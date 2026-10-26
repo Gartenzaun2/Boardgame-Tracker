@@ -176,7 +176,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     Color = table.Column<int>(type: "INTEGER", nullable: false),
                     ZooPlanOption1Id = table.Column<int>(type: "INTEGER", nullable: false),
                     ZooPlanOption2Id = table.Column<int>(type: "INTEGER", nullable: false),
-                    SelectedZooPlanId = table.Column<int>(type: "INTEGER", nullable: true),
+                    SelectedZooPlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     Attractiveness = table.Column<int>(type: "INTEGER", nullable: true),
                     Conservation = table.Column<int>(type: "INTEGER", nullable: true),
                     Reputation = table.Column<int>(type: "INTEGER", nullable: true)
@@ -185,7 +185,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                 {
                     table.PrimaryKey("PK_ArkNovaSessionPlayers", x => new { x.GameSessionId, x.PersonId });
                     table.CheckConstraint("CK_ArkNovaSessionPlayers_DifferentZooPlanOptions", "ZooPlanOption1Id <> ZooPlanOption2Id");
-                    table.CheckConstraint("CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered", "SelectedZooPlanId IS NULL OR SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
+                    table.CheckConstraint("CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered", "SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
                     table.ForeignKey(
                         name: "FK_ArkNovaSessionPlayers_ArkNovaZooPlans_SelectedZooPlanId",
                         column: x => x.SelectedZooPlanId,

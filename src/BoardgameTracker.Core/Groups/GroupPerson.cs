@@ -6,7 +6,7 @@ public sealed class GroupPerson
     {
     }
 
-    public GroupPerson(Guid groupId, Guid personId, int defaultOrder)
+    internal GroupPerson(Guid groupId, Guid personId, int defaultOrder)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(personId, Guid.Empty);
@@ -19,15 +19,11 @@ public sealed class GroupPerson
 
     public Guid GroupId { get; private set; }
 
-    public Group? Group { get; private set; }
-
     public Guid PersonId { get; private set; }
-
-    public Person? Person { get; private set; }
 
     public int DefaultOrder { get; private set; }
 
-    public void SetDefaultOrder(int defaultOrder)
+    internal void SetDefaultOrder(int defaultOrder)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(defaultOrder);
         DefaultOrder = defaultOrder;

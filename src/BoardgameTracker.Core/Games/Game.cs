@@ -1,4 +1,4 @@
-namespace BoardgameTracker.Core.GameSessions;
+namespace BoardgameTracker.Core.Games;
 
 public sealed class Game
 {

@@ -1,73 +1,42 @@
-Boardgame Tracker - Scaffold v0.4
+Boardgame Tracker v0.5
 
-Neu in v0.4
-------------
-- Core featureorientiert reorganisiert:
-    People/
-    Groups/
-    GameSessions/
-    Games/ArkNova/
-- Kein künstlicher General-, Domain- oder Rules-Sammelordner mehr.
-- StartingPlayerRotation aus ArkNova herausgezogen; die Regel gehört allgemein
-  zu GameSessions.
-- Erster echter Persistenz-Slice implementiert:
-    Gruppenübersicht -> Gruppe anlegen -> Personen auswählen/anlegen ->
-    Standard-Reihenfolge festlegen -> SQLite speichern -> Liste neu laden.
-- Neue Personen können direkt beim Anlegen einer Gruppe erstellt werden.
-- Personen können als Gast markiert werden.
-- Bestehende aktive Personen können wiederverwendet werden.
-- Standard-Reihenfolge wird mit Auf/Ab-Schaltflächen festgelegt und als
-  GroupPerson.DefaultOrder gespeichert.
-- ViewModels greifen nicht direkt auf DbContext zu. Der gezielte GroupStore
-  bündelt die für diesen Slice benötigten EF-Core-Abfragen und Schreibvorgänge.
-- Leseabfragen verwenden AsNoTracking(); benötigte Navigationen werden explizit
-  geladen. Lazy Loading bleibt deaktiviert.
-- Shell-Route und DI für CreateGroupPage/CreateGroupViewModel ergänzt.
-- Architektur-Dokument auf v0.3 aktualisiert.
+1.  Voraussetzung Visual Studio 2026 mit .NET-MAUI-Workload und .NET 10
+    SDK.
 
-Migration
----------
-Das Datenmodell wurde durch v0.4 NICHT verändert. Deine lokal bereits erzeugte
-InitialCreate-Migration aus v0.3 bleibt daher gültig.
+2.  Wichtig: Migration neu erzeugen v0.5 enthält absichtlich keine
+    generierte Migration. Das Domainmodell wurde gegenüber der
+    bisherigen InitialCreate geändert, insbesondere ist
+    SelectedZooPlanId jetzt verpflichtend.
 
-WICHTIG: Dieses ZIP enthält deine lokal generierten Migrationsdateien nicht.
-Wenn du den v0.4-Ordner als neues Projektverzeichnis verwendest, kopiere deinen
-bestehenden Ordner
+Wenn du noch keine produktiven Daten hast, lösche für diesen
+Entwicklungsstand die alte lokale InitialCreate und erzeuge sie aus v0.5
+neu:
 
-  src\BoardgameTracker.Infrastructure\Persistence\SQLite\Migrations
+tools-initial-migration.cmd
 
-in den entsprechenden v0.4-Pfad.
+Alternativ manuell:
 
-Alternativ kannst du in einem frischen v0.4-Verzeichnis InitialCreate erneut
-mit dem vorhandenen Skript erzeugen, solange noch keine echten Nutzerdaten
-existieren:
+dotnet tool restore
 
-  tools\create-initial-migration.cmd
+dotnet ef migrations add InitialCreate –project
+src.Infrastructure.Infrastructure.csproj –context
+BoardgameTrackerDbContext –output-dir Persistence
 
-Testablauf
-----------
-1. Solution öffnen und Build ausführen.
-2. Android-App starten.
-3. In der Gruppenübersicht "Neue Gruppe" wählen.
-4. Einen Gruppennamen eingeben.
-5. Neue Personen hinzufügen; optional Gast markieren.
-6. Reihenfolge mit ↑ / ↓ festlegen.
-7. Gruppe speichern.
-8. App vollständig schließen und erneut starten.
-9. Die Gruppe und ihre Personen müssen wieder aus SQLite erscheinen.
-10. Eine zweite Gruppe anlegen und eine bereits vorhandene Person auswählen.
+3.  App starten Beim Start ruft DatabaseInitializer
+    Database.MigrateAsync auf und legt bzw. aktualisiert die lokale
+    SQLite-Datenbank.
 
-Hinweis zu DateTimeOffset + SQLite
-----------------------------------
-GameSession verwendet derzeit weiterhin DateTimeOffset. SQLite kann diesen Typ
-speichern, unterstützt aber bestimmte serverseitige Vergleiche/Sortierungen nur
-eingeschränkt. Der aktuelle GroupStore lädt die wenigen benötigten Zeitwerte
-bewusst vor der Max-Auswertung in den Speicher, statt eine problematische
-SQLite-Aggregation zu erzwingen. Vor dem History-/Statistik-Slice prüfen wir, ob
-wir die Persistenzzeitstempel langfristig auf UTC-DateTime umstellen wollen.
+4.  Testablauf
 
-Validierung
------------
-XML, XAML, RESX und Projektdateien wurden strukturell geparst. In der
-Erstellungsumgebung steht kein .NET-SDK zur Verfügung; ein echter dotnet build
-konnte deshalb hier nicht ausgeführt werden.
+-   Gruppe anlegen
+-   vorhandene Person auswählen oder neue Person anlegen
+-   optional Gast markieren
+-   mehrere Mitglieder hinzufügen
+-   Reihenfolge mit Hoch/Runter ändern
+-   speichern
+-   App beenden und neu starten
+-   prüfen, ob die Gruppe und Personen wieder verfügbar sind
+
+5.  Hinweis In dieser Laufzeit konnte kein echter dotnet build
+    ausgeführt werden, weil hier kein .NET SDK installiert ist. XAML/XML
+    und Projektstruktur wurden statisch geprüft.

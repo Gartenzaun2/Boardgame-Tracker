@@ -1,6 +1,6 @@
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.People;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,26 +11,21 @@ internal sealed class GameSessionConfiguration : IEntityTypeConfiguration<GameSe
     public void Configure(EntityTypeBuilder<GameSession> builder)
     {
         builder.ToTable("GameSessions");
-
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Status).HasConversion<int>().IsRequired();
+        builder.Property(x => x.StartedAt).IsRequired();
+        builder.Property(x => x.ModifiedAt).IsRequired();
 
-        builder.Property(x => x.Status)
-            .HasConversion<int>()
-            .IsRequired();
+        builder.Navigation(x => x.Players)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.Property(x => x.StartedAt)
-            .IsRequired();
-
-        builder.Property(x => x.ModifiedAt)
-            .IsRequired();
-
-        builder.HasOne(x => x.Game)
+        builder.HasOne<Game>()
             .WithMany()
             .HasForeignKey(x => x.GameId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.Group)
+        builder.HasOne<Group>()
             .WithMany()
             .HasForeignKey(x => x.GroupId)
             .IsRequired()

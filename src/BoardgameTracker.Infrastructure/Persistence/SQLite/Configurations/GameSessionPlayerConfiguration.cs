@@ -1,5 +1,4 @@
 using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.People;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -14,32 +13,25 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
             "GameSessionPlayers",
             table =>
             {
-                table.HasCheckConstraint(
-                    "CK_GameSessionPlayers_Order_Positive",
-                    "\"Order\" > 0");
-                table.HasCheckConstraint(
-                    "CK_GameSessionPlayers_Placement_Positive",
-                    "Placement IS NULL OR Placement > 0");
+                table.HasCheckConstraint("CK_GameSessionPlayers_Order_Positive", "\"Order\" > 0");
+                table.HasCheckConstraint("CK_GameSessionPlayers_Placement_Positive", "Placement IS NULL OR Placement > 0");
             });
 
         builder.HasKey(x => new { x.GameSessionId, x.PersonId });
+        builder.Property(x => x.Order).IsRequired();
 
-        builder.Property(x => x.Order)
-            .IsRequired();
-
-        builder.HasOne(x => x.GameSession)
+        builder.HasOne<GameSession>()
             .WithMany(x => x.Players)
             .HasForeignKey(x => x.GameSessionId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Person)
+        builder.HasOne<Person>()
             .WithMany()
             .HasForeignKey(x => x.PersonId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => new { x.GameSessionId, x.Order })
-            .IsUnique();
+        builder.HasIndex(x => new { x.GameSessionId, x.Order }).IsUnique();
     }
 }

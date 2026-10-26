@@ -1,4 +1,6 @@
-namespace BoardgameTracker.App.Features.Groups;
+using BoardgameTracker.App.Features.Groups.CreateGroup;
+
+namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
 public partial class GroupListPage : ContentPage
 {
@@ -7,7 +9,6 @@ public partial class GroupListPage : ContentPage
     public GroupListPage(GroupListViewModel viewModel)
     {
         InitializeComponent();
-
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
