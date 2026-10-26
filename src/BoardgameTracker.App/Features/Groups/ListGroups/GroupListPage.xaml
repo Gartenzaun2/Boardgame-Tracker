@@ -6,7 +6,7 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+    <Grid Padding="20,22" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="18">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <Label
                 FontAttributes="Bold"
@@ -26,8 +26,19 @@
             Text="{Binding ErrorMessage}"
             TextColor="{StaticResource Danger}" />
 
+        <HorizontalStackLayout Grid.Row="2" Spacing="18">
+            <HorizontalStackLayout Spacing="6">
+                <Switch IsToggled="{Binding IncludeTemporary}" />
+                <Label Text="Temporäre einblenden" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="6">
+                <Switch IsToggled="{Binding IncludeArchived}" />
+                <Label Text="Archivierte einblenden" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </HorizontalStackLayout>
+
         <CollectionView
-            Grid.Row="2"
+            Grid.Row="3"
             ItemsSource="{Binding Groups}">
             <CollectionView.EmptyView>
                 <Border Padding="20" Style="{StaticResource CardBorder}">
@@ -53,7 +64,11 @@
                                     FontAttributes="Bold"
                                     FontSize="20"
                                     Text="{Binding Name}" />
-                                <Label Text="{Binding MemberNames}" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="{Binding MemberNames}" />
+                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="Temporär" TextColor="{StaticResource TextSecondary}" />
+                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="Archiviert" TextColor="{StaticResource TextSecondary}" />
+                                </HorizontalStackLayout>
                                 <Label
                                     FontSize="12"
                                     Text="{Binding LastPlayedText}"
@@ -74,13 +89,13 @@
         </CollectionView>
 
         <ActivityIndicator
-            Grid.Row="3"
+            Grid.Row="4"
             HorizontalOptions="Center"
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}" />
 
         <Grid
-            Grid.RowSpan="4"
+            Grid.RowSpan="5"
             BackgroundColor="#40FFFFFF"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
@@ -92,7 +107,7 @@
 
         <Grid
             x:Name="NavigationBusyOverlay"
-            Grid.RowSpan="4"
+            Grid.RowSpan="5"
             BackgroundColor="#40FFFFFF"
             InputTransparent="False"
             IsVisible="False">

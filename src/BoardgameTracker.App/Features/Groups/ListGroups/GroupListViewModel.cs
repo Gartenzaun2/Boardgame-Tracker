@@ -1,22 +1,33 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Diagnostics;
-using Microsoft.Extensions.Logging;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.ListGroups;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
-public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery, ILogger<GroupListViewModel> logger) : ObservableObject
+public partial class GroupListViewModel(
+    IListGroupsQuery listGroupsQuery,
+    ILogger<GroupListViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
+
+    [ObservableProperty]
+    public partial bool IncludeTemporary { get; set; }
+
+    [ObservableProperty]
+    public partial bool IncludeArchived { get; set; }
 
     [ObservableProperty]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
+
+    partial void OnIncludeTemporaryChanged(bool value) => _ = LoadAsync();
+    partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -31,7 +42,10 @@ public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery, ILogge
             ErrorMessage = null;
 
             IReadOnlyList<GroupListItem> groups =
-                await listGroupsQuery.ExecuteAsync(cancellationToken);
+                await listGroupsQuery.ExecuteAsync(
+                    IncludeTemporary,
+                    IncludeArchived,
+                    cancellationToken);
 
             Groups.Clear();
 
@@ -47,6 +61,8 @@ public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery, ILogge
                 Groups.Add(new GroupListItemViewModel(
                     group.Id,
                     group.Name,
+                    group.IsTemporary,
+                    group.IsArchived,
                     group.MemberCount,
                     string.Join(" · ", group.MemberNames),
                     lastPlayedText));
@@ -67,6 +83,8 @@ public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery, ILogge
 public sealed record GroupListItemViewModel(
     Guid Id,
     string Name,
+    bool IsTemporary,
+    bool IsArchived,
     int MemberCount,
     string MemberNames,
     string LastPlayedText);

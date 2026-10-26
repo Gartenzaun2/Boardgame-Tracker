@@ -1,25 +1,51 @@
-# Boardgame Tracker v0.6.3.1 – Setup
+# Boardgame Tracker v0.6.4 – Setup
 
-## Upgrade
+## Upgrade von v0.6.3.1
+
+1.  v0.6.4 über das vorhandene Projekt kopieren.
+2.  Cleanup-/Hinweisscript ausführen:
 
 ``` cmd
-tools\upgrade-from-v063.cmd
+tools\upgrade-from-v0631.cmd
 ```
 
-Keine Dateien werden gelöscht oder verschoben. Keine EF-Core-Migration
-erforderlich.
+3.  Wenn dein Projekt bereits eine bestehende `InitialCreate`-Migration
+    besitzt, neue Migration erzeugen:
 
-## Build-Test
+``` cmd
+tools\create-v064-migration.cmd
+```
 
-1.  `Clean Solution`
-2.  `Rebuild Solution`
-3.  Prüfen, dass die früheren Fehler `AppResources.Retry`,
-    `AppResources.TechnicalDetails` und `CreateGroupButton` nicht mehr
-    auftreten.
-4.  Android-App starten.
-5.  `Neue Gruppe` schnell mehrfach antippen; der Screen darf nur einmal
-    geöffnet werden.
-6.  Startup-Fehlerbildschirm und Busy-Zustände bei Gelegenheit prüfen.
+4.  Clean Solution.
+5.  Rebuild Solution.
+6.  Android-App starten. Die Migration wird beim Startup über
+    `MigrateAsync` angewendet.
 
-In der Paket-Erstellungsumgebung steht kein .NET SDK zur Verfügung;
-daher wurde statisch statt mit `dotnet build` validiert.
+## Erwartete Schemaänderung
+
+Die Tabelle `Groups` erhält eine nicht-nullbare Bool-Spalte `IsArchived`
+mit dem für bestehende Datensätze effektiven Standardwert `false`.
+
+## Funktionstest
+
+- Gruppenübersicht: normale permanente, nicht archivierte Gruppen sind
+  sichtbar.
+- `Temporäre einblenden` einschalten: temporäre Gruppen erscheinen.
+- `Archivierte einblenden` einschalten: archivierte Gruppen erscheinen.
+- Temporäre Gruppe bearbeiten: `Als permanente Gruppe übernehmen` ist
+  verfügbar.
+- Permanente Gruppe bearbeiten: keine Möglichkeit, sie temporär zu
+  machen.
+- Gruppe archivieren und speichern: bei deaktiviertem Archivfilter
+  verschwindet sie.
+- Archivfilter einschalten, Gruppe bearbeiten und Archivierung
+  ausschalten: Gruppe ist wieder normal sichtbar.
+- `Speichern` ist eindeutig grün.
+- Gruppenflächen und `Neue Gruppe` verwenden `PaleGoldenrod`.
+
+## Hinweis zur Paketprüfung
+
+In der Paket-Erstellungsumgebung steht kein .NET SDK zur Verfügung.
+Deshalb konnte kein echter `dotnet build` und keine
+EF-Migrationserzeugung ausgeführt werden. XAML/XML/RESX und
+Ressourcenreferenzen wurden statisch geprüft.

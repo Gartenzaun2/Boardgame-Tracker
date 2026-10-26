@@ -27,6 +27,8 @@ public sealed class Group
 
     public bool IsTemporary { get; private set; }
 
+    public bool IsArchived { get; private set; }
+
     public IReadOnlyCollection<GroupPerson> Members => _members;
 
     public void SetName(string name)
@@ -35,7 +37,9 @@ public sealed class Group
         Name = name.Trim();
     }
 
-    public void SetTemporary(bool isTemporary) => IsTemporary = isTemporary;
+    public void MakePermanent() => IsTemporary = false;
+
+    public void SetArchived(bool isArchived) => IsArchived = isArchived;
 
     public void SetDefaultOrder(IReadOnlyList<Guid> orderedPersonIds)
     {

@@ -1,37 +1,59 @@
-# Boardgame Tracker – Scaffold v0.6.3.1
+# Boardgame Tracker – Scaffold v0.6.4
 
-v0.6.3.1 ist ein Compile-Bugfix für v0.6.3.
+v0.6.4 ergänzt Gruppenarchivierung, Gruppenfilter und die überarbeitete
+Gelb-/Grün-Farbsemantik.
 
-## Behobene Compilerfehler
+## UI
 
-- `AppResources.Retry` und `AppResources.TechnicalDetails` werden nicht
-  mehr als nicht vorhandene stark typisierte Resource-Properties
-  referenziert. Die beiden ausschließlich im Startup-Fehlerbildschirm
-  verwendeten Texte werden vorerst direkt dort gesetzt.
-- Der Navigation-Guard referenziert nicht mehr `CreateGroupButton` aus
-  dem Code-behind. Das vorhandene Busy-Overlay blockiert weitere
-  Eingaben bereits zuverlässig; dadurch ist keine direkte Abhängigkeit
-  von einem generierten XAML-Feld nötig.
+- `SurfaceYellow` verwendet jetzt `PaleGoldenrod`.
+- Gruppenkarten in der Gruppenübersicht verwenden dieses Gelb.
+- `Neue Gruppe` verwendet den gelben kompakten Aktionsstil.
+- Die Gruppenstammdaten in `Gruppe anlegen` und `Gruppe bearbeiten`
+  verwenden ebenfalls das gelbe Oberflächen-Token.
+- Bestätigende Hauptaktionen wie `Speichern` sind wieder eindeutig grün.
+- Grün ist damit die feste Semantik für Bestätigen/Abschließen, Gelb für
+  Gruppen-/Auswahlflächen.
 
-## Verhalten
+## Gruppenübersicht
 
-Die in v0.6.3 eingeführten Funktionen bleiben erhalten:
+Zwei Schalter steuern die Sichtbarkeit:
 
-- fataler DB-Startup-Fehler stoppt die eigentliche App,
-- `Erneut versuchen`,
-- Logging und DEBUG-Fehlerdetails,
-- Schutz gegen Mehrfachtaps,
-- Busy-Feedback,
-- Empty-State für vorhandene Personen,
-- klareres Pastellgelb.
+- `Temporäre einblenden` – standardmäßig aus.
+- `Archivierte einblenden` – standardmäßig aus.
+
+Temporäre und archivierte Gruppen werden in der Liste entsprechend
+gekennzeichnet.
+
+## Gruppen bearbeiten
+
+Eine bestehende permanente Gruppe kann nicht nachträglich temporär
+gemacht werden.
+
+Bei einer temporären Gruppe erscheint stattdessen die Option
+`Als permanente Gruppe übernehmen`. Diese Änderung ist nur in Richtung
+temporär → permanent möglich.
+
+Jede Gruppe kann archiviert oder wieder aktiviert werden. Archivierte
+Gruppen verschwinden bei ausgeschaltetem `Archivierte einblenden` aus
+der normalen Gruppenübersicht. Historische Daten werden nicht gelöscht.
 
 ## Datenbank
 
-Keine Schemaänderung. **Keine Migration erforderlich.**
+`Group` besitzt neu `IsArchived`.
 
-## Upgrade von v0.6.3
+**Für v0.6.3.1 → v0.6.4 ist eine EF-Core-Migration erforderlich.**
 
-1.  v0.6.3.1 über v0.6.3 kopieren.
-2.  `tools\upgrade-from-v063.cmd` ausführen.
-3.  Clean Solution.
-4.  Rebuild Solution.
+Nach dem Kopieren:
+
+``` cmd
+tools\upgrade-from-v0631.cmd
+tools\create-v064-migration.cmd
+```
+
+Danach App starten. `DatabaseInitializer` wendet die Migration beim
+Start an.
+
+Wenn in deinem lokalen Projekt noch gar keine `InitialCreate`-Migration
+existiert, nicht beide Migrationen neu erzeugen: dann stattdessen die
+bisherige Initial-Migration entsprechend dem bestehenden Setup erzeugen,
+sodass `IsArchived` bereits Teil des aktuellen Modells ist.

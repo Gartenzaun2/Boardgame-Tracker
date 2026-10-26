@@ -8,6 +8,8 @@ public sealed class SqliteListGroupsQuery(
     : IListGroupsQuery
 {
     public async Task<IReadOnlyList<GroupListItem>> ExecuteAsync(
+        bool includeTemporary = false,
+        bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext dbContext =
@@ -15,8 +17,9 @@ public sealed class SqliteListGroupsQuery(
 
         var groups = await dbContext.Groups
             .AsNoTracking()
-            .Where(group => !group.IsTemporary)
-            .Select(group => new { group.Id, group.Name })
+            .Where(group => includeTemporary || !group.IsTemporary)
+            .Where(group => includeArchived || !group.IsArchived)
+            .Select(group => new { group.Id, group.Name, group.IsTemporary, group.IsArchived })
             .ToListAsync(cancellationToken);
 
         var members = await (
@@ -61,6 +64,8 @@ public sealed class SqliteListGroupsQuery(
                 return new GroupListItem(
                     group.Id,
                     group.Name,
+                    group.IsTemporary,
+                    group.IsArchived,
                     memberNames.Length,
                     memberNames,
                     lastPlayedByGroup.GetValueOrDefault(group.Id));

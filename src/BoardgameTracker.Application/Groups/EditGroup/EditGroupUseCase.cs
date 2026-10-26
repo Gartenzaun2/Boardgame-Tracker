@@ -27,7 +27,13 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
             ?? throw new InvalidOperationException("The group does not exist.");
 
         group.SetName(command.Name);
-        group.SetTemporary(command.IsTemporary);
+
+        if (command.MakePermanent)
+        {
+            group.MakePermanent();
+        }
+
+        group.SetArchived(command.IsArchived);
         group.SetDefaultOrder(command.OrderedPersonIds);
 
         await dataAccess.SaveAsync(group, cancellationToken);

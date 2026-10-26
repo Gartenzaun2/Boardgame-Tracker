@@ -6,7 +6,7 @@ namespace BoardgameTracker.Application.Tests.Groups.EditGroup;
 public sealed class EditGroupUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ChangesEditablePropertiesWithoutChangingMembership()
+    public async Task ExecuteAsync_ChangesNameOrderAndArchiveStateWithoutChangingMembership()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
@@ -15,17 +15,41 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id,
-            "Neu",
-            true,
-            [second, first]));
+            group.Id, "Neu", false, true, [second, first]));
 
         Assert.Same(group, dataAccess.SavedGroup);
         Assert.Equal("Neu", group.Name);
-        Assert.True(group.IsTemporary);
+        Assert.False(group.IsTemporary);
+        Assert.True(group.IsArchived);
         Assert.Equal(2, group.Members.Count);
         Assert.Equal(1, group.Members.Single(member => member.PersonId == second).DefaultOrder);
         Assert.Equal(2, group.Members.Single(member => member.PersonId == first).DefaultOrder);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CanMakeTemporaryGroupPermanent()
+    {
+        Group group = new("Einmalig", true, [Guid.NewGuid()]);
+        FakeEditGroupDataAccess dataAccess = new(group);
+        EditGroupUseCase useCase = new(dataAccess);
+
+        await useCase.ExecuteAsync(new EditGroupCommand(
+            group.Id, group.Name, true, false, [group.Members.Single().PersonId]));
+
+        Assert.False(group.IsTemporary);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DoesNotMakePermanentGroupTemporary()
+    {
+        Group group = new("Stammgruppe", false, [Guid.NewGuid()]);
+        FakeEditGroupDataAccess dataAccess = new(group);
+        EditGroupUseCase useCase = new(dataAccess);
+
+        await useCase.ExecuteAsync(new EditGroupCommand(
+            group.Id, group.Name, false, false, [group.Members.Single().PersonId]));
+
+        Assert.False(group.IsTemporary);
     }
 
     [Fact]
@@ -39,10 +63,7 @@ public sealed class EditGroupUseCaseTests
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.ExecuteAsync(new EditGroupCommand(
-                group.Id,
-                group.Name,
-                group.IsTemporary,
-                [first, Guid.NewGuid()])));
+                group.Id, group.Name, false, false, [first, Guid.NewGuid()])));
     }
 
     private sealed class FakeEditGroupDataAccess(Group group) : IEditGroupDataAccess
@@ -59,9 +80,7 @@ public sealed class EditGroupUseCaseTests
             CancellationToken cancellationToken = default) =>
             Task.FromResult<Group?>(groupId == group.Id ? group : null);
 
-        public Task SaveAsync(
-            Group groupToSave,
-            CancellationToken cancellationToken = default)
+        public Task SaveAsync(Group groupToSave, CancellationToken cancellationToken = default)
         {
             SavedGroup = groupToSave;
             return Task.CompletedTask;

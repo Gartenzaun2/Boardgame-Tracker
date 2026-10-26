@@ -21,7 +21,13 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     public partial string GroupName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool IsTemporary { get; set; }
+    public partial bool IsTemporary { get; private set; }
+
+    [ObservableProperty]
+    public partial bool MakePermanent { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsArchived { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -58,6 +64,8 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             GroupId = details.Id;
             GroupName = details.Name;
             IsTemporary = details.IsTemporary;
+            MakePermanent = false;
+            IsArchived = details.IsArchived;
 
             Members.Clear();
             foreach (EditGroupMember member in details.Members.OrderBy(member => member.DefaultOrder))
@@ -139,7 +147,8 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             await editGroup.ExecuteAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
-                IsTemporary,
+                MakePermanent,
+                IsArchived,
                 orderedPersonIds));
 
             Saved?.Invoke(this, EventArgs.Empty);
