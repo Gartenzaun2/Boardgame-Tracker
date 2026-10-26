@@ -1,35 +1,132 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <root>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-  <resheader name="version"><value>2.0</value></resheader>
-  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
-  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
-  <data name="Groups" xml:space="preserve"><value>Gruppen</value></data>
-  <data name="NoGroupsYet" xml:space="preserve"><value>Noch keine Gruppen vorhanden.</value></data>
-  <data name="NewGroup" xml:space="preserve"><value>Neue Gruppe</value></data>
-  <data name="CreateFirstGroupHint" xml:space="preserve"><value>Lege deine erste Gruppe an und füge Personen hinzu.</value></data>
-  <data name="CreateGroup" xml:space="preserve"><value>Gruppe anlegen</value></data>
-  <data name="CreateGroupHint" xml:space="preserve"><value>Wähle vorhandene Personen oder lege neue an. Die Reihenfolge wird als Standard-Sitzreihenfolge gespeichert.</value></data>
-  <data name="GroupName" xml:space="preserve"><value>Gruppenname</value></data>
-  <data name="GroupNamePlaceholder" xml:space="preserve"><value>z. B. Freitagabend</value></data>
-  <data name="TemporaryGroup" xml:space="preserve"><value>Temporäre Gruppe</value></data>
-  <data name="NewPerson" xml:space="preserve"><value>Neue Person</value></data>
-  <data name="PersonNamePlaceholder" xml:space="preserve"><value>Name</value></data>
-  <data name="Guest" xml:space="preserve"><value>Gast</value></data>
-  <data name="AddPerson" xml:space="preserve"><value>Person hinzufügen</value></data>
-  <data name="ExistingPersons" xml:space="preserve"><value>Vorhandene Personen</value></data>
-  <data name="NoAvailablePersons" xml:space="preserve"><value>Keine weiteren Personen vorhanden.</value></data>
-  <data name="Add" xml:space="preserve"><value>Hinzufügen</value></data>
-  <data name="GroupMembers" xml:space="preserve"><value>Gruppenmitglieder</value></data>
-  <data name="DefaultOrderHint" xml:space="preserve"><value>Mit ↑ und ↓ legst du die Standard-Reihenfolge fest.</value></data>
-  <data name="NoMembersYet" xml:space="preserve"><value>Noch keine Personen in der Gruppe.</value></data>
-  <data name="SaveGroup" xml:space="preserve"><value>Gruppe speichern</value></data>
-  <data name="EnterPersonName" xml:space="preserve"><value>Bitte einen Namen eingeben.</value></data>
-  <data name="PersonAlreadyInGroup" xml:space="preserve"><value>Diese Person ist bereits in der Gruppe.</value></data>
-  <data name="LoadPersonsFailed" xml:space="preserve"><value>Die Personen konnten nicht geladen werden.</value></data>
-  <data name="SaveGroupFailed" xml:space="preserve"><value>Die Gruppe konnte nicht gespeichert werden.</value></data>
-  <data name="LoadGroupsFailed" xml:space="preserve"><value>Die Gruppen konnten nicht geladen werden.</value></data>
-  <data name="Initializing" xml:space="preserve"><value>Datenbank wird vorbereitet …</value></data>
-  <data name="StartupErrorTitle" xml:space="preserve"><value>Start fehlgeschlagen</value></data>
-  <data name="StartupErrorMessage" xml:space="preserve"><value>Die lokale Datenbank konnte nicht initialisiert werden.</value></data>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Groups" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="NoGroupsYet" xml:space="preserve">
+    <value>Noch keine Gruppen vorhanden.</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>Neue Gruppe</value>
+  </data>
+  <data name="CreateFirstGroupHint" xml:space="preserve">
+    <value>Lege deine erste Gruppe an und füge Personen hinzu.</value>
+  </data>
+  <data name="CreateGroup" xml:space="preserve">
+    <value>Gruppe anlegen</value>
+  </data>
+  <data name="CreateGroupHint" xml:space="preserve">
+    <value>Wähle vorhandene Personen oder lege neue an. Die Reihenfolge wird als Standard-Sitzreihenfolge gespeichert.</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>Gruppenname</value>
+  </data>
+  <data name="GroupNamePlaceholder" xml:space="preserve">
+    <value>z. B. Freitagabend</value>
+  </data>
+  <data name="TemporaryGroup" xml:space="preserve">
+    <value>Temporäre Gruppe</value>
+  </data>
+  <data name="NewPerson" xml:space="preserve">
+    <value>Neue Person</value>
+  </data>
+  <data name="PersonNamePlaceholder" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Guest" xml:space="preserve">
+    <value>Gast</value>
+  </data>
+  <data name="AddPerson" xml:space="preserve">
+    <value>Person hinzufügen</value>
+  </data>
+  <data name="ExistingPersons" xml:space="preserve">
+    <value>Vorhandene Personen</value>
+  </data>
+  <data name="NoAvailablePersons" xml:space="preserve">
+    <value>Keine weiteren Personen vorhanden.</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="GroupMembers" xml:space="preserve">
+    <value>Gruppenmitglieder</value>
+  </data>
+  <data name="DefaultOrderHint" xml:space="preserve">
+    <value>Mit ↑ und ↓ legst du die Standard-Reihenfolge fest.</value>
+  </data>
+  <data name="NoMembersYet" xml:space="preserve">
+    <value>Noch keine Personen in der Gruppe.</value>
+  </data>
+  <data name="SaveGroup" xml:space="preserve">
+    <value>Gruppe speichern</value>
+  </data>
+  <data name="EnterPersonName" xml:space="preserve">
+    <value>Bitte einen Namen eingeben.</value>
+  </data>
+  <data name="PersonAlreadyInGroup" xml:space="preserve">
+    <value>Diese Person ist bereits in der Gruppe.</value>
+  </data>
+  <data name="LoadPersonsFailed" xml:space="preserve">
+    <value>Die Personen konnten nicht geladen werden.</value>
+  </data>
+  <data name="SaveGroupFailed" xml:space="preserve">
+    <value>Die Gruppe konnte nicht gespeichert werden.</value>
+  </data>
+  <data name="LoadGroupsFailed" xml:space="preserve">
+    <value>Die Gruppen konnten nicht geladen werden.</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>Datenbank wird vorbereitet …</value>
+  </data>
+  <data name="StartupErrorTitle" xml:space="preserve">
+    <value>Start fehlgeschlagen</value>
+  </data>
+  <data name="StartupErrorMessage" xml:space="preserve">
+    <value>Die lokale Datenbank konnte nicht initialisiert werden.</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AddExistingPerson" xml:space="preserve">
+    <value>Vorhandene Person hinzufügen</value>
+  </data>
+  <data name="SelectPerson" xml:space="preserve">
+    <value>Person auswählen</value>
+  </data>
+  <data name="EditGroup" xml:space="preserve">
+    <value>Gruppe bearbeiten</value>
+  </data>
+  <data name="EditGroupHint" xml:space="preserve">
+    <value>Bearbeite Gruppenname, temporären Status und die Standard-Reihenfolge. Eine andere Personenzusammensetzung ist eine andere Gruppe.</value>
+  </data>
+  <data name="EditGroupMembersHint" xml:space="preserve">
+    <value>Mit ↑ und ↓ änderst du die Standard-Reihenfolge. Die Mitgliederzusammensetzung bleibt unverändert.</value>
+  </data>
+  <data name="GroupNotFound" xml:space="preserve">
+    <value>Die Gruppe wurde nicht gefunden.</value>
+  </data>
+  <data name="LoadGroupFailed" xml:space="preserve">
+    <value>Die Gruppe konnte nicht geladen werden.</value>
+  </data>
+  <data name="LastPlayedFormat" xml:space="preserve">
+    <value>Zuletzt gespielt: {0}</value>
+  </data>
+  <data name="NeverPlayed" xml:space="preserve">
+    <value>Noch keine Partie gespielt.</value>
+  </data>
 </root>

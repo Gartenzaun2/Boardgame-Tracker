@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.Groups;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.CreateGroup;
@@ -19,6 +20,10 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
     public partial bool IsTemporary { get; set; }
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddSelectedPersonCommand))]
+    public partial AvailablePersonItemViewModel? SelectedExistingPerson { get; set; }
+
+    [ObservableProperty]
     public partial string NewPersonName { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -26,10 +31,17 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddSelectedPersonCommand))]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
+
+    [ObservableProperty]
+    public partial bool HasNoMembers { get; private set; } = true;
+
+    [ObservableProperty]
+    public partial bool HasNoAvailablePersons { get; private set; } = true;
 
     public event EventHandler? Saved;
 
@@ -52,6 +64,9 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
                         person.IsGuest));
                 }
             }
+
+            SelectedExistingPerson = null;
+            UpdateCollectionStates();
         }
         catch (Exception)
         {
@@ -59,9 +74,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
         }
     }
 
-    [RelayCommand]
-    private void AddExistingPerson(AvailablePersonItemViewModel? person)
+    private bool CanAddSelectedPerson() =>
+        !IsBusy && SelectedExistingPerson is not null;
+
+    [RelayCommand(CanExecute = nameof(CanAddSelectedPerson))]
+    private void AddSelectedPerson()
     {
+        AvailablePersonItemViewModel? person = SelectedExistingPerson;
+
         if (person is null || Members.Any(member => member.PersonId == person.Id))
         {
             return;
@@ -69,6 +89,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
 
         Members.Add(new GroupMemberItemViewModel(person.Id, person.Name, person.IsGuest));
         AvailablePersons.Remove(person);
+        SelectedExistingPerson = null;
+        ErrorMessage = null;
         MembersChanged();
     }
 
@@ -104,6 +126,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
                 personId,
                 member.Name,
                 member.IsGuest));
+
+            SortAvailablePersons();
         }
 
         MembersChanged();
@@ -174,8 +198,30 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
         }
     }
 
-    private void MembersChanged() => SaveCommand.NotifyCanExecuteChanged();
+    private void MembersChanged()
+    {
+        SaveCommand.NotifyCanExecuteChanged();
+        UpdateCollectionStates();
+    }
+
+    private void UpdateCollectionStates()
+    {
+        HasNoMembers = Members.Count == 0;
+        HasNoAvailablePersons = AvailablePersons.Count == 0;
+    }
+
+    private void SortAvailablePersons()
+    {
+        AvailablePersonItemViewModel[] ordered = AvailablePersons
+            .OrderBy(person => person.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ToArray();
+
+        AvailablePersons.Clear();
+        foreach (AvailablePersonItemViewModel person in ordered)
+        {
+            AvailablePersons.Add(person);
+        }
+    }
 }
 
 public sealed record AvailablePersonItemViewModel(Guid Id, string Name, bool IsGuest);
-public sealed record GroupMemberItemViewModel(Guid? PersonId, string Name, bool IsGuest);

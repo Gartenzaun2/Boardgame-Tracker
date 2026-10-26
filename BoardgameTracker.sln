@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardgameTracker.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardgameTracker.Core.Tests", "tests\BoardgameTracker.Core.Tests\BoardgameTracker.Core.Tests.csproj", "{7CB4CAFC-F6A7-4492-8FED-B6A38A612EAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardgameTracker.Application.Tests", "tests\BoardgameTracker.Application.Tests\BoardgameTracker.Application.Tests.csproj", "{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7CB4CAFC-F6A7-4492-8FED-B6A38A612EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CB4CAFC-F6A7-4492-8FED-B6A38A612EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CB4CAFC-F6A7-4492-8FED-B6A38A612EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,9 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
+using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,11 +34,15 @@ public static class MauiProgram
         builder.Services.AddSingleton<IListGroupsQuery, SqliteListGroupsQuery>();
         builder.Services.AddTransient<ICreateGroupDataAccess, SqliteCreateGroupDataAccess>();
         builder.Services.AddTransient<CreateGroupUseCase>();
+        builder.Services.AddTransient<IEditGroupDataAccess, SqliteEditGroupDataAccess>();
+        builder.Services.AddTransient<EditGroupUseCase>();
 
         builder.Services.AddSingleton<GroupListViewModel>();
         builder.Services.AddSingleton<GroupListPage>();
         builder.Services.AddTransient<CreateGroupViewModel>();
         builder.Services.AddTransient<CreateGroupPage>();
+        builder.Services.AddTransient<EditGroupViewModel>();
+        builder.Services.AddTransient<EditGroupPage>();
 
         builder.Services.AddSingleton<AppShell>();
 

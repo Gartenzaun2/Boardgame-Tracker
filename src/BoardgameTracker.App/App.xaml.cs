@@ -3,7 +3,8 @@ using BoardgameTracker.Infrastructure.Persistence.SQLite;
 
 namespace BoardgameTracker.App;
 
-public partial class App : Microsoft.Maui.Controls.Application {
+public partial class App : Microsoft.Maui.Controls.Application
+{
     private readonly AppShell _shell;
     private readonly DatabaseInitializer _databaseInitializer;
 

@@ -4,14 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    Title="{x:Static res:AppResources.Groups}">
+    Shell.NavBarIsVisible="False">
 
     <Grid Padding="24" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
         <Grid ColumnDefinitions="*,Auto">
             <Label
                 FontAttributes="Bold"
                 FontSize="30"
-                Text="{x:Static res:AppResources.Groups}" />
+                Text="{x:Static res:AppResources.Groups}"
+                VerticalOptions="Center" />
             <Button
                 Grid.Column="1"
                 Clicked="OnCreateGroupClicked"
@@ -20,8 +21,8 @@
 
         <Label
             Grid.Row="1"
-            TextColor="#B3261E"
-            Text="{Binding ErrorMessage}" />
+            Text="{Binding ErrorMessage}"
+            TextColor="#B3261E" />
 
         <CollectionView
             Grid.Row="2"
@@ -47,13 +48,29 @@
                         Padding="18"
                         Stroke="#D7DBD3"
                         StrokeShape="RoundRectangle 16">
-                        <VerticalStackLayout Spacing="6">
-                            <Label
-                                FontAttributes="Bold"
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Spacing="6">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="20"
+                                    Text="{Binding Name}" />
+                                <Label Text="{Binding MemberNames}" />
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding LastPlayedText}" />
+                            </VerticalStackLayout>
+                            <Button
+                                Grid.Column="1"
+                                BackgroundColor="Transparent"
+                                Clicked="OnEditGroupClicked"
+                                CommandParameter="{Binding Id}"
                                 FontSize="20"
-                                Text="{Binding Name}" />
-                            <Label Text="{Binding MemberNames}" />
-                        </VerticalStackLayout>
+                                HeightRequest="44"
+                                Text="✎"
+                                ToolTipProperties.Text="{x:Static res:AppResources.EditGroup}"
+                                VerticalOptions="Start"
+                                WidthRequest="44" />
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.ListGroups;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -34,12 +35,19 @@ public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery) : Obse
 
             foreach (GroupListItem group in groups)
             {
+                string lastPlayedText = group.LastPlayedAt is DateTimeOffset lastPlayed
+                    ? string.Format(
+                        CultureInfo.CurrentCulture,
+                        AppResources.LastPlayedFormat,
+                        lastPlayed.ToLocalTime().ToString("d", CultureInfo.CurrentCulture))
+                    : AppResources.NeverPlayed;
+
                 Groups.Add(new GroupListItemViewModel(
                     group.Id,
                     group.Name,
                     group.MemberCount,
                     string.Join(" · ", group.MemberNames),
-                    group.LastPlayedAt));
+                    lastPlayedText));
             }
         }
         catch (Exception)
@@ -58,4 +66,4 @@ public sealed record GroupListItemViewModel(
     string Name,
     int MemberCount,
     string MemberNames,
-    DateTimeOffset? LastPlayedAt);
+    string LastPlayedText);
