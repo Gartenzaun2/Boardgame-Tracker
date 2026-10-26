@@ -47,4 +47,22 @@ public sealed class GroupTests
         Assert.Equal(1, group.Members.Single(x => x.PersonId == second).DefaultOrder);
         Assert.Equal(2, group.Members.Single(x => x.PersonId == first).DefaultOrder);
     }
+
+    [Fact]
+    public void Constructor_RejectsEmptyMembership()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new Group("Freitagabend", false, []));
+    }
+
+    [Fact]
+    public void SetDefaultOrder_RejectsMissingOrUnknownMembers()
+    {
+        Guid first = Guid.NewGuid();
+        Guid second = Guid.NewGuid();
+        Group group = new("Freitagabend", false, [first, second]);
+
+        Assert.Throws<ArgumentException>(() =>
+            group.SetDefaultOrder([first, Guid.NewGuid()]));
+    }
 }

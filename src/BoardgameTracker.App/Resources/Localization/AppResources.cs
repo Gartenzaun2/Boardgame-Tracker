@@ -84,6 +84,39 @@ public static class AppResources
     public static string LoadGroupsFailed =>
         GetString(nameof(LoadGroupsFailed));
 
+    public static string Save =>
+        GetString(nameof(Save));
+
+    public static string Ok =>
+        GetString(nameof(Ok));
+
+    public static string AddExistingPerson =>
+        GetString(nameof(AddExistingPerson));
+
+    public static string SelectPerson =>
+        GetString(nameof(SelectPerson));
+
+    public static string EditGroup =>
+        GetString(nameof(EditGroup));
+
+    public static string EditGroupHint =>
+        GetString(nameof(EditGroupHint));
+
+    public static string EditGroupMembersHint =>
+        GetString(nameof(EditGroupMembersHint));
+
+    public static string GroupNotFound =>
+        GetString(nameof(GroupNotFound));
+
+    public static string LoadGroupFailed =>
+        GetString(nameof(LoadGroupFailed));
+
+    public static string LastPlayedFormat =>
+        GetString(nameof(LastPlayedFormat));
+
+    public static string NeverPlayed =>
+        GetString(nameof(NeverPlayed));
+
     public static string Initializing =>
         GetString(nameof(Initializing));
 

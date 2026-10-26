@@ -12,7 +12,7 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>0.6.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>

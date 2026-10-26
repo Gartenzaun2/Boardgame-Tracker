@@ -1,42 +1,53 @@
-Boardgame Tracker v0.5
+Boardgame Tracker v0.6
 
-1.  Voraussetzung Visual Studio 2026 mit .NET-MAUI-Workload und .NET 10
-    SDK.
+1. Voraussetzung
+Visual Studio 2026 mit .NET-MAUI-Workload und .NET 10 SDK.
 
-2.  Wichtig: Migration neu erzeugen v0.5 enthält absichtlich keine
-    generierte Migration. Das Domainmodell wurde gegenüber der
-    bisherigen InitialCreate geändert, insbesondere ist
-    SelectedZooPlanId jetzt verpflichtend.
+2. Migration
+v0.6 enthält absichtlich keine generierte InitialCreate-Migration.
 
-Wenn du noch keine produktiven Daten hast, lösche für diesen
-Entwicklungsstand die alte lokale InitialCreate und erzeuge sie aus v0.5
-neu:
+Wenn du aus v0.4 oder einem älteren Entwicklungsstand kommst und noch keine erhaltenswerten Daten hast, lösche die alte lokale Entwicklungsdatenbank/Migration und erzeuge die InitialCreate aus v0.6 neu:
 
-tools-initial-migration.cmd
+tools\create-initial-migration.cmd
 
-Alternativ manuell:
+Alternativ:
 
 dotnet tool restore
 
-dotnet ef migrations add InitialCreate –project
-src.Infrastructure.Infrastructure.csproj –context
-BoardgameTrackerDbContext –output-dir Persistence
+dotnet ef migrations add InitialCreate --project src\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj --context BoardgameTrackerDbContext --output-dir Persistence\SQLite\Migrations
 
-3.  App starten Beim Start ruft DatabaseInitializer
-    Database.MigrateAsync auf und legt bzw. aktualisiert die lokale
-    SQLite-Datenbank.
+Wenn du bereits eine mit v0.5 erzeugte InitialCreate verwendest, hat v0.6 keine weitere Schemaänderung für den Groups-Slice erzwungen.
 
-4.  Testablauf
+3. Build
+Solution in Visual Studio öffnen, Restore ausführen und Android als Startziel wählen.
 
--   Gruppe anlegen
--   vorhandene Person auswählen oder neue Person anlegen
--   optional Gast markieren
--   mehrere Mitglieder hinzufügen
--   Reihenfolge mit Hoch/Runter ändern
--   speichern
--   App beenden und neu starten
--   prüfen, ob die Gruppe und Personen wieder verfügbar sind
+4. Testablauf
 
-5.  Hinweis In dieser Laufzeit konnte kein echter dotnet build
-    ausgeführt werden, weil hier kein .NET SDK installiert ist. XAML/XML
-    und Projektstruktur wurden statisch geprüft.
+A) Gruppe anlegen
+- Neue Gruppe öffnen.
+- Prüfen: Zurück links, Info beim Titel, Speichern oben rechts grün.
+- Gruppenname eingeben.
+- Vorhandene Person über Picker hinzufügen.
+- Neue Person hinzufügen und optional als Gast markieren.
+- Reihenfolge mit Hoch/Runter ändern.
+- Speichern.
+
+B) Persistenz
+- App vollständig schließen und neu starten.
+- Gruppe und Mitglieder müssen wieder erscheinen.
+
+C) Gruppe bearbeiten
+- Stift-Icon rechts an der Gruppe antippen.
+- Namen ändern.
+- Reihenfolge ändern.
+- Optional temporär aktivieren/deaktivieren.
+- Speichern.
+- Prüfen, dass die Änderungen nach Neustart erhalten bleiben.
+- Hinweis: Wird eine Gruppe temporär gesetzt, verschwindet sie anschließend aus der normalen Gruppenübersicht. Das ist beabsichtigt.
+
+D) Tests
+- BoardgameTracker.Core.Tests ausführen.
+- BoardgameTracker.Application.Tests ausführen.
+
+5. Technischer Hinweis
+In der Erstellungsumgebung für dieses Paket ist kein .NET SDK installiert. Daher konnte kein echter dotnet build ausgeführt werden. XML/XAML/RESX/CSPROJ sowie die Projektstruktur wurden statisch geprüft.

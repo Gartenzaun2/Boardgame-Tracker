@@ -1,7 +1,7 @@
-# Boardgame Tracker – Scaffold v0.5
+# Boardgame Tracker – Scaffold v0.6
 
-v0.5 setzt die validierte Vertical-Slice-Architektur erstmals im Code
-um.
+v0.6 schließt den ersten vollständigen Gruppen-Slice auf Basis der
+pragmatischen Vertical-Slice-Architektur ab.
 
 ## Projekte
 
@@ -12,32 +12,60 @@ um.
 - `BoardgameTracker.Infrastructure`: EF Core, SQLite und technische
   Implementierungen
 
-## Enthaltener End-to-End-Slice
+## In v0.6 umgesetzt
 
-Der Gruppen-Slice unterstützt:
+### Gruppenübersicht
 
-- reguläre oder temporäre Gruppe anlegen,
-- vorhandene aktive Personen auswählen,
-- neue Personen direkt beim Anlegen einer Gruppe erzeugen,
-- neue Person als Gast markieren,
-- Standard-Reihenfolge festlegen,
-- Gruppe und neue Personen atomar in SQLite speichern,
-- reguläre Gruppen nach Neustart wieder laden,
-- Mitglieder in Standard-Reihenfolge anzeigen.
+- reguläre Gruppen laden
+- Sortierung nach letzter Nutzung
+- Mitglieder und letztes Spieldatum anzeigen
+- neue Gruppe anlegen
+- Bearbeiten-Icon pro Gruppe
 
-## Architekturänderungen gegenüber v0.4
+### Gruppe anlegen
 
-- neues Projekt `BoardgameTracker.Application`
-- `GroupStore` entfernt
-- `GroupListItem` und Create-Group-Modelle liegen in Application
-- `IListGroupsQuery` und `ICreateGroupDataAccess` sind gezielte Ports
-  statt generischer Repositories
-- `Game` liegt unter `Core/Games`
-- Cross-Aggregate-Navigationen wurden entfernt, wenn die Domain sie
-  nicht benötigt
-- `Group` schützt Mitglieder- und Reihenfolge-Invarianten
-- `GameSession` schützt Teilnehmer und Statusübergänge
-- `ArkNovaSessionPlayer.SelectedZooPlanId` ist für persistierte Sessions
-  verpflichtend
+- eigene feste Kopfzeile mit Zurück, Information und grünem Speichern
+- Gruppenname kompakt in einer Zeile
+- temporäre Gruppe
+- aktuelle Mitglieder zuerst
+- vorhandene aktive Person per Picker hinzufügen
+- neue Person sekundär anlegen
+- Gaststatus
+- Default-Reihenfolge per Hoch/Runter
+- neue Personen werden erst mit der Gruppe persistiert
 
-Siehe `docs/ARCHITECTURE.md` für den verbindlichen Architekturstand.
+### Gruppe bearbeiten
+
+Eigener Vertical Slice:
+
+- Namen ändern
+- temporär/regulär ändern
+- Default-Reihenfolge ändern
+- Mitgliedermenge bleibt unverändert
+
+### Architektur
+
+- `Application`-Schicht bleibt schlank und use-case-orientiert
+- keine generischen Repositories
+- kein `ICreateGroup`
+- gezielte Ports nur an echten technischen Grenzen
+- `Group` schützt seine fachlichen Invarianten
+- `EditGroup` besitzt einen eigenen Application-/Infrastructure-Slice
+
+### Tests
+
+- Core-Tests für Group-Invarianten
+- Application-Tests für `CreateGroupUseCase`
+- Application-Tests für `EditGroupUseCase`
+
+## Dokumentation
+
+- `docs/ARCHITECTURE.md`
+- `docs/DATA_MODEL.md` – jetzt konsolidiert als v0.3
+- `docs/PRODUCT_SPEC.md`
+- `docs/UI_WIREFRAME.md`
+
+## Nächster großer Slice
+
+Nach erfolgreichem lokalen Build und Test beginnt die
+Arche-Nova-Partievorbereitung.
