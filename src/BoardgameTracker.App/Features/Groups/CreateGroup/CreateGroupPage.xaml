@@ -9,112 +9,97 @@
 
     <Grid RowDefinitions="Auto,*">
         <Grid
-            Padding="12,10"
+            Padding="8,8,12,8"
             ColumnDefinitions="Auto,*,Auto"
-            ColumnSpacing="10">
-            <Button
-                BackgroundColor="Transparent"
+            ColumnSpacing="4">
+            <ImageButton
                 Clicked="OnBackClicked"
-                FontSize="24"
-                HeightRequest="44"
-                Text="←"
-                WidthRequest="44" />
+                Source="icon_back.png"
+                Style="{StaticResource IconButton}"
+                ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
 
             <HorizontalStackLayout
                 Grid.Column="1"
-                Spacing="6"
+                Spacing="2"
                 VerticalOptions="Center">
                 <Label
                     FontAttributes="Bold"
-                    FontSize="22"
+                    FontSize="21"
                     Text="{x:Static res:AppResources.CreateGroup}"
                     VerticalOptions="Center" />
-                <Button
-                    BackgroundColor="Transparent"
+                <ImageButton
                     Clicked="OnInfoClicked"
-                    FontSize="18"
-                    HeightRequest="40"
-                    Padding="6,0"
-                    Text="ⓘ"
-                    ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}"
-                    WidthRequest="40" />
+                    Source="icon_info.png"
+                    Style="{StaticResource IconButton}"
+                    ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
             </HorizontalStackLayout>
 
             <Button
                 Grid.Column="2"
-                BackgroundColor="#2E6F40"
                 Command="{Binding SaveCommand}"
-                FontAttributes="Bold"
+                Style="{StaticResource PrimaryCompactButton}"
                 Text="{x:Static res:AppResources.Save}"
-                TextColor="White" />
+                VerticalOptions="Center" />
         </Grid>
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="24,16,24,28" Spacing="22">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                    <Label
-                        FontAttributes="Bold"
-                        Text="{x:Static res:AppResources.GroupName}"
-                        VerticalOptions="Center" />
-                    <Entry
-                        Grid.Column="1"
-                        Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}"
-                        Text="{Binding GroupName}" />
-                </Grid>
-
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                    <Label
-                        Text="{x:Static res:AppResources.TemporaryGroup}"
-                        VerticalOptions="Center" />
-                    <Switch
-                        Grid.Column="1"
-                        IsToggled="{Binding IsTemporary}" />
-                </Grid>
+            <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+                <Border Padding="16" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                            <Label
+                                FontAttributes="Bold"
+                                Text="{x:Static res:AppResources.GroupName}"
+                                VerticalOptions="Center" />
+                            <Entry
+                                Grid.Column="1"
+                                Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}"
+                                Text="{Binding GroupName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <Label
+                                Text="{x:Static res:AppResources.TemporaryGroup}"
+                                VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
                 <VerticalStackLayout Spacing="10">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        Text="{x:Static res:AppResources.GroupMembers}" />
-                    <Label
-                        FontSize="13"
-                        Text="{x:Static res:AppResources.DefaultOrderHint}" />
+                    <HorizontalStackLayout Spacing="2">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="{x:Static res:AppResources.GroupMembers}"
+                            VerticalOptions="Center" />
+                        <ImageButton
+                            Clicked="OnMembersInfoClicked"
+                            Source="icon_info.png"
+                            Style="{StaticResource IconButton}"
+                            ToolTipProperties.Text="{x:Static res:AppResources.DefaultOrderHint}" />
+                    </HorizontalStackLayout>
 
                     <Label
                         IsVisible="{Binding HasNoMembers}"
-                        Text="{x:Static res:AppResources.NoMembersYet}" />
+                        Text="{x:Static res:AppResources.NoMembersYet}"
+                        TextColor="{StaticResource TextSecondary}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
-                                <Border
-                                    Margin="0,4"
-                                    Padding="12"
-                                    Stroke="#D7DBD3"
-                                    StrokeShape="RoundRectangle 12">
-                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                         <VerticalStackLayout Spacing="2">
                                             <Label FontAttributes="Bold" Text="{Binding Name}" />
                                             <Label
                                                 FontSize="12"
                                                 IsVisible="{Binding IsGuest}"
-                                                Text="{x:Static res:AppResources.Guest}" />
+                                                Text="{x:Static res:AppResources.Guest}"
+                                                TextColor="{StaticResource TextSecondary}" />
                                         </VerticalStackLayout>
-                                        <Button
-                                            Grid.Column="1"
-                                            Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}"
-                                            CommandParameter="{Binding .}"
-                                            Text="↑" />
-                                        <Button
-                                            Grid.Column="2"
-                                            Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}"
-                                            CommandParameter="{Binding .}"
-                                            Text="↓" />
-                                        <Button
-                                            Grid.Column="3"
-                                            Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}"
-                                            CommandParameter="{Binding .}"
-                                            Text="×" />
+                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↑" />
+                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↓" />
+                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="×" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -122,16 +107,10 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Border
-                    Padding="16"
-                    Stroke="#D7DBD3"
-                    StrokeShape="RoundRectangle 16">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            Text="{x:Static res:AppResources.AddExistingPerson}" />
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPerson}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePersons}">
                             <Picker
                                 ItemDisplayBinding="{Binding Name}"
                                 ItemsSource="{Binding AvailablePersons}"
@@ -140,50 +119,40 @@
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding AddSelectedPersonCommand}"
-                                Text="+" />
-                        </Grid>
-                        <Label
-                            FontSize="12"
-                            IsVisible="{Binding HasNoAvailablePersons}"
-                            Text="{x:Static res:AppResources.NoAvailablePersons}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <Border
-                    Padding="16"
-                    Stroke="#D7DBD3"
-                    StrokeShape="RoundRectangle 16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            Text="{x:Static res:AppResources.NewPerson}" />
-                        <Entry
-                            Placeholder="{x:Static res:AppResources.PersonNamePlaceholder}"
-                            Text="{Binding NewPersonName}" />
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <Label
-                                Text="{x:Static res:AppResources.Guest}"
+                                Style="{StaticResource CompactActionButton}"
+                                Text="+"
                                 VerticalOptions="Center" />
-                            <Switch
-                                Grid.Column="1"
-                                IsToggled="{Binding NewPersonIsGuest}" />
                         </Grid>
-                        <Button
-                            Command="{Binding AddNewPersonCommand}"
-                            HorizontalOptions="End"
-                            Text="{x:Static res:AppResources.AddPerson}" />
+                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePersons}" Text="{x:Static res:AppResources.NoAvailablePersons}" TextColor="{StaticResource TextSecondary}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Label
-                    Text="{Binding ErrorMessage}"
-                    TextColor="#B3261E" />
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceGreen}" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPerson}" />
+                        <Entry Placeholder="{x:Static res:AppResources.PersonNamePlaceholder}" Text="{Binding NewPersonName}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewPersonIsGuest}" />
+                        </Grid>
+                        <Button Command="{Binding AddNewPersonCommand}" HorizontalOptions="End" Style="{StaticResource CompactActionButton}" Text="{x:Static res:AppResources.AddPerson}" />
+                    </VerticalStackLayout>
+                </Border>
 
-                <ActivityIndicator
-                    IsRunning="{Binding IsBusy}"
-                    IsVisible="{Binding IsBusy}" />
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
             </VerticalStackLayout>
         </ScrollView>
+
+        <Grid
+            Grid.RowSpan="2"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="{Binding IsBusy}">
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>

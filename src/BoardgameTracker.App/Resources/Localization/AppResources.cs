@@ -9,6 +9,9 @@ public static class AppResources
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);
 
+    public static string Back =>
+        GetString(nameof(Back));
+
     public static string Groups =>
         GetString(nameof(Groups));
 

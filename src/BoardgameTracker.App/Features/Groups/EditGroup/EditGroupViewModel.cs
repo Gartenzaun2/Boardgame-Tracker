@@ -1,4 +1,6 @@
 using BoardgameTracker.App.Features.Groups;
+using BoardgameTracker.App.Diagnostics;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.EditGroup;
@@ -7,7 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
-public partial class EditGroupViewModel(EditGroupUseCase editGroup) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupMemberItemViewModel> Members { get; } = [];
 
@@ -68,9 +70,10 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup) : Observable
 
             SaveCommand.NotifyCanExecuteChanged();
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            ErrorMessage = AppResources.LoadGroupFailed;
+            logger.LogError(exception, "Could not load group {GroupId}.", groupId);
+            ErrorMessage = UserErrorMessage.Create(AppResources.LoadGroupFailed, exception);
         }
         finally
         {
@@ -117,6 +120,11 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup) : Observable
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         try
         {
             IsBusy = true;
@@ -136,9 +144,10 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup) : Observable
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            ErrorMessage = AppResources.SaveGroupFailed;
+            logger.LogError(exception, "Could not save group {GroupId}.", GroupId);
+            ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
         }
         finally
         {

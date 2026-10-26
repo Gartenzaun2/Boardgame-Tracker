@@ -34,6 +34,14 @@ public partial class CreateGroupPage : ContentPage
             AppResources.Ok);
     }
 
+    private async void OnMembersInfoClicked(object? sender, EventArgs e)
+    {
+        await DisplayAlertAsync(
+            AppResources.GroupMembers,
+            AppResources.DefaultOrderHint,
+            AppResources.Ok);
+    }
+
     private async void OnSaved(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
