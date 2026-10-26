@@ -2,7 +2,18 @@ namespace BoardgameTracker.Core.Domain;
 
 public sealed class Game
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    private Game()
+    {
+    }
 
-    public required string Key { get; init; }
+    public Game(string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        Id = Guid.NewGuid();
+        Key = key.Trim();
+    }
+
+    public Guid Id { get; private set; }
+
+    public string Key { get; private set; } = string.Empty;
 }

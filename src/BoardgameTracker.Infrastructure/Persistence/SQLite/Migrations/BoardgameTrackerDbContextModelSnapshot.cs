@@ -51,7 +51,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.Property<Guid>("GroupId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("ModifiedAt")
+                    b.Property<DateTimeOffset>("ModifiedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("StartedAt")
@@ -90,7 +90,12 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.HasIndex("GameSessionId", "Order")
                         .IsUnique();
 
-                    b.ToTable("GameSessionPlayers", (string)null);
+                    b.ToTable("GameSessionPlayers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_GameSessionPlayers_Order_Positive", "\"Order\" > 0");
+
+                            t.HasCheckConstraint("CK_GameSessionPlayers_Placement_Positive", "Placement IS NULL OR Placement > 0");
+                        });
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Domain.Group", b =>
@@ -127,7 +132,13 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("GroupPersons", (string)null);
+                    b.HasIndex("GroupId", "DefaultOrder")
+                        .IsUnique();
+
+                    b.ToTable("GroupPersons", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_GroupPersons_DefaultOrder_Positive", "DefaultOrder > 0");
+                        });
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Domain.Person", b =>
@@ -150,6 +161,25 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Persons", (string)null);
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DefaultColor")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GroupId", "PersonId");
+
+                    b.HasIndex("GroupId", "DefaultColor")
+                        .IsUnique();
+
+                    b.ToTable("ArkNovaGroupPlayers", (string)null);
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaSessionPlayer", b =>
@@ -183,7 +213,21 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
 
                     b.HasKey("GameSessionId", "PersonId");
 
-                    b.ToTable("ArkNovaSessionPlayers", (string)null);
+                    b.HasIndex("SelectedZooPlanId");
+
+                    b.HasIndex("ZooPlanOption1Id");
+
+                    b.HasIndex("ZooPlanOption2Id");
+
+                    b.HasIndex("GameSessionId", "Color")
+                        .IsUnique();
+
+                    b.ToTable("ArkNovaSessionPlayers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ArkNovaSessionPlayers_DifferentZooPlanOptions", "ZooPlanOption1Id <> ZooPlanOption2Id");
+
+                            t.HasCheckConstraint("CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered", "SelectedZooPlanId IS NULL OR SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
+                        });
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", b =>
@@ -268,6 +312,51 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", b =>
+                {
+                    b.HasOne("BoardgameTracker.Core.Domain.GroupPerson", "GroupPerson")
+                        .WithOne()
+                        .HasForeignKey("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", "GroupId", "PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupPerson");
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaSessionPlayer", b =>
+                {
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "SelectedZooPlan")
+                        .WithMany()
+                        .HasForeignKey("SelectedZooPlanId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "ZooPlanOption1")
+                        .WithMany()
+                        .HasForeignKey("ZooPlanOption1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "ZooPlanOption2")
+                        .WithMany()
+                        .HasForeignKey("ZooPlanOption2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BoardgameTracker.Core.Domain.GameSessionPlayer", "GameSessionPlayer")
+                        .WithOne()
+                        .HasForeignKey("BoardgameTracker.Core.Games.ArkNova.ArkNovaSessionPlayer", "GameSessionId", "PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GameSessionPlayer");
+
+                    b.Navigation("SelectedZooPlan");
+
+                    b.Navigation("ZooPlanOption1");
+
+                    b.Navigation("ZooPlanOption2");
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSession", b =>

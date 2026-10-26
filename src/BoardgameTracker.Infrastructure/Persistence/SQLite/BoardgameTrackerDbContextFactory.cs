@@ -10,7 +10,8 @@ public sealed class BoardgameTrackerDbContextFactory
     {
         DbContextOptionsBuilder<BoardgameTrackerDbContext> optionsBuilder = new();
 
-        optionsBuilder.UseSqlite(
+        BoardgameTrackerDbContextOptions.Configure(
+            optionsBuilder,
             "Data Source=boardgame-tracker.design.db");
 
         return new BoardgameTrackerDbContext(optionsBuilder.Options);

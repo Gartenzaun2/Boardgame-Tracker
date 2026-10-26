@@ -1,6 +1,5 @@
 using BoardgameTracker.App.Features.Groups;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoardgameTracker.App;
@@ -22,7 +21,9 @@ public static class MauiProgram
             "boardgame-tracker.db");
 
         builder.Services.AddDbContextFactory<BoardgameTrackerDbContext>(
-            options => options.UseSqlite($"Data Source={databasePath}"));
+            options => BoardgameTrackerDbContextOptions.Configure(
+                options,
+                $"Data Source={databasePath}"));
 
         builder.Services.AddSingleton<DatabaseInitializer>();
 

@@ -2,23 +2,55 @@ namespace BoardgameTracker.Core.Domain;
 
 public sealed class GameSession
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    private readonly List<GameSessionPlayer> _players = [];
 
-    public Guid GameId { get; init; }
+    private GameSession()
+    {
+    }
 
-    public required Game Game { get; init; }
+    public GameSession(Guid gameId, Guid groupId, DateTimeOffset startedAt)
+    {
+        ArgumentOutOfRangeException.ThrowIfEqual(gameId, Guid.Empty);
+        ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
 
-    public Guid GroupId { get; init; }
+        Id = Guid.NewGuid();
+        GameId = gameId;
+        GroupId = groupId;
+        Status = GameSessionStatus.Running;
+        StartedAt = startedAt;
+        ModifiedAt = startedAt;
+    }
 
-    public required Group Group { get; init; }
+    public Guid Id { get; private set; }
 
-    public GameSessionStatus Status { get; set; } = GameSessionStatus.Running;
+    public Guid GameId { get; private set; }
 
-    public DateTimeOffset StartedAt { get; init; }
+    public Game? Game { get; private set; }
 
-    public DateTimeOffset? EndedAt { get; set; }
+    public Guid GroupId { get; private set; }
 
-    public DateTimeOffset? ModifiedAt { get; set; }
+    public Group? Group { get; private set; }
 
-    public ICollection<GameSessionPlayer> Players { get; } = [];
+    public GameSessionStatus Status { get; private set; }
+
+    public DateTimeOffset StartedAt { get; private set; }
+
+    public DateTimeOffset? EndedAt { get; private set; }
+
+    public DateTimeOffset ModifiedAt { get; private set; }
+
+    public IReadOnlyCollection<GameSessionPlayer> Players => _players;
+
+    public void BeginScoring(DateTimeOffset modifiedAt)
+    {
+        Status = GameSessionStatus.Scoring;
+        ModifiedAt = modifiedAt;
+    }
+
+    public void Complete(DateTimeOffset endedAt)
+    {
+        Status = GameSessionStatus.Completed;
+        EndedAt = endedAt;
+        ModifiedAt = endedAt;
+    }
 }

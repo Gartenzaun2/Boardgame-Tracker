@@ -19,14 +19,19 @@ internal sealed class GameSessionConfiguration : IEntityTypeConfiguration<GameSe
         builder.Property(x => x.StartedAt)
             .IsRequired();
 
+        builder.Property(x => x.ModifiedAt)
+            .IsRequired();
+
         builder.HasOne(x => x.Game)
             .WithMany()
             .HasForeignKey(x => x.GameId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Group)
             .WithMany()
             .HasForeignKey(x => x.GroupId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
