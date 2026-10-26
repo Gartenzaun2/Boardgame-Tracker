@@ -6,12 +6,13 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.EditGroup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
 public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
-    public ObservableCollection<GroupMemberItemViewModel> Members { get; } = [];
+    public ObservableCollection<EditGroupMemberItemViewModel> Members { get; } = [];
 
     [ObservableProperty]
     public partial Guid GroupId { get; private set; }
@@ -70,10 +71,11 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             Members.Clear();
             foreach (EditGroupMember member in details.Members.OrderBy(member => member.DefaultOrder))
             {
-                Members.Add(new GroupMemberItemViewModel(
+                Members.Add(new EditGroupMemberItemViewModel(
                     member.PersonId,
                     member.Name,
-                    member.IsGuest));
+                    member.IsGuest,
+                    member.ArkNovaDefaultColor));
             }
 
             SaveCommand.NotifyCanExecuteChanged();
@@ -90,7 +92,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void MoveMemberUp(GroupMemberItemViewModel? member)
+    private void MoveMemberUp(EditGroupMemberItemViewModel? member)
     {
         if (member is null)
         {
@@ -105,7 +107,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void MoveMemberDown(GroupMemberItemViewModel? member)
+    private void MoveMemberDown(EditGroupMemberItemViewModel? member)
     {
         if (member is null)
         {
@@ -117,6 +119,62 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
         {
             Members.Move(index, index + 1);
         }
+    }
+
+    [RelayCommand]
+    private void ToggleColorPicker(EditGroupMemberItemViewModel? member)
+    {
+        if (member is null)
+        {
+            return;
+        }
+
+        foreach (EditGroupMemberItemViewModel candidate in Members)
+        {
+            candidate.IsColorPickerOpen =
+                ReferenceEquals(candidate, member) && !candidate.IsColorPickerOpen;
+        }
+    }
+
+    [RelayCommand]
+    private void SetBlue(EditGroupMemberItemViewModel? member) =>
+        SetDefaultColor(member, ArkNovaPlayerColor.Blue);
+
+    [RelayCommand]
+    private void SetYellow(EditGroupMemberItemViewModel? member) =>
+        SetDefaultColor(member, ArkNovaPlayerColor.Yellow);
+
+    [RelayCommand]
+    private void SetRed(EditGroupMemberItemViewModel? member) =>
+        SetDefaultColor(member, ArkNovaPlayerColor.Red);
+
+    [RelayCommand]
+    private void SetBlack(EditGroupMemberItemViewModel? member) =>
+        SetDefaultColor(member, ArkNovaPlayerColor.Black);
+
+    private void SetDefaultColor(
+        EditGroupMemberItemViewModel? member,
+        ArkNovaPlayerColor color)
+    {
+        if (member is null)
+        {
+            return;
+        }
+
+        EditGroupMemberItemViewModel? currentOwner = Members
+            .FirstOrDefault(candidate =>
+                !ReferenceEquals(candidate, member)
+                && candidate.DefaultColor == color);
+
+        ArkNovaPlayerColor? previousColor = member.DefaultColor;
+        member.DefaultColor = color;
+
+        if (currentOwner is not null)
+        {
+            currentOwner.DefaultColor = previousColor;
+        }
+
+        member.IsColorPickerOpen = false;
     }
 
     private bool CanSave() =>
@@ -139,17 +197,19 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             ErrorMessage = null;
 
             Guid[] orderedPersonIds = Members
-                .Select(member => member.PersonId
-                    ?? throw new InvalidOperationException(
-                        "An existing group member must have a person id."))
+                .Select(member => member.PersonId)
                 .ToArray();
+
+            Dictionary<Guid, ArkNovaPlayerColor?> defaultColors = Members
+                .ToDictionary(member => member.PersonId, member => member.DefaultColor);
 
             await editGroup.ExecuteAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
                 MakePermanent,
                 IsArchived,
-                orderedPersonIds));
+                orderedPersonIds,
+                defaultColors));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
@@ -163,4 +223,32 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             IsBusy = false;
         }
     }
+}
+
+
+public partial class EditGroupMemberItemViewModel(
+    Guid personId,
+    string name,
+    bool isGuest,
+    ArkNovaPlayerColor? defaultColor) : ObservableObject
+{
+    public Guid PersonId { get; } = personId;
+    public string Name { get; } = name;
+    public bool IsGuest { get; } = isGuest;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ColorBrush))]
+    public partial ArkNovaPlayerColor? DefaultColor { get; set; } = defaultColor;
+
+    [ObservableProperty]
+    public partial bool IsColorPickerOpen { get; set; }
+
+    public Microsoft.Maui.Graphics.Color ColorBrush => DefaultColor switch
+    {
+        ArkNovaPlayerColor.Blue => Microsoft.Maui.Graphics.Color.FromArgb("#8BC4E8"),
+        ArkNovaPlayerColor.Yellow => Microsoft.Maui.Graphics.Color.FromArgb("#F2D65C"),
+        ArkNovaPlayerColor.Red => Microsoft.Maui.Graphics.Color.FromArgb("#E98A84"),
+        ArkNovaPlayerColor.Black => Microsoft.Maui.Graphics.Color.FromArgb("#404040"),
+        _ => Microsoft.Maui.Graphics.Color.FromArgb("#E7E7E7")
+    };
 }

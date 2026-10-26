@@ -1,5 +1,6 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
+using BoardgameTracker.App.Features.GameSessions.Preparation;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
@@ -32,6 +33,35 @@ public partial class GroupListPage : ContentPage
         try
         {
             await Shell.Current.GoToAsync(nameof(CreateGroupPage));
+        }
+        catch
+        {
+            SetNavigationBusy(false);
+            throw;
+        }
+    }
+
+
+    private async void OnGroupTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is not Guid groupId || !TryBeginNavigation())
+        {
+            return;
+        }
+
+        GroupListItemViewModel? group = _viewModel.Groups.FirstOrDefault(candidate => candidate.Id == groupId);
+
+        if (group?.IsArchived == true)
+        {
+            SetNavigationBusy(false);
+            return;
+        }
+
+        try
+        {
+            await Shell.Current.GoToAsync(
+                nameof(ArkNovaPreparationPage),
+                new Dictionary<string, object> { ["GroupId"] = groupId });
         }
         catch
         {

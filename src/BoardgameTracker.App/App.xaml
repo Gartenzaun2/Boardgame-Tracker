@@ -13,8 +13,8 @@
             <Color x:Key="SurfaceGreen">#EDF5E8</Color>
             <Color x:Key="SurfaceYellow">PaleGoldenrod</Color>
             <Color x:Key="SurfaceViolet">#F1ECF7</Color>
-            <Color x:Key="Primary">#2E7D32</Color>
-            <Color x:Key="PrimaryPressed">#256628</Color>
+            <Color x:Key="Primary">YellowGreen</Color>
+            <Color x:Key="PrimaryPressed">#7FAE1F</Color>
             <Color x:Key="Secondary">#3E6E83</Color>
             <Color x:Key="TextPrimary">#28322D</Color>
             <Color x:Key="TextSecondary">#65706A</Color>

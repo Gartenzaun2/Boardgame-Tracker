@@ -15,7 +15,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, "Neu", false, true, [second, first]));
+            group.Id, "Neu", false, true, [second, first], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
 
         Assert.Same(group, dataAccess.SavedGroup);
         Assert.Equal("Neu", group.Name);
@@ -34,7 +34,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, group.Name, true, false, [group.Members.Single().PersonId]));
+            group.Id, group.Name, true, false, [group.Members.Single().PersonId], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
 
         Assert.False(group.IsTemporary);
     }
@@ -47,7 +47,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, group.Name, false, false, [group.Members.Single().PersonId]));
+            group.Id, group.Name, false, false, [group.Members.Single().PersonId], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
 
         Assert.False(group.IsTemporary);
     }
@@ -63,7 +63,7 @@ public sealed class EditGroupUseCaseTests
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.ExecuteAsync(new EditGroupCommand(
-                group.Id, group.Name, false, false, [first, Guid.NewGuid()])));
+                group.Id, group.Name, false, false, [first, Guid.NewGuid()], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>())));
     }
 
     private sealed class FakeEditGroupDataAccess(Group group) : IEditGroupDataAccess
@@ -80,7 +80,10 @@ public sealed class EditGroupUseCaseTests
             CancellationToken cancellationToken = default) =>
             Task.FromResult<Group?>(groupId == group.Id ? group : null);
 
-        public Task SaveAsync(Group groupToSave, CancellationToken cancellationToken = default)
+        public Task SaveAsync(
+            Group groupToSave,
+            IReadOnlyDictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?> arkNovaDefaultColors,
+            CancellationToken cancellationToken = default)
         {
             SavedGroup = groupToSave;
             return Task.CompletedTask;

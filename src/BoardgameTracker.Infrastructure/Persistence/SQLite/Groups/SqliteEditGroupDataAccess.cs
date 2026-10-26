@@ -1,5 +1,6 @@
 using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Groups;
+using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
@@ -36,13 +37,21 @@ public sealed class SqliteEditGroupDataAccess(
             from membership in dbContext.GroupPersons.AsNoTracking()
             join person in dbContext.Persons.AsNoTracking()
                 on membership.PersonId equals person.Id
+            join arkNovaPlayer in dbContext.ArkNovaGroupPlayers.AsNoTracking()
+                on new { membership.GroupId, membership.PersonId }
+                equals new { arkNovaPlayer.GroupId, arkNovaPlayer.PersonId }
+                into arkNovaPlayers
+            from arkNovaPlayer in arkNovaPlayers.DefaultIfEmpty()
             where membership.GroupId == groupId
             orderby membership.DefaultOrder
             select new EditGroupMember(
                 person.Id,
                 person.Name,
                 person.IsGuest,
-                membership.DefaultOrder))
+                membership.DefaultOrder,
+                arkNovaPlayer == null
+                    ? (ArkNovaPlayerColor?)null
+                    : arkNovaPlayer.DefaultColor))
             .ToArrayAsync(cancellationToken);
 
         return new EditGroupDetails(
@@ -67,9 +76,11 @@ public sealed class SqliteEditGroupDataAccess(
 
     public async Task SaveAsync(
         Group group,
+        IReadOnlyDictionary<Guid, ArkNovaPlayerColor?> arkNovaDefaultColors,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(group);
+        ArgumentNullException.ThrowIfNull(arkNovaDefaultColors);
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
@@ -121,6 +132,38 @@ public sealed class SqliteEditGroupDataAccess(
                     "A group member no longer exists.");
             }
         }
+
+        ArkNovaGroupPlayer[] existingDefaults = await dbContext.ArkNovaGroupPlayers
+            .Where(player => player.GroupId == group.Id)
+            .ToArrayAsync(cancellationToken);
+
+        foreach ((Guid personId, ArkNovaPlayerColor? color) in arkNovaDefaultColors)
+        {
+            ArkNovaGroupPlayer? existing = existingDefaults
+                .SingleOrDefault(player => player.PersonId == personId);
+
+            if (color is null)
+            {
+                if (existing is not null)
+                {
+                    dbContext.ArkNovaGroupPlayers.Remove(existing);
+                }
+
+                continue;
+            }
+
+            if (existing is null)
+            {
+                dbContext.ArkNovaGroupPlayers.Add(
+                    new ArkNovaGroupPlayer(group.Id, personId, color.Value));
+            }
+            else
+            {
+                existing.SetDefaultColor(color.Value);
+            }
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
     }

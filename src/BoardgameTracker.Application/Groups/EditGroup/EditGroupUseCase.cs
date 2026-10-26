@@ -20,6 +20,7 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
         ArgumentOutOfRangeException.ThrowIfEqual(command.GroupId, Guid.Empty);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
         ArgumentNullException.ThrowIfNull(command.OrderedPersonIds);
+        ArgumentNullException.ThrowIfNull(command.ArkNovaDefaultColors);
 
         Group group = await dataAccess.GetAggregateAsync(
             command.GroupId,
@@ -36,6 +37,6 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
         group.SetArchived(command.IsArchived);
         group.SetDefaultOrder(command.OrderedPersonIds);
 
-        await dataAccess.SaveAsync(group, cancellationToken);
+        await dataAccess.SaveAsync(group, command.ArkNovaDefaultColors, cancellationToken);
     }
 }
