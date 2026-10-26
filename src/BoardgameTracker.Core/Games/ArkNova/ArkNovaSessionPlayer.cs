@@ -1,4 +1,5 @@
-using BoardgameTracker.Core.Domain;
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Groups;
 
 namespace BoardgameTracker.Core.Games.ArkNova;
 

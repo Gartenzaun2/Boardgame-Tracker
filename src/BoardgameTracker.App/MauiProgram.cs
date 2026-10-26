@@ -1,5 +1,6 @@
 using BoardgameTracker.App.Features.Groups;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoardgameTracker.App;
@@ -26,10 +27,15 @@ public static class MauiProgram
                 $"Data Source={databasePath}"));
 
         builder.Services.AddSingleton<DatabaseInitializer>();
+        builder.Services.AddSingleton<GroupStore>();
 
         builder.Services.AddSingleton<GroupListViewModel>();
         builder.Services.AddSingleton<GroupListPage>();
+        builder.Services.AddTransient<CreateGroupViewModel>();
+        builder.Services.AddTransient<CreateGroupPage>();
+
         builder.Services.AddSingleton<AppShell>();
+
         return builder.Build();
     }
 }

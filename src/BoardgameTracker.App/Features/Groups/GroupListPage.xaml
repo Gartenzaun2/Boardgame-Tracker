@@ -6,29 +6,63 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Title="{x:Static res:AppResources.Groups}">
 
-    <Grid Padding="24" RowDefinitions="Auto,Auto,*" RowSpacing="18">
-        <Label
-            FontAttributes="Bold"
-            FontSize="30"
-            Text="{Binding Heading}" />
+    <Grid Padding="24" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <Grid ColumnDefinitions="*,Auto">
+            <Label
+                FontAttributes="Bold"
+                FontSize="30"
+                Text="{x:Static res:AppResources.Groups}" />
+            <Button
+                Grid.Column="1"
+                Clicked="OnCreateGroupClicked"
+                Text="{x:Static res:AppResources.NewGroup}" />
+        </Grid>
 
         <Label
             Grid.Row="1"
-            FontSize="16"
-            Text="{x:Static res:AppResources.FirstRunHint}" />
+            TextColor="#B3261E"
+            Text="{Binding ErrorMessage}" />
 
-        <Border
+        <CollectionView
             Grid.Row="2"
-            Padding="20"
-            Stroke="#D7DBD3"
-            StrokeShape="RoundRectangle 16">
-            <VerticalStackLayout Spacing="12">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="20"
-                    Text="{x:Static res:AppResources.Groups}" />
-                <Label Text="{x:Static res:AppResources.NoGroupsYet}" />
-            </VerticalStackLayout>
-        </Border>
+            ItemsSource="{Binding Groups}">
+            <CollectionView.EmptyView>
+                <Border
+                    Padding="20"
+                    Stroke="#D7DBD3"
+                    StrokeShape="RoundRectangle 16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Text="{x:Static res:AppResources.NoGroupsYet}" />
+                        <Label Text="{x:Static res:AppResources.CreateFirstGroupHint}" />
+                    </VerticalStackLayout>
+                </Border>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Margin="0,0,0,12"
+                        Padding="18"
+                        Stroke="#D7DBD3"
+                        StrokeShape="RoundRectangle 16">
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="20"
+                                Text="{Binding Name}" />
+                            <Label Text="{Binding MemberNames}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator
+            Grid.Row="3"
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}" />
     </Grid>
 </ContentPage>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.Groups.CreateGroupPage"
+    x:Name="Page"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    Title="{x:Static res:AppResources.CreateGroup}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="20">
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="30"
+                    Text="{x:Static res:AppResources.CreateGroup}" />
+                <Label Text="{x:Static res:AppResources.CreateGroupHint}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    FontAttributes="Bold"
+                    Text="{x:Static res:AppResources.GroupName}" />
+                <Entry
+                    Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}"
+                    Text="{Binding GroupName}" />
+                <HorizontalStackLayout Spacing="12">
+                    <Switch IsToggled="{Binding IsTemporary}" />
+                    <Label
+                        VerticalOptions="Center"
+                        Text="{x:Static res:AppResources.TemporaryGroup}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <Border
+                Padding="16"
+                Stroke="#D7DBD3"
+                StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="{x:Static res:AppResources.NewPerson}" />
+                    <Entry
+                        Placeholder="{x:Static res:AppResources.PersonNamePlaceholder}"
+                        Text="{Binding NewPersonName}" />
+                    <HorizontalStackLayout Spacing="12">
+                        <Switch IsToggled="{Binding NewPersonIsGuest}" />
+                        <Label
+                            VerticalOptions="Center"
+                            Text="{x:Static res:AppResources.Guest}" />
+                    </HorizontalStackLayout>
+                    <Button
+                        Command="{Binding AddNewPersonCommand}"
+                        Text="{x:Static res:AppResources.AddPerson}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="{x:Static res:AppResources.ExistingPersons}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding AvailablePersons}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Grid
+                                Padding="0,6"
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="12">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                    <Label
+                                        FontSize="12"
+                                        IsVisible="{Binding IsGuest}"
+                                        Text="{x:Static res:AppResources.Guest}" />
+                                </VerticalStackLayout>
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.AddExistingPersonCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Text="{x:Static res:AppResources.Add}" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="{x:Static res:AppResources.GroupMembers}" />
+                <Label
+                    FontSize="13"
+                    Text="{x:Static res:AppResources.DefaultOrderHint}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Margin="0,4"
+                                Padding="12"
+                                Stroke="#D7DBD3"
+                                StrokeShape="RoundRectangle 12">
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                        <Label
+                                            FontSize="12"
+                                            IsVisible="{Binding IsGuest}"
+                                            Text="{x:Static res:AppResources.Guest}" />
+                                    </VerticalStackLayout>
+                                    <Button
+                                        Grid.Column="1"
+                                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="↑" />
+                                    <Button
+                                        Grid.Column="2"
+                                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="↓" />
+                                    <Button
+                                        Grid.Column="3"
+                                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Text="×" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <Label
+                TextColor="#B3261E"
+                Text="{Binding ErrorMessage}" />
+
+            <Button
+                Command="{Binding SaveCommand}"
+                Text="{x:Static res:AppResources.SaveGroup}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

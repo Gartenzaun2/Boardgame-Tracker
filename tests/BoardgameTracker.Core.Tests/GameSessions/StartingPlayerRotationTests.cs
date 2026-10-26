@@ -1,6 +1,6 @@
-using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.GameSessions;
 
-namespace BoardgameTracker.Core.Tests.Games.ArkNova;
+namespace BoardgameTracker.Core.Tests.GameSessions;
 
 public sealed class StartingPlayerRotationTests
 {
