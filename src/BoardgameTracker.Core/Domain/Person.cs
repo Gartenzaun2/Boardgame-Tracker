@@ -2,11 +2,33 @@ namespace BoardgameTracker.Core.Domain;
 
 public sealed class Person
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    private Person()
+    {
+    }
 
-    public required string Name { get; set; }
+    public Person(string name, bool isGuest = false)
+    {
+        Id = Guid.NewGuid();
+        SetName(name);
+        IsGuest = isGuest;
+        IsActive = true;
+    }
 
-    public bool IsGuest { get; set; }
+    public Guid Id { get; private set; }
 
-    public bool IsActive { get; set; } = true;
+    public string Name { get; private set; } = string.Empty;
+
+    public bool IsGuest { get; private set; }
+
+    public bool IsActive { get; private set; }
+
+    public void SetName(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name.Trim();
+    }
+
+    public void SetGuestStatus(bool isGuest) => IsGuest = isGuest;
+
+    public void SetActiveStatus(bool isActive) => IsActive = isActive;
 }

@@ -1,30 +1,57 @@
-Boardgame Tracker - Scaffold v0.2
+Boardgame Tracker - Scaffold v0.3
 
-Neu in v0.2
+Neu in v0.3
 ------------
-- Application.MainPage entfernt.
-- Moderner MAUI-Start über Application.CreateWindow.
+- EF-Core-10-Beziehungen vereinheitlicht: explizite Foreign Keys plus Navigationen.
+- Navigationen sind von außen nicht frei setzbar; dadurch können FK und Navigation
+  nicht versehentlich unabhängig voneinander gesetzt werden.
+- Navigationen sind nullable, weil eine Beziehung fachlich existieren kann, obwohl
+  die zugehörige Entity in der aktuellen Query nicht geladen wurde.
+- Kein Lazy Loading / keine EF-Proxies. Verwandte Daten werden bewusst per Query
+  bzw. Include geladen.
+- Entity-Zustand wird stärker gekapselt (private Setter + fachliche Methoden).
+- ArkNovaGroupPlayer ergänzt: Standardfarbe pro Gruppe und Person.
+- ArkNovaGroupPlayer referenziert per zusammengesetztem FK eine echte
+  GroupPerson-Mitgliedschaft.
+- ArkNovaSessionPlayer referenziert per zusammengesetztem FK den dazugehörigen
+  GameSessionPlayer.
+- Echte Foreign Keys für angebotene und gewählte Zoopläne.
+- Eindeutige Standardreihenfolge pro Gruppe und Spielerreihenfolge pro Partie.
+- Eindeutige Arche-Nova-Farbe pro Gruppe bzw. Partie.
+- Check-Constraints für positive Reihenfolgen/Platzierungen und gültige
+  Zooplan-Auswahl.
+- Versehentlich erzeugte EF-Shadow-Properties werden als Fehler behandelt.
+
+Weiterhin aus v0.2
+------------------
+- Moderner MAUI-Start über Application.CreateWindow statt Application.MainPage.
 - DatabaseInitializer mit Database.MigrateAsync().
 - Design-Time-DbContextFactory für EF-Core-Migrations.
 - Lokales dotnet-ef Tool-Manifest.
-- Skripte zum Erzeugen der InitialCreate-Migration.
+- CMD- und PowerShell-Skript zum Erzeugen der InitialCreate-Migration.
 
-ERSTER SCHRITT NACH DEM ENTPACKEN
----------------------------------
-Die InitialCreate-Migration muss einmal auf deinem Entwicklungsrechner aus dem
-echten EF-Modell erzeugt werden.
+WICHTIG VOR INITIALCREATE
+-------------------------
+Wenn du bereits mit einem älteren Scaffold eine InitialCreate-Migration erzeugt
+hast, lösche diese Migration für diesen Entwicklungsstand wieder, solange noch
+keine produktiven Nutzerdaten existieren. v0.3 soll die erste verbindliche
+InitialCreate-Basis sein.
 
-Variante A - PowerShell:
-  .\tools\create-initial-migration.ps1
+Wenn noch keine InitialCreate existiert, ist nichts zu löschen.
 
-Variante B - Eingabeaufforderung:
+INITIALCREATE ERZEUGEN
+----------------------
+Variante A - Eingabeaufforderung (empfohlen, wenn PowerShell-Skripte gesperrt sind):
   tools\create-initial-migration.cmd
 
-Die Skripte führen zuerst "dotnet tool restore" aus und erzeugen dann:
+Variante B - Befehle direkt im Terminal:
+  dotnet tool restore
+  dotnet ef migrations add InitialCreate --project src\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj --context BoardgameTrackerDbContext --output-dir Persistence\SQLite\Migrations
 
-  src\BoardgameTracker.Infrastructure\Persistence\SQLite\Migrations\...
+Variante C - PowerShell:
+  .\tools\create-initial-migration.ps1
 
-Danach die Solution öffnen und die App starten.
+Danach die Solution öffnen, kompilieren und die App starten.
 
 WAS PASSIERT BEIM APP-START?
 ----------------------------
@@ -39,9 +66,9 @@ WAS PASSIERT BEIM APP-START?
 Die Datenbankdatei liegt im MAUI-AppDataDirectory und heißt:
   boardgame-tracker.db
 
-HINWEIS
--------
-Die Migration wird absichtlich nicht manuell in diesem Scaffold nachgebildet.
-EF Core 10 soll sie auf deinem Rechner selbst aus dem tatsächlichen Modell und
-dem korrekten ModelSnapshot generieren. Das verhindert Drift zwischen
-DbContext/Configurations und Migration.
+HINWEIS ZUR VALIDIERUNG
+-----------------------
+Dieser Scaffold wurde strukturell geprüft. In der Erstellungsumgebung steht kein
+.NET-SDK zur Verfügung, deshalb konnte hier kein echter "dotnet build" ausgeführt
+werden. Der entscheidende Build- und Migrationscheck erfolgt daher auf deinem
+Entwicklungsrechner.

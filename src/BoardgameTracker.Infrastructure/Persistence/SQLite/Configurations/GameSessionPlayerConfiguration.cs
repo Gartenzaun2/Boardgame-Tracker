@@ -8,7 +8,17 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<GameSessionPlayer> builder)
     {
-        builder.ToTable("GameSessionPlayers");
+        builder.ToTable(
+            "GameSessionPlayers",
+            table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_GameSessionPlayers_Order_Positive",
+                    "\"Order\" > 0");
+                table.HasCheckConstraint(
+                    "CK_GameSessionPlayers_Placement_Positive",
+                    "Placement IS NULL OR Placement > 0");
+            });
 
         builder.HasKey(x => new { x.GameSessionId, x.PersonId });
 
@@ -18,11 +28,13 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
         builder.HasOne(x => x.GameSession)
             .WithMany(x => x.Players)
             .HasForeignKey(x => x.GameSessionId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Person)
             .WithMany()
             .HasForeignKey(x => x.PersonId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(x => new { x.GameSessionId, x.Order })

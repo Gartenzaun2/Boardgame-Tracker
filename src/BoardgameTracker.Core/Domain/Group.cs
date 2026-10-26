@@ -2,11 +2,32 @@ namespace BoardgameTracker.Core.Domain;
 
 public sealed class Group
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    private readonly List<GroupPerson> _members = [];
 
-    public required string Name { get; set; }
+    private Group()
+    {
+    }
 
-    public bool IsTemporary { get; set; }
+    public Group(string name, bool isTemporary = false)
+    {
+        Id = Guid.NewGuid();
+        SetName(name);
+        IsTemporary = isTemporary;
+    }
 
-    public ICollection<GroupPerson> Members { get; } = [];
+    public Guid Id { get; private set; }
+
+    public string Name { get; private set; } = string.Empty;
+
+    public bool IsTemporary { get; private set; }
+
+    public IReadOnlyCollection<GroupPerson> Members => _members;
+
+    public void SetName(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name.Trim();
+    }
+
+    public void SetTemporary(bool isTemporary) => IsTemporary = isTemporary;
 }

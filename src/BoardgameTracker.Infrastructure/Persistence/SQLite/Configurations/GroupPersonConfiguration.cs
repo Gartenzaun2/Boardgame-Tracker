@@ -8,7 +8,11 @@ internal sealed class GroupPersonConfiguration : IEntityTypeConfiguration<GroupP
 {
     public void Configure(EntityTypeBuilder<GroupPerson> builder)
     {
-        builder.ToTable("GroupPersons");
+        builder.ToTable(
+            "GroupPersons",
+            table => table.HasCheckConstraint(
+                "CK_GroupPersons_DefaultOrder_Positive",
+                "DefaultOrder > 0"));
 
         builder.HasKey(x => new { x.GroupId, x.PersonId });
 
@@ -18,11 +22,16 @@ internal sealed class GroupPersonConfiguration : IEntityTypeConfiguration<GroupP
         builder.HasOne(x => x.Group)
             .WithMany(x => x.Members)
             .HasForeignKey(x => x.GroupId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Person)
             .WithMany()
             .HasForeignKey(x => x.PersonId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(x => new { x.GroupId, x.DefaultOrder })
+            .IsUnique();
     }
 }

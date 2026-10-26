@@ -2,11 +2,28 @@ namespace BoardgameTracker.Core.Games.ArkNova;
 
 public sealed class ArkNovaZooPlan
 {
-    public int Id { get; init; }
+    private ArkNovaZooPlan()
+    {
+    }
 
-    public int Number { get; init; }
+    public ArkNovaZooPlan(int id, int number, string nameResourceKey, string iconKey)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(number);
+        ArgumentException.ThrowIfNullOrWhiteSpace(nameResourceKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(iconKey);
 
-    public required string NameResourceKey { get; init; }
+        Id = id;
+        Number = number;
+        NameResourceKey = nameResourceKey;
+        IconKey = iconKey;
+    }
 
-    public required string IconKey { get; init; }
+    public int Id { get; private set; }
+
+    public int Number { get; private set; }
+
+    public string NameResourceKey { get; private set; } = string.Empty;
+
+    public string IconKey { get; private set; } = string.Empty;
 }
