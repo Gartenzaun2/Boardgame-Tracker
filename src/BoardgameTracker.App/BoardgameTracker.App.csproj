@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <RootNamespace>BoardgameTracker.App</RootNamespace>
+    <AssemblyName>BoardgameTracker.App</AssemblyName>
+
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+
+    <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
+    <ApplicationId>de.boardgametracker.app</ApplicationId>
+
+    <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+
+    <NeutralLanguage>de</NeutralLanguage>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MauiIcon Include="Resources\AppIcon\appicon.svg"
+              ForegroundFile="Resources\AppIcon\appiconfg.svg"
+              Color="#2E6F40" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg"
+                      Color="#F7F8F5"
+                      BaseSize="128,128" />
+    <MauiImage Include="Resources\Images\*" />
+    <MauiAsset Include="Resources\Raw\**"
+               LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BoardgameTracker.Core\BoardgameTracker.Core.csproj" />
+    <ProjectReference Include="..\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application
+    x:Class="BoardgameTracker.App.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Primary">#2E6F40</Color>
+            <Color x:Key="Surface">#F7F8F5</Color>
+            <Color x:Key="TextPrimary">#1A1C19</Color>
+
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

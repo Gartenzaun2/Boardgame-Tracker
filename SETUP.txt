@@ -1,0 +1,47 @@
+Boardgame Tracker - Scaffold v0.2
+
+Neu in v0.2
+------------
+- Application.MainPage entfernt.
+- Moderner MAUI-Start über Application.CreateWindow.
+- DatabaseInitializer mit Database.MigrateAsync().
+- Design-Time-DbContextFactory für EF-Core-Migrations.
+- Lokales dotnet-ef Tool-Manifest.
+- Skripte zum Erzeugen der InitialCreate-Migration.
+
+ERSTER SCHRITT NACH DEM ENTPACKEN
+---------------------------------
+Die InitialCreate-Migration muss einmal auf deinem Entwicklungsrechner aus dem
+echten EF-Modell erzeugt werden.
+
+Variante A - PowerShell:
+  .\tools\create-initial-migration.ps1
+
+Variante B - Eingabeaufforderung:
+  tools\create-initial-migration.cmd
+
+Die Skripte führen zuerst "dotnet tool restore" aus und erzeugen dann:
+
+  src\BoardgameTracker.Infrastructure\Persistence\SQLite\Migrations\...
+
+Danach die Solution öffnen und die App starten.
+
+WAS PASSIERT BEIM APP-START?
+----------------------------
+1. MAUI ruft App.CreateWindow auf.
+2. Zunächst wird eine kleine Initialisierungsseite angezeigt.
+3. DatabaseInitializer.InitializeAsync() erzeugt einen DbContext.
+4. Database.MigrateAsync() prüft ausstehende Migrationen.
+5. Bei einer frischen Installation wird die SQLite-Datei erzeugt und
+   InitialCreate angewendet.
+6. Anschließend wird AppShell als Root-Page des Fensters gesetzt.
+
+Die Datenbankdatei liegt im MAUI-AppDataDirectory und heißt:
+  boardgame-tracker.db
+
+HINWEIS
+-------
+Die Migration wird absichtlich nicht manuell in diesem Scaffold nachgebildet.
+EF Core 10 soll sie auf deinem Rechner selbst aus dem tatsächlichen Modell und
+dem korrekten ModelSnapshot generieren. Das verhindert Drift zwischen
+DbContext/Configurations und Migration.
