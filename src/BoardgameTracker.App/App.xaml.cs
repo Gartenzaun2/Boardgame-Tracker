@@ -1,49 +1,52 @@
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App;
 
 public partial class App : Microsoft.Maui.Controls.Application
 {
-    private readonly AppShell _shell;
+    private readonly IServiceProvider _services;
     private readonly DatabaseInitializer _databaseInitializer;
+    private readonly ILogger<App> _logger;
 
     public App(
-        AppShell shell,
-        DatabaseInitializer databaseInitializer)
+        IServiceProvider services,
+        DatabaseInitializer databaseInitializer,
+        ILogger<App> logger)
     {
         InitializeComponent();
-
-        _shell = shell;
+        _services = services;
         _databaseInitializer = databaseInitializer;
+        _logger = logger;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        ContentPage startupPage = CreateStartupPage();
-
-        Window window = new(startupPage);
-
-        window.Created += async (_, _) =>
-        {
-            try
-            {
-                await _databaseInitializer.InitializeAsync();
-
-                window.Page = _shell;
-            }
-            catch (Exception exception)
-            {
-                window.Page = CreateStartupErrorPage(exception);
-            }
-        };
-
+        Window window = new(CreateStartupPage());
+        window.Created += async (_, _) => await InitializeApplicationAsync(window);
         return window;
     }
 
-    private static ContentPage CreateStartupPage()
+    private async Task InitializeApplicationAsync(Window window)
     {
-        return new ContentPage
+        window.Page = CreateStartupPage();
+
+        try
+        {
+            await _databaseInitializer.InitializeAsync();
+            window.Page = _services.GetRequiredService<AppShell>();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogCritical(exception, "The application database could not be initialized.");
+            window.Page = CreateStartupErrorPage(window, exception);
+        }
+    }
+
+    private static ContentPage CreateStartupPage() =>
+        new()
         {
             Content = new Grid
             {
@@ -72,38 +75,59 @@ public partial class App : Microsoft.Maui.Controls.Application
                 }
             }
         };
-    }
 
-    private static ContentPage CreateStartupErrorPage(Exception exception)
+    private ContentPage CreateStartupErrorPage(Window window, Exception exception)
     {
+        VerticalStackLayout content = new()
+        {
+            VerticalOptions = LayoutOptions.Center,
+            Spacing = 12,
+            Children =
+            {
+                new Label
+                {
+                    Text = AppResources.StartupErrorTitle,
+                    FontSize = 24,
+                    FontAttributes = FontAttributes.Bold
+                },
+                new Label { Text = AppResources.StartupErrorMessage }
+            }
+        };
+
+        Button retryButton = new()
+        {
+            Text = "Erneut versuchen",
+            HorizontalOptions = LayoutOptions.Start
+        };
+        retryButton.Clicked += async (_, _) =>
+        {
+            retryButton.IsEnabled = false;
+            await InitializeApplicationAsync(window);
+        };
+        content.Children.Add(retryButton);
+
+#if DEBUG
+        content.Children.Add(new Label
+        {
+            Text = "Technische Details",
+            FontAttributes = FontAttributes.Bold,
+            Margin = new Thickness(0, 12, 0, 0)
+        });
+        content.Children.Add(new ScrollView
+        {
+            MaximumHeightRequest = 260,
+            Content = new Label
+            {
+                Text = exception.ToString(),
+                FontSize = 11
+            }
+        });
+#endif
+
         return new ContentPage
         {
             Padding = 24,
-            Content = new VerticalStackLayout
-            {
-                VerticalOptions = LayoutOptions.Center,
-                Spacing = 12,
-                Children =
-                {
-                    new Label
-                    {
-                        Text = AppResources.StartupErrorTitle,
-                        FontSize = 24,
-                        FontAttributes = FontAttributes.Bold
-                    },
-                    new Label
-                    {
-                        Text = AppResources.StartupErrorMessage
-                    },
-#if DEBUG
-                    new Label
-                    {
-                        Text = exception.ToString(),
-                        FontSize = 11
-                    }
-#endif
-                }
-            }
+            Content = content
         };
     }
 }

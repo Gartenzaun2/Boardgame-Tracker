@@ -6,32 +6,31 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="24" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
-        <Grid ColumnDefinitions="*,Auto">
+    <Grid Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="18">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <Label
                 FontAttributes="Bold"
-                FontSize="30"
+                FontSize="28"
                 Text="{x:Static res:AppResources.Groups}"
                 VerticalOptions="Center" />
             <Button
                 Grid.Column="1"
                 Clicked="OnCreateGroupClicked"
-                Text="{x:Static res:AppResources.NewGroup}" />
+                Style="{StaticResource CompactActionButton}"
+                Text="{x:Static res:AppResources.NewGroup}"
+                VerticalOptions="Center" />
         </Grid>
 
         <Label
             Grid.Row="1"
             Text="{Binding ErrorMessage}"
-            TextColor="#B3261E" />
+            TextColor="{StaticResource Danger}" />
 
         <CollectionView
             Grid.Row="2"
             ItemsSource="{Binding Groups}">
             <CollectionView.EmptyView>
-                <Border
-                    Padding="20"
-                    Stroke="#D7DBD3"
-                    StrokeShape="RoundRectangle 16">
+                <Border Padding="20" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="8">
                         <Label
                             FontAttributes="Bold"
@@ -45,11 +44,11 @@
                 <DataTemplate>
                     <Border
                         Margin="0,0,0,12"
-                        Padding="18"
-                        Stroke="#D7DBD3"
-                        StrokeShape="RoundRectangle 16">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <VerticalStackLayout Spacing="6">
+                        Padding="16"
+                        BackgroundColor="{StaticResource SurfaceYellow}"
+                        Style="{StaticResource CardBorder}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <VerticalStackLayout Spacing="5">
                                 <Label
                                     FontAttributes="Bold"
                                     FontSize="20"
@@ -57,19 +56,17 @@
                                 <Label Text="{Binding MemberNames}" />
                                 <Label
                                     FontSize="12"
-                                    Text="{Binding LastPlayedText}" />
+                                    Text="{Binding LastPlayedText}"
+                                    TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
-                            <Button
+                            <ImageButton
                                 Grid.Column="1"
-                                BackgroundColor="Transparent"
                                 Clicked="OnEditGroupClicked"
                                 CommandParameter="{Binding Id}"
-                                FontSize="20"
-                                HeightRequest="44"
-                                Text="✎"
+                                Source="icon_edit.png"
+                                Style="{StaticResource IconButton}"
                                 ToolTipProperties.Text="{x:Static res:AppResources.EditGroup}"
-                                VerticalOptions="Start"
-                                WidthRequest="44" />
+                                VerticalOptions="Start" />
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -81,5 +78,29 @@
             HorizontalOptions="Center"
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}" />
+
+        <Grid
+            Grid.RowSpan="4"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="{Binding IsBusy}">
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <Grid
+            x:Name="NavigationBusyOverlay"
+            Grid.RowSpan="4"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="False">
+            <ActivityIndicator
+                x:Name="NavigationBusyIndicator"
+                HorizontalOptions="Center"
+                IsRunning="False"
+                VerticalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>

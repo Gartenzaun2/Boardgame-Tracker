@@ -1,71 +1,37 @@
-# Boardgame Tracker – Scaffold v0.6
+# Boardgame Tracker – Scaffold v0.6.3.1
 
-v0.6 schließt den ersten vollständigen Gruppen-Slice auf Basis der
-pragmatischen Vertical-Slice-Architektur ab.
+v0.6.3.1 ist ein Compile-Bugfix für v0.6.3.
 
-## Projekte
+## Behobene Compilerfehler
 
-- `BoardgameTracker.App`: .NET MAUI, XAML, ViewModels und Navigation
-- `BoardgameTracker.Application`: konkrete Use Cases, Read Models und
-  notwendige Ports
-- `BoardgameTracker.Core`: Domainmodell und reine Fachregeln
-- `BoardgameTracker.Infrastructure`: EF Core, SQLite und technische
-  Implementierungen
+- `AppResources.Retry` und `AppResources.TechnicalDetails` werden nicht
+  mehr als nicht vorhandene stark typisierte Resource-Properties
+  referenziert. Die beiden ausschließlich im Startup-Fehlerbildschirm
+  verwendeten Texte werden vorerst direkt dort gesetzt.
+- Der Navigation-Guard referenziert nicht mehr `CreateGroupButton` aus
+  dem Code-behind. Das vorhandene Busy-Overlay blockiert weitere
+  Eingaben bereits zuverlässig; dadurch ist keine direkte Abhängigkeit
+  von einem generierten XAML-Feld nötig.
 
-## In v0.6 umgesetzt
+## Verhalten
 
-### Gruppenübersicht
+Die in v0.6.3 eingeführten Funktionen bleiben erhalten:
 
-- reguläre Gruppen laden
-- Sortierung nach letzter Nutzung
-- Mitglieder und letztes Spieldatum anzeigen
-- neue Gruppe anlegen
-- Bearbeiten-Icon pro Gruppe
+- fataler DB-Startup-Fehler stoppt die eigentliche App,
+- `Erneut versuchen`,
+- Logging und DEBUG-Fehlerdetails,
+- Schutz gegen Mehrfachtaps,
+- Busy-Feedback,
+- Empty-State für vorhandene Personen,
+- klareres Pastellgelb.
 
-### Gruppe anlegen
+## Datenbank
 
-- eigene feste Kopfzeile mit Zurück, Information und grünem Speichern
-- Gruppenname kompakt in einer Zeile
-- temporäre Gruppe
-- aktuelle Mitglieder zuerst
-- vorhandene aktive Person per Picker hinzufügen
-- neue Person sekundär anlegen
-- Gaststatus
-- Default-Reihenfolge per Hoch/Runter
-- neue Personen werden erst mit der Gruppe persistiert
+Keine Schemaänderung. **Keine Migration erforderlich.**
 
-### Gruppe bearbeiten
+## Upgrade von v0.6.3
 
-Eigener Vertical Slice:
-
-- Namen ändern
-- temporär/regulär ändern
-- Default-Reihenfolge ändern
-- Mitgliedermenge bleibt unverändert
-
-### Architektur
-
-- `Application`-Schicht bleibt schlank und use-case-orientiert
-- keine generischen Repositories
-- kein `ICreateGroup`
-- gezielte Ports nur an echten technischen Grenzen
-- `Group` schützt seine fachlichen Invarianten
-- `EditGroup` besitzt einen eigenen Application-/Infrastructure-Slice
-
-### Tests
-
-- Core-Tests für Group-Invarianten
-- Application-Tests für `CreateGroupUseCase`
-- Application-Tests für `EditGroupUseCase`
-
-## Dokumentation
-
-- `docs/ARCHITECTURE.md`
-- `docs/DATA_MODEL.md` – jetzt konsolidiert als v0.3
-- `docs/PRODUCT_SPEC.md`
-- `docs/UI_WIREFRAME.md`
-
-## Nächster großer Slice
-
-Nach erfolgreichem lokalen Build und Test beginnt die
-Arche-Nova-Partievorbereitung.
+1.  v0.6.3.1 über v0.6.3 kopieren.
+2.  `tools\upgrade-from-v063.cmd` ausführen.
+3.  Clean Solution.
+4.  Rebuild Solution.

@@ -1,4 +1,6 @@
 using BoardgameTracker.App.Features.Groups;
+using BoardgameTracker.App.Diagnostics;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.CreateGroup;
@@ -7,7 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
-public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<AvailablePersonItemViewModel> AvailablePersons { get; } = [];
     public ObservableCollection<GroupMemberItemViewModel> Members { get; } = [];
@@ -45,10 +47,19 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
 
     public event EventHandler? Saved;
 
+    public bool HasAvailablePersons => !HasNoAvailablePersons;
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         try
         {
+            IsBusy = true;
+            ErrorMessage = null;
             IReadOnlyList<SelectablePerson> people =
                 await createGroup.GetSelectablePeopleAsync(cancellationToken);
 
@@ -68,9 +79,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
             SelectedExistingPerson = null;
             UpdateCollectionStates();
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            ErrorMessage = AppResources.LoadPersonsFailed;
+            logger.LogError(exception, "Could not load selectable people for group creation.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.LoadPersonsFailed, exception);
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -97,6 +113,11 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
     [RelayCommand]
     private void AddNewPerson()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         string name = NewPersonName.Trim();
 
         if (string.IsNullOrWhiteSpace(name))
@@ -171,6 +192,11 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         try
         {
             IsBusy = true;
@@ -188,9 +214,10 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            ErrorMessage = AppResources.SaveGroupFailed;
+            logger.LogError(exception, "Could not create group.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
         }
         finally
         {
@@ -208,6 +235,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : Obse
     {
         HasNoMembers = Members.Count == 0;
         HasNoAvailablePersons = AvailablePersons.Count == 0;
+        OnPropertyChanged(nameof(HasAvailablePersons));
     }
 
     private void SortAvailablePersons()

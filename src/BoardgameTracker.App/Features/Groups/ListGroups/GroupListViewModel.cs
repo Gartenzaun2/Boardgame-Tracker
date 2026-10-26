@@ -1,12 +1,14 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Diagnostics;
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.Application.Groups.ListGroups;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
-public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery) : ObservableObject
+public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery, ILogger<GroupListViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
 
@@ -50,9 +52,10 @@ public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery) : Obse
                     lastPlayedText));
             }
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            ErrorMessage = AppResources.LoadGroupsFailed;
+            logger.LogError(exception, "Could not load groups.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.LoadGroupsFailed, exception);
         }
         finally
         {

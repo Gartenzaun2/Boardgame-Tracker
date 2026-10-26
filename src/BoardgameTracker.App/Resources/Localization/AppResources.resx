@@ -129,4 +129,13 @@
   <data name="NeverPlayed" xml:space="preserve">
     <value>Noch keine Partie gespielt.</value>
   </data>
+  <data name="Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="TechnicalDetails" xml:space="preserve">
+    <value>Technische Details</value>
+  </data>
 </root>
