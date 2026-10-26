@@ -1,7 +1,8 @@
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games;
+using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.People;
-using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
@@ -10,21 +11,13 @@ public sealed class BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerD
     : DbContext(options)
 {
     public DbSet<Person> Persons => Set<Person>();
-
     public DbSet<Group> Groups => Set<Group>();
-
     public DbSet<GroupPerson> GroupPersons => Set<GroupPerson>();
-
     public DbSet<Game> Games => Set<Game>();
-
     public DbSet<GameSession> GameSessions => Set<GameSession>();
-
     public DbSet<GameSessionPlayer> GameSessionPlayers => Set<GameSessionPlayer>();
-
     public DbSet<ArkNovaGroupPlayer> ArkNovaGroupPlayers => Set<ArkNovaGroupPlayer>();
-
     public DbSet<ArkNovaSessionPlayer> ArkNovaSessionPlayers => Set<ArkNovaSessionPlayer>();
-
     public DbSet<ArkNovaZooPlan> ArkNovaZooPlans => Set<ArkNovaZooPlan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

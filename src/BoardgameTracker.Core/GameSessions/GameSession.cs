@@ -1,5 +1,3 @@
-using BoardgameTracker.Core.Groups;
-
 namespace BoardgameTracker.Core.GameSessions;
 
 public sealed class GameSession
@@ -10,10 +8,30 @@ public sealed class GameSession
     {
     }
 
-    public GameSession(Guid gameId, Guid groupId, DateTimeOffset startedAt)
+    public GameSession(
+        Guid gameId,
+        Guid groupId,
+        DateTimeOffset startedAt,
+        IReadOnlyList<Guid> playerIds)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
+        ArgumentNullException.ThrowIfNull(playerIds);
+
+        if (playerIds.Count == 0)
+        {
+            throw new ArgumentException(
+                "A game session must contain at least one player.",
+                nameof(playerIds));
+        }
+
+        if (playerIds.Any(id => id == Guid.Empty)
+            || playerIds.Distinct().Count() != playerIds.Count)
+        {
+            throw new ArgumentException(
+                "Every player must occur exactly once.",
+                nameof(playerIds));
+        }
 
         Id = Guid.NewGuid();
         GameId = gameId;
@@ -21,38 +39,55 @@ public sealed class GameSession
         Status = GameSessionStatus.Running;
         StartedAt = startedAt;
         ModifiedAt = startedAt;
+
+        for (int index = 0; index < playerIds.Count; index++)
+        {
+            _players.Add(new GameSessionPlayer(Id, playerIds[index], index + 1));
+        }
     }
 
     public Guid Id { get; private set; }
-
     public Guid GameId { get; private set; }
-
-    public Game? Game { get; private set; }
-
     public Guid GroupId { get; private set; }
-
-    public Group? Group { get; private set; }
-
     public GameSessionStatus Status { get; private set; }
-
     public DateTimeOffset StartedAt { get; private set; }
-
     public DateTimeOffset? EndedAt { get; private set; }
-
     public DateTimeOffset ModifiedAt { get; private set; }
-
     public IReadOnlyCollection<GameSessionPlayer> Players => _players;
 
     public void BeginScoring(DateTimeOffset modifiedAt)
     {
+        if (Status != GameSessionStatus.Running)
+        {
+            throw new InvalidOperationException(
+                "Only a running session can enter scoring.");
+        }
+
+        if (modifiedAt < StartedAt)
+        {
+            throw new ArgumentOutOfRangeException(nameof(modifiedAt));
+        }
+
         Status = GameSessionStatus.Scoring;
+        EndedAt = modifiedAt;
         ModifiedAt = modifiedAt;
     }
 
-    public void Complete(DateTimeOffset endedAt)
+    public void Complete(DateTimeOffset modifiedAt)
     {
+        if (Status != GameSessionStatus.Scoring)
+        {
+            throw new InvalidOperationException(
+                "Only a session in scoring can be completed.");
+        }
+
+        if (modifiedAt < StartedAt)
+        {
+            throw new ArgumentOutOfRangeException(nameof(modifiedAt));
+        }
+
         Status = GameSessionStatus.Completed;
-        EndedAt = endedAt;
-        ModifiedAt = endedAt;
+        EndedAt ??= modifiedAt;
+        ModifiedAt = modifiedAt;
     }
 }

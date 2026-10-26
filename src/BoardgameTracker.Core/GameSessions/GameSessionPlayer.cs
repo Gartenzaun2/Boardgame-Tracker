@@ -1,5 +1,3 @@
-using BoardgameTracker.Core.People;
-
 namespace BoardgameTracker.Core.GameSessions;
 
 public sealed class GameSessionPlayer
@@ -8,7 +6,7 @@ public sealed class GameSessionPlayer
     {
     }
 
-    public GameSessionPlayer(Guid gameSessionId, Guid personId, int order)
+    internal GameSessionPlayer(Guid gameSessionId, Guid personId, int order)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(personId, Guid.Empty);
@@ -20,22 +18,9 @@ public sealed class GameSessionPlayer
     }
 
     public Guid GameSessionId { get; private set; }
-
-    public GameSession? GameSession { get; private set; }
-
     public Guid PersonId { get; private set; }
-
-    public Person? Person { get; private set; }
-
     public int Order { get; private set; }
-
     public int? Placement { get; private set; }
-
-    public void SetOrder(int order)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(order);
-        Order = order;
-    }
 
     public void SetPlacement(int? placement)
     {

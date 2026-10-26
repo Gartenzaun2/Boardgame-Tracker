@@ -1,6 +1,3 @@
-using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Groups;
-
 namespace BoardgameTracker.Core.Games.ArkNova;
 
 public sealed class ArkNovaGroupPlayer
@@ -20,11 +17,7 @@ public sealed class ArkNovaGroupPlayer
     }
 
     public Guid GroupId { get; private set; }
-
     public Guid PersonId { get; private set; }
-
-    public GroupPerson? GroupPerson { get; private set; }
-
     public ArkNovaPlayerColor DefaultColor { get; private set; }
 
     public void SetDefaultColor(ArkNovaPlayerColor color) => DefaultColor = color;

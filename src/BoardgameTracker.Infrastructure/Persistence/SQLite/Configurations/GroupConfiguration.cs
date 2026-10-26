@@ -20,5 +20,8 @@ internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 
         builder.Property(x => x.IsTemporary)
             .IsRequired();
+
+        builder.Navigation(x => x.Members)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

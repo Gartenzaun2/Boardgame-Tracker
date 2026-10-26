@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BoardgameTracker.Core\BoardgameTracker.Core.csproj" />
+    <ProjectReference Include="..\BoardgameTracker.Application\BoardgameTracker.Application.csproj" />
     <ProjectReference Include="..\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

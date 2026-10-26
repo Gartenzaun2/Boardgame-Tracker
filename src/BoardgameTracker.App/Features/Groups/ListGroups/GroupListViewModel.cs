@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
+using BoardgameTracker.Application.Groups.ListGroups;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace BoardgameTracker.App.Features.Groups;
+namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
-public partial class GroupListViewModel(GroupStore groupStore) : ObservableObject
+public partial class GroupListViewModel(IListGroupsQuery listGroupsQuery) : ObservableObject
 {
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
 
@@ -14,10 +14,6 @@ public partial class GroupListViewModel(GroupStore groupStore) : ObservableObjec
 
     [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
-
-    public bool HasGroups => Groups.Count > 0;
-
-    public bool HasNoGroups => !HasGroups && !IsBusy;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -31,12 +27,12 @@ public partial class GroupListViewModel(GroupStore groupStore) : ObservableObjec
             IsBusy = true;
             ErrorMessage = null;
 
-            IReadOnlyList<GroupSummary> groups =
-                await groupStore.GetGroupsAsync(cancellationToken);
+            IReadOnlyList<GroupListItem> groups =
+                await listGroupsQuery.ExecuteAsync(cancellationToken);
 
             Groups.Clear();
 
-            foreach (GroupSummary group in groups)
+            foreach (GroupListItem group in groups)
             {
                 Groups.Add(new GroupListItemViewModel(
                     group.Id,
@@ -45,9 +41,6 @@ public partial class GroupListViewModel(GroupStore groupStore) : ObservableObjec
                     string.Join(" · ", group.MemberNames),
                     group.LastPlayedAt));
             }
-
-            OnPropertyChanged(nameof(HasGroups));
-            OnPropertyChanged(nameof(HasNoGroups));
         }
         catch (Exception)
         {
@@ -56,8 +49,6 @@ public partial class GroupListViewModel(GroupStore groupStore) : ObservableObjec
         finally
         {
             IsBusy = false;
-            OnPropertyChanged(nameof(HasGroups));
-            OnPropertyChanged(nameof(HasNoGroups));
         }
     }
 }

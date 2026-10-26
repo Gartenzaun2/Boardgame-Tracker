@@ -1,15 +1,14 @@
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
+using BoardgameTracker.Application.Groups.CreateGroup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace BoardgameTracker.App.Features.Groups;
+namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
-public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup) : ObservableObject
 {
     public ObservableCollection<AvailablePersonItemViewModel> AvailablePersons { get; } = [];
-
     public ObservableCollection<GroupMemberItemViewModel> Members { get; } = [];
 
     [ObservableProperty]
@@ -38,12 +37,12 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
     {
         try
         {
-            IReadOnlyList<PersonSummary> persons =
-                await groupStore.GetActivePersonsAsync(cancellationToken);
+            IReadOnlyList<SelectablePerson> people =
+                await createGroup.GetSelectablePeopleAsync(cancellationToken);
 
             AvailablePersons.Clear();
 
-            foreach (PersonSummary person in persons)
+            foreach (SelectablePerson person in people)
             {
                 if (Members.All(member => member.PersonId != person.Id))
                 {
@@ -54,7 +53,7 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
                 }
             }
         }
-        catch (Exception exception)
+        catch (Exception)
         {
             ErrorMessage = AppResources.LoadPersonsFailed;
         }
@@ -68,10 +67,7 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
             return;
         }
 
-        Members.Add(new GroupMemberItemViewModel(
-            person.Id,
-            person.Name,
-            person.IsGuest));
+        Members.Add(new GroupMemberItemViewModel(person.Id, person.Name, person.IsGuest));
         AvailablePersons.Remove(person);
         MembersChanged();
     }
@@ -87,18 +83,7 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
             return;
         }
 
-        if (Members.Any(member =>
-                string.Equals(member.Name, name, StringComparison.CurrentCultureIgnoreCase)))
-        {
-            ErrorMessage = AppResources.PersonAlreadyInGroup;
-            return;
-        }
-
-        Members.Add(new GroupMemberItemViewModel(
-            null,
-            name,
-            NewPersonIsGuest));
-
+        Members.Add(new GroupMemberItemViewModel(null, name, NewPersonIsGuest));
         NewPersonName = string.Empty;
         NewPersonIsGuest = false;
         ErrorMessage = null;
@@ -167,18 +152,15 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
             IsBusy = true;
             ErrorMessage = null;
 
-            CreateGroupMember[] members = Members
-                .Select(member => new CreateGroupMember(
+            CreateGroupMemberInput[] members = Members
+                .Select(member => new CreateGroupMemberInput(
                     member.PersonId,
                     member.Name,
                     member.IsGuest))
                 .ToArray();
 
-            await groupStore.CreateGroupAsync(
-                new CreateGroupRequest(
-                    GroupName,
-                    IsTemporary,
-                    members));
+            await createGroup.ExecuteAsync(
+                new CreateGroupCommand(GroupName, IsTemporary, members));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
@@ -192,19 +174,8 @@ public partial class CreateGroupViewModel(GroupStore groupStore) : ObservableObj
         }
     }
 
-    private void MembersChanged()
-    {
-        SaveCommand.NotifyCanExecuteChanged();
-        OnPropertyChanged(nameof(Members));
-    }
+    private void MembersChanged() => SaveCommand.NotifyCanExecuteChanged();
 }
 
-public sealed record AvailablePersonItemViewModel(
-    Guid Id,
-    string Name,
-    bool IsGuest);
-
-public sealed record GroupMemberItemViewModel(
-    Guid? PersonId,
-    string Name,
-    bool IsGuest);
+public sealed record AvailablePersonItemViewModel(Guid Id, string Name, bool IsGuest);
+public sealed record GroupMemberItemViewModel(Guid? PersonId, string Name, bool IsGuest);

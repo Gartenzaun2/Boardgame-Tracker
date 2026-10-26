@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
 {
     [DbContext(typeof(BoardgameTrackerDbContext))]
-    [Migration("20261026183712_InitialCreate")]
+    [Migration("20261026195227_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,26 +20,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.Game", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.ToTable("Games", (string)null);
-                });
-
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSession", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.GameSessions.GameSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -72,7 +53,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.ToTable("GameSessions", (string)null);
                 });
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSessionPlayer", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.GameSessions.GameSessionPlayer", b =>
                 {
                     b.Property<Guid>("GameSessionId")
                         .HasColumnType("TEXT");
@@ -99,71 +80,6 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
 
                             t.HasCheckConstraint("CK_GameSessionPlayers_Placement_Positive", "Placement IS NULL OR Placement > 0");
                         });
-                });
-
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.Group", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsTemporary")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Groups", (string)null);
-                });
-
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GroupPerson", b =>
-                {
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DefaultOrder")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("GroupId", "PersonId");
-
-                    b.HasIndex("PersonId");
-
-                    b.HasIndex("GroupId", "DefaultOrder")
-                        .IsUnique();
-
-                    b.ToTable("GroupPersons", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_GroupPersons_DefaultOrder_Positive", "DefaultOrder > 0");
-                        });
-                });
-
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.Person", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsGuest")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons", (string)null);
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", b =>
@@ -205,7 +121,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.Property<int?>("Reputation")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("SelectedZooPlanId")
+                    b.Property<int>("SelectedZooPlanId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ZooPlanOption1Id")
@@ -229,7 +145,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                         {
                             t.HasCheckConstraint("CK_ArkNovaSessionPlayers_DifferentZooPlanOptions", "ZooPlanOption1Id <> ZooPlanOption2Id");
 
-                            t.HasCheckConstraint("CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered", "SelectedZooPlanId IS NULL OR SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
+                            t.HasCheckConstraint("CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered", "SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
                         });
                 });
 
@@ -260,114 +176,177 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                     b.ToTable("ArkNovaZooPlans", (string)null);
                 });
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSession", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.Games.Game", b =>
                 {
-                    b.HasOne("BoardgameTracker.Core.Domain.Game", "Game")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("Games", (string)null);
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.Groups.Group", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsTemporary")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Groups", (string)null);
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.Groups.GroupPerson", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DefaultOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GroupId", "PersonId");
+
+                    b.HasIndex("PersonId");
+
+                    b.HasIndex("GroupId", "DefaultOrder")
+                        .IsUnique();
+
+                    b.ToTable("GroupPersons", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_GroupPersons_DefaultOrder_Positive", "DefaultOrder > 0");
+                        });
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.People.Person", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsGuest")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons", (string)null);
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.GameSessions.GameSession", b =>
+                {
+                    b.HasOne("BoardgameTracker.Core.Games.Game", null)
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BoardgameTracker.Core.Domain.Group", "Group")
+                    b.HasOne("BoardgameTracker.Core.Groups.Group", null)
                         .WithMany()
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("Group");
                 });
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSessionPlayer", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.GameSessions.GameSessionPlayer", b =>
                 {
-                    b.HasOne("BoardgameTracker.Core.Domain.GameSession", "GameSession")
+                    b.HasOne("BoardgameTracker.Core.GameSessions.GameSession", null)
                         .WithMany("Players")
                         .HasForeignKey("GameSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BoardgameTracker.Core.Domain.Person", "Person")
+                    b.HasOne("BoardgameTracker.Core.People.Person", null)
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("GameSession");
-
-                    b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GroupPerson", b =>
-                {
-                    b.HasOne("BoardgameTracker.Core.Domain.Group", "Group")
-                        .WithMany("Members")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BoardgameTracker.Core.Domain.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", b =>
                 {
-                    b.HasOne("BoardgameTracker.Core.Domain.GroupPerson", "GroupPerson")
+                    b.HasOne("BoardgameTracker.Core.Groups.GroupPerson", null)
                         .WithOne()
                         .HasForeignKey("BoardgameTracker.Core.Games.ArkNova.ArkNovaGroupPlayer", "GroupId", "PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("GroupPerson");
                 });
 
             modelBuilder.Entity("BoardgameTracker.Core.Games.ArkNova.ArkNovaSessionPlayer", b =>
                 {
-                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "SelectedZooPlan")
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", null)
                         .WithMany()
                         .HasForeignKey("SelectedZooPlanId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "ZooPlanOption1")
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", null)
                         .WithMany()
                         .HasForeignKey("ZooPlanOption1Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", "ZooPlanOption2")
+                    b.HasOne("BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan", null)
                         .WithMany()
                         .HasForeignKey("ZooPlanOption2Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BoardgameTracker.Core.Domain.GameSessionPlayer", "GameSessionPlayer")
+                    b.HasOne("BoardgameTracker.Core.GameSessions.GameSessionPlayer", null)
                         .WithOne()
                         .HasForeignKey("BoardgameTracker.Core.Games.ArkNova.ArkNovaSessionPlayer", "GameSessionId", "PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("GameSessionPlayer");
-
-                    b.Navigation("SelectedZooPlan");
-
-                    b.Navigation("ZooPlanOption1");
-
-                    b.Navigation("ZooPlanOption2");
                 });
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.GameSession", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.Groups.GroupPerson", b =>
+                {
+                    b.HasOne("BoardgameTracker.Core.Groups.Group", null)
+                        .WithMany("Members")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BoardgameTracker.Core.People.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BoardgameTracker.Core.GameSessions.GameSession", b =>
                 {
                     b.Navigation("Players");
                 });
 
-            modelBuilder.Entity("BoardgameTracker.Core.Domain.Group", b =>
+            modelBuilder.Entity("BoardgameTracker.Core.Groups.Group", b =>
                 {
                     b.Navigation("Members");
                 });

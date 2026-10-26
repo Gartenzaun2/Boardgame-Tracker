@@ -1,4 +1,4 @@
-namespace BoardgameTracker.App.Features.Groups;
+namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
 public partial class CreateGroupPage : ContentPage
 {

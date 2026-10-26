@@ -1,4 +1,3 @@
-using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.People;
 using Microsoft.EntityFrameworkCore;
@@ -17,23 +16,20 @@ internal sealed class GroupPersonConfiguration : IEntityTypeConfiguration<GroupP
                 "DefaultOrder > 0"));
 
         builder.HasKey(x => new { x.GroupId, x.PersonId });
+        builder.Property(x => x.DefaultOrder).IsRequired();
 
-        builder.Property(x => x.DefaultOrder)
-            .IsRequired();
-
-        builder.HasOne(x => x.Group)
+        builder.HasOne<Group>()
             .WithMany(x => x.Members)
             .HasForeignKey(x => x.GroupId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Person)
+        builder.HasOne<Person>()
             .WithMany()
             .HasForeignKey(x => x.PersonId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => new { x.GroupId, x.DefaultOrder })
-            .IsUnique();
+        builder.HasIndex(x => new { x.GroupId, x.DefaultOrder }).IsUnique();
     }
 }
