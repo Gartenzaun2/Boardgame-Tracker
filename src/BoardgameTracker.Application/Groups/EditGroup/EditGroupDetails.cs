@@ -1,3 +1,5 @@
+using BoardgameTracker.Core.Games.ArkNova;
+
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
 public sealed record EditGroupDetails(
@@ -11,4 +13,5 @@ public sealed record EditGroupMember(
     Guid PersonId,
     string Name,
     bool IsGuest,
-    int DefaultOrder);
+    int DefaultOrder,
+    ArkNovaPlayerColor? ArkNovaDefaultColor);

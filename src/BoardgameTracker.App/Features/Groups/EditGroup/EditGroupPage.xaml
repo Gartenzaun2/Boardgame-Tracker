@@ -54,14 +54,43 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
-                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label FontAttributes="Bold" Text="{Binding Name}" />
-                                            <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" TextColor="{StaticResource TextSecondary}" />
-                                        </VerticalStackLayout>
-                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↑" />
-                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↓" />
-                                    </Grid>
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                                <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" TextColor="{StaticResource TextSecondary}" />
+                                            </VerticalStackLayout>
+                                            <Border
+                                                Grid.Column="1"
+                                                BackgroundColor="{Binding ColorBrush}"
+                                                HeightRequest="32"
+                                                Stroke="{StaticResource Outline}"
+                                                StrokeShape="RoundRectangle 16"
+                                                WidthRequest="32">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.ToggleColorPickerCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Image
+                                                    HeightRequest="18"
+                                                    Source="icon_palette.png"
+                                                    WidthRequest="18" />
+                                            </Border>
+                                            <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↑" />
+                                            <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↓" />
+                                        </Grid>
+
+                                        <HorizontalStackLayout
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding IsColorPickerOpen}"
+                                            Spacing="8">
+                                            <Button BackgroundColor="#8BC4E8" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlueCommand}" CommandParameter="{Binding .}" HeightRequest="34" Padding="0" WidthRequest="34" />
+                                            <Button BackgroundColor="#F2D65C" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetYellowCommand}" CommandParameter="{Binding .}" HeightRequest="34" Padding="0" WidthRequest="34" />
+                                            <Button BackgroundColor="#E98A84" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetRedCommand}" CommandParameter="{Binding .}" HeightRequest="34" Padding="0" WidthRequest="34" />
+                                            <Button BackgroundColor="#404040" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlackCommand}" CommandParameter="{Binding .}" HeightRequest="34" Padding="0" WidthRequest="34" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>

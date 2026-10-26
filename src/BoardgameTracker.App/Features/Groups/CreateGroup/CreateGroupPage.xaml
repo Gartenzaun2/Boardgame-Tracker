@@ -107,7 +107,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPerson}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePersons}">
