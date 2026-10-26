@@ -1,4 +1,4 @@
-namespace BoardgameTracker.Core.Games.ArkNova;
+namespace BoardgameTracker.Core.GameSessions;
 
 public static class StartingPlayerRotation
 {

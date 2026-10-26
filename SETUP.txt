@@ -1,74 +1,73 @@
-Boardgame Tracker - Scaffold v0.3
+Boardgame Tracker - Scaffold v0.4
 
-Neu in v0.3
+Neu in v0.4
 ------------
-- EF-Core-10-Beziehungen vereinheitlicht: explizite Foreign Keys plus Navigationen.
-- Navigationen sind von außen nicht frei setzbar; dadurch können FK und Navigation
-  nicht versehentlich unabhängig voneinander gesetzt werden.
-- Navigationen sind nullable, weil eine Beziehung fachlich existieren kann, obwohl
-  die zugehörige Entity in der aktuellen Query nicht geladen wurde.
-- Kein Lazy Loading / keine EF-Proxies. Verwandte Daten werden bewusst per Query
-  bzw. Include geladen.
-- Entity-Zustand wird stärker gekapselt (private Setter + fachliche Methoden).
-- ArkNovaGroupPlayer ergänzt: Standardfarbe pro Gruppe und Person.
-- ArkNovaGroupPlayer referenziert per zusammengesetztem FK eine echte
-  GroupPerson-Mitgliedschaft.
-- ArkNovaSessionPlayer referenziert per zusammengesetztem FK den dazugehörigen
-  GameSessionPlayer.
-- Echte Foreign Keys für angebotene und gewählte Zoopläne.
-- Eindeutige Standardreihenfolge pro Gruppe und Spielerreihenfolge pro Partie.
-- Eindeutige Arche-Nova-Farbe pro Gruppe bzw. Partie.
-- Check-Constraints für positive Reihenfolgen/Platzierungen und gültige
-  Zooplan-Auswahl.
-- Versehentlich erzeugte EF-Shadow-Properties werden als Fehler behandelt.
+- Core featureorientiert reorganisiert:
+    People/
+    Groups/
+    GameSessions/
+    Games/ArkNova/
+- Kein künstlicher General-, Domain- oder Rules-Sammelordner mehr.
+- StartingPlayerRotation aus ArkNova herausgezogen; die Regel gehört allgemein
+  zu GameSessions.
+- Erster echter Persistenz-Slice implementiert:
+    Gruppenübersicht -> Gruppe anlegen -> Personen auswählen/anlegen ->
+    Standard-Reihenfolge festlegen -> SQLite speichern -> Liste neu laden.
+- Neue Personen können direkt beim Anlegen einer Gruppe erstellt werden.
+- Personen können als Gast markiert werden.
+- Bestehende aktive Personen können wiederverwendet werden.
+- Standard-Reihenfolge wird mit Auf/Ab-Schaltflächen festgelegt und als
+  GroupPerson.DefaultOrder gespeichert.
+- ViewModels greifen nicht direkt auf DbContext zu. Der gezielte GroupStore
+  bündelt die für diesen Slice benötigten EF-Core-Abfragen und Schreibvorgänge.
+- Leseabfragen verwenden AsNoTracking(); benötigte Navigationen werden explizit
+  geladen. Lazy Loading bleibt deaktiviert.
+- Shell-Route und DI für CreateGroupPage/CreateGroupViewModel ergänzt.
+- Architektur-Dokument auf v0.3 aktualisiert.
 
-Weiterhin aus v0.2
-------------------
-- Moderner MAUI-Start über Application.CreateWindow statt Application.MainPage.
-- DatabaseInitializer mit Database.MigrateAsync().
-- Design-Time-DbContextFactory für EF-Core-Migrations.
-- Lokales dotnet-ef Tool-Manifest.
-- CMD- und PowerShell-Skript zum Erzeugen der InitialCreate-Migration.
+Migration
+---------
+Das Datenmodell wurde durch v0.4 NICHT verändert. Deine lokal bereits erzeugte
+InitialCreate-Migration aus v0.3 bleibt daher gültig.
 
-WICHTIG VOR INITIALCREATE
--------------------------
-Wenn du bereits mit einem älteren Scaffold eine InitialCreate-Migration erzeugt
-hast, lösche diese Migration für diesen Entwicklungsstand wieder, solange noch
-keine produktiven Nutzerdaten existieren. v0.3 soll die erste verbindliche
-InitialCreate-Basis sein.
+WICHTIG: Dieses ZIP enthält deine lokal generierten Migrationsdateien nicht.
+Wenn du den v0.4-Ordner als neues Projektverzeichnis verwendest, kopiere deinen
+bestehenden Ordner
 
-Wenn noch keine InitialCreate existiert, ist nichts zu löschen.
+  src\BoardgameTracker.Infrastructure\Persistence\SQLite\Migrations
 
-INITIALCREATE ERZEUGEN
-----------------------
-Variante A - Eingabeaufforderung (empfohlen, wenn PowerShell-Skripte gesperrt sind):
+in den entsprechenden v0.4-Pfad.
+
+Alternativ kannst du in einem frischen v0.4-Verzeichnis InitialCreate erneut
+mit dem vorhandenen Skript erzeugen, solange noch keine echten Nutzerdaten
+existieren:
+
   tools\create-initial-migration.cmd
 
-Variante B - Befehle direkt im Terminal:
-  dotnet tool restore
-  dotnet ef migrations add InitialCreate --project src\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj --context BoardgameTrackerDbContext --output-dir Persistence\SQLite\Migrations
+Testablauf
+----------
+1. Solution öffnen und Build ausführen.
+2. Android-App starten.
+3. In der Gruppenübersicht "Neue Gruppe" wählen.
+4. Einen Gruppennamen eingeben.
+5. Neue Personen hinzufügen; optional Gast markieren.
+6. Reihenfolge mit ↑ / ↓ festlegen.
+7. Gruppe speichern.
+8. App vollständig schließen und erneut starten.
+9. Die Gruppe und ihre Personen müssen wieder aus SQLite erscheinen.
+10. Eine zweite Gruppe anlegen und eine bereits vorhandene Person auswählen.
 
-Variante C - PowerShell:
-  .\tools\create-initial-migration.ps1
+Hinweis zu DateTimeOffset + SQLite
+----------------------------------
+GameSession verwendet derzeit weiterhin DateTimeOffset. SQLite kann diesen Typ
+speichern, unterstützt aber bestimmte serverseitige Vergleiche/Sortierungen nur
+eingeschränkt. Der aktuelle GroupStore lädt die wenigen benötigten Zeitwerte
+bewusst vor der Max-Auswertung in den Speicher, statt eine problematische
+SQLite-Aggregation zu erzwingen. Vor dem History-/Statistik-Slice prüfen wir, ob
+wir die Persistenzzeitstempel langfristig auf UTC-DateTime umstellen wollen.
 
-Danach die Solution öffnen, kompilieren und die App starten.
-
-WAS PASSIERT BEIM APP-START?
-----------------------------
-1. MAUI ruft App.CreateWindow auf.
-2. Zunächst wird eine kleine Initialisierungsseite angezeigt.
-3. DatabaseInitializer.InitializeAsync() erzeugt einen DbContext.
-4. Database.MigrateAsync() prüft ausstehende Migrationen.
-5. Bei einer frischen Installation wird die SQLite-Datei erzeugt und
-   InitialCreate angewendet.
-6. Anschließend wird AppShell als Root-Page des Fensters gesetzt.
-
-Die Datenbankdatei liegt im MAUI-AppDataDirectory und heißt:
-  boardgame-tracker.db
-
-HINWEIS ZUR VALIDIERUNG
------------------------
-Dieser Scaffold wurde strukturell geprüft. In der Erstellungsumgebung steht kein
-.NET-SDK zur Verfügung, deshalb konnte hier kein echter "dotnet build" ausgeführt
-werden. Der entscheidende Build- und Migrationscheck erfolgt daher auf deinem
-Entwicklungsrechner.
+Validierung
+-----------
+XML, XAML, RESX und Projektdateien wurden strukturell geparst. In der
+Erstellungsumgebung steht kein .NET-SDK zur Verfügung; ein echter dotnet build
+konnte deshalb hier nicht ausgeführt werden.

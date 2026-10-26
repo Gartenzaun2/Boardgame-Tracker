@@ -1,4 +1,4 @@
-namespace BoardgameTracker.Core.Domain;
+namespace BoardgameTracker.Core.Groups;
 
 public sealed class GroupPerson
 {

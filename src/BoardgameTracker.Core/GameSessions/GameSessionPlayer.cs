@@ -1,4 +1,6 @@
-namespace BoardgameTracker.Core.Domain;
+using BoardgameTracker.Core.People;
+
+namespace BoardgameTracker.Core.GameSessions;
 
 public sealed class GameSessionPlayer
 {

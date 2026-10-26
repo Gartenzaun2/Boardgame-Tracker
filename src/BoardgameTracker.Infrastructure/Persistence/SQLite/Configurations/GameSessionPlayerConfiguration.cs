@@ -1,4 +1,6 @@
-using BoardgameTracker.Core.Domain;
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Groups;
+using BoardgameTracker.Core.People;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

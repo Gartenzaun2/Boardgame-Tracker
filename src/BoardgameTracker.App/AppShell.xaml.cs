@@ -9,6 +9,8 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
+        Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
+
         Items.Add(new ShellContent
         {
             Title = AppResources.Groups,
