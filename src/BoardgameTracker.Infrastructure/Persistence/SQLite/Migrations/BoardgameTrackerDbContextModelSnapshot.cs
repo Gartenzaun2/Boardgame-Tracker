@@ -198,6 +198,9 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsTemporary")
                         .HasColumnType("INTEGER");
 

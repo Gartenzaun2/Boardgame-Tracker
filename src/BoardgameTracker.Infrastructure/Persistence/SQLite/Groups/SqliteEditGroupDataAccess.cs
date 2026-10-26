@@ -22,7 +22,8 @@ public sealed class SqliteEditGroupDataAccess(
             {
                 candidate.Id,
                 candidate.Name,
-                candidate.IsTemporary
+                candidate.IsTemporary,
+                candidate.IsArchived
             })
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -48,6 +49,7 @@ public sealed class SqliteEditGroupDataAccess(
             group.Id,
             group.Name,
             group.IsTemporary,
+            group.IsArchived,
             members);
     }
 
@@ -79,7 +81,8 @@ public sealed class SqliteEditGroupDataAccess(
             .ExecuteUpdateAsync(
                 setters => setters
                     .SetProperty(candidate => candidate.Name, group.Name)
-                    .SetProperty(candidate => candidate.IsTemporary, group.IsTemporary),
+                    .SetProperty(candidate => candidate.IsTemporary, group.IsTemporary)
+                    .SetProperty(candidate => candidate.IsArchived, group.IsArchived),
                 cancellationToken);
 
         if (updatedGroups != 1)

@@ -21,15 +21,25 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="16">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                             <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
                             <Entry Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}" Text="{Binding GroupName}" />
                         </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Temporäre Gruppe" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="Als permanente Gruppe übernehmen" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
+                        </Grid>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                            <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
-                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Archiviert" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="Archivierte Gruppen werden in der normalen Übersicht ausgeblendet." TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>

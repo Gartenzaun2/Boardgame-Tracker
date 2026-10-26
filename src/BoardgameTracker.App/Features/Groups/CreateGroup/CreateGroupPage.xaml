@@ -44,7 +44,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="16">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                             <Label
@@ -107,7 +107,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPerson}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePersons}">

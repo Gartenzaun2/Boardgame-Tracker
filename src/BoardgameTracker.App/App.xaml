@@ -11,10 +11,10 @@
             <Color x:Key="Surface">#FFFDF7</Color>
             <Color x:Key="SurfaceBlue">#EAF4F7</Color>
             <Color x:Key="SurfaceGreen">#EDF5E8</Color>
-            <Color x:Key="SurfaceYellow">#FFF0A8</Color>
+            <Color x:Key="SurfaceYellow">PaleGoldenrod</Color>
             <Color x:Key="SurfaceViolet">#F1ECF7</Color>
-            <Color x:Key="Primary">#D9A51B</Color>
-            <Color x:Key="PrimaryPressed">#C29110</Color>
+            <Color x:Key="Primary">#2E7D32</Color>
+            <Color x:Key="PrimaryPressed">#256628</Color>
             <Color x:Key="Secondary">#3E6E83</Color>
             <Color x:Key="TextPrimary">#28322D</Color>
             <Color x:Key="TextSecondary">#65706A</Color>

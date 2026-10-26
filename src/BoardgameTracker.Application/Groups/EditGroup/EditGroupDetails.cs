@@ -4,6 +4,7 @@ public sealed record EditGroupDetails(
     Guid Id,
     string Name,
     bool IsTemporary,
+    bool IsArchived,
     IReadOnlyList<EditGroupMember> Members);
 
 public sealed record EditGroupMember(
