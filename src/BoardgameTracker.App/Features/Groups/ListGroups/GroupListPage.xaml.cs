@@ -7,7 +7,6 @@ namespace BoardgameTracker.App.Features.Groups.ListGroups;
 public partial class GroupListPage : ContentPage
 {
     private readonly GroupListViewModel _viewModel;
-    private bool _isNavigating;
 
     public GroupListPage(GroupListViewModel viewModel)
     {
@@ -19,13 +18,13 @@ public partial class GroupListPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        SetNavigationBusy(false);
+        _viewModel.EndNavigation();
         await _viewModel.LoadAsync();
     }
 
     private async void OnCreateGroupClicked(object? sender, EventArgs e)
     {
-        if (!TryBeginNavigation())
+        if (!_viewModel.TryBeginNavigation())
         {
             return;
         }
@@ -36,7 +35,7 @@ public partial class GroupListPage : ContentPage
         }
         catch
         {
-            SetNavigationBusy(false);
+            _viewModel.EndNavigation();
             throw;
         }
     }
@@ -44,7 +43,7 @@ public partial class GroupListPage : ContentPage
 
     private async void OnGroupTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is not Guid groupId || !TryBeginNavigation())
+        if (e.Parameter is not Guid groupId || !_viewModel.TryBeginNavigation())
         {
             return;
         }
@@ -53,7 +52,7 @@ public partial class GroupListPage : ContentPage
 
         if (group?.IsArchived == true)
         {
-            SetNavigationBusy(false);
+            _viewModel.EndNavigation();
             return;
         }
 
@@ -65,7 +64,7 @@ public partial class GroupListPage : ContentPage
         }
         catch
         {
-            SetNavigationBusy(false);
+            _viewModel.EndNavigation();
             throw;
         }
     }
@@ -73,7 +72,7 @@ public partial class GroupListPage : ContentPage
     private async void OnEditGroupClicked(object? sender, EventArgs e)
     {
         if (sender is not ImageButton { CommandParameter: Guid groupId }
-            || !TryBeginNavigation())
+            || !_viewModel.TryBeginNavigation())
         {
             return;
         }
@@ -86,26 +85,9 @@ public partial class GroupListPage : ContentPage
         }
         catch
         {
-            SetNavigationBusy(false);
+            _viewModel.EndNavigation();
             throw;
         }
     }
 
-    private bool TryBeginNavigation()
-    {
-        if (_isNavigating)
-        {
-            return false;
-        }
-
-        SetNavigationBusy(true);
-        return true;
-    }
-
-    private void SetNavigationBusy(bool isBusy)
-    {
-        _isNavigating = isBusy;
-        NavigationBusyOverlay.IsVisible = isBusy;
-        NavigationBusyIndicator.IsRunning = isBusy;
-    }
 }
