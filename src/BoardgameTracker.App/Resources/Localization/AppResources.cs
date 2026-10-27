@@ -256,11 +256,20 @@ public static class AppResources
     public static string Remove =>
         GetString(nameof(Remove));
 
-    /// <summary>
-    /// Resolves a persisted localization resource key, for example an Ark Nova
-    /// zoo-plan name stored as reference data.
-    /// </summary>
-    public static string GetByKey(string key) => GetString(key);
+    public static string ArkNovaZooPlan01Name => GetString(nameof(ArkNovaZooPlan01Name));
+    public static string ArkNovaZooPlan02Name => GetString(nameof(ArkNovaZooPlan02Name));
+    public static string ArkNovaZooPlan03Name => GetString(nameof(ArkNovaZooPlan03Name));
+    public static string ArkNovaZooPlan04Name => GetString(nameof(ArkNovaZooPlan04Name));
+    public static string ArkNovaZooPlan05Name => GetString(nameof(ArkNovaZooPlan05Name));
+    public static string ArkNovaZooPlan06Name => GetString(nameof(ArkNovaZooPlan06Name));
+    public static string ArkNovaZooPlan07Name => GetString(nameof(ArkNovaZooPlan07Name));
+    public static string ArkNovaZooPlan08Name => GetString(nameof(ArkNovaZooPlan08Name));
+    public static string ArkNovaZooPlan09Name => GetString(nameof(ArkNovaZooPlan09Name));
+    public static string ArkNovaZooPlan10Name => GetString(nameof(ArkNovaZooPlan10Name));
+    public static string ArkNovaZooPlan11Name => GetString(nameof(ArkNovaZooPlan11Name));
+    public static string ArkNovaZooPlan12Name => GetString(nameof(ArkNovaZooPlan12Name));
+    public static string ArkNovaZooPlan13Name => GetString(nameof(ArkNovaZooPlan13Name));
+    public static string ArkNovaZooPlan14Name => GetString(nameof(ArkNovaZooPlan14Name));
 
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)

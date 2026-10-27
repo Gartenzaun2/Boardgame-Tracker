@@ -47,8 +47,6 @@ public sealed class SqliteArkNovaRunningSessionQuery(
             join arkNovaPlayer in dbContext.ArkNovaSessionPlayers.AsNoTracking()
                 on new { sessionPlayer.GameSessionId, sessionPlayer.PersonId }
                 equals new { arkNovaPlayer.GameSessionId, arkNovaPlayer.PersonId }
-            join zooPlan in dbContext.ArkNovaZooPlans.AsNoTracking()
-                on arkNovaPlayer.SelectedZooPlanId equals zooPlan.Id
             where sessionPlayer.GameSessionId == sessionId
             orderby sessionPlayer.Order
             select new
@@ -57,9 +55,7 @@ public sealed class SqliteArkNovaRunningSessionQuery(
                 person.Name,
                 sessionPlayer.Order,
                 arkNovaPlayer.Color,
-                ZooPlanNumber = zooPlan.Number,
-                ZooPlanNameResourceKey = zooPlan.NameResourceKey,
-                ZooPlanIconSource = zooPlan.IconKey
+                ZooPlanNumber = arkNovaPlayer.SelectedZooPlanNumber
             })
             .ToArrayAsync(cancellationToken);
 
@@ -70,9 +66,7 @@ public sealed class SqliteArkNovaRunningSessionQuery(
                 player.Name,
                 player.Order,
                 player.Color,
-                player.ZooPlanNumber,
-                player.ZooPlanNameResourceKey,
-                player.ZooPlanIconSource))
+                player.ZooPlanNumber))
         ];
 
         return new ArkNovaRunningSessionData(

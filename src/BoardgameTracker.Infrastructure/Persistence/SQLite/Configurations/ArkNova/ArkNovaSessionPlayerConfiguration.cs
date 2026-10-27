@@ -18,15 +18,15 @@ internal sealed class ArkNovaSessionPlayerConfiguration : IEntityTypeConfigurati
             {
                 table.HasCheckConstraint(
                     "CK_ArkNovaSessionPlayers_DifferentZooPlanOptions",
-                    "ZooPlanOption1Id <> ZooPlanOption2Id");
+                    "ZooPlanOption1Number <> ZooPlanOption2Number");
                 table.HasCheckConstraint(
                     "CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered",
-                    "SelectedZooPlanId = ZooPlanOption1Id OR SelectedZooPlanId = ZooPlanOption2Id");
+                    "SelectedZooPlanNumber = ZooPlanOption1Number OR SelectedZooPlanNumber = ZooPlanOption2Number");
             });
 
         builder.HasKey(x => new { x.GameSessionId, x.PersonId });
         builder.Property(x => x.Color).HasConversion<int>().IsRequired();
-        builder.Property(x => x.SelectedZooPlanId).IsRequired();
+        builder.Property(x => x.SelectedZooPlanNumber).IsRequired();
 
         builder.HasOne<GameSessionPlayer>()
             .WithOne()
@@ -36,19 +36,19 @@ internal sealed class ArkNovaSessionPlayerConfiguration : IEntityTypeConfigurati
 
         builder.HasOne<ArkNovaZooPlan>()
             .WithMany()
-            .HasForeignKey(x => x.ZooPlanOption1Id)
+            .HasForeignKey(x => x.ZooPlanOption1Number)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<ArkNovaZooPlan>()
             .WithMany()
-            .HasForeignKey(x => x.ZooPlanOption2Id)
+            .HasForeignKey(x => x.ZooPlanOption2Number)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<ArkNovaZooPlan>()
             .WithMany()
-            .HasForeignKey(x => x.SelectedZooPlanId)
+            .HasForeignKey(x => x.SelectedZooPlanNumber)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 

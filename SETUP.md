@@ -81,3 +81,9 @@ neu erzeugt. Für Android ist das beispielsweise durch Deinstallieren der App
 Sobald veröffentlichte Nutzerdaten über Schemaänderungen hinweg erhalten werden
 müssen, wird diese Entwicklungsstrategie beendet und ein versionierter
 EF-Core-Migrationsverlauf eingeführt.
+
+## v0.8.1.3 – Entwicklungsdatenbank neu erstellen
+
+v0.8.1.3 vereinfacht die Ark-Nova-Zooplanschlüssel: `Number` ist jetzt der Primärschlüssel und die Session-Fremdschlüssel heißen entsprechend `...Number`. Da die aktuelle Entwicklungsphase bewusst `EnsureCreatedAsync()` statt EF-Migrationen verwendet, kann ein vorhandenes altes Schema nicht automatisch angepasst werden.
+
+Nach dem Update auf v0.8.1.3 daher einmal die App-Daten löschen oder die App deinstallieren und neu installieren. Anschließend wird die Datenbank aus dem aktuellen Modell neu erzeugt und die Ark-Nova-Referenzdaten werden automatisch angelegt.
