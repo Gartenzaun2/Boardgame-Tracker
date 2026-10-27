@@ -76,9 +76,7 @@ public partial class ArkNovaRunningViewModel(
                     player.Name,
                     player.Order,
                     player.Color,
-                    player.ZooPlanNumber,
-                    player.ZooPlanNameResourceKey,
-                    player.ZooPlanIconSource));
+                    player.ZooPlanNumber));
             }
 
             RefreshDuration(DateTimeOffset.UtcNow);
@@ -180,22 +178,32 @@ public partial class ArkNovaRunningViewModel(
 /// <summary>
 /// Presentation projection for one player on the running-session screen.
 /// </summary>
-public sealed class ArkNovaRunningPlayerViewModel(
-    string name,
-    int position,
-    ArkNovaPlayerColor color,
-    int zooPlanNumber,
-    string zooPlanNameResourceKey,
-    string zooPlanIconSource)
+public sealed class ArkNovaRunningPlayerViewModel
 {
-    public string Name { get; } = name;
-    public int Position { get; } = position;
-    public int ZooPlanNumber { get; } = zooPlanNumber;
-    public string ZooPlanText { get; } = AppResources.GetByKey(zooPlanNameResourceKey);
-    public string ZooPlanIconSource { get; } = zooPlanIconSource;
+    private readonly ArkNovaPlayerColor _color;
 
-    public string ColorName => ArkNovaPlayerColorPresentation.GetName(color);
+    public ArkNovaRunningPlayerViewModel(
+        string name,
+        int position,
+        ArkNovaPlayerColor color,
+        int zooPlanNumber)
+    {
+        Name = name;
+        Position = position;
+        _color = color;
+        ZooPlanNumber = zooPlanNumber;
+        ZooPlanText = ArkNovaZooPlanPresentation.GetName(zooPlanNumber);
+        ZooPlanIconSource = ArkNovaZooPlanPresentation.GetIconSource(zooPlanNumber);
+    }
+
+    public string Name { get; }
+    public int Position { get; }
+    public int ZooPlanNumber { get; }
+    public string ZooPlanText { get; }
+    public string ZooPlanIconSource { get; }
+
+    public string ColorName => ArkNovaPlayerColorPresentation.GetName(_color);
 
     public Microsoft.Maui.Graphics.Color ColorBrush =>
-        ArkNovaPlayerColorPresentation.GetTint(color);
+        ArkNovaPlayerColorPresentation.GetTint(_color);
 }

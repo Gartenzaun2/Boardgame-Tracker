@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations.ArkNova;
 
 /// <summary>
-/// Maps stable Ark Nova zoo-plan reference data to SQLite.
+/// Maps the fixed Ark Nova zoo-plan numbers used for referential integrity.
 /// </summary>
 internal sealed class ArkNovaZooPlanConfiguration
     : IEntityTypeConfiguration<ArkNovaZooPlan>
@@ -13,21 +13,7 @@ internal sealed class ArkNovaZooPlanConfiguration
     public void Configure(EntityTypeBuilder<ArkNovaZooPlan> builder)
     {
         builder.ToTable("ArkNovaZooPlans");
-
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Number)
-            .IsRequired();
-
-        builder.HasIndex(x => x.Number)
-            .IsUnique();
-
-        builder.Property(x => x.NameResourceKey)
-            .HasMaxLength(100)
-            .IsRequired();
-
-        builder.Property(x => x.IconKey)
-            .HasMaxLength(100)
-            .IsRequired();
+        builder.HasKey(x => x.Number);
+        builder.Property(x => x.Number).ValueGeneratedNever();
     }
 }

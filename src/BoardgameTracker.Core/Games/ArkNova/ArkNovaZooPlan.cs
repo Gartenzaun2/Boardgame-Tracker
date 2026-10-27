@@ -1,7 +1,8 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
 /// <summary>
-/// Represents stable Ark Nova zoo-plan reference data persisted by id, localized name key and image key.
+/// Represents one of the fourteen fixed Ark Nova zoo plans. The printed plan number
+/// is its stable domain identity and therefore also its persistence key.
 /// </summary>
 public sealed class ArkNovaZooPlan
 {
@@ -9,24 +10,11 @@ public sealed class ArkNovaZooPlan
     {
     }
 
-    public ArkNovaZooPlan(int id, int number, string nameResourceKey, string iconKey)
+    public ArkNovaZooPlan(int number)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(number);
-        ArgumentException.ThrowIfNullOrWhiteSpace(nameResourceKey);
-        ArgumentException.ThrowIfNullOrWhiteSpace(iconKey);
-
-        Id = id;
         Number = number;
-        NameResourceKey = nameResourceKey;
-        IconKey = iconKey;
     }
 
-    public int Id { get; private set; }
-
     public int Number { get; private set; }
-
-    public string NameResourceKey { get; private set; } = string.Empty;
-
-    public string IconKey { get; private set; } = string.Empty;
 }

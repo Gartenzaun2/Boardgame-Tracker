@@ -34,6 +34,4 @@ public sealed record ArkNovaRunningSessionPlayer(
     string Name,
     int Order,
     ArkNovaPlayerColor Color,
-    int ZooPlanNumber,
-    string ZooPlanNameResourceKey,
-    string ZooPlanIconSource);
+    int ZooPlanNumber);

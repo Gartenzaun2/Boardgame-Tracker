@@ -53,9 +53,9 @@ public sealed class SqliteStartArkNovaSessionDataAccess(
             .Select(member => member.PersonId)
             .ToArrayAsync(cancellationToken);
 
-        int[] zooPlanIds = await dbContext.ArkNovaZooPlans
+        int[] zooPlanNumbers = await dbContext.ArkNovaZooPlans
             .AsNoTracking()
-            .Select(plan => plan.Id)
+            .Select(plan => plan.Number)
             .ToArrayAsync(cancellationToken);
 
         bool hasOpenSession = await dbContext.GameSessions
@@ -70,7 +70,7 @@ public sealed class SqliteStartArkNovaSessionDataAccess(
             group.IsArchived,
             hasOpenSession,
             groupMemberIds,
-            zooPlanIds.ToHashSet());
+            zooPlanNumbers.ToHashSet());
     }
 
     public async Task SaveAsync(

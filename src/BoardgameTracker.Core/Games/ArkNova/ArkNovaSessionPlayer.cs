@@ -14,45 +14,45 @@ public sealed class ArkNovaSessionPlayer
         Guid gameSessionId,
         Guid personId,
         ArkNovaPlayerColor color,
-        int zooPlanOption1Id,
-        int zooPlanOption2Id,
-        int selectedZooPlanId)
+        int zooPlanOption1Number,
+        int zooPlanOption2Number,
+        int selectedZooPlanNumber)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(personId, Guid.Empty);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption1Id);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption2Id);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(selectedZooPlanId);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption1Number);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption2Number);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(selectedZooPlanNumber);
         ValidateColor(color);
 
-        if (zooPlanOption1Id == zooPlanOption2Id)
+        if (zooPlanOption1Number == zooPlanOption2Number)
         {
             throw new ArgumentException("The two zoo plan options must be different.");
         }
 
-        if (selectedZooPlanId != zooPlanOption1Id
-            && selectedZooPlanId != zooPlanOption2Id)
+        if (selectedZooPlanNumber != zooPlanOption1Number
+            && selectedZooPlanNumber != zooPlanOption2Number)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(selectedZooPlanId),
-                selectedZooPlanId,
+                nameof(selectedZooPlanNumber),
+                selectedZooPlanNumber,
                 "The selected zoo plan must be one of the two offered plans.");
         }
 
         GameSessionId = gameSessionId;
         PersonId = personId;
         Color = color;
-        ZooPlanOption1Id = zooPlanOption1Id;
-        ZooPlanOption2Id = zooPlanOption2Id;
-        SelectedZooPlanId = selectedZooPlanId;
+        ZooPlanOption1Number = zooPlanOption1Number;
+        ZooPlanOption2Number = zooPlanOption2Number;
+        SelectedZooPlanNumber = selectedZooPlanNumber;
     }
 
     public Guid GameSessionId { get; private set; }
     public Guid PersonId { get; private set; }
     public ArkNovaPlayerColor Color { get; private set; }
-    public int ZooPlanOption1Id { get; private set; }
-    public int ZooPlanOption2Id { get; private set; }
-    public int SelectedZooPlanId { get; private set; }
+    public int ZooPlanOption1Number { get; private set; }
+    public int ZooPlanOption2Number { get; private set; }
+    public int SelectedZooPlanNumber { get; private set; }
     public int? Attractiveness { get; private set; }
     public int? Conservation { get; private set; }
     public int? Reputation { get; private set; }

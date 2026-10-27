@@ -46,27 +46,27 @@ public static class ArkNovaSessionSetup
 
         foreach (ArkNovaSessionSetupPlayer player in players)
         {
-            if (player.ZooPlanOption1Id <= 0 || player.ZooPlanOption2Id <= 0)
+            if (player.ZooPlanOption1Number <= 0 || player.ZooPlanOption2Number <= 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(players),
                     "Zoo plan identifiers must be positive.");
             }
 
-            if (player.ZooPlanOption1Id == player.ZooPlanOption2Id)
+            if (player.ZooPlanOption1Number == player.ZooPlanOption2Number)
             {
                 throw new InvalidOperationException(
                     "The two offered zoo plans for a player must be different.");
             }
 
-            if (player.SelectedZooPlanId is null)
+            if (player.SelectedZooPlanNumber is null)
             {
                 throw new InvalidOperationException(
                     "Every Ark Nova player must select one of the offered zoo plans before the session starts.");
             }
 
-            if (player.SelectedZooPlanId != player.ZooPlanOption1Id
-                && player.SelectedZooPlanId != player.ZooPlanOption2Id)
+            if (player.SelectedZooPlanNumber != player.ZooPlanOption1Number
+                && player.SelectedZooPlanNumber != player.ZooPlanOption2Number)
             {
                 throw new InvalidOperationException(
                     "The selected zoo plan must be one of the two offered plans.");
@@ -77,8 +77,8 @@ public static class ArkNovaSessionSetup
         [
             .. players.SelectMany(player => new[]
             {
-                player.ZooPlanOption1Id,
-                player.ZooPlanOption2Id
+                player.ZooPlanOption1Number,
+                player.ZooPlanOption2Number
             })
         ];
 
@@ -99,6 +99,6 @@ public static class ArkNovaSessionSetup
 public sealed record ArkNovaSessionSetupPlayer(
     Guid PersonId,
     ArkNovaPlayerColor Color,
-    int ZooPlanOption1Id,
-    int ZooPlanOption2Id,
-    int? SelectedZooPlanId);
+    int ZooPlanOption1Number,
+    int ZooPlanOption2Number,
+    int? SelectedZooPlanNumber);

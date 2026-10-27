@@ -25,25 +25,21 @@ internal static class ArkNovaReferenceDataSeeder
             dbContext.Games.Add(new Game(ArkNovaGame.Key));
         }
 
-        int[] existingZooPlanIds = await dbContext.ArkNovaZooPlans
+        int[] existingZooPlanNumbers = await dbContext.ArkNovaZooPlans
             .AsNoTracking()
-            .Select(plan => plan.Id)
+            .Select(plan => plan.Number)
             .ToArrayAsync(cancellationToken);
 
-        HashSet<int> existingIds = [.. existingZooPlanIds];
+        HashSet<int> existingNumbers = [.. existingZooPlanNumbers];
 
         foreach (ArkNovaZooPlanOption option in ArkNovaZooPlanCatalog.All)
         {
-            if (existingIds.Contains(option.Id))
+            if (existingNumbers.Contains(option.Number))
             {
                 continue;
             }
 
-            dbContext.ArkNovaZooPlans.Add(new ArkNovaZooPlan(
-                option.Id,
-                option.Id,
-                $"ArkNovaZooPlan{option.Id:00}Name",
-                option.IconSource));
+            dbContext.ArkNovaZooPlans.Add(new ArkNovaZooPlan(option.Number));
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

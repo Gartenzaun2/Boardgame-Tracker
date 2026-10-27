@@ -56,8 +56,8 @@ public sealed class StartArkNovaSessionUseCase(
             .. command.Players
                 .SelectMany(player => new[]
                 {
-                    player.ZooPlanOption1Id,
-                    player.ZooPlanOption2Id
+                    player.ZooPlanOption1Number,
+                    player.ZooPlanOption2Number
                 })
                 .Distinct()
         ];
@@ -81,9 +81,9 @@ public sealed class StartArkNovaSessionUseCase(
                 session.Id,
                 player.PersonId,
                 player.Color,
-                player.ZooPlanOption1Id,
-                player.ZooPlanOption2Id,
-                player.SelectedZooPlanId.GetValueOrDefault()))
+                player.ZooPlanOption1Number,
+                player.ZooPlanOption2Number,
+                player.SelectedZooPlanNumber.GetValueOrDefault()))
         ];
 
         await dataAccess.SaveAsync(session, arkNovaPlayers, cancellationToken);

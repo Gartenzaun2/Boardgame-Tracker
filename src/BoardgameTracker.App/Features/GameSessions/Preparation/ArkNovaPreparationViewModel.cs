@@ -50,7 +50,7 @@ public partial class ArkNovaPreparationViewModel(
     public bool CanStart =>
         !IsBusy
         && Players.Count is >= ArkNovaSessionSetup.MinimumPlayerCount and <= ArkNovaSessionSetup.MaximumPlayerCount
-        && Players.All(player => player.SelectedZooPlanId is not null)
+        && Players.All(player => player.SelectedZooPlanNumber is not null)
         && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
 
     public async Task LoadAsync(
@@ -241,9 +241,9 @@ public partial class ArkNovaPreparationViewModel(
                 .. Players.Select(player => new ArkNovaSessionSetupPlayer(
                     player.PersonId,
                     player.Color,
-                    player.ZooPlanOption1!.Id,
-                    player.ZooPlanOption2!.Id,
-                    player.SelectedZooPlanId))
+                    player.ZooPlanOption1!.Number,
+                    player.ZooPlanOption2!.Number,
+                    player.SelectedZooPlanNumber))
             ];
 
             StartArkNovaSessionCommand command = new(
@@ -367,10 +367,12 @@ public partial class ArkNovaPreparationPlayerViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasZooPlans))]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption1IconSource))]
     public partial ArkNovaZooPlanOption? ZooPlanOption1 { get; private set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasZooPlans))]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption2IconSource))]
     public partial ArkNovaZooPlanOption? ZooPlanOption2 { get; private set; }
 
     [ObservableProperty]
@@ -380,7 +382,7 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [NotifyPropertyChangedFor(nameof(Option2Stroke))]
     [NotifyPropertyChangedFor(nameof(Option1StrokeThickness))]
     [NotifyPropertyChangedFor(nameof(Option2StrokeThickness))]
-    public partial int? SelectedZooPlanId { get; private set; }
+    public partial int? SelectedZooPlanNumber { get; private set; }
 
     public string ColorName => ArkNovaPlayerColorPresentation.GetName(Color);
 
@@ -393,15 +395,19 @@ public partial class ArkNovaPreparationPlayerViewModel(
     public bool CanChooseBlack => Color != ArkNovaPlayerColor.Black;
 
     public bool HasZooPlans => ZooPlanOption1 is not null && ZooPlanOption2 is not null;
+    public string? ZooPlanOption1IconSource =>
+        ZooPlanOption1 is null ? null : ArkNovaZooPlanPresentation.GetIconSource(ZooPlanOption1.Number);
+    public string? ZooPlanOption2IconSource =>
+        ZooPlanOption2 is null ? null : ArkNovaZooPlanPresentation.GetIconSource(ZooPlanOption2.Number);
     public bool Option1Selected =>
-        SelectedZooPlanId.HasValue
+        SelectedZooPlanNumber.HasValue
         && ZooPlanOption1 is not null
-        && ZooPlanOption1.Id == SelectedZooPlanId.Value;
+        && ZooPlanOption1.Number == SelectedZooPlanNumber.Value;
 
     public bool Option2Selected =>
-        SelectedZooPlanId.HasValue
+        SelectedZooPlanNumber.HasValue
         && ZooPlanOption2 is not null
-        && ZooPlanOption2.Id == SelectedZooPlanId.Value;
+        && ZooPlanOption2.Number == SelectedZooPlanNumber.Value;
     public Microsoft.Maui.Graphics.Color Option1Stroke =>
         Option1Selected ? Microsoft.Maui.Graphics.Colors.Green : Microsoft.Maui.Graphics.Colors.Transparent;
 
@@ -415,7 +421,7 @@ public partial class ArkNovaPreparationPlayerViewModel(
     {
         ZooPlanOption1 = option1;
         ZooPlanOption2 = option2;
-        SelectedZooPlanId = null;
+        SelectedZooPlanNumber = null;
     }
 
     public void SelectZooPlan(int optionNumber)
@@ -432,6 +438,6 @@ public partial class ArkNovaPreparationPlayerViewModel(
             return;
         }
 
-        SelectedZooPlanId = selected.Id;
+        SelectedZooPlanNumber = selected.Number;
     }
 }

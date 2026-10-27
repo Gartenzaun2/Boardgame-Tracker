@@ -152,7 +152,7 @@
                                                 <Image
                                                     Aspect="Fill"
                                                     HeightRequest="81"
-                                                    Source="{Binding ZooPlanOption1.IconSource}" />
+                                                    Source="{Binding ZooPlanOption1IconSource}" />
 
                                                 <Border
                                                     Margin="0,3,0,0"
@@ -165,7 +165,7 @@
                                                     <Label
                                                         FontAttributes="Bold"
                                                         FontSize="14"
-                                                        Text="{Binding ZooPlanOption1.Id}" />
+                                                        Text="{Binding ZooPlanOption1.Number}" />
                                                 </Border>
                                             </Grid>
                                         </Border>
@@ -185,7 +185,7 @@
                                                 <Image
                                                     Aspect="Fill"
                                                     HeightRequest="81"
-                                                    Source="{Binding ZooPlanOption2.IconSource}" />
+                                                    Source="{Binding ZooPlanOption2IconSource}" />
 
                                                 <Border
                                                     Margin="0,3,0,0"
@@ -198,7 +198,7 @@
                                                     <Label
                                                         FontAttributes="Bold"
                                                         FontSize="14"
-                                                        Text="{Binding ZooPlanOption2.Id}" />
+                                                        Text="{Binding ZooPlanOption2.Number}" />
                                                 </Border>
                                             </Grid>
                                         </Border>
