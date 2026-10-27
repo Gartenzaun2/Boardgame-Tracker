@@ -214,6 +214,7 @@
         <Button
             Grid.Row="3"
             Clicked="OnStartClicked"
+            IsEnabled="{Binding CanStart}"
             Style="{StaticResource PrimaryCompactButton}"
             Text="{x:Static res:AppResources.StartGame}" />
 

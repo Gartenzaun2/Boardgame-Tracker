@@ -1,9 +1,10 @@
-# Boardgame Tracker v0.8.1.6 – Setup / Upgrade
+# Boardgame Tracker v0.8.1.7 – Setup / Upgrade
 
-## Upgrade auf v0.8.1.6
+## Upgrade auf v0.8.1.7
 
-v0.8.1.6 enthält UI-/Navigationsverbesserungen und den Verwerfen-Pfad für eine
-offene Wertung. Das Datenbankschema ändert sich gegenüber v0.8.1.5 nicht.
+v0.8.1.7 enthält ausschließlich UI-/Navigationsänderungen sowie zusätzliche
+Read-Model-Daten für die Ergebnisdauer. Das Datenbankschema ändert sich gegenüber
+v0.8.1.6 nicht.
 
 Nach dem Übernehmen der geänderten/neuen Dateien:
 
@@ -13,12 +14,10 @@ Nach dem Übernehmen der geänderten/neuen Dateien:
 4. beide Testprojekte ausführen,
 5. App starten und die unten genannten Smoke Tests durchführen.
 
-Von v0.8.1.5 auf v0.8.1.6 ist **kein Datenbank-Reset** erforderlich. Wer direkt
-von einem älteren Stand vor v0.8.1.5 aktualisiert, muss weiterhin die damalige
-Schemaänderung über einen frischen Entwicklungsdatenbank-Stand übernehmen.
+Von v0.8.1.6 auf v0.8.1.7 ist **kein Datenbank-Reset** erforderlich.
 
-Es werden für dieses Update keine bestehenden Projektdateien gelöscht; deshalb
-gibt es bewusst kein Upgrade-/Lösch-`.cmd`.
+Es werden für dieses Update keine bestehenden App-/Projektquelldateien gelöscht;
+deshalb gibt es kein neues Upgrade-/Löschskript.
 
 ## Testprojekte
 
@@ -67,8 +66,9 @@ dotnet test
   Eingabescreen öffnen.
 - Prüfen, dass Farbe und lokalisierter Zooplanname gut lesbar angezeigt werden.
 - `Verwerfen` in der Wertung einschließlich Sicherheitsabfrage testen.
-- Untere Navigation `Gruppen / Spiele / Einstellungen` von mehreren Screens aus
-  testen; Arche-Nova-Einstellungen über `Einstellungen` öffnen.
+- Untere Navigation `Spiele / Gruppen / Historie / Einstellungen` von mehreren
+  Screens aus testen. `Gruppen` muss immer zur Gruppenübersicht führen und bleibt
+  beim normalen App-Start der aktive Bereich.
 - In der Gruppenübersicht bei einer offenen Session das Aktiv-Icon neben dem
   Gruppennamen prüfen.
 - Nach `Partie beenden` prüfen, dass die Session in `Scoring` wieder aufgenommen
@@ -80,9 +80,11 @@ dotnet test
   dass die Eingabe entsprechend ein-/ausgeblendet wird.
 - Neue/alte Punkteanzeige umschalten; die angezeigten Werte müssen exakt 100
   Punkte auseinanderliegen, ohne die Rohwerte zu verändern.
-- Bei jedem Spieler `Spezialkarte hinzufügen` öffnen; freie Karten müssen
-  hervorgehoben sein und sich per Auswahl zuordnen lassen. Zugeordnete Karten
-  direkt auf der Spielerkachel antippen und wieder entfernen.
+- Das Spezialkarten-Icon rechts in jeder Spielerkachel antippen; freie Spezialkarten
+  müssen hervorgehoben sein und sich per Auswahl zuordnen lassen. Das Flyout muss
+  nach Auswahl direkt schließen. Unter Attraktivität/Artenschutz muss die kompakte
+  Zusammenfassung der Spezialkartenanzahl und – bei aktivierter Erfassung – des
+  Rufs erscheinen.
 - Dieselbe Spezialkarte einem zweiten Spieler zuordnen und die explizite
   Mehrfachzuordnungs-Abfrage prüfen.
 - `Wertung abschließen` darf erst aktiv sein, wenn bei allen Spielern
@@ -90,8 +92,10 @@ dotnet test
 - Bei Punktgleichstand prüfen, dass alle Platzrahmen sichtbar sind, aber nur die
   punktgleichen Spieler innerhalb ihres ursprünglichen Rangbereichs verschoben
   werden können; Gleichstand unverändert lassen und alternativ auflösen.
-- Nach Abschluss den Ergebnis-Screen prüfen; erst `Fertig` soll zur
-  Gruppenübersicht zurückführen.
+- Nach vollständiger Eingabe prüfen, dass die berechneten Punkte direkt hinter
+  dem Spielernamen stehen.
+- Nach Abschluss den Ergebnis-Screen prüfen; dort muss zusätzlich die Partiedauer
+  stehen. Erst `Fertig` soll zur Gruppenübersicht zurückführen.
 - Kamera-Button ist bereits am endgültigen Platz sichtbar, die eigentliche
   Fotoerkennung gehört noch nicht zu v0.8.1.5.
 
@@ -123,3 +127,19 @@ EF-Core-Migrationsverlauf eingeführt.
 v0.8.1.3 vereinfacht die Ark-Nova-Zooplanschlüssel: `Number` ist jetzt der Primärschlüssel und die Session-Fremdschlüssel heißen entsprechend `...Number`. Da die aktuelle Entwicklungsphase bewusst `EnsureCreatedAsync()` statt EF-Migrationen verwendet, kann ein vorhandenes altes Schema nicht automatisch angepasst werden.
 
 Nach dem Update auf v0.8.1.3 daher einmal die App-Daten löschen oder die App deinstallieren und neu installieren. Anschließend wird die Datenbank aus dem aktuellen Modell neu erzeugt und die Ark-Nova-Referenzdaten werden automatisch angelegt.
+## Lieferregel für Entwicklungs-Updates
+
+Update-Pakete enthalten standardmäßig **nur geänderte oder neu hinzugekommene
+Dateien**. Ein vollständiges Repository-ZIP wird nur auf ausdrücklichen Wunsch
+erstellt.
+
+- Unveränderte Projektdateien werden nicht erneut mitgeliefert.
+- Generierte Ordner und Dateien wie `bin` und `obj` gehören nicht in das Paket.
+- Müssen vorhandene Dateien entfernt werden, enthält das Paket eine
+  `DELETE_FILES.txt` mit den relativ zum Repository-Root zu löschenden Pfaden;
+  bei komplexeren Upgrade-Schritten kann stattdessen bzw. zusätzlich ein
+  passendes Upgrade-Skript mitgeliefert werden.
+- Neue und geänderte Dateien behalten im Paket ihre Pfade relativ zum
+  Repository-Root, damit das Update direkt über den bestehenden Stand kopiert
+  werden kann.
+

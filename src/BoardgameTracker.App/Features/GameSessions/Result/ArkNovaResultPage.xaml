@@ -10,6 +10,7 @@
         <VerticalStackLayout Spacing="1">
             <Label Text="Ergebnis" FontAttributes="Bold" FontSize="24" />
             <Label Text="{Binding GroupName}" TextColor="{StaticResource TextSecondary}" />
+            <Label Text="{Binding DurationText}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
         </VerticalStackLayout>
         <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None">
             <CollectionView.ItemTemplate>

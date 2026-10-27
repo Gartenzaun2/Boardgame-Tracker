@@ -272,6 +272,8 @@ public static class AppResources
     public static string ArkNovaZooPlan14Name => GetString(nameof(ArkNovaZooPlan14Name));
 
     public static string Games => GetString(nameof(Games));
+    public static string History => GetString(nameof(History));
+    public static string HistoryHint => GetString(nameof(HistoryHint));
     public static string Settings => GetString(nameof(Settings));
     public static string ArkNova => GetString(nameof(ArkNova));
     public static string SupportedGame => GetString(nameof(SupportedGame));
@@ -283,6 +285,8 @@ public static class AppResources
     public static string AddSpecialCard => GetString(nameof(AddSpecialCard));
     public static string SpecialCards => GetString(nameof(SpecialCards));
     public static string NoSpecialCards => GetString(nameof(NoSpecialCards));
+    public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSecondaryValuesFormat));
+    public static string ScoringSecondaryValuesWithReputationFormat => GetString(nameof(ScoringSecondaryValuesWithReputationFormat));
     public static string SpecialCardAvailable => GetString(nameof(SpecialCardAvailable));
     public static string SpecialCardAlreadyAssigned => GetString(nameof(SpecialCardAlreadyAssigned));
     public static string SpecialCardAssignedHere => GetString(nameof(SpecialCardAssignedHere));

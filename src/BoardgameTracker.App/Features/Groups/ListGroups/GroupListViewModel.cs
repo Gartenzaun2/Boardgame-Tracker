@@ -96,6 +96,7 @@ public partial class GroupListViewModel(
                         group.MemberCount,
                         string.Join(" · ", group.MemberNames),
                         lastPlayedText,
+                        AppResources.ArkNova,
                         group.OpenSessionId,
                         group.OpenSessionStatus));
                 }
@@ -125,6 +126,7 @@ public sealed record GroupListItemViewModel(
     int MemberCount,
     string MemberNames,
     string LastPlayedText,
+    string GameName,
     Guid? OpenSessionId,
     GameSessionStatus? OpenSessionStatus)
 {

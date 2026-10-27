@@ -7,6 +7,7 @@ using BoardgameTracker.App.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Features.GameSessions.Result;
 using BoardgameTracker.App.Features.Games.ArkNova.Settings;
 using BoardgameTracker.App.Features.Games.ListGames;
+using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Services;
 using BoardgameTracker.Application.Groups.CreateGroup;
@@ -68,6 +69,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<GroupListViewModel>();
         builder.Services.AddSingleton<GroupListPage>();
         builder.Services.AddSingleton<GamesPage>();
+        builder.Services.AddSingleton<HistoryPage>();
         builder.Services.AddSingleton<AppSettingsPage>();
         builder.Services.AddTransient<CreateGroupViewModel>();
         builder.Services.AddTransient<CreateGroupPage>();

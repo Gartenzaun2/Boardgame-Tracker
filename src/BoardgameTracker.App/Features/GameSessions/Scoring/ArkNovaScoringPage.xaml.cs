@@ -42,33 +42,32 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private async void OnPlayerTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is not ArkNovaScoringPlayerViewModel player)
+        if (e.Parameter is not ArkNovaScoringPlayerViewModel player || !_viewModel.TryBeginNavigation())
         {
             return;
         }
 
-        await Shell.Current.GoToAsync(
-            nameof(ArkNovaPlayerScoringPage),
-            new ShellNavigationQueryParameters
-            {
-                [NavigationParameters.SessionId] = _sessionId,
-                [NavigationParameters.PersonId] = player.PersonId
-            });
-    }
-
-    private void OnAddSpecialCardClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button { CommandParameter: Guid personId })
+        try
         {
-            _viewModel.OpenSpecialCardPicker(personId);
+            await Shell.Current.GoToAsync(
+                nameof(ArkNovaPlayerScoringPage),
+                new ShellNavigationQueryParameters
+                {
+                    [NavigationParameters.SessionId] = _sessionId,
+                    [NavigationParameters.PersonId] = player.PersonId
+                });
+        }
+        finally
+        {
+            _viewModel.EndNavigation();
         }
     }
 
-    private async void OnAssignedSpecialCardTapped(object? sender, TappedEventArgs e)
+    private void OnAddSpecialCardTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is ArkNovaAssignedSpecialCardViewModel assignment)
+        if (e.Parameter is Guid personId)
         {
-            await _viewModel.RemoveSpecialCardAsync(assignment.PersonId, assignment.Card);
+            _viewModel.OpenSpecialCardPicker(personId);
         }
     }
 

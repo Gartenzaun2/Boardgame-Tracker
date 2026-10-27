@@ -297,6 +297,12 @@
   <data name="Games" xml:space="preserve">
     <value>Spiele</value>
   </data>
+  <data name="History" xml:space="preserve">
+    <value>Historie</value>
+  </data>
+  <data name="HistoryHint" xml:space="preserve">
+    <value>Abgeschlossene Partien werden hier in einem späteren Slice angezeigt.</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Einstellungen</value>
   </data>
@@ -389,6 +395,12 @@
   </data>
   <data name="ArkNovaSpecialCardSunBearSymbols" xml:space="preserve">
     <value>🐻</value>
+  </data>
+  <data name="ScoringSecondaryValuesFormat" xml:space="preserve">
+    <value>Spezialkarten: {0}</value>
+  </data>
+  <data name="ScoringSecondaryValuesWithReputationFormat" xml:space="preserve">
+    <value>Spezialkarten: {0} · Ruf: {1}</value>
   </data>
   <data name="NoSpecialCards" xml:space="preserve">
     <value>Keine Spezialkarten</value>
