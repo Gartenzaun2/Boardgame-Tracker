@@ -3,6 +3,7 @@ using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Core.GameSessions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
@@ -94,7 +95,9 @@ public partial class GroupListViewModel(
                         group.IsArchived,
                         group.MemberCount,
                         string.Join(" · ", group.MemberNames),
-                        lastPlayedText));
+                        lastPlayedText,
+                        group.OpenSessionId,
+                        group.OpenSessionStatus));
                 }
             }
             while (_reloadRequested && !cancellationToken.IsCancellationRequested);
@@ -121,4 +124,6 @@ public sealed record GroupListItemViewModel(
     bool IsArchived,
     int MemberCount,
     string MemberNames,
-    string LastPlayedText);
+    string LastPlayedText,
+    Guid? OpenSessionId,
+    GameSessionStatus? OpenSessionStatus);

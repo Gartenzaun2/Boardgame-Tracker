@@ -1,6 +1,9 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.GameSessions.Preparation;
+using BoardgameTracker.App.Features.GameSessions.Running;
+using BoardgameTracker.App.Features.GameSessions.Scoring;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
@@ -62,9 +65,31 @@ public partial class GroupListPage : ContentPage
 
         try
         {
+            if (group?.OpenSessionId is Guid sessionId)
+            {
+                string route = group.OpenSessionStatus switch
+                {
+                    GameSessionStatus.Running => nameof(ArkNovaRunningPage),
+                    GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
+                    _ => throw new InvalidOperationException(
+                        $"Unsupported open session status '{group.OpenSessionStatus}'.")
+                };
+
+                await Shell.Current.GoToAsync(
+                    route,
+                    new ShellNavigationQueryParameters
+                    {
+                        [NavigationParameters.SessionId] = sessionId
+                    });
+                return;
+            }
+
             await Shell.Current.GoToAsync(
                 nameof(ArkNovaPreparationPage),
-                new ShellNavigationQueryParameters { [NavigationParameters.GroupId] = groupId });
+                new ShellNavigationQueryParameters
+                {
+                    [NavigationParameters.GroupId] = groupId
+                });
         }
         catch
         {

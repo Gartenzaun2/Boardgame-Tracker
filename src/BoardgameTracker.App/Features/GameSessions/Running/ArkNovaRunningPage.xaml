@@ -9,17 +9,24 @@
     Shell.NavBarIsVisible="False">
 
     <Grid Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <VerticalStackLayout Spacing="0">
-            <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.RunningGame}" />
-            <Label
-                FontSize="13"
-                Text="{Binding GroupName}"
-                TextColor="{StaticResource TextSecondary}" />
-            <Label
-                FontSize="13"
-                Text="{Binding DurationText}"
-                TextColor="{StaticResource TextSecondary}" />
-        </VerticalStackLayout>
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <ImageButton
+                Clicked="OnBackClicked"
+                Source="icon_back.png"
+                Style="{StaticResource IconButton}"
+                SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.RunningGame}" />
+                <Label
+                    FontSize="13"
+                    Text="{Binding GroupName}"
+                    TextColor="{StaticResource TextSecondary}" />
+                <Label
+                    FontSize="13"
+                    Text="{Binding DurationText}"
+                    TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Grid>
 
         <Label
             Grid.Row="1"

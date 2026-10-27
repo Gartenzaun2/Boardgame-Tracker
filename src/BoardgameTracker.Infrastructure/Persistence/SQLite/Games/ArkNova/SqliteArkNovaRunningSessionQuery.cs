@@ -58,6 +58,7 @@ public sealed class SqliteArkNovaRunningSessionQuery(
                 sessionPlayer.Order,
                 arkNovaPlayer.Color,
                 ZooPlanNumber = zooPlan.Number,
+                ZooPlanNameResourceKey = zooPlan.NameResourceKey,
                 ZooPlanIconSource = zooPlan.IconKey
             })
             .ToArrayAsync(cancellationToken);
@@ -70,6 +71,7 @@ public sealed class SqliteArkNovaRunningSessionQuery(
                 player.Order,
                 player.Color,
                 player.ZooPlanNumber,
+                player.ZooPlanNameResourceKey,
                 player.ZooPlanIconSource))
         ];
 

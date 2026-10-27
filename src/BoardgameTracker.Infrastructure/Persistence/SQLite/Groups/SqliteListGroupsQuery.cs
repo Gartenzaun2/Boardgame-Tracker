@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
@@ -59,6 +60,18 @@ public sealed class SqliteListGroupsQuery(
                 group => group.Key,
                 group => (DateTimeOffset?)group.Max(session => session.StartedAt));
 
+        var openSessions = await dbContext.GameSessions
+            .AsNoTracking()
+            .Where(session => groupIds.Contains(session.GroupId))
+            .Where(session => session.Status == GameSessionStatus.Running
+                           || session.Status == GameSessionStatus.Scoring)
+            .Select(session => new { session.GroupId, session.Id, session.Status })
+            .ToListAsync(cancellationToken);
+
+        var openSessionByGroup = openSessions
+            .GroupBy(session => session.GroupId)
+            .ToDictionary(group => group.Key, group => group.Single());
+
         Dictionary<Guid, string[]> memberNamesByGroup = members
             .GroupBy(member => member.GroupId)
             .ToDictionary(
@@ -82,7 +95,13 @@ public sealed class SqliteListGroupsQuery(
                         group.IsArchived,
                         memberNames.Length,
                         memberNames,
-                        lastPlayedByGroup.GetValueOrDefault(group.Id));
+                        lastPlayedByGroup.GetValueOrDefault(group.Id),
+                        openSessionByGroup.TryGetValue(group.Id, out var openSession)
+                            ? openSession.Id
+                            : null,
+                        openSessionByGroup.TryGetValue(group.Id, out openSession)
+                            ? openSession.Status
+                            : null);
                 })
                 .OrderByDescending(group => group.LastPlayedAt)
                 .ThenBy(group => group.Name)

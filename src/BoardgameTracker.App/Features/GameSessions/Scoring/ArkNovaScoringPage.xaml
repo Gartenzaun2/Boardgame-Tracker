@@ -7,7 +7,19 @@
     Shell.NavBarIsVisible="False">
 
     <Grid Padding="18" RowDefinitions="Auto,*" RowSpacing="20">
-        <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.Scoring}" />
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <ImageButton
+                Clicked="OnBackClicked"
+                Source="icon_back.png"
+                Style="{StaticResource IconButton}"
+                SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="23"
+                Text="{x:Static res:AppResources.Scoring}"
+                VerticalOptions="Center" />
+        </Grid>
         <Border Grid.Row="1" Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
             <Label
                 Text="{x:Static res:AppResources.ScoringPlaceholder}"
