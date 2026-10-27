@@ -393,20 +393,25 @@ Nach der gegebenenfalls nötigen Gleichstandsauflösung werden die finalen
 Ergebnis-Screen bleibt anschließend sichtbar, bis der Nutzer explizit `Fertig`
 wählt.
 
-## Historie – geplanter Slice (Tab derzeit Platzhalter)
+## Historie
 
-Die geplante Liste zeigt ausschließlich abgeschlossene Partien:
+Der Hauptbereich Historie bündelt Partien und künftig Statistik. Statistik ist ein eigener nachfolgender Slice und darf eigene umfangreichere Filter nach Spiel, Gruppe, Spieler, Zooplan, besonderen Karten oder Zeitraum erhalten. Ihre Filter sind unabhängig von der Partienliste.
 
-- Spiel
-- Gruppe
-- Datum
-- Spieler
-- Dauer
-- Gewinner
-- kurze Zusammenfassung
+### Partienliste
 
-Eine historische Partie kann über einen expliziten **Bearbeiten**-Button
-geändert werden.
+Ausschließlich `Completed`-Partien, nach Startdatum absteigend (neueste zuerst), mit Filtern nach Spiel und Gruppe. Ein sinnvoller vorhandener Spielkontext darf vorausgewählt sein; sonst alle Spiele. Die Liste löst Spieler- und Gruppennamen immer aktuell auf; keine Namens-Snapshots.
+
+Kompakte Karten: erste Zeile Spiel, Dauer und Datum; zweite Zeile Gruppe; dritte Zeile gespeicherte Platzierungen und Spielernamen. Tatsächliche Gleichstände behalten identische Plätze, z. B. `1. Anna · 1. Ben · 3. Chris`.
+
+### Historische Wertungsübersicht
+
+Ein Tap öffnet die spielabhängige Wertungsübersicht, für Arche Nova die vorhandene Wertungsoberfläche. Diese ist Ergebnis-, Detail- und Korrekturansicht. Spieler werden nach gespeichertem `Placement` aufsteigend sortiert, bei gleichem Platz nach Startreihenfolge; Punktzahl ersetzt die gespeicherte Platzierung nicht.
+
+Bearbeitbar sind ausschließlich Attraktivität, Artenschutz, Ruf und besondere Karten. Spiel, Gruppe, Teilnehmer, Farben, Zoopläne, Startreihenfolge und Start-/Endzeit bleiben unverändert.
+
+Korrekturen erfolgen als expliziter Completed-Anwendungsfall in einem nicht persistenten Entwurf. Erst `Korrektur speichern` übernimmt Rohwerte, Karten und finale Platzierungen atomar. Punkte werden neu berechnet, Platzierungen neu bestimmt und Gleichstände mit der bestehenden Gleichstandsauflösung bearbeitet. Die Partie bleibt durchgehend `Completed`; nach Speichern wird nach aktualisiertem Placement sortiert. Ungespeicherte Entwürfe werden beim Verlassen verworfen. Der normale Scoring-Use-Case bleibt auf `Scoring` beschränkt.
+
+`Partie löschen` ist eine sekundäre destruktive Aktion. Zwingende Sicherheitsabfrage: „Partie löschen?“ / „Möchtest du diese Partie wirklich löschen? Die gespeicherte Wertung und alle zugehörigen Daten werden dauerhaft entfernt.“ / „Abbrechen · Partie löschen“. Bestätigung löscht GameSession und alle zugehörigen spielspezifischen Daten vollständig; Spieler und Gruppe bleiben erhalten.
 
 ## Statistik – geplanter Slice
 

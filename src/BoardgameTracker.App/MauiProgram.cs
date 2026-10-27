@@ -72,6 +72,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<GroupListPage>();
         builder.Services.AddSingleton<GamesPage>();
         builder.Services.AddSingleton<HistoryPage>();
+        builder.Services.AddSingleton<BoardgameTracker.Application.History.IHistoryQuery, SqliteHistoryQuery>();
+        builder.Services.AddTransient<BoardgameTracker.Application.Games.ArkNova.GameSessions.History.IArkNovaCorrectionDataAccess, SqliteArkNovaCorrectionDataAccess>();
+        builder.Services.AddTransient<BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionUseCase>();
         builder.Services.AddSingleton<AppSettingsPage>();
         builder.Services.AddTransient<CreateGroupViewModel>();
         builder.Services.AddTransient<CreateGroupPage>();

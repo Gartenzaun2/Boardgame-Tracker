@@ -24,7 +24,7 @@ public sealed class SqliteArkNovaScoringDataAccess(
 
         var gameSession = await dbContext.GameSessions
             .AsNoTracking()
-            .Where(x => x.Id == gameSessionId)
+            .Where(x => x.Id == gameSessionId && dbContext.Games.Any(g => g.Id == x.GameId && g.Key == ArkNovaGame.Key))
             .Select(x => new
             {
                 x.Id,

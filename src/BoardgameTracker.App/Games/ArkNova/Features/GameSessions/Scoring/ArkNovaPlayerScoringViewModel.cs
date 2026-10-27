@@ -11,6 +11,7 @@ public partial class ArkNovaPlayerScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
     IArkNovaSettingsStore settingsStore) : ObservableObject
 {
+    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; set; }
     private CancellationTokenSource? _autosaveCts;
     private bool _loading;
 
@@ -31,7 +32,7 @@ public partial class ArkNovaPlayerScoringViewModel(
         _loading = true;
         try
         {
-            ArkNovaScoringGameSessionData? gameSession = await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
+            ArkNovaScoringGameSessionData? gameSession = Draft?.Data ?? await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
             ArkNovaScoringPlayerData? player = gameSession?.Players.SingleOrDefault(x => x.PlayerId == playerId);
             if (player is null) throw new InvalidOperationException("The scoring player does not exist.");
 
@@ -43,7 +44,7 @@ public partial class ArkNovaPlayerScoringViewModel(
             AttractivenessText = player.Attractiveness?.ToString() ?? string.Empty;
             ConservationText = player.Conservation?.ToString() ?? string.Empty;
             ReputationText = player.Reputation?.ToString() ?? string.Empty;
-            IsReputationVisible = settings.CaptureReputation;
+            IsReputationVisible = Draft is not null || settings.CaptureReputation;
             RefreshCalculatedScore();
         }
         finally { _loading = false; }
@@ -53,12 +54,14 @@ public partial class ArkNovaPlayerScoringViewModel(
     partial void OnConservationTextChanged(string value) => ScheduleAutosave();
     partial void OnReputationTextChanged(string value) => ScheduleAutosave();
 
+    public bool IsValid => TryReadValues(out _, out _, out _);
     public async Task FlushAsync(CancellationToken cancellationToken = default)
     {
         _autosaveCts?.Cancel();
         if (TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
         {
-            await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cancellationToken);
+            if (Draft is not null) Draft.SetScore(PlayerId, attractiveness, conservation, reputation);
+            else await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cancellationToken);
         }
     }
 
@@ -66,6 +69,7 @@ public partial class ArkNovaPlayerScoringViewModel(
     {
         if (_loading || GameSessionId == Guid.Empty) return;
         RefreshCalculatedScore();
+        if (Draft is not null) return;
         _autosaveCts?.Cancel();
         CancellationTokenSource cts = new();
         _autosaveCts = cts;
@@ -93,25 +97,30 @@ public partial class ArkNovaPlayerScoringViewModel(
         ValidationMessage = null;
         attractiveness = ParseOptional(AttractivenessText);
         conservation = ParseOptional(ConservationText);
-        reputation = IsReputationVisible ? ParseOptional(ReputationText) : null;
+        reputation = IsReputationVisible || Draft is not null ? ParseOptional(ReputationText) : null;
 
         if ((!string.IsNullOrWhiteSpace(AttractivenessText) && attractiveness is null)
             || attractiveness is < 0 or > 113)
         {
-            ValidationMessage = "Attraktivität muss zwischen 0 und 113 liegen.";
+            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.AttractivenessValidation;
             return false;
         }
         if ((!string.IsNullOrWhiteSpace(ConservationText) && conservation is null)
             || conservation is < 0 or > 41)
         {
-            ValidationMessage = "Artenschutz muss zwischen 0 und 41 liegen.";
+            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.ConservationValidation;
             return false;
         }
         if (IsReputationVisible
             && ((!string.IsNullOrWhiteSpace(ReputationText) && reputation is null)
                 || reputation is < 1 or > 15))
         {
-            ValidationMessage = "Ruf muss leer bleiben oder zwischen 1 und 15 liegen.";
+            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.ReputationValidation;
+            return false;
+        }
+        if (Draft is not null && (attractiveness is null || conservation is null))
+        {
+            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.CorrectionInvalid;
             return false;
         }
         return true;

@@ -350,16 +350,14 @@ Spielerkachel in der Wertungsübersicht:
 
 ```text
 ┌──────────────────────────────────────┐
-│ Claudi · 68 Punkte              [▣2] │
+│ Claudi · 68 Punkte               [▣] │
 │ Blau · Parkrestaurant                │
 │ Attraktivität 72 · Artenschutz 16    │
 └──────────────────────────────────────┘
 ```
 
 Der rechte Kartenbutton verwendet das neutrale Besondere-Karten-Icon. Seine
-Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Zahl
-zeigt nur die Anzahl zugewiesener Spezialkarten; konkrete Karten werden erst
-in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
+Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Anzahl zugewiesener besonderer Karten steht in einer eigenen Informationszeile; der Button hat keinen Zähler. Konkrete Karten werden in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
 
 
 ------------------------------------------------------------------------
@@ -399,3 +397,9 @@ in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
 - Doppelte Farben sind während der Vorbereitung erlaubt, verhindern aber den Start. Starten liegt am unteren Bildschirmrand.
 - Defaultfarben werden in der Gruppenbearbeitung gepflegt; Farbänderungen der Vorbereitung gelten nur für diese Partie.
 - Zooplanauswahl erfolgt durch Tippen auf die Skizze; initial ist kein Plan ausgewählt.
+
+## Historie: Partien
+
+Zwei kompakte Picker (Spiel, Gruppe) oberhalb der scrollbaren Liste. Karten mit drei umbrechenden Informationszeilen: `Arche Nova · 2 h 14 min · 26.10.26`, `Freitagabend`, `1. Anna · 2. Ben · 3. Chris`. Leer- und Fehlerzustand sowie Busy-Schutz vorsehen. Tap öffnet spielabhängige Wertung, keine generische Detailseite.
+
+Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placement sortiert. Bestehende Eingaben und Kartenwahl verwenden; `Korrektur speichern` führt bei Gleichstand in die vorhandene Auflösung. Sekundäre Aktion `Partie löschen` nur nach ausdrücklicher Bestätigung. Zurück verwirft ungespeicherte Korrekturen. Statistik folgt separat mit unabhängigen Filtern.

@@ -3,6 +3,7 @@
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring.ArkNovaTieResolutionPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
     x:DataType="vm:ArkNovaTieResolutionViewModel"
     Shell.NavBarIsVisible="False">
@@ -10,14 +11,14 @@
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
             <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
             <VerticalStackLayout Grid.Column="1" Spacing="1">
-                <Label Text="Gleichstände bearbeiten" FontAttributes="Bold" FontSize="22" />
-                <Label Text="Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden." FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{x:Static res:AppResources.ResolveTies}" FontAttributes="Bold" FontSize="22" />
+                <Label Text="{x:Static res:AppResources.ResolveTiesHint}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
             </VerticalStackLayout>
         </Grid>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout x:Name="FramesHost" Spacing="8" />
         </ScrollView>
         <Label Grid.Row="2" Text="{Binding ValidationMessage}" TextColor="{StaticResource Danger}" FontSize="12" />
-        <Button Grid.Row="3" Text="Wertung speichern" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanFinish}" Clicked="OnFinishClicked" />
+        <Button Grid.Row="3" Text="{x:Static res:AppResources.SaveScoring}" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanFinish}" Clicked="OnFinishClicked" />
     </Grid>
 </ContentPage>

@@ -38,8 +38,12 @@ Autoritative Fachregeln gehören nicht in ViewModels; Feature-ViewModels kennen 
 
 Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-/Helper-/Utils-Abstraktionen und keine Interfaces ausschließlich für Mockbarkeit oder Symmetrie einführen.
 
+Navigationsparameter ausschließlich über gemeinsame Konstanten aus `App/Navigation/NavigationParameters.cs` senden und in `ApplyQueryAttributes` auslesen; keine String-Literale für Schlüssel. Details: `docs/ARCHITECTURE.md`.
+
 ## Vorgehen und Entscheidungsgrenze
 Vor jeder Änderung betroffene Dateien und relevante Dokumentation lesen, die Implementierung verstehen und Auswirkungen auf Tests, Persistenz, UI und Dokumentation prüfen. Danach die kleinste sinnvolle Änderung durchführen; funktionierenden Code nicht unnötig neu schreiben.
+
+Fehler, Ungereimtheiten und Verbesserungsmöglichkeiten außerhalb des aktuellen Auftrags nur benennen und mit dem Benutzer besprechen; nicht automatisch korrigieren oder als beiläufige Bereinigung aufnehmen. Solche Änderungen erst nach ausdrücklicher Beauftragung umsetzen. Ist eine auftragsfremde Korrektur Voraussetzung für die Aufgabe, die Abhängigkeit erklären und vor der Umsetzung abstimmen.
 
 Keine Architektur-, Persistenz- oder Paketänderungen außerhalb des Auftrags; neue NuGet-Pakete nur bei klarem Bedarf. Kleine technische Entscheidungen innerhalb bestehender Spezifikation selbstständig treffen. Vor Änderungen an Architekturgrundsätzen, grundlegendem Datenmodell, Persistenzstrategie/Migration, wesentlichen Benutzerabläufen, größeren Abhängigkeiten oder bestehenden Anforderungen nachfragen; ebenso bei nicht spezifiziertem Fachverhalten.
 

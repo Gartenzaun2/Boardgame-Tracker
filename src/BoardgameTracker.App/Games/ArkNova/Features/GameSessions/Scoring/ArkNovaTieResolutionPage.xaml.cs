@@ -1,5 +1,6 @@
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
@@ -31,6 +32,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         {
             throw new InvalidOperationException("Required gameSession navigation parameter is missing or invalid.");
         }
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out var draft) ? draft as BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft : null;
         _gameSessionId = gameSessionId;
     }
 
@@ -73,7 +75,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
 
             if (frame.Players.Count == 0)
             {
-                content.Children.Add(new Label { Text = "Hierher ziehen", FontSize = 11, Opacity = 0.55 });
+                content.Children.Add(new Label { Text = AppResources.DragHere, FontSize = 11, Opacity = 0.55 });
             }
 
             Border border = new()
@@ -98,12 +100,26 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         }
     }
 
+    private bool _saving;
     private async void OnFinishClicked(object? sender, EventArgs e)
     {
-        await _viewModel.CompleteAsync();
-        await Shell.Current.GoToAsync(
-            nameof(ArkNovaResultPage),
-            new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
+        if (_saving) return;
+        _saving = true;
+        try
+        {
+            await _viewModel.CompleteAsync();
+            if (_viewModel.Draft is not null)
+            {
+                await Shell.Current.GoToAsync("..");
+                return;
+            }
+            await Shell.Current.GoToAsync(
+                nameof(ArkNovaResultPage),
+                new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
+        }
+
+        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        finally { _saving = false; }
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");

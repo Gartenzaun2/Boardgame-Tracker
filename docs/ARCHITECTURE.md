@@ -321,3 +321,11 @@ Games/TerraformingMars/
 Nur wirklich allgemeine Konzepte werden in den gemeinsamen Kern verschoben.
 Gemeinsamer Code entsteht durch nachgewiesene Gemeinsamkeit, nicht durch
 vorsorgliche Abstraktion.
+
+## Historien-Slice
+
+Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter in Infrastructure, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case und Persistenzport für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
+
+## Navigationsparameter
+
+Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,8 +9,10 @@ using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaTieResolutionViewModel(
-    ArkNovaScoringUseCase scoringUseCase) : ObservableObject
+    ArkNovaScoringUseCase scoringUseCase,
+    BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionUseCase correction) : ObservableObject
 {
+    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; set; }
     private readonly Dictionary<Guid, int> _scores = [];
     private readonly Dictionary<Guid, int> _placements = [];
     private readonly Dictionary<Guid, (int Min, int Max)> _allowedRanges = [];
@@ -22,9 +25,9 @@ public partial class ArkNovaTieResolutionViewModel(
 
     public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
-        ArkNovaScoringGameSessionData gameSession = await scoringUseCase.LoadAsync(gameSessionId, cancellationToken)
+        ArkNovaScoringGameSessionData gameSession = Draft?.Data ?? await scoringUseCase.LoadAsync(gameSessionId, cancellationToken)
             ?? throw new InvalidOperationException("The scoring GameSession does not exist.");
-        ArkNovaCompletionPlan plan = await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
+        ArkNovaCompletionPlan plan = Draft is not null ? correction.Prepare(Draft) : await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
 
         GameSessionId = gameSessionId;
         _scores.Clear();
@@ -72,7 +75,8 @@ public partial class ArkNovaTieResolutionViewModel(
     public async Task CompleteAsync(CancellationToken cancellationToken = default)
     {
         ArkNovaPlacementRules.ValidateResolution(_scores, _placements);
-        await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
+        if (Draft is not null) await correction.SaveAsync(Draft, _placements, cancellationToken);
+        else await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
     }
 
     private void RefreshFrames()
@@ -102,17 +106,17 @@ public partial class ArkNovaTieResolutionViewModel(
         catch (ArgumentException)
         {
             CanFinish = false;
-            ValidationMessage = "Die aktuelle Aufteilung ist noch keine gültige Rangfolge.";
+            ValidationMessage = AppResources.TieInvalid;
         }
     }
 }
 
 public sealed record ArkNovaPlacementFrameViewModel(int Placement, IReadOnlyList<ArkNovaPlacementPlayerViewModel> Players)
 {
-    public string Title => $"Platz {Placement}";
+    public string Title => string.Format(AppResources.PlaceFormat, Placement);
 }
 
 public sealed record ArkNovaPlacementPlayerViewModel(Guid PlayerId, string Name, int Score, bool IsMovable)
 {
-    public string ScoreText => $"{Score} Punkte";
+    public string ScoreText => string.Format(AppResources.PointsFormat, Score);
 }
