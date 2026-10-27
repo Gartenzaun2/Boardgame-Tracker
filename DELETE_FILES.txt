@@ -1,0 +1,4 @@
+src/BoardgameTracker.App/Resources/AppIcon/appicon.svg
+src/BoardgameTracker.App/Resources/AppIcon/appiconfg.svg
+src/BoardgameTracker.App/Resources/Splash/splash.svg
+src/BoardgameTracker.App/Resources/Images/icon_games.svg

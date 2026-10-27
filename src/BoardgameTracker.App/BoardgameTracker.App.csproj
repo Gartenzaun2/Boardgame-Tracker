@@ -12,8 +12,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.8.1.6</ApplicationDisplayVersion>
-    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>0.8.2.2</ApplicationDisplayVersion>
+    <ApplicationVersion>2</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
@@ -22,12 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\appicon.svg"
-              ForegroundFile="Resources\AppIcon\appiconfg.svg"
-              Color="#2E6F40" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg"
-                      Color="#F7F8F5"
-                      BaseSize="128,128" />
+    <MauiIcon Include="Resources\AppIcon\appicon.png" />
+    <MauiSplashScreen Include="Resources\Splash\splash.png"
+                      Color="#F8F5EA"
+                      BaseSize="512,512" />
     <MauiImage Include="Resources\Images\*" />
     <MauiAsset Include="Resources\Raw\**"
                LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
