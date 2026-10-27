@@ -16,6 +16,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
+    BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionUseCase correction,
     IArkNovaSettingsStore settingsStore,
     ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
 {
@@ -26,10 +27,18 @@ public partial class ArkNovaScoringViewModel(
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string DateText { get; private set; } = string.Empty;
     [ObservableProperty] public partial bool IsBusy { get; private set; }
-    [ObservableProperty] public partial string? ErrorMessage { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    public partial string? ErrorMessage { get; private set; }
     [ObservableProperty] public partial bool IsSpecialCardPickerVisible { get; private set; }
     [ObservableProperty] public partial Guid? SpecialCardTargetPlayerId { get; private set; }
 
+    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; private set; }
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+    public bool IsHistorical => Draft is not null;
+    public bool IsLiveScoring => !IsHistorical;
+    public string CompleteText => IsHistorical ? AppResources.SaveCorrection : AppResources.CompleteScoring;
+    public string DeleteText => IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard;
     public bool CanComplete => Players.Count > 0 && Players.All(x => x.HasRequiredValues);
 
     public string SpecialCardPickerTitle
@@ -56,10 +65,20 @@ public partial class ArkNovaScoringViewModel(
             ArkNovaScoringGameSessionData? data = await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
             if (data is null)
             {
-                ErrorMessage = "Die Wertung wurde nicht gefunden.";
+                ErrorMessage = AppResources.ScoringNotFound;
                 return;
             }
 
+            if (data.Status == BoardgameTracker.Core.GameSessions.GameSessionStatus.Completed)
+            {
+                if (Draft?.Saved == true) Draft = null;
+                Draft ??= await correction.BeginAsync(gameSessionId, cancellationToken);
+                data = Draft.Data with { Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() };
+            }
+            OnPropertyChanged(nameof(IsHistorical));
+            OnPropertyChanged(nameof(IsLiveScoring));
+            OnPropertyChanged(nameof(CompleteText));
+            OnPropertyChanged(nameof(DeleteText));
             ArkNovaSettings settings = settingsStore.Get();
             GameSessionId = data.GameSessionId;
             GroupName = data.GroupName;
@@ -84,7 +103,7 @@ public partial class ArkNovaScoringViewModel(
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not load Ark Nova scoring GameSession {GameSessionId}.", gameSessionId);
-            ErrorMessage = UserErrorMessage.Create("Die Wertung konnte nicht geladen werden.", exception);
+            ErrorMessage = UserErrorMessage.Create(AppResources.ScoringLoadFailed, exception);
         }
         finally
         {
@@ -119,7 +138,8 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        await scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        if (Draft is not null) Draft.SetCard(playerId, card, true);
+        else await scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
         await LoadAsync(GameSessionId, cancellationToken);
     }
 
@@ -129,7 +149,8 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        await scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        if (Draft is not null) Draft.SetCard(playerId, card, false);
+        else await scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
         await LoadAsync(GameSessionId, cancellationToken);
     }
 
@@ -152,13 +173,24 @@ public partial class ArkNovaScoringViewModel(
     public async Task<ArkNovaCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
     {
         if (!CanComplete) return null;
-        return await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
+        return Draft is not null ? correction.Prepare(Draft) : await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
     }
 
     public async Task CompleteWithoutTieAsync(
         IReadOnlyDictionary<Guid, int> placements,
         CancellationToken cancellationToken = default) =>
-        await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+        await SaveCompletionAsync(placements, cancellationToken);
+
+    private async Task SaveCompletionAsync(IReadOnlyDictionary<Guid, int> placements, CancellationToken cancellationToken)
+    {
+        if (Draft is not null)
+        {
+            await correction.SaveAsync(Draft, placements, cancellationToken);
+            Draft = null;
+            await LoadAsync(GameSessionId, cancellationToken);
+        }
+        else await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+    }
 
     public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default)
     {
@@ -168,7 +200,8 @@ public partial class ArkNovaScoringViewModel(
         {
             IsBusy = true;
             ErrorMessage = null;
-            await scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
+            if (IsHistorical) await correction.DeleteAsync(GameSessionId, cancellationToken);
+            else await scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
             return true;
         }
         catch (Exception exception)
@@ -212,7 +245,7 @@ public sealed class ArkNovaScoringPlayerViewModel
         bool showReputation)
     {
         PlayerId = data.PlayerId;
-        Name = data.Name;
+        Name = data.Placement is int placement ? $"{placement}. {data.Name}" : data.Name;
         Color = data.Color;
         ZooPlanNumber = data.ZooPlanNumber;
         Attractiveness = data.Attractiveness;
@@ -240,7 +273,7 @@ public sealed class ArkNovaScoringPlayerViewModel
     public string ZooPlanText => ArkNovaZooPlanPresentation.GetName(ZooPlanNumber);
     public string Subtitle => $"{ColorText} · {ZooPlanText}";
     public string RawValuesText =>
-        $"Attraktivität: {Attractiveness?.ToString() ?? "–"} · Artenschutz: {Conservation?.ToString() ?? "–"}";
+        string.Format(AppResources.RawScoreFormat, Attractiveness?.ToString() ?? "–", Conservation?.ToString() ?? "–");
     public string SecondaryValuesText => ShowReputation
         ? string.Format(
             AppResources.ScoringSecondaryValuesWithReputationFormat,
@@ -252,7 +285,7 @@ public sealed class ArkNovaScoringPlayerViewModel
             ? ArkNovaScoringRules.CalculateOldScore(Attractiveness!.Value, Conservation!.Value)
             : ArkNovaScoringRules.CalculateNewScore(Attractiveness!.Value, Conservation!.Value)
         : null;
-    public string NameWithScore => Score is int score ? $"{Name} · {score} Punkte" : Name;
+    public string NameWithScore => Score is int score ? string.Format(AppResources.ScoreNameFormat, Name, score) : Name;
 }
 
 public sealed class ArkNovaSpecialCardOptionViewModel(

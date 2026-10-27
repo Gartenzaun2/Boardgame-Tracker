@@ -25,6 +25,7 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         {
             throw new InvalidOperationException("Required scoring navigation parameters are missing or invalid.");
         }
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out var draft) ? draft as BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft : null;
         _gameSessionId = gameSessionId;
         _playerId = playerId;
     }
@@ -35,9 +36,22 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         await _viewModel.LoadAsync(_gameSessionId, _playerId);
     }
 
+    private bool _saving;
     private async void OnDoneClicked(object? sender, EventArgs e)
     {
-        await _viewModel.FlushAsync();
-        await Shell.Current.GoToAsync("..");
+        if (_saving) return;
+        _saving = true;
+        try
+        {
+            if (!_viewModel.IsValid) return;
+            await _viewModel.FlushAsync();
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception)
+        {
+            await DisplayAlertAsync(BoardgameTracker.App.Resources.Localization.AppResources.Scoring,
+            BoardgameTracker.App.Resources.Localization.AppResources.CorrectionFailed, BoardgameTracker.App.Resources.Localization.AppResources.Ok);
+        }
+        finally { _saving = false; }
     }
 }

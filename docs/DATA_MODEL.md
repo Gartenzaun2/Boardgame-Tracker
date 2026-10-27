@@ -458,3 +458,7 @@ Der allgemeine Kern bleibt frei von Arche-Nova-Sonderfällen.
 - `ArkNovaZooPlan.Number` (1–14) ist dagegen die stabile fachliche Identität und der Primärschlüssel. Eine zusätzliche künstliche `Id` entfällt.
 - Die `ArkNovaZooPlans`-Tabelle enthält nur die gültigen Nummern und dient der referenziellen Integrität.
 - Lokalisierter Zooplanname und Sketch-Datei sind Presentation-Metadaten und werden nicht persistiert.
+
+## Historische Korrekturen
+
+Completed-Partien sind über einen expliziten Korrektur-Anwendungsfall bearbeitbar; keine Transition zurück zu Scoring. Rohwerte, besondere Karten und neu validierte Placements werden atomar gespeichert. Spiel-, Gruppen-, Teilnehmer- und Setupdaten sowie Start-/Endzeit bleiben unverändert. Namen werden über aktuelle Player-/Group-Referenzen aufgelöst. Löschen einer Completed-Partie entfernt alle abhängigen Partiedaten kaskadierend, niemals Spieler oder Gruppen. Kein neues Schema und keine Namens-Snapshots.

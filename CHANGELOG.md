@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.4.0
+
+- Completed-Partien mit Spiel-/Gruppenfiltern, aktuellen Namen und gespeicherten Platzierungen.
+- Explizite Arche-Nova-Korrektur und bestätigtes Löschen abgeschlossener Partien; normale Scoring-Statusgrenze bleibt erhalten.
+- Fachliche Festlegung zu Historie und späterer unabhängiger Statistik kanonisch dokumentiert.
+- App-Version 0.8.4.0 / ApplicationVersion 9; keine Schemaänderung.
+
 
 ## 0.8.3.2
 

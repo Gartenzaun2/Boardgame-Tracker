@@ -313,6 +313,49 @@ public static class AppResources
     public static string ArkNovaSpecialCardGoldenEagleSymbols => GetString(nameof(ArkNovaSpecialCardGoldenEagleSymbols));
     public static string ArkNovaSpecialCardSunBearSymbols => GetString(nameof(ArkNovaSpecialCardSunBearSymbols));
 
+    public static string SaveCorrection => GetString(nameof(SaveCorrection));
+    public static string CompleteScoring => GetString(nameof(CompleteScoring));
+    public static string DeleteGameSession => GetString(nameof(DeleteGameSession));
+    public static string DeleteGameSessionTitle => GetString(nameof(DeleteGameSessionTitle));
+    public static string DeleteGameSessionMessage => GetString(nameof(DeleteGameSessionMessage));
+    public static string HistoryGameFilter => GetString(nameof(HistoryGameFilter));
+    public static string HistoryGroupFilter => GetString(nameof(HistoryGroupFilter));
+    public static string HistoryAllGames => GetString(nameof(HistoryAllGames));
+    public static string HistoryAllGroups => GetString(nameof(HistoryAllGroups));
+    public static string HistoryEmpty => GetString(nameof(HistoryEmpty));
+    public static string HistoryLoadFailed => GetString(nameof(HistoryLoadFailed));
+    public static string HistoryOpenFailed => GetString(nameof(HistoryOpenFailed));
+    public static string HistoryHeaderFormat => GetString(nameof(HistoryHeaderFormat));
+    public static string HistoryDurationFormat => GetString(nameof(HistoryDurationFormat));
+    public static string CorrectionInvalid => GetString(nameof(CorrectionInvalid));
+    public static string CorrectionFailed => GetString(nameof(CorrectionFailed));
+    public static string AttractivenessValidation => GetString(nameof(AttractivenessValidation));
+    public static string ConservationValidation => GetString(nameof(ConservationValidation));
+    public static string ReputationValidation => GetString(nameof(ReputationValidation));
+
+    public static string ScoringNotFound => GetString(nameof(ScoringNotFound));
+    public static string ScoringLoadFailed => GetString(nameof(ScoringLoadFailed));
+    public static string ScoreNameFormat => GetString(nameof(ScoreNameFormat));
+    public static string RawScoreFormat => GetString(nameof(RawScoreFormat));
+    public static string PlaceFormat => GetString(nameof(PlaceFormat));
+    public static string PointsFormat => GetString(nameof(PointsFormat));
+    public static string TieInvalid => GetString(nameof(TieInvalid));
+    public static string DragHere => GetString(nameof(DragHere));
+    public static string CalculatedPoints => GetString(nameof(CalculatedPoints));
+    public static string OptionalValue => GetString(nameof(OptionalValue));
+    public static string OptionalReputation => GetString(nameof(OptionalReputation));
+    public static string PhotoRecognition => GetString(nameof(PhotoRecognition));
+    public static string PhotoRecognitionPending => GetString(nameof(PhotoRecognitionPending));
+
+    public static string Done => GetString(nameof(Done));
+    public static string Reputation => GetString(nameof(Reputation));
+    public static string Attractiveness => GetString(nameof(Attractiveness));
+    public static string Conservation => GetString(nameof(Conservation));
+
+    public static string ResolveTies => GetString(nameof(ResolveTies));
+    public static string ResolveTiesHint => GetString(nameof(ResolveTiesHint));
+    public static string SaveScoring => GetString(nameof(SaveScoring));
+
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(

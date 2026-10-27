@@ -16,7 +16,7 @@
                 <Label Text="{Binding GroupName}" FontSize="12" TextColor="{StaticResource TextPrimary}" />
                 <Label Text="{Binding DateText}" FontSize="11" TextColor="{StaticResource TextPrimary}" />
             </VerticalStackLayout>
-            <ImageButton Grid.Column="2" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
+            <ImageButton Grid.Column="2" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
             <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
         </Grid>
 
@@ -66,16 +66,20 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="10">
-            <Button Text="{x:Static res:AppResources.Discard}"
+        <VerticalStackLayout Grid.Row="2" Spacing="6">
+        <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+            <Button Text="{Binding DeleteText}"
                     TextColor="{StaticResource Danger}"
                     BackgroundColor="{StaticResource Surface}"
                     BorderColor="{StaticResource Danger}"
                     BorderWidth="1"
                     MinimumHeightRequest="44"
                     Clicked="OnDiscardClicked" />
-            <Button Grid.Column="1" Text="Wertung abschließen" Style="{StaticResource PrimaryCompactButton}" Clicked="OnCompleteClicked" IsEnabled="{Binding CanComplete}" />
+            <Button Grid.Column="1" Text="{Binding CompleteText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnCompleteClicked" IsEnabled="{Binding CanComplete}" />
         </Grid>
+
+        </VerticalStackLayout>
 
         <Grid Grid.RowSpan="3" IsVisible="{Binding IsSpecialCardPickerVisible}" BackgroundColor="#66000000" Padding="18">
             <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Center" MaximumWidthRequest="520">

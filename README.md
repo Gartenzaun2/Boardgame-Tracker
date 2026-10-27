@@ -21,6 +21,7 @@ Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist
   werden.
 - Arche-Nova-Wertung unterstützt Attraktivität, Artenschutz, optional Ruf,
   besondere Karten, Gleichstände und Ergebnisanzeige.
+- Historie abgeschlossener Partien mit Spiel-/Gruppenfiltern, Wertungskorrektur und bestätigtem Löschen. Statistik folgt separat.
 - Lokale Navigations- und Arche-Nova-Einstellungen werden über MAUI Preferences
   gespeichert.
 

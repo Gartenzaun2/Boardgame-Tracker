@@ -55,7 +55,8 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
                 new ShellNavigationQueryParameters
                 {
                     [NavigationParameters.GameSessionId] = _gameSessionId,
-                    [NavigationParameters.PlayerId] = player.PlayerId
+                    [NavigationParameters.PlayerId] = player.PlayerId,
+                    [NavigationParameters.CorrectionDraft] = _viewModel.Draft!
                 });
         }
         finally
@@ -74,82 +75,110 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private async void OnSpecialCardOptionTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is not ArkNovaSpecialCardOptionViewModel option
+        if (_saving) return;
+        _saving = true;
+        try
+        {
+            if (e.Parameter is not ArkNovaSpecialCardOptionViewModel option
             || _viewModel.SpecialCardTargetPlayerId is not Guid playerId)
-        {
-            return;
-        }
-
-        if (option.IsAssignedToTarget)
-        {
-            await _viewModel.RemoveSpecialCardAsync(playerId, option.Card);
-            return;
-        }
-
-        if (option.IsAssignedToOtherPlayer)
-        {
-            bool confirmed = await DisplayAlertAsync(
-                AppResources.SpecialCardMultipleTitle,
-                string.Format(
-                    AppResources.SpecialCardMultipleMessageFormat,
-                    ArkNovaSpecialCardPresentation.GetName(option.Card)),
-                AppResources.Yes,
-                AppResources.Cancel);
-
-            if (!confirmed)
             {
                 return;
             }
-        }
 
-        await _viewModel.AssignSpecialCardAsync(playerId, option.Card);
+            if (option.IsAssignedToTarget)
+            {
+                await _viewModel.RemoveSpecialCardAsync(playerId, option.Card);
+                return;
+            }
+
+            if (option.IsAssignedToOtherPlayer)
+            {
+                bool confirmed = await DisplayAlertAsync(
+                    AppResources.SpecialCardMultipleTitle,
+                    string.Format(
+                        AppResources.SpecialCardMultipleMessageFormat,
+                        ArkNovaSpecialCardPresentation.GetName(option.Card)),
+                    AppResources.Yes,
+                    AppResources.Cancel);
+
+                if (!confirmed)
+                {
+                    return;
+                }
+            }
+
+            await _viewModel.AssignSpecialCardAsync(playerId, option.Card);
+        }
+        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        finally { _saving = false; }
     }
 
     private void OnCloseSpecialCardPickerClicked(object? sender, EventArgs e) =>
         _viewModel.CloseSpecialCardPicker();
 
+    private bool _saving;
     private async void OnCompleteClicked(object? sender, EventArgs e)
     {
-        ArkNovaCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
-        if (plan is null) return;
-
-        string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
-        if (!plan.HasTies)
+        if (_saving) return;
+        _saving = true;
+        try
         {
-            await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+            ArkNovaCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
+            if (plan is null) return;
+
+            if (_viewModel.IsHistorical && !plan.HasTies)
+            {
+                await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+                return;
+            }
+            string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
+            if (!plan.HasTies)
+            {
+                await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+            }
+
+            await Shell.Current.GoToAsync(
+                route,
+                new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId, [NavigationParameters.CorrectionDraft] = _viewModel.Draft! });
         }
 
-        await Shell.Current.GoToAsync(
-            route,
-            new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
+        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        finally { _saving = false; }
     }
 
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {
-        bool confirmed = await DisplayAlertAsync(
-            AppResources.DiscardScoringTitle,
-            AppResources.DiscardScoringMessage,
-            AppResources.Discard,
+        if (_saving) return;
+        _saving = true;
+        try
+        {
+            bool confirmed = await DisplayAlertAsync(
+            _viewModel.IsHistorical ? AppResources.DeleteGameSessionTitle : AppResources.DiscardScoringTitle,
+            _viewModel.IsHistorical ? AppResources.DeleteGameSessionMessage : AppResources.DiscardScoringMessage,
+            _viewModel.IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard,
             AppResources.Cancel);
 
-        if (confirmed && await _viewModel.DiscardAsync())
-        {
-            await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+            if (confirmed && await _viewModel.DiscardAsync())
+            {
+                await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
+            }
+
         }
+        finally { _saving = false; }
     }
 
     private async void OnCameraClicked(object? sender, EventArgs e) =>
-        await DisplayAlertAsync("Fotoerkennung", "Der Kamera-Einstieg ist vorbereitet. Die Bilderkennung folgt im nächsten Feature-Slice.", AppResources.Ok);
+        await DisplayAlertAsync(AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
 
     private async void OnSettingsClicked(object? sender, EventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
 
     private async void OnBackClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+        await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
 
     protected override bool OnBackButtonPressed()
     {
-        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}"));
+        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}"));
         return true;
     }
 }

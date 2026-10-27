@@ -1,12 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage
-    x:Class="BoardgameTracker.App.Features.History.HistoryPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    Shell.NavBarIsVisible="False">
-    <Grid Padding="20,22" RowDefinitions="Auto,Auto,*" RowSpacing="14">
-        <Label Text="{x:Static res:AppResources.History}" FontAttributes="Bold" FontSize="28" />
-        <Label Grid.Row="1" Text="{x:Static res:AppResources.HistoryHint}" TextColor="{StaticResource TextSecondary}" />
-    </Grid>
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="BoardgameTracker.App.Features.History.HistoryPage"
+ xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+ xmlns:local="clr-namespace:BoardgameTracker.App.Features.History" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" Shell.NavBarIsVisible="False">
+ <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="8">
+  <Label Text="{x:Static res:AppResources.History}" FontSize="28" FontAttributes="Bold" />
+  <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="8">
+   <Picker x:Name="GameFilter" SelectedIndexChanged="OnFilterChanged" Title="{x:Static res:AppResources.HistoryGameFilter}" />
+   <Picker x:Name="GroupFilter" Grid.Column="1" SelectedIndexChanged="OnFilterChanged" Title="{x:Static res:AppResources.HistoryGroupFilter}" />
+  </Grid>
+  <Label Grid.Row="2" x:Name="ErrorLabel" IsVisible="False" TextColor="{StaticResource Danger}" />
+  <CollectionView Grid.Row="3" x:Name="Sessions" SelectionMode="Single" SelectionChanged="OnSessionSelected">
+   <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.HistoryEmpty}" Margin="0,20" /></CollectionView.EmptyView>
+   <CollectionView.ItemTemplate><DataTemplate x:DataType="local:HistoryCard"><Border Padding="12,9" Margin="0,4" Style="{StaticResource CardBorder}">
+    <VerticalStackLayout Spacing="3">
+     <Label Text="{Binding Header}" FontSize="13" />
+     <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
+     <Label Text="{Binding Placements}" FontSize="13" LineBreakMode="WordWrap" />
+    </VerticalStackLayout>
+   </Border></DataTemplate></CollectionView.ItemTemplate>
+  </CollectionView>
+  <Grid x:Name="BusyOverlay" Grid.RowSpan="4" BackgroundColor="#66FFFFFF" IsVisible="False"><ActivityIndicator IsRunning="True" /></Grid>
+ </Grid>
 </ContentPage>

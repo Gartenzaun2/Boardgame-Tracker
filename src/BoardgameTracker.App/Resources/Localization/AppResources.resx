@@ -414,4 +414,43 @@
   <data name="DefaultGameHint" xml:space="preserve">
     <value>Ohne Standardspiel startet die App bei Spiele. Mit Standardspiel startet sie beim ersten Mal direkt in dessen Gruppenübersicht. Danach wird der zuletzt verwendete Bereich wiederhergestellt.</value>
   </data>
+<data name="SaveCorrection" xml:space="preserve"><value>Korrektur speichern</value></data>
+<data name="CompleteScoring" xml:space="preserve"><value>Wertung abschließen</value></data>
+<data name="DeleteGameSession" xml:space="preserve"><value>Partie löschen</value></data>
+<data name="DeleteGameSessionTitle" xml:space="preserve"><value>Partie löschen?</value></data>
+<data name="DeleteGameSessionMessage" xml:space="preserve"><value>Möchtest du diese Partie wirklich löschen? Die gespeicherte Wertung und alle zugehörigen Daten werden dauerhaft entfernt.</value></data>
+<data name="HistoryGameFilter" xml:space="preserve"><value>Spiel</value></data>
+<data name="HistoryGroupFilter" xml:space="preserve"><value>Gruppe</value></data>
+<data name="HistoryAllGames" xml:space="preserve"><value>Alle Spiele</value></data>
+<data name="HistoryAllGroups" xml:space="preserve"><value>Alle Gruppen</value></data>
+<data name="HistoryEmpty" xml:space="preserve"><value>Keine abgeschlossenen Partien für diese Auswahl.</value></data>
+<data name="HistoryLoadFailed" xml:space="preserve"><value>Die Historie konnte nicht geladen werden.</value></data>
+<data name="HistoryOpenFailed" xml:space="preserve"><value>Die Partie konnte nicht geöffnet werden.</value></data>
+<data name="HistoryHeaderFormat" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
+<data name="HistoryDurationFormat" xml:space="preserve"><value>{0} h {1} min</value></data>
+<data name="CorrectionInvalid" xml:space="preserve"><value>Bitte vollständige gültige Wertungsdaten eingeben.</value></data>
+<data name="CorrectionFailed" xml:space="preserve"><value>Die Korrektur konnte nicht gespeichert werden.</value></data>
+<data name="AttractivenessValidation" xml:space="preserve"><value>Attraktivität muss zwischen 0 und 113 liegen.</value></data>
+<data name="ConservationValidation" xml:space="preserve"><value>Artenschutz muss zwischen 0 und 41 liegen.</value></data>
+<data name="ReputationValidation" xml:space="preserve"><value>Ruf muss leer bleiben oder zwischen 1 und 15 liegen.</value></data>
+<data name="ScoringNotFound" xml:space="preserve"><value>Die Wertung wurde nicht gefunden.</value></data>
+<data name="ScoringLoadFailed" xml:space="preserve"><value>Die Wertung konnte nicht geladen werden.</value></data>
+<data name="ScoreNameFormat" xml:space="preserve"><value>{0} · {1} Punkte</value></data>
+<data name="RawScoreFormat" xml:space="preserve"><value>Attraktivität: {0} · Artenschutz: {1}</value></data>
+<data name="PlaceFormat" xml:space="preserve"><value>Platz {0}</value></data>
+<data name="PointsFormat" xml:space="preserve"><value>{0} Punkte</value></data>
+<data name="TieInvalid" xml:space="preserve"><value>Die aktuelle Aufteilung ist noch keine gültige Rangfolge.</value></data>
+<data name="DragHere" xml:space="preserve"><value>Hierher ziehen</value></data>
+<data name="CalculatedPoints" xml:space="preserve"><value>Berechnete Punkte</value></data>
+<data name="OptionalValue" xml:space="preserve"><value>optional</value></data>
+<data name="OptionalReputation" xml:space="preserve"><value>optional · 1–15</value></data>
+<data name="PhotoRecognition" xml:space="preserve"><value>Fotoerkennung</value></data>
+<data name="PhotoRecognitionPending" xml:space="preserve"><value>Der Kamera-Einstieg ist vorbereitet. Die Bilderkennung folgt in einem späteren Slice.</value></data>
+<data name="Done" xml:space="preserve"><value>Fertig</value></data>
+<data name="Reputation" xml:space="preserve"><value>Ruf</value></data>
+<data name="Attractiveness" xml:space="preserve"><value>Attraktivität</value></data>
+<data name="Conservation" xml:space="preserve"><value>Artenschutz</value></data>
+<data name="ResolveTies" xml:space="preserve"><value>Gleichstände bearbeiten</value></data>
+<data name="ResolveTiesHint" xml:space="preserve"><value>Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden.</value></data>
+<data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
 </root>
