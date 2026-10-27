@@ -3,11 +3,12 @@ using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
 /// <summary>
-/// Maps the game-session aggregate root, lifecycle fields and owned player relationship to SQLite.
+/// Maps the GameSession aggregate root, lifecycle fields and owned player relationship to SQLite.
 /// </summary>
 internal sealed class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
 {

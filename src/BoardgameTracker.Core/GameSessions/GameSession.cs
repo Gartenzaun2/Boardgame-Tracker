@@ -1,8 +1,9 @@
+using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.GameSessions;
 
 /// <summary>
-/// Aggregate root for a persisted game session. It owns participants and protects
-/// the session lifecycle from Running through Scoring to Completed.
+/// Aggregate root for a persisted game gameSession. It owns participants and protects
+/// the GameSession lifecycle from Running through Scoring to Completed.
 /// </summary>
 public sealed class GameSession
 {
@@ -25,7 +26,7 @@ public sealed class GameSession
         if (playerIds.Count == 0)
         {
             throw new ArgumentException(
-                "A game session must contain at least one player.",
+                "A game gameSession must contain at least one player.",
                 nameof(playerIds));
         }
 
@@ -64,7 +65,7 @@ public sealed class GameSession
         if (Status != GameSessionStatus.Running)
         {
             throw new InvalidOperationException(
-                "Only a running session can enter scoring.");
+                "Only a running GameSession can enter scoring.");
         }
 
         if (modifiedAt < StartedAt)
@@ -82,7 +83,7 @@ public sealed class GameSession
         if (Status != GameSessionStatus.Scoring)
         {
             throw new InvalidOperationException(
-                "Only a session in scoring can be completed.");
+                "Only a GameSession in scoring can be completed.");
         }
 
         if (modifiedAt < StartedAt

@@ -12,8 +12,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.8.2.5</ApplicationDisplayVersion>
-    <ApplicationVersion>5</ApplicationVersion>
+    <ApplicationDisplayVersion>0.8.3.2</ApplicationDisplayVersion>
+    <ApplicationVersion>8</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
@@ -26,7 +26,7 @@
               ForegroundFile="Resources\AppIcon\appiconfg.png"
               Color="#F8F5EA"
               BaseSize="1024,1024"
-              ForegroundScale="1" />
+              ForegroundScale="0.95" />
     <MauiSplashScreen Include="Resources\Splash\splash.png"
                       Color="#F8F5EA"
                       BaseSize="512,512" />

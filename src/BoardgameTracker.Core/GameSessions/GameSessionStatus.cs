@@ -1,7 +1,7 @@
 namespace BoardgameTracker.Core.GameSessions;
 
 /// <summary>
-/// Defines the persisted lifecycle states of a game session.
+/// Defines the persisted lifecycle states of a game gameSession.
 /// </summary>
 public enum GameSessionStatus
 {

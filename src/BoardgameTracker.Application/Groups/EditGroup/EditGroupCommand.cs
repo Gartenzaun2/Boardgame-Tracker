@@ -1,4 +1,5 @@
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Players;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
@@ -10,5 +11,5 @@ public sealed record EditGroupCommand(
     string Name,
     bool MakePermanent,
     bool IsArchived,
-    IReadOnlyList<Guid> OrderedPersonIds,
+    IReadOnlyList<Guid> OrderedPlayerIds,
     IReadOnlyDictionary<Guid, ArkNovaPlayerColor?> ArkNovaDefaultColors);

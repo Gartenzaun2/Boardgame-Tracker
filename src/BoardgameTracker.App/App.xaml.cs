@@ -1,5 +1,5 @@
-using BoardgameTracker.App.Features.GameSessions.Running;
-using BoardgameTracker.App.Features.GameSessions.Scoring;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions.Resume;
@@ -52,36 +52,36 @@ public partial class App : Microsoft.Maui.Controls.Application
 
             IAppNavigationSettingsStore navigationStore =
                 _services.GetRequiredService<IAppNavigationSettingsStore>();
-            IOpenGameSessionQuery openSessionQuery =
+            IOpenGameSessionQuery openGameSessionQuery =
                 _services.GetRequiredService<IOpenGameSessionQuery>();
 
             AppNavigationSettings state = navigationStore.Get();
 
-            if (state.LastSessionId is Guid rememberedSessionId)
+            if (state.LastGameSessionId is Guid rememberedGameSessionId)
             {
-                OpenGameSession? rememberedSession =
-                    await openSessionQuery.GetAsync(rememberedSessionId);
+                OpenGameSession? rememberedGameSession =
+                    await openGameSessionQuery.GetAsync(rememberedGameSessionId);
 
-                if (rememberedSession is not null && rememberedSession.GameKey == ArkNovaGame.Key)
+                if (rememberedGameSession is not null && rememberedGameSession.GameKey == ArkNovaGame.Key)
                 {
-                    await RestoreSessionAsync(shell, rememberedSession);
+                    await RestoreGameSessionAsync(shell, rememberedGameSession);
                     shell.EnableNavigationMemory();
                     return;
                 }
 
-                state = state with { LastSessionId = null };
+                state = state with { LastGameSessionId = null };
                 navigationStore.Save(state);
             }
 
             // Compatibility for an existing development database created before
             // explicit navigation context existed: restore only when there is
-            // exactly one unfinished session. Never choose arbitrarily among several.
+            // exactly one unfinished GameSession. Never choose arbitrarily among several.
             if (state.LastMainSection is null)
             {
-                IReadOnlyList<OpenGameSession> openSessions = await openSessionQuery.GetAllAsync();
-                if (openSessions.Count == 1 && openSessions[0].GameKey == ArkNovaGame.Key)
+                IReadOnlyList<OpenGameSession> openGameSessions = await openGameSessionQuery.GetAllAsync();
+                if (openGameSessions.Count == 1 && openGameSessions[0].GameKey == ArkNovaGame.Key)
                 {
-                    await RestoreSessionAsync(shell, openSessions[0]);
+                    await RestoreGameSessionAsync(shell, openGameSessions[0]);
                     shell.EnableNavigationMemory();
                     return;
                 }
@@ -114,13 +114,13 @@ public partial class App : Microsoft.Maui.Controls.Application
         }
     }
 
-    private static async Task RestoreSessionAsync(
+    private static async Task RestoreGameSessionAsync(
         AppShell shell,
-        OpenGameSession session)
+        OpenGameSession gameSession)
     {
-        await shell.NavigateToGroupsForGameAsync(session.GameKey, remember: false);
-        shell.RememberSession(session.SessionId, session.GameKey);
-        await NavigateToSessionAsync(shell, session);
+        await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false);
+        shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
+        await NavigateToGameSessionAsync(shell, gameSession);
     }
 
     private static AppMainSection ResolveInitialSection(AppNavigationSettings state)
@@ -140,9 +140,9 @@ public partial class App : Microsoft.Maui.Controls.Application
             : AppMainSection.Games;
     }
 
-    private static async Task NavigateToSessionAsync(AppShell shell, OpenGameSession openSession)
+    private static async Task NavigateToGameSessionAsync(AppShell shell, OpenGameSession openGameSession)
     {
-        string route = openSession.Status switch
+        string route = openGameSession.Status switch
         {
             GameSessionStatus.Running => nameof(ArkNovaRunningPage),
             GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
@@ -158,7 +158,7 @@ public partial class App : Microsoft.Maui.Controls.Application
             route,
             new ShellNavigationQueryParameters
             {
-                [NavigationParameters.SessionId] = openSession.SessionId
+                [NavigationParameters.GameSessionId] = openGameSession.GameSessionId
             });
     }
 

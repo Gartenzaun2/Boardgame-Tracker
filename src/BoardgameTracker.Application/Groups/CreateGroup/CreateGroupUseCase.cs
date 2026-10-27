@@ -1,16 +1,16 @@
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.People;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
 /// <summary>
-/// Creates a valid fixed-membership group and coordinates person reuse/creation through the slice-specific persistence port.
+/// Creates a valid fixed-membership group and coordinates player reuse/creation through the slice-specific persistence port.
 /// </summary>
 public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
 {
-    public Task<IReadOnlyList<SelectablePerson>> GetSelectablePeopleAsync(
+    public Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
         CancellationToken cancellationToken = default) =>
-        dataAccess.GetSelectablePeopleAsync(cancellationToken);
+        dataAccess.GetSelectablePlayersAsync(cancellationToken);
 
     public async Task<Guid> ExecuteAsync(
         CreateGroupCommand command,
@@ -18,59 +18,59 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
-        ArgumentNullException.ThrowIfNull(command.Members);
+        ArgumentNullException.ThrowIfNull(command.Players);
 
-        if (command.Members.Count == 0)
+        if (command.Players.Count == 0)
         {
             throw new ArgumentException(
-                "A group must contain at least one person.",
+                "A group must contain at least one player.",
                 nameof(command));
         }
 
         IReadOnlyList<Guid> requestedExistingIds =
         [
-            .. command.Members
-                .Where(member => member.ExistingPersonId.HasValue)
-                .Select(member => member.ExistingPersonId.GetValueOrDefault())
+            .. command.Players
+                .Where(player => player.ExistingPlayerId.HasValue)
+                .Select(player => player.ExistingPlayerId.GetValueOrDefault())
         ];
 
         if (requestedExistingIds.Distinct().Count() != requestedExistingIds.Count)
         {
             throw new ArgumentException(
-                "An existing person can only be selected once.",
+                "An existing player can only be selected once.",
                 nameof(command));
         }
 
-        IReadOnlySet<Guid> activePersonIds =
-            await dataAccess.GetActivePersonIdsAsync(
+        IReadOnlySet<Guid> activePlayerIds =
+            await dataAccess.GetActivePlayerIdsAsync(
                 requestedExistingIds,
                 cancellationToken);
 
-        if (activePersonIds.Count != requestedExistingIds.Count)
+        if (activePlayerIds.Count != requestedExistingIds.Count)
         {
             throw new InvalidOperationException(
-                "At least one selected person does not exist or is inactive.");
+                "At least one selected player does not exist or is inactive.");
         }
 
-        List<Person> newPeople = [];
-        List<Guid> memberIds = [];
+        List<Player> newPlayers = [];
+        List<Guid> playerIds = [];
 
-        foreach (CreateGroupMemberInput member in command.Members)
+        foreach (CreateGroupPlayerInput player in command.Players)
         {
-            if (member.ExistingPersonId is Guid existingPersonId)
+            if (player.ExistingPlayerId is Guid existingPlayerId)
             {
-                memberIds.Add(existingPersonId);
+                playerIds.Add(existingPlayerId);
                 continue;
             }
 
-            Person person = new(member.Name, member.IsGuest);
-            newPeople.Add(person);
-            memberIds.Add(person.Id);
+            Player newPlayer = new(player.Name, player.IsGuest);
+            newPlayers.Add(newPlayer);
+            playerIds.Add(newPlayer.Id);
         }
 
-        Group group = new(command.Name, command.IsTemporary, memberIds);
+        Group group = new(command.Name, command.IsTemporary, playerIds);
 
-        await dataAccess.SaveAsync(group, newPeople, cancellationToken);
+        await dataAccess.SaveAsync(group, newPlayers, cancellationToken);
         return group.Id;
     }
 }

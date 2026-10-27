@@ -10,8 +10,8 @@ public sealed record GroupListItem(
     string Name,
     bool IsTemporary,
     bool IsArchived,
-    int MemberCount,
-    IReadOnlyList<string> MemberNames,
+    int PlayerCount,
+    IReadOnlyList<string> PlayerNames,
     DateTimeOffset? LastPlayedAt,
-    Guid? OpenSessionId,
-    GameSessionStatus? OpenSessionStatus);
+    Guid? OpenGameSessionId,
+    GameSessionStatus? OpenGameSessionStatus);

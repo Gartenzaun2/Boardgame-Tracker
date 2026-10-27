@@ -5,31 +5,31 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 
 /// <summary>
-/// SQLite implementation for retrieving unfinished sessions used by navigation restoration.
+/// SQLite implementation for retrieving unfinished gameSessions used by navigation restoration.
 /// </summary>
 public sealed class SqliteOpenGameSessionQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IOpenGameSessionQuery
 {
     public async Task<OpenGameSession?> GetAsync(
-        Guid sessionId,
+        Guid gameSessionId,
         CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
         return await (
-            from session in dbContext.GameSessions.AsNoTracking()
+            from gameSession in dbContext.GameSessions.AsNoTracking()
             join game in dbContext.Games.AsNoTracking()
-                on session.GameId equals game.Id
-            where session.Id == sessionId
-                  && (session.Status == GameSessionStatus.Running
-                      || session.Status == GameSessionStatus.Scoring)
+                on gameSession.GameId equals game.Id
+            where gameSession.Id == gameSessionId
+                  && (gameSession.Status == GameSessionStatus.Running
+                      || gameSession.Status == GameSessionStatus.Scoring)
             select new OpenGameSession(
-                session.Id,
+                gameSession.Id,
                 game.Key,
-                session.Status,
-                session.ModifiedAt))
+                gameSession.Status,
+                gameSession.ModifiedAt))
             .SingleOrDefaultAsync(cancellationToken);
     }
 
@@ -42,16 +42,16 @@ public sealed class SqliteOpenGameSessionQuery(
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
         return await (
-            from session in dbContext.GameSessions.AsNoTracking()
+            from gameSession in dbContext.GameSessions.AsNoTracking()
             join game in dbContext.Games.AsNoTracking()
-                on session.GameId equals game.Id
-            where session.Status == GameSessionStatus.Running
-                  || session.Status == GameSessionStatus.Scoring
+                on gameSession.GameId equals game.Id
+            where gameSession.Status == GameSessionStatus.Running
+                  || gameSession.Status == GameSessionStatus.Scoring
             select new OpenGameSession(
-                session.Id,
+                gameSession.Id,
                 game.Key,
-                session.Status,
-                session.ModifiedAt))
+                gameSession.Status,
+                gameSession.ModifiedAt))
             .ToListAsync(cancellationToken);
     }
 }

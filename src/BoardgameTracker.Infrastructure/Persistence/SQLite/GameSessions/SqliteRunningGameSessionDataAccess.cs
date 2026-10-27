@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 
 /// <summary>
-/// SQLite implementation of the running-session lifecycle persistence port.
+/// SQLite implementation of the running GameSession lifecycle persistence port.
 /// A fresh DbContext is used per operation so no tracked state leaks across use-case calls.
 /// </summary>
 public sealed class SqliteRunningGameSessionDataAccess(
@@ -13,7 +13,7 @@ public sealed class SqliteRunningGameSessionDataAccess(
     : IRunningGameSessionDataAccess
 {
     public async Task<GameSession?> FindAsync(
-        Guid sessionId,
+        Guid gameSessionId,
         CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext dbContext =
@@ -22,35 +22,35 @@ public sealed class SqliteRunningGameSessionDataAccess(
         return await dbContext.GameSessions
             .AsNoTracking()
             .SingleOrDefaultAsync(
-                session => session.Id == sessionId,
+                gameSession => gameSession.Id == gameSessionId,
                 cancellationToken);
     }
 
     public async Task SaveAsync(
-        GameSession session,
+        GameSession gameSession,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(gameSession);
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        dbContext.Attach(session);
-        dbContext.Entry(session).State = EntityState.Modified;
+        dbContext.Attach(gameSession);
+        dbContext.Entry(gameSession).State = EntityState.Modified;
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(
-        GameSession session,
+        GameSession gameSession,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(gameSession);
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        dbContext.Attach(session);
-        dbContext.GameSessions.Remove(session);
+        dbContext.Attach(gameSession);
+        dbContext.GameSessions.Remove(gameSession);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

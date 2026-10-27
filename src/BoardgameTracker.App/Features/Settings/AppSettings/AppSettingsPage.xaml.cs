@@ -1,5 +1,5 @@
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Features.Games.ArkNova.Settings;
+using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
 

@@ -8,44 +8,44 @@ public sealed class GameSessionTests
     public void Complete_RequiresScoringState()
     {
         DateTimeOffset startedAt = DateTimeOffset.UtcNow;
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
 
-        Assert.Throws<InvalidOperationException>(() => session.Complete(startedAt.AddMinutes(1)));
+        Assert.Throws<InvalidOperationException>(() => gameSession.Complete(startedAt.AddMinutes(1)));
     }
 
     [Fact]
     public void Complete_BeforeScoringEnd_Throws()
     {
         DateTimeOffset startedAt = DateTimeOffset.UtcNow;
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
-        session.BeginScoring(startedAt.AddMinutes(30));
+        gameSession.BeginScoring(startedAt.AddMinutes(30));
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            session.Complete(startedAt.AddMinutes(29)));
+            gameSession.Complete(startedAt.AddMinutes(29)));
     }
 
     [Fact]
     public void BeginScoring_ThenComplete_UsesValidTransitions()
     {
         DateTimeOffset startedAt = DateTimeOffset.UtcNow;
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
 
-        session.BeginScoring(startedAt.AddMinutes(30));
-        session.Complete(startedAt.AddMinutes(35));
+        gameSession.BeginScoring(startedAt.AddMinutes(30));
+        gameSession.Complete(startedAt.AddMinutes(35));
 
-        Assert.Equal(GameSessionStatus.Completed, session.Status);
-        Assert.Equal(startedAt.AddMinutes(30), session.EndedAt);
+        Assert.Equal(GameSessionStatus.Completed, gameSession.Status);
+        Assert.Equal(startedAt.AddMinutes(30), gameSession.EndedAt);
     }
 }

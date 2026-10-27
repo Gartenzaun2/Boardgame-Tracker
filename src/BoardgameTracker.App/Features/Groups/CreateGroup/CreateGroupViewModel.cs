@@ -13,8 +13,8 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// </summary>
 public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
-    public ObservableCollection<SelectablePerson> AvailablePersons { get; } = [];
-    public ObservableCollection<CreateGroupMemberInput> Members { get; } = [];
+    public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
+    public ObservableCollection<CreateGroupPlayerInput> Players { get; } = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -24,18 +24,18 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     public partial bool IsTemporary { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AddSelectedPersonCommand))]
-    public partial SelectablePerson? SelectedExistingPerson { get; set; }
+    [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
+    public partial SelectablePlayer? SelectedExistingPlayer { get; set; }
 
     [ObservableProperty]
-    public partial string NewPersonName { get; set; } = string.Empty;
+    public partial string NewPlayerName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool NewPersonIsGuest { get; set; }
+    public partial bool NewPlayerIsGuest { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddSelectedPersonCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
@@ -45,14 +45,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
-    public partial bool HasNoMembers { get; private set; } = true;
+    public partial bool HasNoPlayers { get; private set; } = true;
 
     [ObservableProperty]
-    public partial bool HasNoAvailablePersons { get; private set; } = true;
+    public partial bool HasNoAvailablePlayers { get; private set; } = true;
 
     public event EventHandler? Saved;
 
-    public bool HasAvailablePersons => !HasNoAvailablePersons;
+    public bool HasAvailablePlayers => !HasNoAvailablePlayers;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -65,26 +65,26 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
         {
             IsBusy = true;
             ErrorMessage = null;
-            IReadOnlyList<SelectablePerson> people =
-                await createGroup.GetSelectablePeopleAsync(cancellationToken);
+            IReadOnlyList<SelectablePlayer> players =
+                await createGroup.GetSelectablePlayersAsync(cancellationToken);
 
-            AvailablePersons.Clear();
+            AvailablePlayers.Clear();
 
-            foreach (SelectablePerson person in people)
+            foreach (SelectablePlayer player in players)
             {
-                if (Members.All(member => member.ExistingPersonId != person.Id))
+                if (Players.All(candidate => candidate.ExistingPlayerId != player.Id))
                 {
-                    AvailablePersons.Add(person);
+                    AvailablePlayers.Add(player);
                 }
             }
 
-            SelectedExistingPerson = null;
+            SelectedExistingPlayer = null;
             UpdateCollectionStates();
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Could not load selectable people for group creation.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.LoadPersonsFailed, exception);
+            logger.LogError(exception, "Could not load selectable players for group creation.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.LoadPlayersFailed, exception);
         }
         finally
         {
@@ -92,104 +92,104 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
         }
     }
 
-    private bool CanAddSelectedPerson() =>
-        !IsBusy && SelectedExistingPerson is not null;
+    private bool CanAddSelectedPlayer() =>
+        !IsBusy && SelectedExistingPlayer is not null;
 
-    [RelayCommand(CanExecute = nameof(CanAddSelectedPerson))]
-    private void AddSelectedPerson()
+    [RelayCommand(CanExecute = nameof(CanAddSelectedPlayer))]
+    private void AddSelectedPlayer()
     {
-        SelectablePerson? person = SelectedExistingPerson;
+        SelectablePlayer? player = SelectedExistingPlayer;
 
-        if (person is null || Members.Any(member => member.ExistingPersonId == person.Id))
+        if (player is null || Players.Any(candidate => candidate.ExistingPlayerId == player.Id))
         {
             return;
         }
 
-        Members.Add(new CreateGroupMemberInput(person.Id, person.Name, person.IsGuest));
-        AvailablePersons.Remove(person);
-        SelectedExistingPerson = null;
+        Players.Add(new CreateGroupPlayerInput(player.Id, player.Name, player.IsGuest));
+        AvailablePlayers.Remove(player);
+        SelectedExistingPlayer = null;
         ErrorMessage = null;
-        MembersChanged();
+        PlayersChanged();
     }
 
     [RelayCommand]
-    private void AddNewPerson()
+    private void AddNewPlayer()
     {
         if (IsBusy)
         {
             return;
         }
 
-        string name = NewPersonName.Trim();
+        string name = NewPlayerName.Trim();
 
         if (string.IsNullOrWhiteSpace(name))
         {
-            ErrorMessage = AppResources.EnterPersonName;
+            ErrorMessage = AppResources.EnterPlayerName;
             return;
         }
 
-        Members.Add(new CreateGroupMemberInput(null, name, NewPersonIsGuest));
-        NewPersonName = string.Empty;
-        NewPersonIsGuest = false;
+        Players.Add(new CreateGroupPlayerInput(null, name, NewPlayerIsGuest));
+        NewPlayerName = string.Empty;
+        NewPlayerIsGuest = false;
         ErrorMessage = null;
-        MembersChanged();
+        PlayersChanged();
     }
 
     [RelayCommand]
-    private void RemoveMember(CreateGroupMemberInput? member)
+    private void RemovePlayer(CreateGroupPlayerInput? player)
     {
-        if (member is null || !Members.Remove(member))
+        if (player is null || !Players.Remove(player))
         {
             return;
         }
 
-        if (member.ExistingPersonId is Guid personId)
+        if (player.ExistingPlayerId is Guid playerId)
         {
-            AvailablePersons.Add(new SelectablePerson(
-                personId,
-                member.Name,
-                member.IsGuest));
+            AvailablePlayers.Add(new SelectablePlayer(
+                playerId,
+                player.Name,
+                player.IsGuest));
 
-            SortAvailablePersons();
+            SortAvailablePlayers();
         }
 
-        MembersChanged();
+        PlayersChanged();
     }
 
     [RelayCommand]
-    private void MoveMemberUp(CreateGroupMemberInput? member)
+    private void MovePlayerUp(CreateGroupPlayerInput? player)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        int index = Members.IndexOf(member);
+        int index = Players.IndexOf(player);
         if (index > 0)
         {
-            Members.Move(index, index - 1);
+            Players.Move(index, index - 1);
         }
     }
 
     [RelayCommand]
-    private void MoveMemberDown(CreateGroupMemberInput? member)
+    private void MovePlayerDown(CreateGroupPlayerInput? player)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        int index = Members.IndexOf(member);
-        if (index >= 0 && index < Members.Count - 1)
+        int index = Players.IndexOf(player);
+        if (index >= 0 && index < Players.Count - 1)
         {
-            Members.Move(index, index + 1);
+            Players.Move(index, index + 1);
         }
     }
 
     private bool CanSave() =>
         !IsBusy
         && !string.IsNullOrWhiteSpace(GroupName)
-        && Members.Count > 0;
+        && Players.Count > 0;
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -205,7 +205,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
             ErrorMessage = null;
 
             await createGroup.ExecuteAsync(
-                new CreateGroupCommand(GroupName, IsTemporary, [.. Members]));
+                new CreateGroupCommand(GroupName, IsTemporary, [.. Players]));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
@@ -220,7 +220,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
         }
     }
 
-    private void MembersChanged()
+    private void PlayersChanged()
     {
         SaveCommand.NotifyCanExecuteChanged();
         UpdateCollectionStates();
@@ -228,20 +228,20 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
 
     private void UpdateCollectionStates()
     {
-        HasNoMembers = Members.Count == 0;
-        HasNoAvailablePersons = AvailablePersons.Count == 0;
-        OnPropertyChanged(nameof(HasAvailablePersons));
+        HasNoPlayers = Players.Count == 0;
+        HasNoAvailablePlayers = AvailablePlayers.Count == 0;
+        OnPropertyChanged(nameof(HasAvailablePlayers));
     }
 
-    private void SortAvailablePersons()
+    private void SortAvailablePlayers()
     {
-        IReadOnlyList<SelectablePerson> ordered =
-            [.. AvailablePersons.OrderBy(person => person.Name, StringComparer.CurrentCultureIgnoreCase)];
+        IReadOnlyList<SelectablePlayer> ordered =
+            [.. AvailablePlayers.OrderBy(player => player.Name, StringComparer.CurrentCultureIgnoreCase)];
 
-        AvailablePersons.Clear();
-        foreach (SelectablePerson person in ordered)
+        AvailablePlayers.Clear();
+        foreach (SelectablePlayer player in ordered)
         {
-            AvailablePersons.Add(person);
+            AvailablePlayers.Add(player);
         }
     }
 }

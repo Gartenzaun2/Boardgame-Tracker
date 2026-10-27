@@ -2,6 +2,9 @@ using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
+using BoardgameTracker.Core.Games.ArkNova.Groups;
+using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 
@@ -36,21 +39,21 @@ public sealed class SqliteEditGroupDataAccess(
             return null;
         }
 
-        EditGroupMember[] members = await (
-            from membership in dbContext.GroupPersons.AsNoTracking()
-            join person in dbContext.Persons.AsNoTracking()
-                on membership.PersonId equals person.Id
+        EditGroupPlayer[] players = await (
+            from membership in dbContext.GroupPlayers.AsNoTracking()
+            join player in dbContext.Players.AsNoTracking()
+                on membership.PlayerId equals player.Id
             join arkNovaPlayer in dbContext.ArkNovaGroupPlayers.AsNoTracking()
-                on new { membership.GroupId, membership.PersonId }
-                equals new { arkNovaPlayer.GroupId, arkNovaPlayer.PersonId }
+                on new { membership.GroupId, membership.PlayerId }
+                equals new { arkNovaPlayer.GroupId, arkNovaPlayer.PlayerId }
                 into arkNovaPlayers
             from arkNovaPlayer in arkNovaPlayers.DefaultIfEmpty()
             where membership.GroupId == groupId
             orderby membership.DefaultOrder
-            select new EditGroupMember(
-                person.Id,
-                person.Name,
-                person.IsGuest,
+            select new EditGroupPlayer(
+                player.Id,
+                player.Name,
+                player.IsGuest,
                 membership.DefaultOrder,
                 arkNovaPlayer == null
                     ? (ArkNovaPlayerColor?)null
@@ -62,7 +65,7 @@ public sealed class SqliteEditGroupDataAccess(
             group.Name,
             group.IsTemporary,
             group.IsArchived,
-            members);
+            players);
     }
 
     public async Task<Group?> GetAggregateAsync(
@@ -73,7 +76,7 @@ public sealed class SqliteEditGroupDataAccess(
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
         return await dbContext.Groups
-            .Include(group => group.Members)
+            .Include(group => group.Players)
             .SingleOrDefaultAsync(group => group.Id == groupId, cancellationToken);
     }
 
@@ -106,50 +109,50 @@ public sealed class SqliteEditGroupDataAccess(
 
         // Move all persisted orders outside the normal 1..n range first.
         // This avoids transient collisions with the unique (GroupId, DefaultOrder)
-        // index while two members swap their positions.
-        int orderOffset = group.Members.Count + 1000;
+        // index while two players swap their positions.
+        int orderOffset = group.Players.Count + 1000;
 
-        await dbContext.GroupPersons
-            .Where(member => member.GroupId == group.Id)
+        await dbContext.GroupPlayers
+            .Where(player => player.GroupId == group.Id)
             .ExecuteUpdateAsync(
                 setters => setters.SetProperty(
-                    member => member.DefaultOrder,
-                    member => member.DefaultOrder + orderOffset),
+                    player => player.DefaultOrder,
+                    player => player.DefaultOrder + orderOffset),
                 cancellationToken);
 
-        foreach (GroupPerson member in group.Members.OrderBy(member => member.DefaultOrder))
+        foreach (GroupPlayer player in group.Players.OrderBy(player => player.DefaultOrder))
         {
-            int updatedMembers = await dbContext.GroupPersons
+            int updatedPlayers = await dbContext.GroupPlayers
                 .Where(candidate =>
                     candidate.GroupId == group.Id
-                    && candidate.PersonId == member.PersonId)
+                    && candidate.PlayerId == player.PlayerId)
                 .ExecuteUpdateAsync(
                     setters => setters.SetProperty(
                         candidate => candidate.DefaultOrder,
-                        member.DefaultOrder),
+                        player.DefaultOrder),
                     cancellationToken);
 
-            if (updatedMembers != 1)
+            if (updatedPlayers != 1)
             {
                 throw new InvalidOperationException(
-                    "A group member no longer exists.");
+                    "A group player no longer exists.");
             }
         }
 
         // Default colors form a tiny replaceable group-level snapshot. Replacing
         // the validated snapshot avoids transient unique-index collisions when two
-        // members swap colors in one edit operation. The surrounding transaction
+        // players swap colors in one edit operation. The surrounding transaction
         // keeps the delete-and-reinsert sequence atomic.
         await dbContext.ArkNovaGroupPlayers
             .Where(player => player.GroupId == group.Id)
             .ExecuteDeleteAsync(cancellationToken);
 
-        foreach ((Guid personId, ArkNovaPlayerColor? color) in arkNovaDefaultColors)
+        foreach ((Guid playerId, ArkNovaPlayerColor? color) in arkNovaDefaultColors)
         {
             if (color is ArkNovaPlayerColor selectedColor)
             {
                 dbContext.ArkNovaGroupPlayers.Add(
-                    new ArkNovaGroupPlayer(group.Id, personId, selectedColor));
+                    new ArkNovaGroupPlayer(group.Id, playerId, selectedColor));
             }
         }
 

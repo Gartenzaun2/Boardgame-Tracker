@@ -37,10 +37,10 @@ public partial class CreateGroupPage : ContentPage
             AppResources.Ok);
     }
 
-    private async void OnMembersInfoClicked(object? sender, EventArgs e)
+    private async void OnPlayersInfoClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync(
-            AppResources.GroupMembers,
+            AppResources.GroupPlayers,
             AppResources.DefaultOrderHint,
             AppResources.Ok);
     }

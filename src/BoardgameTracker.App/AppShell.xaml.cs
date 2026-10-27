@@ -1,8 +1,8 @@
-using BoardgameTracker.App.Features.GameSessions.Preparation;
-using BoardgameTracker.App.Features.GameSessions.Result;
-using BoardgameTracker.App.Features.GameSessions.Running;
-using BoardgameTracker.App.Features.GameSessions.Scoring;
-using BoardgameTracker.App.Features.Games.ArkNova.Settings;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
+using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
@@ -99,7 +99,7 @@ public partial class AppShell : Shell
         {
             SelectedGameKey = gameKey,
             LastMainSection = remember ? AppMainSection.Groups : current.LastMainSection,
-            LastSessionId = null
+            LastGameSessionId = null
         });
 
         await NavigateToMainSectionAsync(AppMainSection.Groups, remember);
@@ -107,13 +107,13 @@ public partial class AppShell : Shell
 
     public void EnableNavigationMemory() => _isNavigationMemoryEnabled = true;
 
-    public void RememberSession(Guid sessionId, string gameKey)
+    public void RememberGameSession(Guid gameSessionId, string gameKey)
     {
         AppNavigationSettings current = _navigationSettingsStore.Get();
         _navigationSettingsStore.Save(current with
         {
             SelectedGameKey = gameKey,
-            LastSessionId = sessionId
+            LastGameSessionId = gameSessionId
         });
     }
 
@@ -163,7 +163,7 @@ public partial class AppShell : Shell
         _navigationSettingsStore.Save(current with
         {
             LastMainSection = section,
-            LastSessionId = null
+            LastGameSessionId = null
         });
     }
 

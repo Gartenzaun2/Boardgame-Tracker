@@ -121,11 +121,11 @@ public partial class GroupListViewModel(
                         group.Name,
                         group.IsTemporary,
                         group.IsArchived,
-                        group.MemberCount,
-                        string.Join(" · ", group.MemberNames),
+                        group.PlayerCount,
+                        string.Join(" · ", group.PlayerNames),
                         lastPlayedText,
-                        group.OpenSessionId,
-                        group.OpenSessionStatus));
+                        group.OpenGameSessionId,
+                        group.OpenGameSessionStatus));
                 }
             }
             while (_reloadRequested && !cancellationToken.IsCancellationRequested);
@@ -156,11 +156,11 @@ public sealed record GroupListItemViewModel(
     string Name,
     bool IsTemporary,
     bool IsArchived,
-    int MemberCount,
-    string MemberNames,
+    int PlayerCount,
+    string PlayerNames,
     string LastPlayedText,
-    Guid? OpenSessionId,
-    GameSessionStatus? OpenSessionStatus)
+    Guid? OpenGameSessionId,
+    GameSessionStatus? OpenGameSessionStatus)
 {
-    public bool HasOpenSession => OpenSessionId is not null;
+    public bool HasOpenGameSession => OpenGameSessionId is not null;
 }

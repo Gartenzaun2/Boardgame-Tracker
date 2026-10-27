@@ -1,5 +1,5 @@
 using BoardgameTracker.App.Diagnostics;
-using BoardgameTracker.App.Features.Games.ArkNova;
+using BoardgameTracker.App.Games.ArkNova;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
@@ -7,6 +7,8 @@ using BoardgameTracker.Application.Groups.EditGroup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
@@ -15,7 +17,7 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// </summary>
 public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
-    public ObservableCollection<EditGroupMemberItemViewModel> Members { get; } = [];
+    public ObservableCollection<EditGroupPlayerItemViewModel> Players { get; } = [];
 
     [ObservableProperty]
     public partial Guid GroupId { get; private set; }
@@ -74,14 +76,14 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             MakePermanent = false;
             IsArchived = details.IsArchived;
 
-            Members.Clear();
-            foreach (EditGroupMember member in details.Members.OrderBy(member => member.DefaultOrder))
+            Players.Clear();
+            foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
             {
-                Members.Add(new EditGroupMemberItemViewModel(
-                    member.PersonId,
-                    member.Name,
-                    member.IsGuest,
-                    member.ArkNovaDefaultColor));
+                Players.Add(new EditGroupPlayerItemViewModel(
+                    player.PlayerId,
+                    player.Name,
+                    player.IsGuest,
+                    player.ArkNovaDefaultColor));
             }
 
             SaveCommand.NotifyCanExecuteChanged();
@@ -98,96 +100,96 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void MoveMemberUp(EditGroupMemberItemViewModel? member)
+    private void MovePlayerUp(EditGroupPlayerItemViewModel? player)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        int index = Members.IndexOf(member);
+        int index = Players.IndexOf(player);
         if (index > 0)
         {
-            Members.Move(index, index - 1);
+            Players.Move(index, index - 1);
         }
     }
 
     [RelayCommand]
-    private void MoveMemberDown(EditGroupMemberItemViewModel? member)
+    private void MovePlayerDown(EditGroupPlayerItemViewModel? player)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        int index = Members.IndexOf(member);
-        if (index >= 0 && index < Members.Count - 1)
+        int index = Players.IndexOf(player);
+        if (index >= 0 && index < Players.Count - 1)
         {
-            Members.Move(index, index + 1);
+            Players.Move(index, index + 1);
         }
     }
 
     [RelayCommand]
-    private void ToggleColorPicker(EditGroupMemberItemViewModel? member)
+    private void ToggleColorPicker(EditGroupPlayerItemViewModel? player)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        foreach (EditGroupMemberItemViewModel candidate in Members)
+        foreach (EditGroupPlayerItemViewModel candidate in Players)
         {
             candidate.IsColorPickerOpen =
-                ReferenceEquals(candidate, member) && !candidate.IsColorPickerOpen;
+                ReferenceEquals(candidate, player) && !candidate.IsColorPickerOpen;
         }
     }
 
     [RelayCommand]
-    private void SetBlue(EditGroupMemberItemViewModel? member) =>
-        SetDefaultColor(member, ArkNovaPlayerColor.Blue);
+    private void SetBlue(EditGroupPlayerItemViewModel? player) =>
+        SetDefaultColor(player, ArkNovaPlayerColor.Blue);
 
     [RelayCommand]
-    private void SetYellow(EditGroupMemberItemViewModel? member) =>
-        SetDefaultColor(member, ArkNovaPlayerColor.Yellow);
+    private void SetYellow(EditGroupPlayerItemViewModel? player) =>
+        SetDefaultColor(player, ArkNovaPlayerColor.Yellow);
 
     [RelayCommand]
-    private void SetRed(EditGroupMemberItemViewModel? member) =>
-        SetDefaultColor(member, ArkNovaPlayerColor.Red);
+    private void SetRed(EditGroupPlayerItemViewModel? player) =>
+        SetDefaultColor(player, ArkNovaPlayerColor.Red);
 
     [RelayCommand]
-    private void SetBlack(EditGroupMemberItemViewModel? member) =>
-        SetDefaultColor(member, ArkNovaPlayerColor.Black);
+    private void SetBlack(EditGroupPlayerItemViewModel? player) =>
+        SetDefaultColor(player, ArkNovaPlayerColor.Black);
 
     private void SetDefaultColor(
-        EditGroupMemberItemViewModel? member,
+        EditGroupPlayerItemViewModel? player,
         ArkNovaPlayerColor color)
     {
-        if (member is null)
+        if (player is null)
         {
             return;
         }
 
-        EditGroupMemberItemViewModel? currentOwner = Members
+        EditGroupPlayerItemViewModel? currentOwner = Players
             .FirstOrDefault(candidate =>
-                !ReferenceEquals(candidate, member)
+                !ReferenceEquals(candidate, player)
                 && candidate.DefaultColor == color);
 
-        ArkNovaPlayerColor? previousColor = member.DefaultColor;
-        member.DefaultColor = color;
+        ArkNovaPlayerColor? previousColor = player.DefaultColor;
+        player.DefaultColor = color;
 
         if (currentOwner is not null)
         {
             currentOwner.DefaultColor = previousColor;
         }
 
-        member.IsColorPickerOpen = false;
+        player.IsColorPickerOpen = false;
     }
 
     private bool CanSave() =>
         !IsBusy
         && GroupId != Guid.Empty
         && !string.IsNullOrWhiteSpace(GroupName)
-        && Members.Count > 0;
+        && Players.Count > 0;
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -202,18 +204,18 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             IsBusy = true;
             ErrorMessage = null;
 
-            IReadOnlyList<Guid> orderedPersonIds =
-                [.. Members.Select(member => member.PersonId)];
+            IReadOnlyList<Guid> orderedPlayerIds =
+                [.. Players.Select(player => player.PlayerId)];
 
-            Dictionary<Guid, ArkNovaPlayerColor?> defaultColors = Members
-                .ToDictionary(member => member.PersonId, member => member.DefaultColor);
+            Dictionary<Guid, ArkNovaPlayerColor?> defaultColors = Players
+                .ToDictionary(player => player.PlayerId, player => player.DefaultColor);
 
             await editGroup.ExecuteAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
                 MakePermanent,
                 IsArchived,
-                orderedPersonIds,
+                orderedPlayerIds,
                 defaultColors));
 
             Saved?.Invoke(this, EventArgs.Empty);
@@ -232,15 +234,15 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
 
 
 /// <summary>
-/// Presentation model for one fixed group member while editing order and Ark Nova default color.
+/// Presentation model for one fixed group player while editing order and Ark Nova default color.
 /// </summary>
-public partial class EditGroupMemberItemViewModel(
-    Guid personId,
+public partial class EditGroupPlayerItemViewModel(
+    Guid playerId,
     string name,
     bool isGuest,
     ArkNovaPlayerColor? defaultColor) : ObservableObject
 {
-    public Guid PersonId { get; } = personId;
+    public Guid PlayerId { get; } = playerId;
     public string Name { get; } = name;
     public bool IsGuest { get; } = isGuest;
 

@@ -3,48 +3,48 @@ using BoardgameTracker.Core.GameSessions;
 namespace BoardgameTracker.Application.GameSessions.Running;
 
 /// <summary>
-/// Orchestrates lifecycle actions that are available while a game session is
+/// Orchestrates lifecycle actions that are available while a game gameSession is
 /// running. Domain state transitions remain protected by <see cref="GameSession"/>.
 /// </summary>
 public sealed class RunningGameSessionUseCase(
     IRunningGameSessionDataAccess dataAccess)
 {
     public async Task BeginScoringAsync(
-        Guid sessionId,
+        Guid gameSessionId,
         DateTimeOffset endedAt,
         CancellationToken cancellationToken = default)
     {
-        GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
-        session.BeginScoring(endedAt);
-        await dataAccess.SaveAsync(session, cancellationToken);
+        GameSession gameSession = await GetRunningGameSessionAsync(gameSessionId, cancellationToken);
+        gameSession.BeginScoring(endedAt);
+        await dataAccess.SaveAsync(gameSession, cancellationToken);
     }
 
     public async Task DiscardAsync(
-        Guid sessionId,
+        Guid gameSessionId,
         CancellationToken cancellationToken = default)
     {
-        GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
-        await dataAccess.DeleteAsync(session, cancellationToken);
+        GameSession gameSession = await GetRunningGameSessionAsync(gameSessionId, cancellationToken);
+        await dataAccess.DeleteAsync(gameSession, cancellationToken);
     }
 
-    private async Task<GameSession> GetRunningSessionAsync(
-        Guid sessionId,
+    private async Task<GameSession> GetRunningGameSessionAsync(
+        Guid gameSessionId,
         CancellationToken cancellationToken)
     {
-        ArgumentOutOfRangeException.ThrowIfEqual(sessionId, Guid.Empty);
+        ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
 
-        GameSession? session = await dataAccess.FindAsync(sessionId, cancellationToken);
+        GameSession? gameSession = await dataAccess.FindAsync(gameSessionId, cancellationToken);
 
-        if (session is null)
+        if (gameSession is null)
         {
-            throw new InvalidOperationException("The game session does not exist.");
+            throw new InvalidOperationException("The game gameSession does not exist.");
         }
 
-        if (session.Status != GameSessionStatus.Running)
+        if (gameSession.Status != GameSessionStatus.Running)
         {
-            throw new InvalidOperationException("Only a running game session can be changed here.");
+            throw new InvalidOperationException("Only a running game gameSession can be changed here.");
         }
 
-        return session;
+        return gameSession;
     }
 }
