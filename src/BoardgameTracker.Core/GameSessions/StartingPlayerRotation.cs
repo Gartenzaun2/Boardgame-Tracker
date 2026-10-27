@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.GameSessions;
 
+/// <summary>
+/// Provides the pure cyclic rotation used to move a selected player to position one without changing relative seating order.
+/// </summary>
 public static class StartingPlayerRotation
 {
     public static IReadOnlyList<T> RotateToStart<T>(

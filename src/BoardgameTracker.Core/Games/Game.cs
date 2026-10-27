@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Games;
 
+/// <summary>
+/// Represents one supported board game using a stable, language-independent key.
+/// </summary>
 public sealed class Game
 {
     private Game()

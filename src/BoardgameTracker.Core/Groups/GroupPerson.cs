@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Groups;
 
+/// <summary>
+/// Represents one fixed membership inside a group together with its default seating order.
+/// </summary>
 public sealed class GroupPerson
 {
     private GroupPerson()

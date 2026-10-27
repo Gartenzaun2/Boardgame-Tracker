@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 
+/// <summary>
+/// Design-time DbContext factory used by EF Core tooling to create migrations outside the MAUI runtime.
+/// </summary>
 public sealed class BoardgameTrackerDbContextFactory
     : IDesignTimeDbContextFactory<BoardgameTrackerDbContext>
 {

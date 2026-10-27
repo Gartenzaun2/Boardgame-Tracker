@@ -3,6 +3,9 @@ using BoardgameTracker.Core.People;
 
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
+/// <summary>
+/// Application-owned persistence boundary containing only the technical operations required by the create-group use case.
+/// </summary>
 public interface ICreateGroupDataAccess
 {
     Task<IReadOnlyList<SelectablePerson>> GetSelectablePeopleAsync(

@@ -1,10 +1,15 @@
 using BoardgameTracker.App.Features.GameSessions.Running;
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.GameSessions.Preparation;
 
-[QueryProperty(nameof(GroupId), "GroupId")]
-public partial class ArkNovaPreparationPage : ContentPage
+/// <summary>
+/// MAUI view for Ark Nova preparation. It receives the group id through Shell,
+/// binds screen state to the view model and performs concrete Shell navigation.
+/// </summary>
+public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaPreparationViewModel _viewModel;
     private Guid _groupId;
@@ -16,10 +21,17 @@ public partial class ArkNovaPreparationPage : ContentPage
         BindingContext = _viewModel;
     }
 
-    public Guid GroupId
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        get => _groupId;
-        set => _groupId = value;
+        if (!query.TryGetValue(NavigationParameters.GroupId, out object? value)
+            || value is not Guid groupId
+            || groupId == Guid.Empty)
+        {
+            throw new InvalidOperationException(
+                $"Required navigation parameter '{NavigationParameters.GroupId}' is missing or invalid.");
+        }
+
+        _groupId = groupId;
     }
 
     protected override async void OnAppearing()
@@ -96,10 +108,13 @@ public partial class ArkNovaPreparationPage : ContentPage
                 .Select(player => player.Color)
                 .Distinct()
                 .Count() != _viewModel.Players.Count
-                ? "Jeder Spieler muss vor dem Start eine eigene Farbe haben."
-                : "Jeder Spieler muss vor dem Start einen Zooplan ausgewählt haben.";
+                ? AppResources.UniqueColorsRequired
+                : AppResources.ZooPlanSelectionRequired;
 
-            await DisplayAlertAsync("Partie kann nicht gestartet werden", message, "OK");
+            await DisplayAlertAsync(
+                AppResources.StartValidationTitle,
+                message,
+                AppResources.Ok);
             return;
         }
 
@@ -112,9 +127,9 @@ public partial class ArkNovaPreparationPage : ContentPage
 
         await Shell.Current.GoToAsync(
             nameof(ArkNovaRunningPage),
-            new Dictionary<string, object>
+            new ShellNavigationQueryParameters
             {
-                ["SessionId"] = sessionId.Value
+                [NavigationParameters.SessionId] = sessionId.Value
             });
     }
 }

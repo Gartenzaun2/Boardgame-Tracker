@@ -43,4 +43,13 @@ public sealed class ArkNovaSessionSetupTests
             new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 1, 2, null)
         ]));
     }
+
+    [Fact]
+    public void Validate_WithUndefinedPlayerColor_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaSessionSetup.Validate(
+        [
+            new(Guid.NewGuid(), (ArkNovaPlayerColor)999, 1, 2, 1)
+        ]));
+    }
 }

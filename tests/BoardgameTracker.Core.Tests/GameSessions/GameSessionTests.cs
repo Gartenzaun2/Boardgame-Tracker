@@ -18,6 +18,21 @@ public sealed class GameSessionTests
     }
 
     [Fact]
+    public void Complete_BeforeScoringEnd_Throws()
+    {
+        DateTimeOffset startedAt = DateTimeOffset.UtcNow;
+        GameSession session = new(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            startedAt,
+            [Guid.NewGuid()]);
+        session.BeginScoring(startedAt.AddMinutes(30));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            session.Complete(startedAt.AddMinutes(29)));
+    }
+
+    [Fact]
     public void BeginScoring_ThenComplete_UsesValidTransitions()
     {
         DateTimeOffset startedAt = DateTimeOffset.UtcNow;

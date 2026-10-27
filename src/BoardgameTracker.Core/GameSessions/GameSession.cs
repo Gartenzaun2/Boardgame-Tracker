@@ -1,5 +1,9 @@
 namespace BoardgameTracker.Core.GameSessions;
 
+/// <summary>
+/// Aggregate root for a persisted game session. It owns participants and protects
+/// the session lifecycle from Running through Scoring to Completed.
+/// </summary>
 public sealed class GameSession
 {
     private readonly List<GameSessionPlayer> _players = [];
@@ -81,7 +85,8 @@ public sealed class GameSession
                 "Only a session in scoring can be completed.");
         }
 
-        if (modifiedAt < StartedAt)
+        if (modifiedAt < StartedAt
+            || EndedAt is DateTimeOffset endedAt && modifiedAt < endedAt)
         {
             throw new ArgumentOutOfRangeException(nameof(modifiedAt));
         }

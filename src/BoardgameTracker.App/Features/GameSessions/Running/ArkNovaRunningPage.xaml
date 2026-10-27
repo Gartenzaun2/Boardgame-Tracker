@@ -3,11 +3,14 @@
     x:Class="BoardgameTracker.App.Features.GameSessions.Running.ArkNovaRunningPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.GameSessions.Running"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:DataType="local:ArkNovaRunningViewModel"
     Shell.NavBarIsVisible="False">
 
     <Grid Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
         <VerticalStackLayout Spacing="0">
-            <Label FontAttributes="Bold" FontSize="23" Text="Laufende Partie" />
+            <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.RunningGame}" />
             <Label
                 FontSize="13"
                 Text="{Binding GroupName}"
@@ -27,7 +30,7 @@
         <ScrollView Grid.Row="2">
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="10">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="local:ArkNovaRunningPlayerViewModel">
                         <Border
                             Padding="12"
                             BackgroundColor="{Binding ColorBrush}"
@@ -48,7 +51,7 @@
                                 <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                     <Label FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
                                     <Label FontSize="12" Text="{Binding ColorName}" />
-                                    <Label FontSize="12" Text="{Binding ZooPlanNumber, StringFormat='Zooplan {0}'}" />
+                                    <Label FontSize="12" Text="{Binding ZooPlanText}" />
                                 </VerticalStackLayout>
 
                                 <Border
@@ -88,12 +91,12 @@
             <Button
                 Clicked="OnEndClicked"
                 Style="{StaticResource PrimaryCompactButton}"
-                Text="Partie beenden" />
+                Text="{x:Static res:AppResources.EndGame}" />
             <Button
                 Grid.Column="1"
                 BackgroundColor="Transparent"
                 Clicked="OnDiscardClicked"
-                Text="Verwerfen"
+                Text="{x:Static res:AppResources.Discard}"
                 TextColor="{StaticResource Danger}" />
         </Grid>
 

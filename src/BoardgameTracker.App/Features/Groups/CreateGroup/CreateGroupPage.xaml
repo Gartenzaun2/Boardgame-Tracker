@@ -4,7 +4,10 @@
     x:Name="Page"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:application="clr-namespace:BoardgameTracker.Application.Groups.CreateGroup;assembly=BoardgameTracker.Application"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.CreateGroup"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:DataType="local:CreateGroupViewModel"
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto,*">
@@ -16,6 +19,7 @@
                 Clicked="OnBackClicked"
                 Source="icon_back.png"
                 Style="{StaticResource IconButton}"
+                SemanticProperties.Description="{x:Static res:AppResources.Back}"
                 ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
 
             <HorizontalStackLayout
@@ -31,6 +35,7 @@
                     Clicked="OnInfoClicked"
                     Source="icon_info.png"
                     Style="{StaticResource IconButton}"
+                    SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
                     ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
             </HorizontalStackLayout>
 
@@ -76,6 +81,7 @@
                             Clicked="OnMembersInfoClicked"
                             Source="icon_info.png"
                             Style="{StaticResource IconButton}"
+                            SemanticProperties.Description="{x:Static res:AppResources.DefaultOrderHint}"
                             ToolTipProperties.Text="{x:Static res:AppResources.DefaultOrderHint}" />
                     </HorizontalStackLayout>
 
@@ -86,7 +92,7 @@
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="application:CreateGroupMemberInput">
                                 <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
                                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                         <VerticalStackLayout Spacing="2">
@@ -97,9 +103,9 @@
                                                 Text="{x:Static res:AppResources.Guest}"
                                                 TextColor="{StaticResource TextSecondary}" />
                                         </VerticalStackLayout>
-                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↑" />
-                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="↓" />
-                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}" CommandParameter="{Binding .}" Padding="10,4" Text="×" />
+                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -112,7 +118,7 @@
                         <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPerson}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePersons}">
                             <Picker
-                                ItemDisplayBinding="{Binding Name}"
+                                ItemDisplayBinding="{Binding Name, x:DataType=application:SelectablePerson}"
                                 ItemsSource="{Binding AvailablePersons}"
                                 SelectedItem="{Binding SelectedExistingPerson}"
                                 Title="{x:Static res:AppResources.SelectPerson}" />
@@ -120,6 +126,7 @@
                                 Grid.Column="1"
                                 Command="{Binding AddSelectedPersonCommand}"
                                 Style="{StaticResource CompactActionButton}"
+                                SemanticProperties.Description="{x:Static res:AppResources.AddExistingPerson}"
                                 Text="+"
                                 VerticalOptions="Center" />
                         </Grid>
@@ -139,7 +146,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
             </VerticalStackLayout>
         </ScrollView>

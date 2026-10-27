@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Games.ArkNova;
 
+/// <summary>
+/// SQLite implementation of the Ark Nova start-session persistence boundary, saving the generic and game-specific session snapshot in one SaveChanges operation.
+/// </summary>
 public sealed class SqliteStartArkNovaSessionDataAccess(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IStartArkNovaSessionDataAccess
@@ -33,7 +36,7 @@ public sealed class SqliteStartArkNovaSessionDataAccess(
 
         Guid? gameId = await dbContext.Games
             .AsNoTracking()
-            .Where(game => game.Key == "ark-nova")
+            .Where(game => game.Key == ArkNovaGame.Key)
             .Select(game => (Guid?)game.Id)
             .SingleOrDefaultAsync(cancellationToken);
 

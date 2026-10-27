@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps group membership, default ordering and uniqueness constraints to SQLite.
+/// </summary>
 internal sealed class GroupPersonConfiguration : IEntityTypeConfiguration<GroupPerson>
 {
     public void Configure(EntityTypeBuilder<GroupPerson> builder)

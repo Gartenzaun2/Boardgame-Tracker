@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 
+/// <summary>
+/// Centralizes provider options shared by runtime and design-time SQLite DbContext creation.
+/// </summary>
 public static class BoardgameTrackerDbContextOptions
 {
     public static void Configure(

@@ -8,6 +8,9 @@ using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App;
 
+/// <summary>
+/// Defines the MAUI Shell root and registers feature routes; it does not contain domain or persistence logic.
+/// </summary>
 public partial class AppShell : Shell
 {
     public AppShell(GroupListPage groupListPage)

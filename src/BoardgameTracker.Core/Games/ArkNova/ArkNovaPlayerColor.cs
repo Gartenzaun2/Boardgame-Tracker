@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
+/// <summary>
+/// Defines the four player colors supported by Ark Nova.
+/// </summary>
 public enum ArkNovaPlayerColor
 {
     Blue = 1,

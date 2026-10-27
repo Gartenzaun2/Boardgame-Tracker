@@ -1,9 +1,14 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.GameSessions.Preparation;
+using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
+/// <summary>
+/// Shell root page for selecting, creating and editing groups. Concrete navigation
+/// stays in the view while navigation re-entry state is held by the view model.
+/// </summary>
 public partial class GroupListPage : ContentPage
 {
     private readonly GroupListViewModel _viewModel;
@@ -40,7 +45,6 @@ public partial class GroupListPage : ContentPage
         }
     }
 
-
     private async void OnGroupTapped(object? sender, TappedEventArgs e)
     {
         if (e.Parameter is not Guid groupId || !_viewModel.TryBeginNavigation())
@@ -60,7 +64,7 @@ public partial class GroupListPage : ContentPage
         {
             await Shell.Current.GoToAsync(
                 nameof(ArkNovaPreparationPage),
-                new Dictionary<string, object> { ["GroupId"] = groupId });
+                new ShellNavigationQueryParameters { [NavigationParameters.GroupId] = groupId });
         }
         catch
         {
@@ -81,7 +85,7 @@ public partial class GroupListPage : ContentPage
         {
             await Shell.Current.GoToAsync(
                 nameof(EditGroupPage),
-                new Dictionary<string, object> { ["GroupId"] = groupId });
+                new ShellNavigationQueryParameters { [NavigationParameters.GroupId] = groupId });
         }
         catch
         {
@@ -89,5 +93,4 @@ public partial class GroupListPage : ContentPage
             throw;
         }
     }
-
 }

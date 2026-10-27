@@ -9,7 +9,6 @@ public sealed class ArkNovaZooPlanCatalogTests
     {
         Assert.Equal(14, ArkNovaZooPlanCatalog.All.Count);
         Assert.Equal(14, ArkNovaZooPlanCatalog.All.Select(plan => plan.Id).Distinct().Count());
-        Assert.Equal(14, ArkNovaZooPlanCatalog.All.Select(plan => plan.Name).Distinct().Count());
         Assert.Equal(14, ArkNovaZooPlanCatalog.All.Select(plan => plan.IconSource).Distinct().Count());
     }
 

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 
+/// <summary>
+/// SQLite implementation of the group-overview read projection.
+/// </summary>
 public sealed class SqliteListGroupsQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IListGroupsQuery
@@ -22,8 +25,15 @@ public sealed class SqliteListGroupsQuery(
             .Select(group => new { group.Id, group.Name, group.IsTemporary, group.IsArchived })
             .ToListAsync(cancellationToken);
 
+        Guid[] groupIds = [.. groups.Select(group => group.Id)];
+        if (groupIds.Length == 0)
+        {
+            return [];
+        }
+
         var members = await (
             from membership in dbContext.GroupPersons.AsNoTracking()
+            where groupIds.Contains(membership.GroupId)
             join person in dbContext.Persons.AsNoTracking()
                 on membership.PersonId equals person.Id
             select new
@@ -35,9 +45,11 @@ public sealed class SqliteListGroupsQuery(
             .ToListAsync(cancellationToken);
 
         // SQLite stores DateTimeOffset, but provider-side ordering/aggregation is limited.
-        // We therefore fetch only the two required columns and calculate Max in memory.
+        // We therefore fetch only the two required columns for the visible groups and
+        // calculate Max in memory.
         var sessionDates = await dbContext.GameSessions
             .AsNoTracking()
+            .Where(session => groupIds.Contains(session.GroupId))
             .Select(session => new { session.GroupId, session.StartedAt })
             .ToListAsync(cancellationToken);
 
@@ -56,22 +68,24 @@ public sealed class SqliteListGroupsQuery(
                     .Select(member => member.Name)
                     .ToArray());
 
-        return groups
-            .Select(group =>
-            {
-                string[] memberNames = memberNamesByGroup.GetValueOrDefault(group.Id) ?? [];
+        return
+        [
+            .. groups
+                .Select(group =>
+                {
+                    string[] memberNames = memberNamesByGroup.GetValueOrDefault(group.Id) ?? [];
 
-                return new GroupListItem(
-                    group.Id,
-                    group.Name,
-                    group.IsTemporary,
-                    group.IsArchived,
-                    memberNames.Length,
-                    memberNames,
-                    lastPlayedByGroup.GetValueOrDefault(group.Id));
-            })
-            .OrderByDescending(group => group.LastPlayedAt)
-            .ThenBy(group => group.Name)
-            .ToArray();
+                    return new GroupListItem(
+                        group.Id,
+                        group.Name,
+                        group.IsTemporary,
+                        group.IsArchived,
+                        memberNames.Length,
+                        memberNames,
+                        lastPlayedByGroup.GetValueOrDefault(group.Id));
+                })
+                .OrderByDescending(group => group.LastPlayedAt)
+                .ThenBy(group => group.Name)
+        ];
     }
 }

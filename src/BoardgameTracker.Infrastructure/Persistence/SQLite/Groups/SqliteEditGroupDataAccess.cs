@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 
+/// <summary>
+/// SQLite implementation of the group-edit slice persistence boundary.
+/// </summary>
 public sealed class SqliteEditGroupDataAccess(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IEditGroupDataAccess
@@ -133,33 +136,20 @@ public sealed class SqliteEditGroupDataAccess(
             }
         }
 
-        ArkNovaGroupPlayer[] existingDefaults = await dbContext.ArkNovaGroupPlayers
+        // Default colors form a tiny replaceable group-level snapshot. Replacing
+        // the validated snapshot avoids transient unique-index collisions when two
+        // members swap colors in one edit operation. The surrounding transaction
+        // keeps the delete-and-reinsert sequence atomic.
+        await dbContext.ArkNovaGroupPlayers
             .Where(player => player.GroupId == group.Id)
-            .ToArrayAsync(cancellationToken);
+            .ExecuteDeleteAsync(cancellationToken);
 
         foreach ((Guid personId, ArkNovaPlayerColor? color) in arkNovaDefaultColors)
         {
-            ArkNovaGroupPlayer? existing = existingDefaults
-                .SingleOrDefault(player => player.PersonId == personId);
-
-            if (color is null)
-            {
-                if (existing is not null)
-                {
-                    dbContext.ArkNovaGroupPlayers.Remove(existing);
-                }
-
-                continue;
-            }
-
-            if (existing is null)
+            if (color is ArkNovaPlayerColor selectedColor)
             {
                 dbContext.ArkNovaGroupPlayers.Add(
-                    new ArkNovaGroupPlayer(group.Id, personId, color.Value));
-            }
-            else
-            {
-                existing.SetDefaultColor(color.Value);
+                    new ArkNovaGroupPlayer(group.Id, personId, selectedColor));
             }
         }
 

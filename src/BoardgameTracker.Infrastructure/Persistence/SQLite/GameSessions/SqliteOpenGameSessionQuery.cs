@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 
+/// <summary>
+/// SQLite implementation of the startup query that finds the most recently modified unfinished session.
+/// </summary>
 public sealed class SqliteOpenGameSessionQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IOpenGameSessionQuery

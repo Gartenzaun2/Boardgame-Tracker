@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
+/// <summary>
+/// Represents stable Ark Nova zoo-plan reference data persisted by id, localized name key and image key.
+/// </summary>
 public sealed class ArkNovaZooPlan
 {
     private ArkNovaZooPlan()

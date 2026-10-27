@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 
+/// <summary>
+/// SQLite implementation of the create-group slice persistence boundary.
+/// </summary>
 public sealed class SqliteCreateGroupDataAccess(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : ICreateGroupDataAccess
@@ -38,7 +41,7 @@ public sealed class SqliteCreateGroupDataAccess(
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        Guid[] requestedIds = personIds.ToArray();
+        Guid[] requestedIds = [.. personIds];
 
         Guid[] ids = await dbContext.Persons
             .AsNoTracking()

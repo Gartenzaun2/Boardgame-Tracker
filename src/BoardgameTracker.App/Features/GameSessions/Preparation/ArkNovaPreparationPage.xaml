@@ -3,6 +3,9 @@
     x:Class="BoardgameTracker.App.Features.GameSessions.Preparation.ArkNovaPreparationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.GameSessions.Preparation"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:DataType="local:ArkNovaPreparationViewModel"
     Shell.NavBarIsVisible="False">
 
     <Grid Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
@@ -10,17 +13,19 @@
             <ImageButton
                 Clicked="OnBackClicked"
                 Source="icon_back.png"
-                Style="{StaticResource IconButton}" />
+                Style="{StaticResource IconButton}"
+                SemanticProperties.Description="{x:Static res:AppResources.Back}" />
             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                 <Grid ColumnDefinitions="*,Auto">
-                    <Label FontAttributes="Bold" FontSize="23" Text="Partie vorbereiten" VerticalOptions="Center" />
+                    <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.PrepareGame}" VerticalOptions="Center" />
                     <ImageButton
                         Grid.Column="1"
                         Clicked="OnRandomStartClicked"
                         Margin="12,0,0,0"
                         Source="icon_dice.png"
                         Style="{StaticResource IconButton}"
-                        ToolTipProperties.Text="Startspieler bestimmen" />
+                        SemanticProperties.Description="{x:Static res:AppResources.DetermineStartingPlayer}"
+                        ToolTipProperties.Text="{x:Static res:AppResources.DetermineStartingPlayer}" />
                 </Grid>
                 <Label
                     Margin="0,-4,0,0"
@@ -32,6 +37,7 @@
 
         <Label
             Grid.Row="1"
+            IsVisible="{Binding HasError}"
             Text="{Binding ErrorMessage}"
             TextColor="{StaticResource Danger}" />
 
@@ -45,17 +51,17 @@
                     <Button
                         Clicked="OnDrawZooPlansClicked"
                         Style="{StaticResource CompactActionButton}"
-                        Text="Zoopläne auslosen" />
+                        Text="{x:Static res:AppResources.DrawZooPlans}" />
                     <Button
                         Grid.Column="1"
                         Clicked="OnRotateOrderClicked"
                         Style="{StaticResource CompactActionButton}"
-                        Text="Reihenfolge durchrotieren" />
+                        Text="{x:Static res:AppResources.RotateOrder}" />
                 </Grid>
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="0">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="local:ArkNovaPreparationPlayerViewModel">
                             <Border
                                 Margin="0,0,0,10"
                                 Padding="12"
@@ -83,7 +89,8 @@
                                             Clicked="OnColorClicked"
                                             Source="icon_palette.png"
                                             Style="{StaticResource IconButton}"
-                                            ToolTipProperties.Text="Farbe wählen" />
+                                            SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}"
+                                            ToolTipProperties.Text="{x:Static res:AppResources.ChooseColor}" />
                                     </Grid>
 
                                     <HorizontalStackLayout
@@ -92,36 +99,40 @@
                                         Spacing="8">
                                         <Button
                                             BackgroundColor="#8BC4E8"
+                                            SemanticProperties.Description="{x:Static res:AppResources.Blue}"
                                             Clicked="OnBlueColorClicked"
                                             IsVisible="{Binding CanChooseBlue}"
-                                            HeightRequest="36"
+                                            HeightRequest="44"
                                             Padding="0"
                                             Text=""
-                                            WidthRequest="36" />
+                                            WidthRequest="44" />
                                         <Button
                                             BackgroundColor="#F2D65C"
+                                            SemanticProperties.Description="{x:Static res:AppResources.Yellow}"
                                             Clicked="OnYellowColorClicked"
                                             IsVisible="{Binding CanChooseYellow}"
-                                            HeightRequest="36"
+                                            HeightRequest="44"
                                             Padding="0"
                                             Text=""
-                                            WidthRequest="36" />
+                                            WidthRequest="44" />
                                         <Button
                                             BackgroundColor="#E98A84"
+                                            SemanticProperties.Description="{x:Static res:AppResources.Red}"
                                             Clicked="OnRedColorClicked"
                                             IsVisible="{Binding CanChooseRed}"
-                                            HeightRequest="36"
+                                            HeightRequest="44"
                                             Padding="0"
                                             Text=""
-                                            WidthRequest="36" />
+                                            WidthRequest="44" />
                                         <Button
                                             BackgroundColor="#404040"
+                                            SemanticProperties.Description="{x:Static res:AppResources.Black}"
                                             Clicked="OnBlackColorClicked"
                                             IsVisible="{Binding CanChooseBlack}"
-                                            HeightRequest="36"
+                                            HeightRequest="44"
                                             Padding="0"
                                             Text=""
-                                            WidthRequest="36" />
+                                            WidthRequest="44" />
                                     </HorizontalStackLayout>
 
                                     <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasZooPlans}">
@@ -203,7 +214,7 @@
             Grid.Row="3"
             Clicked="OnStartClicked"
             Style="{StaticResource PrimaryCompactButton}"
-            Text="Starten" />
+            Text="{x:Static res:AppResources.StartGame}" />
 
         <Grid
             Grid.RowSpan="4"

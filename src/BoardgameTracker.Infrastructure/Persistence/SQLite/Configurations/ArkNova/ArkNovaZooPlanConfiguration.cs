@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations.ArkNova;
 
+/// <summary>
+/// Maps stable Ark Nova zoo-plan reference data to SQLite.
+/// </summary>
 internal sealed class ArkNovaZooPlanConfiguration
     : IEntityTypeConfiguration<ArkNovaZooPlan>
 {

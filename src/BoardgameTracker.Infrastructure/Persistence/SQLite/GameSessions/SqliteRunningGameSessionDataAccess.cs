@@ -4,77 +4,53 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 
+/// <summary>
+/// SQLite implementation of the running-session lifecycle persistence port.
+/// A fresh DbContext is used per operation so no tracked state leaks across use-case calls.
+/// </summary>
 public sealed class SqliteRunningGameSessionDataAccess(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IRunningGameSessionDataAccess
 {
-    private BoardgameTrackerDbContext? _trackedContext;
-
     public async Task<GameSession?> FindAsync(
         Guid sessionId,
         CancellationToken cancellationToken = default)
     {
-        await DisposeTrackedContextAsync();
-        _trackedContext = await contextFactory.CreateDbContextAsync(cancellationToken);
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await _trackedContext.GameSessions
-            .Include(session => session.Players)
+        return await dbContext.GameSessions
+            .AsNoTracking()
             .SingleOrDefaultAsync(
                 session => session.Id == sessionId,
                 cancellationToken);
     }
 
-    public async Task SaveAsync(CancellationToken cancellationToken = default)
+    public async Task SaveAsync(
+        GameSession session,
+        CancellationToken cancellationToken = default)
     {
-        if (_trackedContext is null)
-        {
-            throw new InvalidOperationException("No tracked game session has been loaded.");
-        }
+        ArgumentNullException.ThrowIfNull(session);
 
-        try
-        {
-            await _trackedContext.SaveChangesAsync(cancellationToken);
-        }
-        finally
-        {
-            await DisposeTrackedContextAsync();
-        }
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        dbContext.Attach(session);
+        dbContext.Entry(session).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(
         GameSession session,
         CancellationToken cancellationToken = default)
     {
-        if (_trackedContext is null)
-        {
-            throw new InvalidOperationException("No tracked game session has been loaded.");
-        }
+        ArgumentNullException.ThrowIfNull(session);
 
-        try
-        {
-            _trackedContext.GameSessions.Remove(session);
-            await _trackedContext.SaveChangesAsync(cancellationToken);
-        }
-        finally
-        {
-            await DisposeTrackedContextAsync();
-        }
-    }
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
 
-    public async ValueTask DisposeAsync()
-    {
-        await DisposeTrackedContextAsync();
-        GC.SuppressFinalize(this);
-    }
-
-    private async Task DisposeTrackedContextAsync()
-    {
-        if (_trackedContext is null)
-        {
-            return;
-        }
-
-        await _trackedContext.DisposeAsync();
-        _trackedContext = null;
+        dbContext.Attach(session);
+        dbContext.GameSessions.Remove(session);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Features.Games.ArkNova;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.Preparation;
 using BoardgameTracker.Application.Games.ArkNova.StartSession;
 using BoardgameTracker.Core.GameSessions;
@@ -10,6 +12,10 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.GameSessions.Preparation;
 
+/// <summary>
+/// Holds the non-persisted screen state for preparing an Ark Nova session and
+/// delegates persistence to the start-session Application use case.
+/// </summary>
 public partial class ArkNovaPreparationViewModel(
     IArkNovaPreparationQuery preparationQuery,
     StartArkNovaSessionUseCase startSessionUseCase,
@@ -26,7 +32,7 @@ public partial class ArkNovaPreparationViewModel(
     public partial string GroupName { get; private set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string LastSessionText { get; private set; } = "Keine letzte Partie vorhanden.";
+    public partial string LastSessionText { get; private set; } = AppResources.NoPreviousSession;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanStart))]
@@ -43,7 +49,7 @@ public partial class ArkNovaPreparationViewModel(
 
     public bool CanStart =>
         !IsBusy
-        && Players.Count is >= 1 and <= 4
+        && Players.Count is >= ArkNovaSessionSetup.MinimumPlayerCount and <= ArkNovaSessionSetup.MaximumPlayerCount
         && Players.All(player => player.SelectedZooPlanId is not null)
         && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
 
@@ -67,7 +73,7 @@ public partial class ArkNovaPreparationViewModel(
 
             if (data is null)
             {
-                ErrorMessage = "Die Gruppe wurde nicht gefunden.";
+                ErrorMessage = AppResources.GroupNotFoundForPreparation;
                 return;
             }
 
@@ -79,13 +85,13 @@ public partial class ArkNovaPreparationViewModel(
 
             if (data.IsArchived)
             {
-                ErrorMessage = "Archivierte Gruppen können keine neue Partie starten.";
+                ErrorMessage = AppResources.ArchivedGroupCannotStart;
                 return;
             }
 
-            if (data.Players.Count is < 1 or > 4)
+            if (data.Players.Count is < ArkNovaSessionSetup.MinimumPlayerCount or > ArkNovaSessionSetup.MaximumPlayerCount)
             {
-                ErrorMessage = "Arche Nova unterstützt in dieser App Gruppen mit 1 bis 4 Personen.";
+                ErrorMessage = AppResources.ArkNovaPlayerCountError;
                 return;
             }
 
@@ -103,13 +109,8 @@ public partial class ArkNovaPreparationViewModel(
 
             if (data.LastSession is not null)
             {
-                Guid? startingPlayerId = ArkNovaStartingPlayerRule.SelectFromPreviousPlacements(
-                    data.LastSession.Placements
-                        .Select(placement => new ArkNovaPreviousPlacement(
-                            placement.PersonId,
-                            placement.Name,
-                            placement.Placement))
-                        .ToArray());
+                Guid? startingPlayerId =
+                    ArkNovaStartingPlayerRule.SelectFromPreviousPlacements(data.LastSession.Placements);
 
                 if (startingPlayerId is Guid personId)
                 {
@@ -122,8 +123,9 @@ public partial class ArkNovaPreparationViewModel(
 
                     if (startIndex > 0)
                     {
+                        IReadOnlyList<ArkNovaPreparationPlayerViewModel> currentOrder = [.. Players];
                         IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
-                            StartingPlayerRotation.RotateToStart(Players.ToArray(), startIndex);
+                            StartingPlayerRotation.RotateToStart(currentOrder, startIndex);
                         ReplacePlayers(rotated);
                     }
                 }
@@ -133,7 +135,7 @@ public partial class ArkNovaPreparationViewModel(
         {
             logger.LogError(exception, "Could not load Ark Nova preparation for group {GroupId}.", groupId);
             ErrorMessage = UserErrorMessage.Create(
-                "Die Partievorbereitung konnte nicht geladen werden.",
+                AppResources.LoadPreparationFailed,
                 exception);
         }
         finally
@@ -151,7 +153,7 @@ public partial class ArkNovaPreparationViewModel(
         }
 
         IReadOnlyList<ArkNovaZooPlanDraw> draws = ArkNovaPreparationDraw.Draw(
-            Players.Select(player => player.PersonId).ToArray(),
+            [.. Players.Select(player => player.PersonId)],
             Random.Shared);
 
         foreach (ArkNovaZooPlanDraw draw in draws)
@@ -180,8 +182,9 @@ public partial class ArkNovaPreparationViewModel(
         }
 
         int startIndex = Random.Shared.Next(Players.Count);
+        IReadOnlyList<ArkNovaPreparationPlayerViewModel> currentOrder = [.. Players];
         IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
-            StartingPlayerRotation.RotateToStart(Players.ToArray(), startIndex);
+            StartingPlayerRotation.RotateToStart(currentOrder, startIndex);
 
         ReplacePlayers(rotated);
     }
@@ -193,8 +196,9 @@ public partial class ArkNovaPreparationViewModel(
             return;
         }
 
+        IReadOnlyList<ArkNovaPreparationPlayerViewModel> currentOrder = [.. Players];
         IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
-            StartingPlayerRotation.RotateToStart(Players.ToArray(), 1);
+            StartingPlayerRotation.RotateToStart(currentOrder, 1);
 
         ReplacePlayers(rotated);
     }
@@ -232,16 +236,20 @@ public partial class ArkNovaPreparationViewModel(
             IsBusy = true;
             ErrorMessage = null;
 
-            var command = new StartArkNovaSessionCommand(
-                GroupId,
-                DateTimeOffset.UtcNow,
-                Players.Select(player => new ArkNovaSessionSetupPlayer(
+            IReadOnlyList<ArkNovaSessionSetupPlayer> setupPlayers =
+            [
+                .. Players.Select(player => new ArkNovaSessionSetupPlayer(
                     player.PersonId,
                     player.Color,
                     player.ZooPlanOption1!.Id,
                     player.ZooPlanOption2!.Id,
-                    player.SelectedZooPlanId)).ToList()
-                 );
+                    player.SelectedZooPlanId))
+            ];
+
+            StartArkNovaSessionCommand command = new(
+                GroupId,
+                DateTimeOffset.UtcNow,
+                setupPlayers);
 
             return await startSessionUseCase.ExecuteAsync(command, cancellationToken);
         }
@@ -249,7 +257,7 @@ public partial class ArkNovaPreparationViewModel(
         {
             logger.LogError(exception, "Could not start Ark Nova session for group {GroupId}.", GroupId);
             ErrorMessage = UserErrorMessage.Create(
-                "Die Partie konnte nicht gestartet werden.",
+                AppResources.StartGameFailed,
                 exception);
             return null;
         }
@@ -264,10 +272,10 @@ public partial class ArkNovaPreparationViewModel(
     {
         if (lastSession is null)
         {
-            return "Keine letzte Partie vorhanden.";
+            return AppResources.NoPreviousSession;
         }
 
-        string header = $"Letzte Partie: {lastSession.StartedAt.ToLocalTime():d}";
+        string header = string.Format(AppResources.PreviousSessionFormat, lastSession.StartedAt.ToLocalTime().ToString("d"));
 
         if (lastSession.Placements.Count == 0)
         {
@@ -329,6 +337,10 @@ public partial class ArkNovaPreparationViewModel(
     }
 }
 
+/// <summary>
+/// Presentation model for one player tile during Ark Nova preparation. It contains
+/// temporary choices that are persisted only after the session starts.
+/// </summary>
 public partial class ArkNovaPreparationPlayerViewModel(
     Guid personId,
     string name,
@@ -350,11 +362,6 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [NotifyPropertyChangedFor(nameof(CanChooseBlack))]
     public partial ArkNovaPlayerColor Color { get; set; } = color;
 
-    partial void OnColorChanged(ArkNovaPlayerColor value)
-    {
-        // The parent view model validates duplicate colors when starting.
-    }
-
     [ObservableProperty]
     public partial bool IsColorPickerOpen { get; set; }
 
@@ -375,23 +382,10 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [NotifyPropertyChangedFor(nameof(Option2StrokeThickness))]
     public partial int? SelectedZooPlanId { get; private set; }
 
-    public string ColorName => Color switch
-    {
-        ArkNovaPlayerColor.Blue => "Blau",
-        ArkNovaPlayerColor.Yellow => "Gelb",
-        ArkNovaPlayerColor.Red => "Rot",
-        ArkNovaPlayerColor.Black => "Schwarz",
-        _ => Color.ToString()
-    };
+    public string ColorName => ArkNovaPlayerColorPresentation.GetName(Color);
 
-    public Microsoft.Maui.Graphics.Color ColorBrush => Color switch
-    {
-        ArkNovaPlayerColor.Blue => Microsoft.Maui.Graphics.Color.FromArgb("#8BC4E8"),
-        ArkNovaPlayerColor.Yellow => Microsoft.Maui.Graphics.Color.FromArgb("#F2D65C"),
-        ArkNovaPlayerColor.Red => Microsoft.Maui.Graphics.Color.FromArgb("#E98A84"),
-        ArkNovaPlayerColor.Black => Microsoft.Maui.Graphics.Color.FromArgb("#808080"),
-        _ => Microsoft.Maui.Graphics.Colors.Transparent
-    };
+    public Microsoft.Maui.Graphics.Color ColorBrush =>
+        ArkNovaPlayerColorPresentation.GetTint(Color);
 
     public bool CanChooseBlue => Color != ArkNovaPlayerColor.Blue;
     public bool CanChooseYellow => Color != ArkNovaPlayerColor.Yellow;
@@ -422,8 +416,6 @@ public partial class ArkNovaPreparationPlayerViewModel(
         ZooPlanOption1 = option1;
         ZooPlanOption2 = option2;
         SelectedZooPlanId = null;
-        OnPropertyChanged(nameof(Option1Selected));
-        OnPropertyChanged(nameof(Option2Selected));
     }
 
     public void SelectZooPlan(int optionNumber)

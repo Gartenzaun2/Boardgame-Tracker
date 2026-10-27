@@ -1,4 +1,3 @@
-using BoardgameTracker.App.Features.Groups;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -9,10 +8,13 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
+/// <summary>
+/// Owns create-group screen state and translates UI input into the create-group Application command.
+/// </summary>
 public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
-    public ObservableCollection<AvailablePersonItemViewModel> AvailablePersons { get; } = [];
-    public ObservableCollection<GroupMemberItemViewModel> Members { get; } = [];
+    public ObservableCollection<SelectablePerson> AvailablePersons { get; } = [];
+    public ObservableCollection<CreateGroupMemberInput> Members { get; } = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -23,7 +25,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddSelectedPersonCommand))]
-    public partial AvailablePersonItemViewModel? SelectedExistingPerson { get; set; }
+    public partial SelectablePerson? SelectedExistingPerson { get; set; }
 
     [ObservableProperty]
     public partial string NewPersonName { get; set; } = string.Empty;
@@ -37,7 +39,10 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
     public partial bool HasNoMembers { get; private set; } = true;
@@ -67,12 +72,9 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
 
             foreach (SelectablePerson person in people)
             {
-                if (Members.All(member => member.PersonId != person.Id))
+                if (Members.All(member => member.ExistingPersonId != person.Id))
                 {
-                    AvailablePersons.Add(new AvailablePersonItemViewModel(
-                        person.Id,
-                        person.Name,
-                        person.IsGuest));
+                    AvailablePersons.Add(person);
                 }
             }
 
@@ -96,14 +98,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     [RelayCommand(CanExecute = nameof(CanAddSelectedPerson))]
     private void AddSelectedPerson()
     {
-        AvailablePersonItemViewModel? person = SelectedExistingPerson;
+        SelectablePerson? person = SelectedExistingPerson;
 
-        if (person is null || Members.Any(member => member.PersonId == person.Id))
+        if (person is null || Members.Any(member => member.ExistingPersonId == person.Id))
         {
             return;
         }
 
-        Members.Add(new GroupMemberItemViewModel(person.Id, person.Name, person.IsGuest));
+        Members.Add(new CreateGroupMemberInput(person.Id, person.Name, person.IsGuest));
         AvailablePersons.Remove(person);
         SelectedExistingPerson = null;
         ErrorMessage = null;
@@ -126,7 +128,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
             return;
         }
 
-        Members.Add(new GroupMemberItemViewModel(null, name, NewPersonIsGuest));
+        Members.Add(new CreateGroupMemberInput(null, name, NewPersonIsGuest));
         NewPersonName = string.Empty;
         NewPersonIsGuest = false;
         ErrorMessage = null;
@@ -134,16 +136,16 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void RemoveMember(GroupMemberItemViewModel? member)
+    private void RemoveMember(CreateGroupMemberInput? member)
     {
         if (member is null || !Members.Remove(member))
         {
             return;
         }
 
-        if (member.PersonId is Guid personId)
+        if (member.ExistingPersonId is Guid personId)
         {
-            AvailablePersons.Add(new AvailablePersonItemViewModel(
+            AvailablePersons.Add(new SelectablePerson(
                 personId,
                 member.Name,
                 member.IsGuest));
@@ -155,7 +157,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void MoveMemberUp(GroupMemberItemViewModel? member)
+    private void MoveMemberUp(CreateGroupMemberInput? member)
     {
         if (member is null)
         {
@@ -170,7 +172,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void MoveMemberDown(GroupMemberItemViewModel? member)
+    private void MoveMemberDown(CreateGroupMemberInput? member)
     {
         if (member is null)
         {
@@ -202,15 +204,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
             IsBusy = true;
             ErrorMessage = null;
 
-            CreateGroupMemberInput[] members = Members
-                .Select(member => new CreateGroupMemberInput(
-                    member.PersonId,
-                    member.Name,
-                    member.IsGuest))
-                .ToArray();
-
             await createGroup.ExecuteAsync(
-                new CreateGroupCommand(GroupName, IsTemporary, members));
+                new CreateGroupCommand(GroupName, IsTemporary, [.. Members]));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
@@ -240,16 +235,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
 
     private void SortAvailablePersons()
     {
-        AvailablePersonItemViewModel[] ordered = AvailablePersons
-            .OrderBy(person => person.Name, StringComparer.CurrentCultureIgnoreCase)
-            .ToArray();
+        IReadOnlyList<SelectablePerson> ordered =
+            [.. AvailablePersons.OrderBy(person => person.Name, StringComparer.CurrentCultureIgnoreCase)];
 
         AvailablePersons.Clear();
-        foreach (AvailablePersonItemViewModel person in ordered)
+        foreach (SelectablePerson person in ordered)
         {
             AvailablePersons.Add(person);
         }
     }
 }
 
-public sealed record AvailablePersonItemViewModel(Guid Id, string Name, bool IsGuest);
