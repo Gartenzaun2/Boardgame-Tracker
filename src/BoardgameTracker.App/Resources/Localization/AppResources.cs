@@ -281,6 +281,9 @@ public static class AppResources
     public static string AppSettingsTitle => GetString(nameof(AppSettingsTitle));
     public static string GameSettings => GetString(nameof(GameSettings));
     public static string GameSettingsHint => GetString(nameof(GameSettingsHint));
+    public static string DefaultGame => GetString(nameof(DefaultGame));
+    public static string NoDefaultGame => GetString(nameof(NoDefaultGame));
+    public static string DefaultGameHint => GetString(nameof(DefaultGameHint));
     public static string ActiveGame => GetString(nameof(ActiveGame));
     public static string AddSpecialCard => GetString(nameof(AddSpecialCard));
     public static string SpecialCards => GetString(nameof(SpecialCards));

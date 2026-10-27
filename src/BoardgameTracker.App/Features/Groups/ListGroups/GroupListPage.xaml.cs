@@ -5,6 +5,7 @@ using BoardgameTracker.App.Features.GameSessions.Running;
 using BoardgameTracker.App.Features.GameSessions.Scoring;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
@@ -63,6 +64,12 @@ public partial class GroupListPage : ContentPage
             return;
         }
 
+        if (_viewModel.SelectedGameKey != ArkNovaGame.Key)
+        {
+            _viewModel.EndNavigation();
+            return;
+        }
+
         try
         {
             if (group?.OpenSessionId is Guid sessionId)
@@ -74,6 +81,11 @@ public partial class GroupListPage : ContentPage
                     _ => throw new InvalidOperationException(
                         $"Unsupported open session status '{group.OpenSessionStatus}'.")
                 };
+
+                if (Shell.Current is AppShell shell)
+                {
+                    shell.RememberSession(sessionId, ArkNovaGame.Key);
+                }
 
                 await Shell.Current.GoToAsync(
                     route,

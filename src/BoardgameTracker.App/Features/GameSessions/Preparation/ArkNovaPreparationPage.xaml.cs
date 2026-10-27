@@ -146,6 +146,11 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
             return;
         }
 
+        if (Shell.Current is AppShell shell)
+        {
+            shell.RememberSession(sessionId.Value, ArkNovaGame.Key);
+        }
+
         await Shell.Current.GoToAsync(
             nameof(ArkNovaRunningPage),
             new ShellNavigationQueryParameters

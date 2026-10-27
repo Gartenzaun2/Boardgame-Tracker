@@ -3,22 +3,31 @@ using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
 /// <summary>
-/// Owns group-overview screen state, filters and navigation re-entry protection.
+/// Owns the game-context group overview, filters and navigation re-entry protection.
 /// </summary>
 public partial class GroupListViewModel(
     IListGroupsQuery listGroupsQuery,
+    IAppNavigationSettingsStore navigationSettingsStore,
     ILogger<GroupListViewModel> logger) : ObservableObject
 {
     private bool _reloadRequested;
 
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
+
+    [ObservableProperty]
+    public partial string SelectedGameName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string SelectedGameKey { get; private set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IncludeTemporary { get; set; }
@@ -71,8 +80,27 @@ public partial class GroupListViewModel(
                 _reloadRequested = false;
                 ErrorMessage = null;
 
+                AppNavigationSettings navigation = navigationSettingsStore.Get();
+                string? gameKey = navigation.SelectedGameKey ?? navigation.DefaultGameKey;
+                if (string.IsNullOrWhiteSpace(gameKey))
+                {
+                    SelectedGameKey = string.Empty;
+                    SelectedGameName = string.Empty;
+                    Groups.Clear();
+                    return;
+                }
+
+                if (navigation.SelectedGameKey != gameKey)
+                {
+                    navigationSettingsStore.Save(navigation with { SelectedGameKey = gameKey });
+                }
+
+                SelectedGameKey = gameKey;
+                SelectedGameName = GetGameName(gameKey);
+
                 IReadOnlyList<GroupListItem> groups =
                     await listGroupsQuery.ExecuteAsync(
+                        gameKey,
                         IncludeTemporary,
                         IncludeArchived,
                         cancellationToken);
@@ -96,7 +124,6 @@ public partial class GroupListViewModel(
                         group.MemberCount,
                         string.Join(" · ", group.MemberNames),
                         lastPlayedText,
-                        AppResources.ArkNova,
                         group.OpenSessionId,
                         group.OpenSessionStatus));
                 }
@@ -113,10 +140,16 @@ public partial class GroupListViewModel(
             IsBusy = false;
         }
     }
+
+    private static string GetGameName(string gameKey) => gameKey switch
+    {
+        ArkNovaGame.Key => AppResources.ArkNova,
+        _ => gameKey
+    };
 }
 
 /// <summary>
-/// Presentation model for one group card in the group overview.
+/// Presentation model for one group card in the selected-game overview.
 /// </summary>
 public sealed record GroupListItemViewModel(
     Guid Id,
@@ -126,7 +159,6 @@ public sealed record GroupListItemViewModel(
     int MemberCount,
     string MemberNames,
     string LastPlayedText,
-    string GameName,
     Guid? OpenSessionId,
     GameSessionStatus? OpenSessionStatus)
 {

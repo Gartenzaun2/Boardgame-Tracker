@@ -328,10 +328,10 @@
     <value>Aktive Partie</value>
   </data>
   <data name="AddSpecialCard" xml:space="preserve">
-    <value>Spezialkarte hinzufügen</value>
+    <value>Besondere Karte hinzufügen</value>
   </data>
   <data name="SpecialCards" xml:space="preserve">
-    <value>Spezialkarten</value>
+    <value>Besondere Karten</value>
   </data>
   <data name="SpecialCardAvailable" xml:space="preserve">
     <value>Noch nicht zugewiesen</value>
@@ -343,10 +343,10 @@
     <value>Diesem Spieler zugewiesen</value>
   </data>
   <data name="SpecialCardPickerTitleFormat" xml:space="preserve">
-    <value>Spezialkarte für {0}</value>
+    <value>Besondere Karte für {0}</value>
   </data>
   <data name="SpecialCardMultipleTitle" xml:space="preserve">
-    <value>Spezialkarte mehrfach zuordnen?</value>
+    <value>Besondere Karte mehrfach zuordnen?</value>
   </data>
   <data name="SpecialCardMultipleMessageFormat" xml:space="preserve">
     <value>Hatten wirklich beide Spieler einen {0}?</value>
@@ -397,12 +397,21 @@
     <value>🐻</value>
   </data>
   <data name="ScoringSecondaryValuesFormat" xml:space="preserve">
-    <value>Spezialkarten: {0}</value>
+    <value>Besondere Karten: {0}</value>
   </data>
   <data name="ScoringSecondaryValuesWithReputationFormat" xml:space="preserve">
-    <value>Spezialkarten: {0} · Ruf: {1}</value>
+    <value>Besondere Karten: {0} · Ruf: {1}</value>
   </data>
   <data name="NoSpecialCards" xml:space="preserve">
-    <value>Keine Spezialkarten</value>
+    <value>Keine besonderen Karten</value>
+  </data>
+  <data name="DefaultGame" xml:space="preserve">
+    <value>Standardspiel</value>
+  </data>
+  <data name="NoDefaultGame" xml:space="preserve">
+    <value>Kein Standardspiel</value>
+  </data>
+  <data name="DefaultGameHint" xml:space="preserve">
+    <value>Ohne Standardspiel startet die App bei Spiele. Mit Standardspiel startet sie beim ersten Mal direkt in dessen Gruppenübersicht. Danach wird der zuletzt verwendete Bereich wiederhergestellt.</value>
   </data>
 </root>

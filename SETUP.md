@@ -1,10 +1,11 @@
-# Boardgame Tracker v0.8.1.7 – Setup / Upgrade
+# Boardgame Tracker v0.8.2.0 – Setup / Upgrade
 
-## Upgrade auf v0.8.1.7
+## Upgrade auf v0.8.2.0
 
-v0.8.1.7 enthält ausschließlich UI-/Navigationsänderungen sowie zusätzliche
-Read-Model-Daten für die Ergebnisdauer. Das Datenbankschema ändert sich gegenüber
-v0.8.1.6 nicht.
+v0.8.2.0 ändert das Datenbankschema nicht. Das Update ergänzt lokale Navigationseinstellungen über MAUI Preferences; ein Datenbank-Reset ist nicht erforderlich.
+Der Stand führt einen lokalen Spiel-/Navigationskontext und ein optionales
+Standardspiel ein. Gruppen- und Sessiondaten selbst bleiben unverändert; die neuen
+Werte werden ausschließlich über MAUI Preferences gespeichert.
 
 Nach dem Übernehmen der geänderten/neuen Dateien:
 
@@ -99,6 +100,17 @@ dotnet test
 - Kamera-Button ist bereits am endgültigen Platz sichtbar, die eigentliche
   Fotoerkennung gehört noch nicht zu v0.8.1.5.
 
+### Navigation / Spielkontext v0.8.2.0
+
+- App ohne Standardspiel und ohne bisherigen Navigationskontext starten: `Spiele` muss aktiv sein.
+- `Arche Nova` antippen: `Gruppen` öffnet sich und zeigt `Arche Nova` direkt unter der Überschrift.
+- Prüfen, dass der Spielname nicht zusätzlich auf jeder Gruppenkarte wiederholt wird.
+- In Einstellungen `Arche Nova` als Standardspiel setzen, Navigationskontext zurücksetzen bzw. frischen App-Stand verwenden und prüfen, dass `Gruppen` der erste Bereich ist.
+- Zwischen `Spiele`, `Gruppen`, `Historie` und `Einstellungen` wechseln, App schließen und prüfen, dass der zuletzt verwendete Hauptbereich wiederhergestellt wird.
+- Eine laufende Partie öffnen, App schließen und prüfen, dass genau diese Session wiederhergestellt wird. Bei mehreren offenen Sessions darf nicht pauschal die zuletzt geänderte andere Session geöffnet werden.
+- In der Wertungsübersicht prüfen, dass Gruppe, Datum, Attraktivität/Artenschutz sowie `Besondere Karten · Ruf` dieselbe gut lesbare Textfarbe verwenden.
+- Prüfen, dass `Besondere Karten` und `Ruf` auch dann deutsch angezeigt werden, wenn die neutrale Ressourcenbasis verwendet wird.
+
 ## Datenbankstrategie während der Programmierphase
 
 Der Runtime-Code verwendet aktuell:
@@ -143,3 +155,15 @@ erstellt.
   Repository-Root, damit das Update direkt über den bestehenden Stand kopiert
   werden kann.
 
+
+
+## Smoke Tests v0.8.2.1
+
+- Ohne letzten Kontext und mit gesetztem Standardspiel App neu starten: `Gruppen`
+  muss direkt für dieses Spiel erscheinen.
+- Unter `Spiele` Arche Nova wählen: vor dem Öffnen der Gruppenübersicht muss der
+  Arche-Nova-Kontext aktiv sein; der Spielname steht direkt unter `Gruppen`.
+- Offene Arche-Nova-Session wiederherstellen und anschließend `Gruppen` öffnen: die
+  Gruppenübersicht bleibt im Arche-Nova-Kontext.
+- Eine abgeschlossene Partie anzeigen: jede Ergebnis-Spielerkachel ist dezent in
+  der jeweiligen Spielerfarbe getönt.

@@ -5,17 +5,21 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 
 /// <summary>
-/// SQLite implementation of the group-overview read projection.
+/// SQLite implementation of the game-context group-overview read projection.
+/// Groups remain game-independent; session metadata is filtered to the selected game.
 /// </summary>
 public sealed class SqliteListGroupsQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IListGroupsQuery
 {
     public async Task<IReadOnlyList<GroupListItem>> ExecuteAsync(
+        string gameKey,
         bool includeTemporary = false,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
+
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -32,6 +36,12 @@ public sealed class SqliteListGroupsQuery(
             return [];
         }
 
+        Guid? gameId = await dbContext.Games
+            .AsNoTracking()
+            .Where(game => game.Key == gameKey)
+            .Select(game => (Guid?)game.Id)
+            .SingleOrDefaultAsync(cancellationToken);
+
         var members = await (
             from membership in dbContext.GroupPersons.AsNoTracking()
             where groupIds.Contains(membership.GroupId)
@@ -45,14 +55,14 @@ public sealed class SqliteListGroupsQuery(
             })
             .ToListAsync(cancellationToken);
 
-        // SQLite stores DateTimeOffset, but provider-side ordering/aggregation is limited.
-        // We therefore fetch only the two required columns for the visible groups and
-        // calculate Max in memory.
-        var sessionDates = await dbContext.GameSessions
-            .AsNoTracking()
-            .Where(session => groupIds.Contains(session.GroupId))
-            .Select(session => new { session.GroupId, session.StartedAt })
-            .ToListAsync(cancellationToken);
+        List<GroupSessionDateProjection> sessionDates = gameId is null
+            ? []
+            : await dbContext.GameSessions
+                .AsNoTracking()
+                .Where(session => groupIds.Contains(session.GroupId)
+                                  && session.GameId == gameId.Value)
+                .Select(session => new GroupSessionDateProjection(session.GroupId, session.StartedAt))
+                .ToListAsync(cancellationToken);
 
         Dictionary<Guid, DateTimeOffset?> lastPlayedByGroup = sessionDates
             .GroupBy(session => session.GroupId)
@@ -60,17 +70,26 @@ public sealed class SqliteListGroupsQuery(
                 group => group.Key,
                 group => (DateTimeOffset?)group.Max(session => session.StartedAt));
 
-        var openSessions = await dbContext.GameSessions
-            .AsNoTracking()
-            .Where(session => groupIds.Contains(session.GroupId))
-            .Where(session => session.Status == GameSessionStatus.Running
-                           || session.Status == GameSessionStatus.Scoring)
-            .Select(session => new { session.GroupId, session.Id, session.Status })
-            .ToListAsync(cancellationToken);
+        List<GroupOpenSessionProjection> openSessions = gameId is null
+            ? []
+            : await dbContext.GameSessions
+                .AsNoTracking()
+                .Where(session => groupIds.Contains(session.GroupId)
+                                  && session.GameId == gameId.Value)
+                .Where(session => session.Status == GameSessionStatus.Running
+                               || session.Status == GameSessionStatus.Scoring)
+                .Select(session => new GroupOpenSessionProjection(
+                    session.GroupId,
+                    session.Id,
+                    session.Status,
+                    session.ModifiedAt))
+                .ToListAsync(cancellationToken);
 
         var openSessionByGroup = openSessions
             .GroupBy(session => session.GroupId)
-            .ToDictionary(group => group.Key, group => group.Single());
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderByDescending(session => session.ModifiedAt).First());
 
         Dictionary<Guid, string[]> memberNamesByGroup = members
             .GroupBy(member => member.GroupId)
@@ -107,4 +126,13 @@ public sealed class SqliteListGroupsQuery(
                 .ThenBy(group => group.Name)
         ];
     }
+
+
+    private sealed record GroupSessionDateProjection(Guid GroupId, DateTimeOffset StartedAt);
+
+    private sealed record GroupOpenSessionProjection(
+        Guid GroupId,
+        Guid Id,
+        GameSessionStatus Status,
+        DateTimeOffset ModifiedAt);
 }

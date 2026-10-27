@@ -1,7 +1,6 @@
-# Boardgame Tracker – v0.8.1.7
+# Boardgame Tracker – v0.8.2.0
 
-v0.8.1.7 verfeinert den Arche-Nova-Wertungsscreen und die appweite
-Hauptnavigation. Es ist ein UI-/Navigations-Cleanup ohne Datenbankschemaänderung.
+v0.8.2.0 führt einen expliziten Spiel- und Navigationskontext ein. Gruppen werden immer im Kontext eines ausgewählten Spiels angezeigt; Standardspiel, letzter Hauptbereich und die zuletzt betrachtete offene Session werden lokal gespeichert. Das Datenbankschema bleibt unverändert.
 
 ## Aktueller Funktionsstand
 
@@ -139,3 +138,36 @@ das Ausführen beider Testprojekte in der lokalen Visual-Studio-Umgebung.
 - Die Wertungskacheln besitzen getrennte Zeilen für Rohwerte und `Spezialkarten · Ruf`; fehlende Pflichtwerte werden direkt als `–` dargestellt. Der Spezialkarten-Button zeigt keinen zusätzlichen Counter-Badge mehr.
 - Die Wertungsübersicht zeigt das Partiedatum. Gruppen zeigen das aktuell unterstützte Spiel zur besseren Orientierung.
 - Spiele- und Einstellungsübersicht verschieben längere Erklärungstexte gemäß UI-Regel hinter ein Info-Icon.
+
+
+## v0.8.2.0 – Spielkontext und Navigation
+
+- Gruppenübersichten besitzen immer einen aktuellen Spielkontext. Der Spielname
+  steht direkt unter `Gruppen` und wird nicht auf jeder Karte wiederholt.
+- Ein Tap auf `Arche Nova` im Spiele-Tab setzt diesen Kontext und öffnet Gruppen.
+- In Einstellungen kann optional ein `Standardspiel` gewählt werden.
+- Ohne gespeicherten Kontext startet die App ohne Standardspiel bei `Spiele`, mit
+  Standardspiel bei `Gruppen` dieses Spiels.
+- Danach werden der zuletzt verwendete Hauptbereich, das gewählte Spiel und – falls
+  zuletzt eine noch offene Session aktiv war – genau diese Session lokal gemerkt.
+  Dadurch bleibt das Verhalten auch bei mehreren gleichzeitig offenen Partien eindeutig.
+- Gruppen bleiben im Domainmodell spielunabhängig; `Letzte Partie` und offene
+  Session werden in der Gruppenübersicht nur für das aktuell gewählte Spiel ermittelt.
+- Die Wertungsübersicht verwendet für Gruppe, Datum, Rohwerte sowie
+  `Besondere Karten · Ruf` dieselbe gut lesbare Textfarbe.
+- Die deutschen Wertungslabels lauten konsistent `Besondere Karten` und `Ruf`.
+- Keine Datenbankschemaänderung; Navigations-/Standardspielzustand liegt in nativen
+  MAUI Preferences.
+
+
+## v0.8.2.1 – stabiler Spielkontext und Ergebnisfarben
+
+- Jeder automatische Wechsel nach `Gruppen` verwendet jetzt einen expliziten Spielkontext.
+  Der `SelectedGameKey` wird vor der Shell-Navigation gespeichert und nicht erst
+  nach dem Öffnen der Gruppenansicht ergänzt.
+- Defaultspiel-Start, Spielauswahl und Session-Wiederaufnahme verwenden denselben
+  Navigationspfad `Gruppen für Spiel öffnen`. Dadurch kann die Gruppenübersicht
+  nicht transient ohne Spielkontext erscheinen.
+- Der Ergebnis-Screen verwendet für jede Spielerkachel wieder die dezente
+  Arche-Nova-Spielerfarbtönung aus Vorbereitung, laufender Partie und Wertung.
+- Keine Datenbankschemaänderung.
