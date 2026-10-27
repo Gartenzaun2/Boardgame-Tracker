@@ -4,6 +4,9 @@ using Android.OS;
 
 namespace BoardgameTracker.App;
 
+/// <summary>
+/// Android launcher activity for the single-project MAUI application.
+/// </summary>
 [Activity(
     Theme = "@style/Maui.SplashTheme",
     MainLauncher = true,

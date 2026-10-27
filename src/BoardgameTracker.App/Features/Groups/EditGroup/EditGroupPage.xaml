@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.Groups.EditGroup.EditGroupPage"
+    x:Name="Page"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.EditGroup"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:DataType="local:EditGroupViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="8,8,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
+            <ImageButton Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" Source="icon_back.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+
+            <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                <Label FontAttributes="Bold" FontSize="21" Text="{x:Static res:AppResources.EditGroup}" VerticalOptions="Center" />
+                <ImageButton Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
+            </HorizontalStackLayout>
+
+            <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                            <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
+                            <Entry Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}" Text="{Binding GroupName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="2">
+                        <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupPlayers}" VerticalOptions="Center" />
+                        <ImageButton Clicked="OnPlayersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:EditGroupPlayerItemViewModel">
+                                <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                                <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" TextColor="{StaticResource TextSecondary}" />
+                                            </VerticalStackLayout>
+                                            <Border
+                                                Grid.Column="1"
+                                                BackgroundColor="{Binding ColorBrush}"
+                                                HeightRequest="44"
+                                                Stroke="{StaticResource Outline}"
+                                                StrokeShape="RoundRectangle 16"
+                                                WidthRequest="44"
+                                                SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.ToggleColorPickerCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Image
+                                                    HeightRequest="18"
+                                                    Source="icon_palette.png"
+                                                    WidthRequest="18" />
+                                            </Border>
+                                            <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                            <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        </Grid>
+
+                                        <HorizontalStackLayout
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding IsColorPickerOpen}"
+                                            Spacing="8">
+                                            <Button BackgroundColor="#8BC4E8" SemanticProperties.Description="{x:Static res:AppResources.Blue}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlueCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="#F2D65C" SemanticProperties.Description="{x:Static res:AppResources.Yellow}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetYellowCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="#E98A84" SemanticProperties.Description="{x:Static res:AppResources.Red}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetRedCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="#404040" SemanticProperties.Description="{x:Static res:AppResources.Black}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlackCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid
+            Grid.RowSpan="2"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="{Binding IsBusy}">
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>
