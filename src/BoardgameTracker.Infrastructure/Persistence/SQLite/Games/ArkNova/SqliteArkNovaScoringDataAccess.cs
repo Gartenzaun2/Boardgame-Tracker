@@ -26,6 +26,8 @@ public sealed class SqliteArkNovaScoringDataAccess(
             {
                 x.Id,
                 x.Status,
+                x.StartedAt,
+                x.EndedAt,
                 GroupName = dbContext.Groups.Where(g => g.Id == x.GroupId).Select(g => g.Name).Single()
             })
             .SingleOrDefaultAsync(cancellationToken);
@@ -61,7 +63,14 @@ public sealed class SqliteArkNovaScoringDataAccess(
             .Select(x => new ArkNovaSpecialCardAssignmentData(x.PersonId, x.SpecialCard))
             .ToListAsync(cancellationToken);
 
-        return new ArkNovaScoringSessionData(session.Id, session.GroupName, session.Status, players, specialCards);
+        return new ArkNovaScoringSessionData(
+            session.Id,
+            session.GroupName,
+            session.Status,
+            session.StartedAt,
+            session.EndedAt,
+            players,
+            specialCards);
     }
 
     public async Task<ArkNovaSessionPlayer?> FindPlayerAsync(

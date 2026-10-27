@@ -23,6 +23,8 @@ public sealed record ArkNovaScoringSessionData(
     Guid SessionId,
     string GroupName,
     GameSessionStatus Status,
+    DateTimeOffset StartedAt,
+    DateTimeOffset? EndedAt,
     IReadOnlyList<ArkNovaScoringPlayerData> Players,
     IReadOnlyList<ArkNovaSpecialCardAssignmentData> SpecialCards);
 

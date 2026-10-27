@@ -475,3 +475,26 @@ Die Vorbereitung ist bis zum eigentlichen Start UI-Zustand. Persistenz von Sessi
 
 Neben speziell unterstützten Spielen wie Arche Nova sollen Benutzer später eigene Spiele anlegen können. Für solche manuellen Spiele soll konfigurierbar sein, welche Ergebnisdaten erfasst werden: nur dass eine Partie gespielt wurde, Gewinner, Punkte und/oder Platzierungen. `Game` ist deshalb eine eigenständig identifizierte, benutzererweiterbare Entität; der Anzeigename ist nicht ihre Identität. Die genaue Konfiguration und der Eingabeflow werden erst bei Umsetzung dieses Features spezifiziert.
 
+
+
+---
+
+## UI-/Navigations-Entscheidung v0.8.1.7
+
+- Die permanente untere Hauptnavigation ist in der Reihenfolge
+  `Spiele`, `Gruppen`, `Historie`, `Einstellungen` angeordnet.
+- `Gruppen` bleibt der normale Startbereich der App. Wird der Gruppen-Tab
+  angewählt, führt er zur Gruppenübersicht und nicht zu einem im Gruppen-Stack
+  verbliebenen Detail-Screen.
+- Der Historie-Tab ist als Navigationsziel vorhanden; die eigentliche
+  Historienliste wird weiterhin in einem eigenen späteren Slice umgesetzt.
+- Der Wertungsscreen schützt die Navigation in die Spielerwertung gegen
+  Mehrfachtaps.
+- Die Spezialkartenaktion sitzt als gut antippbarer Kartenrücken rechts neben
+  den mehrzeiligen Spielerinformationen. Mehrere Spezialkarten werden in der
+  Übersicht nur als Anzahl am Button dargestellt.
+- Nach Auswahl oder Entfernen einer Spezialkarte schließt die Auswahl direkt.
+- Sobald Attraktivität und Artenschutz vollständig sind, stehen die berechneten
+  Punkte direkt hinter dem Spielernamen.
+- Der Ergebnis-Screen zeigt zusätzlich die aus `StartedAt` und `EndedAt`
+  berechnete Partiedauer. Die Dauer wird weiterhin nicht redundant persistiert.

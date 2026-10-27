@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Features.Games.ArkNova;
 using BoardgameTracker.App.Resources.Localization;
@@ -20,6 +21,7 @@ public partial class ArkNovaScoringViewModel(
 
     [ObservableProperty] public partial Guid SessionId { get; private set; }
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
+    [ObservableProperty] public partial string DateText { get; private set; } = string.Empty;
     [ObservableProperty] public partial bool IsBusy { get; private set; }
     [ObservableProperty] public partial string? ErrorMessage { get; private set; }
     [ObservableProperty] public partial bool IsSpecialCardPickerVisible { get; private set; }
@@ -58,6 +60,7 @@ public partial class ArkNovaScoringViewModel(
             ArkNovaSettings settings = settingsStore.Get();
             SessionId = data.SessionId;
             GroupName = data.GroupName;
+            DateText = data.StartedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
             Players.Clear();
             foreach (ArkNovaScoringPlayerData player in data.Players)
             {
@@ -65,7 +68,11 @@ public partial class ArkNovaScoringViewModel(
                     .Where(x => x.PersonId == player.PersonId)
                     .Select(x => x.SpecialCard)
                     .ToArray();
-                Players.Add(new ArkNovaScoringPlayerViewModel(player, cards, settings.ScoringDisplayMode));
+                Players.Add(new ArkNovaScoringPlayerViewModel(
+                    player,
+                    cards,
+                    settings.ScoringDisplayMode,
+                    settings.CaptureReputation));
             }
 
             OnPropertyChanged(nameof(CanComplete));
@@ -108,8 +115,9 @@ public partial class ArkNovaScoringViewModel(
         ArkNovaSpecialCard card,
         CancellationToken cancellationToken = default)
     {
+        CloseSpecialCardPicker();
         await scoringUseCase.AssignSpecialCardAsync(SessionId, personId, card, cancellationToken);
-        await ReloadAndKeepPickerAsync(personId, cancellationToken);
+        await LoadAsync(SessionId, cancellationToken);
     }
 
     public async Task RemoveSpecialCardAsync(
@@ -117,9 +125,23 @@ public partial class ArkNovaScoringViewModel(
         ArkNovaSpecialCard card,
         CancellationToken cancellationToken = default)
     {
+        CloseSpecialCardPicker();
         await scoringUseCase.RemoveSpecialCardAsync(SessionId, personId, card, cancellationToken);
-        await ReloadAndKeepPickerAsync(personId, cancellationToken);
+        await LoadAsync(SessionId, cancellationToken);
     }
+
+    public bool TryBeginNavigation()
+    {
+        if (IsBusy)
+        {
+            return false;
+        }
+
+        IsBusy = true;
+        return true;
+    }
+
+    public void EndNavigation() => IsBusy = false;
 
     public bool IsSpecialCardAssignedToOtherPlayer(Guid personId, ArkNovaSpecialCard card) =>
         Players.Any(x => x.PersonId != personId && x.SpecialCards.Contains(card));
@@ -158,16 +180,6 @@ public partial class ArkNovaScoringViewModel(
         }
     }
 
-    private async Task ReloadAndKeepPickerAsync(Guid personId, CancellationToken cancellationToken)
-    {
-        bool keepPickerOpen = IsSpecialCardPickerVisible && SpecialCardTargetPersonId == personId;
-        await LoadAsync(SessionId, cancellationToken);
-        if (keepPickerOpen)
-        {
-            OpenSpecialCardPicker(personId);
-        }
-    }
-
     private void RefreshSpecialCardOptions()
     {
         if (!IsSpecialCardPickerVisible || SpecialCardTargetPersonId is not Guid targetPersonId)
@@ -193,7 +205,8 @@ public sealed class ArkNovaScoringPlayerViewModel
     public ArkNovaScoringPlayerViewModel(
         ArkNovaScoringPlayerData data,
         IReadOnlyList<ArkNovaSpecialCard> specialCards,
-        ArkNovaScoringDisplayMode displayMode)
+        ArkNovaScoringDisplayMode displayMode,
+        bool showReputation)
     {
         PersonId = data.PersonId;
         Name = data.Name;
@@ -203,9 +216,7 @@ public sealed class ArkNovaScoringPlayerViewModel
         Conservation = data.Conservation;
         Reputation = data.Reputation;
         SpecialCards = specialCards;
-        AssignedSpecialCards = specialCards
-            .Select(card => new ArkNovaAssignedSpecialCardViewModel(PersonId, card))
-            .ToArray();
+        ShowReputation = showReputation;
         _displayMode = displayMode;
     }
 
@@ -217,28 +228,28 @@ public sealed class ArkNovaScoringPlayerViewModel
     public int? Conservation { get; }
     public int? Reputation { get; }
     public IReadOnlyList<ArkNovaSpecialCard> SpecialCards { get; }
-    public IReadOnlyList<ArkNovaAssignedSpecialCardViewModel> AssignedSpecialCards { get; }
+    public bool ShowReputation { get; }
     public bool HasRequiredValues => Attractiveness is not null && Conservation is not null;
+    public bool HasSpecialCards => SpecialCards.Count > 0;
+    public string SpecialCardCountText => SpecialCards.Count.ToString();
     public string ColorText => ArkNovaPlayerColorPresentation.GetName(Color);
     public Microsoft.Maui.Graphics.Color Tint => ArkNovaPlayerColorPresentation.GetTint(Color);
     public string ZooPlanText => ArkNovaZooPlanPresentation.GetName(ZooPlanNumber);
     public string Subtitle => $"{ColorText} · {ZooPlanText}";
-    public string RawValuesText => HasRequiredValues
-        ? $"Attraktivität {Attractiveness} · Artenschutz {Conservation}"
-        : "Werte noch nicht vollständig";
-    public string ScoreText => HasRequiredValues
-        ? $"{(_displayMode == ArkNovaScoringDisplayMode.Old
+    public string RawValuesText =>
+        $"Attraktivität: {Attractiveness?.ToString() ?? "–"} · Artenschutz: {Conservation?.ToString() ?? "–"}";
+    public string SecondaryValuesText => ShowReputation
+        ? string.Format(
+            AppResources.ScoringSecondaryValuesWithReputationFormat,
+            SpecialCards.Count,
+            Reputation?.ToString() ?? "–")
+        : string.Format(AppResources.ScoringSecondaryValuesFormat, SpecialCards.Count);
+    public int? Score => HasRequiredValues
+        ? _displayMode == ArkNovaScoringDisplayMode.Old
             ? ArkNovaScoringRules.CalculateOldScore(Attractiveness!.Value, Conservation!.Value)
-            : ArkNovaScoringRules.CalculateNewScore(Attractiveness!.Value, Conservation!.Value))} Punkte"
-        : string.Empty;
-}
-
-public sealed class ArkNovaAssignedSpecialCardViewModel(Guid personId, ArkNovaSpecialCard card)
-{
-    public Guid PersonId { get; } = personId;
-    public ArkNovaSpecialCard Card { get; } = card;
-    public string Name => ArkNovaSpecialCardPresentation.GetName(Card);
-    public string Symbols => ArkNovaSpecialCardPresentation.GetSymbols(Card);
+            : ArkNovaScoringRules.CalculateNewScore(Attractiveness!.Value, Conservation!.Value)
+        : null;
+    public string NameWithScore => Score is int score ? $"{Name} · {score} Punkte" : Name;
 }
 
 public sealed class ArkNovaSpecialCardOptionViewModel(

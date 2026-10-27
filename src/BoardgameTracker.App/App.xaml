@@ -41,6 +41,20 @@
             <Style x:Key="PrimaryCompactButton" TargetType="Button" BasedOn="{StaticResource CompactActionButton}">
                 <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
                 <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Outline}" />
+                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                    <Setter Property="Opacity" Value="0.65" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
             </Style>
 
             <Style x:Key="IconButton" TargetType="ImageButton">

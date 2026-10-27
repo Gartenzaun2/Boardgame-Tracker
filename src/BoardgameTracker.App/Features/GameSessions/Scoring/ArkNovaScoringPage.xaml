@@ -14,6 +14,7 @@
             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                 <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
                 <Label Text="{Binding GroupName}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding DateText}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
             </VerticalStackLayout>
             <ImageButton Grid.Column="2" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
             <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
@@ -25,44 +26,39 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ArkNovaScoringPlayerViewModel">
-                    <Border Padding="10,7" BackgroundColor="{Binding Tint}" Stroke="{StaticResource Outline}" StrokeShape="RoundRectangle 10">
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="3">
-                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="2">
+                    <Border Padding="10,8" BackgroundColor="{Binding Tint}" Stroke="{StaticResource Outline}" StrokeShape="RoundRectangle 10">
+                        <Grid ColumnDefinitions="*,58" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="2">
+                            <Grid Grid.RowSpan="4">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnPlayerTapped" CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
-                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                                <Label Grid.Column="1" Text="›" FontSize="24" VerticalOptions="Center" Grid.RowSpan="3" />
-                                <Label Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                                <HorizontalStackLayout Grid.Row="2" Spacing="8">
-                                    <Label Text="{Binding RawValuesText}" FontSize="12" />
-                                    <Label Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="12" />
-                                </HorizontalStackLayout>
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="2">
+                                    <Label Text="{Binding NameWithScore}" FontAttributes="Bold" FontSize="16" />
+                                    <Label Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Grid.Row="2" Text="{Binding RawValuesText}" FontSize="12" />
+                                    <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                </Grid>
                             </Grid>
-                            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,3,0,0">
-                                <HorizontalStackLayout Spacing="4" BindableLayout.ItemsSource="{Binding AssignedSpecialCards}" VerticalOptions="Center">
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate x:DataType="vm:ArkNovaAssignedSpecialCardViewModel">
-                                            <Border Padding="7,3" Stroke="{StaticResource Outline}" BackgroundColor="{StaticResource Surface}" StrokeShape="RoundRectangle 7">
-                                                <Border.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnAssignedSpecialCardTapped" CommandParameter="{Binding .}" />
-                                                </Border.GestureRecognizers>
-                                                <HorizontalStackLayout Spacing="4">
-                                                    <Label Text="{Binding Symbols}" FontSize="11" />
-                                                    <Label Text="{Binding Name}" FontSize="10" MaxLines="1" LineBreakMode="TailTruncation" />
-                                                </HorizontalStackLayout>
-                                            </Border>
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </HorizontalStackLayout>
-                                <Button Grid.Column="1"
-                                        Text="{x:Static res:AppResources.AddSpecialCard}"
-                                        FontSize="10"
-                                        Padding="8,3"
-                                        MinimumHeightRequest="44"
-                                        CommandParameter="{Binding PersonId}"
-                                        Clicked="OnAddSpecialCardClicked"
-                                        Style="{StaticResource CompactActionButton}" />
+
+                            <Grid Grid.Column="1" Grid.RowSpan="4"
+                                  MinimumWidthRequest="52"
+                                  MinimumHeightRequest="72"
+                                  HorizontalOptions="End"
+                                  VerticalOptions="Center"
+                                  SemanticProperties.Description="{x:Static res:AppResources.SpecialCards}">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnAddSpecialCardTapped" CommandParameter="{Binding PersonId}" />
+                                </Grid.GestureRecognizers>
+                                <Border Padding="5"
+                                        BackgroundColor="{StaticResource Surface}"
+                                        Stroke="{StaticResource Outline}"
+                                        StrokeShape="RoundRectangle 9"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="Fill">
+                                    <Image Source="icon_special_card.png"
+                                           Aspect="AspectFit"
+                                           Margin="3" />
+                                </Border>
                             </Grid>
                         </Grid>
                     </Border>

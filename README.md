@@ -1,7 +1,7 @@
-# Boardgame Tracker – v0.8.1.6
+# Boardgame Tracker – v0.8.1.7
 
-v0.8.1.6 verbessert den bestehenden Arche-Nova-Scoring-Slice und ergänzt eine
-appweite untere Hauptnavigation zu Gruppen, Spielen und Einstellungen.
+v0.8.1.7 verfeinert den Arche-Nova-Wertungsscreen und die appweite
+Hauptnavigation. Es ist ein UI-/Navigations-Cleanup ohne Datenbankschemaänderung.
 
 ## Aktueller Funktionsstand
 
@@ -38,6 +38,22 @@ appweite untere Hauptnavigation zu Gruppen, Spielen und Einstellungen.
 - Spezialkartennamen und -symbole liegen in den Localization-Ressourcen.
 - Die Spielerkachel zeigt Spielerfarbe und lokalisierten Zooplannamen statt der
   bloßen Zooplan-Nummer.
+
+- Die untere Hauptnavigation lautet jetzt `Spiele · Gruppen · Historie · Einstellungen`;
+  Gruppen bleibt trotz der sichtbaren Reihenfolge der Startbereich.
+- Beim Wechsel auf den Gruppen-Tab wird der Gruppenbereich auf seine Übersicht
+  zurückgesetzt, statt auf einem zuvor geöffneten Detail-Screen zu verbleiben.
+- Doppeltaps auf eine Spielerkachel können den Wertungsdialog nicht mehr mehrfach
+  öffnen; die Navigation nutzt denselben Busy-Schutz wie andere kritische Aktionen.
+- Der Spezialkarten-Einstieg verwendet einen kompakten Arche-Nova-Kartenrücken
+  statt des gelben Textbuttons und bleibt mit mindestens 44 dp gut antippbar.
+- Spezialkarten werden in der Wertungsübersicht nur noch über einen Zähler am
+  Karten-Button zusammengefasst; die konkreten Karten stehen im Auswahl-Flyout.
+- Das Spezialkarten-Flyout schließt nach Zuordnung oder Entfernen direkt.
+- Berechnete Punkte stehen nach vollständiger Eingabe direkt hinter dem Spielernamen.
+- Der Ergebnis-Screen zeigt zusätzlich die aus Start- und Endzeit berechnete Dauer.
+- Der Historie-Tab ist als Hauptnavigationsziel vorbereitet; die eigentliche
+  Historienliste bleibt ein späterer Feature-Slice.
 
 ## Technischer Review v0.8.1
 
@@ -106,3 +122,20 @@ In der Erstellungsumgebung ist kein .NET-SDK bzw. keine MAUI-Workload
 installiert. XML/XAML, Abhängigkeiten und Quelltext wurden statisch geprüft;
 der verbindliche Abschlusscheck bleibt deshalb ein `Rebuild Solution` sowie
 das Ausführen beider Testprojekte in der lokalen Visual-Studio-Umgebung.
+## v0.8.1.8 – Wertungsübersicht und Spezialkarten-Icon
+
+- Der Spezialkarten-Einstieg verwendet wieder die ruhige monochrome Icon-Sprache
+  der App statt des fotografischen Kartenrückens. Das Icon bleibt als große, gut
+  erreichbare Touch-Fläche rechts über die Höhe der Spielerinformationen angeordnet.
+- Unter Attraktivität und Artenschutz fasst eine zusätzliche Zeile Spezialkarten
+  und – bei aktivierter Ruf-Erfassung – den Ruf zusammen, z. B.
+  `Spezialkarten: 0 · Ruf: 4`.
+- Ist `Ruf erfassen` deaktiviert, zeigt die Übersicht nur die Spezialkartenanzahl.
+
+
+## v0.8.1.9 – UI-Cleanup und Orientierung
+
+- Primäraktionen verwenden einen gemeinsamen deutlich sichtbaren Disabled-Zustand; insbesondere `Starten` bleibt bis zur vollständigen Zooplanauswahl deaktiviert und `Wertung abschließen` bis alle Pflichtwerte vorliegen.
+- Die Wertungskacheln besitzen getrennte Zeilen für Rohwerte und `Spezialkarten · Ruf`; fehlende Pflichtwerte werden direkt als `–` dargestellt. Der Spezialkarten-Button zeigt keinen zusätzlichen Counter-Badge mehr.
+- Die Wertungsübersicht zeigt das Partiedatum. Gruppen zeigen das aktuell unterstützte Spiel zur besseren Orientierung.
+- Spiele- und Einstellungsübersicht verschieben längere Erklärungstexte gemäß UI-Regel hinter ein Info-Icon.

@@ -7,6 +7,7 @@ using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
+using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Resources.Localization;
 
@@ -17,9 +18,12 @@ namespace BoardgameTracker.App;
 /// </summary>
 public partial class AppShell : Shell
 {
+    private bool _isResettingGroupTab;
+
     public AppShell(
         GroupListPage groupListPage,
         GamesPage gamesPage,
+        HistoryPage historyPage,
         AppSettingsPage settingsPage)
     {
         InitializeComponent();
@@ -34,11 +38,47 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ArkNovaSettingsPage), typeof(ArkNovaSettingsPage));
 
         TabBar tabBar = new();
-        tabBar.Items.Add(CreateTab(AppResources.Groups, "icon_groups.png", groupListPage, nameof(GroupListPage)));
-        tabBar.Items.Add(CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage)));
-        tabBar.Items.Add(CreateTab(AppResources.Settings, "icon_settings.png", settingsPage, nameof(AppSettingsPage)));
+        Tab gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));
+        Tab groupsTab = CreateTab(AppResources.Groups, "icon_groups.png", groupListPage, nameof(GroupListPage));
+        Tab historyTab = CreateTab(AppResources.History, "icon_history.png", historyPage, nameof(HistoryPage));
+        Tab settingsTab = CreateTab(AppResources.Settings, "icon_settings.png", settingsPage, nameof(AppSettingsPage));
+        tabBar.Items.Add(gamesTab);
+        tabBar.Items.Add(groupsTab);
+        tabBar.Items.Add(historyTab);
+        tabBar.Items.Add(settingsTab);
+        tabBar.CurrentItem = groupsTab;
 
         Items.Add(tabBar);
+        Navigating += OnShellNavigating;
+    }
+
+    private async void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
+    {
+        if (_isResettingGroupTab
+            || e.Source is not (ShellNavigationSource.ShellSectionChanged or ShellNavigationSource.ShellContentChanged)
+            || !e.Target.Location.OriginalString.Contains(nameof(GroupListPage), StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        string current = CurrentState.Location.OriginalString;
+        if (current.EndsWith(nameof(GroupListPage), StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var deferral = e.GetDeferral();
+        e.Cancel();
+        _isResettingGroupTab = true;
+        try
+        {
+            await GoToAsync($"//{nameof(GroupListPage)}");
+        }
+        finally
+        {
+            _isResettingGroupTab = false;
+            deferral.Complete();
+        }
     }
 
     private static Tab CreateTab(string title, string icon, Page content, string route)

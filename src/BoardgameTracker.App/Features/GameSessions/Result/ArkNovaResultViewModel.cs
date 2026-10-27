@@ -14,6 +14,7 @@ public partial class ArkNovaResultViewModel(
 {
     public ObservableCollection<ArkNovaResultPlayerViewModel> Players { get; } = [];
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
+    [ObservableProperty] public partial string DurationText { get; private set; } = string.Empty;
 
     public async Task LoadAsync(Guid sessionId, CancellationToken cancellationToken = default)
     {
@@ -21,6 +22,7 @@ public partial class ArkNovaResultViewModel(
             ?? throw new InvalidOperationException("The completed Ark Nova session does not exist.");
         ArkNovaScoringDisplayMode mode = settingsStore.Get().ScoringDisplayMode;
         GroupName = session.GroupName;
+        DurationText = FormatDuration(session.StartedAt, session.EndedAt);
         Players.Clear();
 
         foreach (ArkNovaScoringPlayerData player in session.Players
@@ -34,6 +36,16 @@ public partial class ArkNovaResultViewModel(
             Players.Add(new ArkNovaResultPlayerViewModel(player, cards, mode));
         }
     }
+
+    private static string FormatDuration(DateTimeOffset startedAt, DateTimeOffset? endedAt)
+    {
+        TimeSpan duration = (endedAt ?? DateTimeOffset.UtcNow) - startedAt;
+        int totalMinutes = Math.Max(0, (int)duration.TotalMinutes);
+        return totalMinutes >= 60
+            ? string.Format(AppResources.DurationHoursFormat, totalMinutes / 60, totalMinutes % 60)
+            : string.Format(AppResources.DurationMinutesFormat, totalMinutes);
+    }
+
 }
 
 public sealed class ArkNovaResultPlayerViewModel

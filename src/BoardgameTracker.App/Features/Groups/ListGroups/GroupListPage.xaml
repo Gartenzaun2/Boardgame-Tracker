@@ -82,6 +82,7 @@
                                         ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
                                         VerticalOptions="Center" />
                                 </HorizontalStackLayout>
+                                <Label Text="{Binding GameName}" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource Secondary}" />
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="{Binding MemberNames}" />
                                     <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{StaticResource TextSecondary}" />
