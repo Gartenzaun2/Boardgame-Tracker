@@ -8,4 +8,5 @@ internal static class NavigationParameters
 {
     public const string GroupId = nameof(GroupId);
     public const string SessionId = nameof(SessionId);
+    public const string PersonId = nameof(PersonId);
 }

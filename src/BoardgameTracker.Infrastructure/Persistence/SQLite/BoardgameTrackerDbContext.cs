@@ -22,6 +22,7 @@ public sealed class BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerD
     public DbSet<ArkNovaGroupPlayer> ArkNovaGroupPlayers => Set<ArkNovaGroupPlayer>();
     public DbSet<ArkNovaSessionPlayer> ArkNovaSessionPlayers => Set<ArkNovaSessionPlayer>();
     public DbSet<ArkNovaZooPlan> ArkNovaZooPlans => Set<ArkNovaZooPlan>();
+    public DbSet<ArkNovaSessionSpecialCardAssignment> ArkNovaSessionSpecialCardAssignments => Set<ArkNovaSessionSpecialCardAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

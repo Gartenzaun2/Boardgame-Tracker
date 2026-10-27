@@ -126,4 +126,7 @@ public sealed record GroupListItemViewModel(
     string MemberNames,
     string LastPlayedText,
     Guid? OpenSessionId,
-    GameSessionStatus? OpenSessionStatus);
+    GameSessionStatus? OpenSessionStatus)
+{
+    public bool HasOpenSession => OpenSessionId is not null;
+}

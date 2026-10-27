@@ -68,10 +68,20 @@
                                 <VerticalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnGroupTapped" CommandParameter="{Binding Id}" />
                                 </VerticalStackLayout.GestureRecognizers>
-                                <Label
-                                    FontAttributes="Bold"
-                                    FontSize="20"
-                                    Text="{Binding Name}" />
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="20"
+                                        Text="{Binding Name}" />
+                                    <Image
+                                        HeightRequest="20"
+                                        WidthRequest="20"
+                                        IsVisible="{Binding HasOpenSession}"
+                                        Source="icon_active_session.png"
+                                        SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
+                                        ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="{Binding MemberNames}" />
                                     <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{StaticResource TextSecondary}" />

@@ -271,6 +271,40 @@ public static class AppResources
     public static string ArkNovaZooPlan13Name => GetString(nameof(ArkNovaZooPlan13Name));
     public static string ArkNovaZooPlan14Name => GetString(nameof(ArkNovaZooPlan14Name));
 
+    public static string Games => GetString(nameof(Games));
+    public static string Settings => GetString(nameof(Settings));
+    public static string ArkNova => GetString(nameof(ArkNova));
+    public static string SupportedGame => GetString(nameof(SupportedGame));
+    public static string GameCatalogHint => GetString(nameof(GameCatalogHint));
+    public static string AppSettingsTitle => GetString(nameof(AppSettingsTitle));
+    public static string GameSettings => GetString(nameof(GameSettings));
+    public static string GameSettingsHint => GetString(nameof(GameSettingsHint));
+    public static string ActiveGame => GetString(nameof(ActiveGame));
+    public static string AddSpecialCard => GetString(nameof(AddSpecialCard));
+    public static string SpecialCards => GetString(nameof(SpecialCards));
+    public static string NoSpecialCards => GetString(nameof(NoSpecialCards));
+    public static string SpecialCardAvailable => GetString(nameof(SpecialCardAvailable));
+    public static string SpecialCardAlreadyAssigned => GetString(nameof(SpecialCardAlreadyAssigned));
+    public static string SpecialCardAssignedHere => GetString(nameof(SpecialCardAssignedHere));
+    public static string SpecialCardPickerTitleFormat => GetString(nameof(SpecialCardPickerTitleFormat));
+    public static string SpecialCardMultipleTitle => GetString(nameof(SpecialCardMultipleTitle));
+    public static string SpecialCardMultipleMessageFormat => GetString(nameof(SpecialCardMultipleMessageFormat));
+    public static string Yes => GetString(nameof(Yes));
+    public static string Close => GetString(nameof(Close));
+    public static string DiscardScoringTitle => GetString(nameof(DiscardScoringTitle));
+    public static string DiscardScoringMessage => GetString(nameof(DiscardScoringMessage));
+    public static string DiscardScoringFailed => GetString(nameof(DiscardScoringFailed));
+    public static string ArkNovaSpecialCardAfricanElephantName => GetString(nameof(ArkNovaSpecialCardAfricanElephantName));
+    public static string ArkNovaSpecialCardAsianElephantName => GetString(nameof(ArkNovaSpecialCardAsianElephantName));
+    public static string ArkNovaSpecialCardBaldEagleName => GetString(nameof(ArkNovaSpecialCardBaldEagleName));
+    public static string ArkNovaSpecialCardGoldenEagleName => GetString(nameof(ArkNovaSpecialCardGoldenEagleName));
+    public static string ArkNovaSpecialCardSunBearName => GetString(nameof(ArkNovaSpecialCardSunBearName));
+    public static string ArkNovaSpecialCardAfricanElephantSymbols => GetString(nameof(ArkNovaSpecialCardAfricanElephantSymbols));
+    public static string ArkNovaSpecialCardAsianElephantSymbols => GetString(nameof(ArkNovaSpecialCardAsianElephantSymbols));
+    public static string ArkNovaSpecialCardBaldEagleSymbols => GetString(nameof(ArkNovaSpecialCardBaldEagleSymbols));
+    public static string ArkNovaSpecialCardGoldenEagleSymbols => GetString(nameof(ArkNovaSpecialCardGoldenEagleSymbols));
+    public static string ArkNovaSpecialCardSunBearSymbols => GetString(nameof(ArkNovaSpecialCardSunBearSymbols));
+
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(
