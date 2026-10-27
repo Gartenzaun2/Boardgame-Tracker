@@ -111,15 +111,13 @@
         </Grid>
 
         <Grid
-            x:Name="NavigationBusyOverlay"
             Grid.RowSpan="4"
             BackgroundColor="#40FFFFFF"
             InputTransparent="False"
-            IsVisible="False">
+            IsVisible="{Binding IsNavigating}">
             <ActivityIndicator
-                x:Name="NavigationBusyIndicator"
                 HorizontalOptions="Center"
-                IsRunning="False"
+                IsRunning="{Binding IsNavigating}"
                 VerticalOptions="Center" />
         </Grid>
     </Grid>

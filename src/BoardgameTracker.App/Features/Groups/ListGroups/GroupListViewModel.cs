@@ -24,10 +24,26 @@ public partial class GroupListViewModel(
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
+    public partial bool IsNavigating { get; private set; }
+
+    [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
 
     partial void OnIncludeTemporaryChanged(bool value) => _ = LoadAsync();
     partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
+
+    public bool TryBeginNavigation()
+    {
+        if (IsNavigating)
+        {
+            return false;
+        }
+
+        IsNavigating = true;
+        return true;
+    }
+
+    public void EndNavigation() => IsNavigating = false;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
