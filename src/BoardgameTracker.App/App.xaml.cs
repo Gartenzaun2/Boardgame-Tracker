@@ -1,3 +1,7 @@
+using BoardgameTracker.App.Features.GameSessions.Running;
+using BoardgameTracker.App.Features.GameSessions.Scoring;
+using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +40,32 @@ public partial class App : Microsoft.Maui.Controls.Application
         try
         {
             await _databaseInitializer.InitializeAsync();
-            window.Page = _services.GetRequiredService<AppShell>();
+            AppShell shell = _services.GetRequiredService<AppShell>();
+            window.Page = shell;
+
+            IOpenGameSessionQuery openSessionQuery =
+                _services.GetRequiredService<IOpenGameSessionQuery>();
+            OpenGameSession? openSession = await openSessionQuery.ExecuteAsync();
+
+            if (openSession is not null && openSession.GameKey == "ark-nova")
+            {
+                string route = openSession.Status switch
+                {
+                    GameSessionStatus.Running => nameof(ArkNovaRunningPage),
+                    GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
+                    _ => string.Empty
+                };
+
+                if (!string.IsNullOrEmpty(route))
+                {
+                    await shell.GoToAsync(
+                        route,
+                        new Dictionary<string, object>
+                        {
+                            ["SessionId"] = openSession.SessionId
+                        });
+                }
+            }
         }
         catch (Exception exception)
         {

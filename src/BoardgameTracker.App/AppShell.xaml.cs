@@ -2,6 +2,8 @@ using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.GameSessions.Preparation;
+using BoardgameTracker.App.Features.GameSessions.Running;
+using BoardgameTracker.App.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App;
@@ -14,6 +16,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
         Routing.RegisterRoute(nameof(ArkNovaPreparationPage), typeof(ArkNovaPreparationPage));
+        Routing.RegisterRoute(nameof(ArkNovaRunningPage), typeof(ArkNovaRunningPage));
+        Routing.RegisterRoute(nameof(ArkNovaScoringPage), typeof(ArkNovaScoringPage));
 
         Items.Add(new ShellContent
         {

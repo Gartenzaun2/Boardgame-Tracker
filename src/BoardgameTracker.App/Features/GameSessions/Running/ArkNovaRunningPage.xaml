@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.GameSessions.Running.ArkNovaRunningPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.NavBarIsVisible="False">
+
+    <Grid Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+        <VerticalStackLayout Spacing="0">
+            <Label FontAttributes="Bold" FontSize="23" Text="Laufende Partie" />
+            <Label
+                FontSize="13"
+                Text="{Binding GroupName}"
+                TextColor="{StaticResource TextSecondary}" />
+            <Label
+                FontSize="13"
+                Text="{Binding DurationText}"
+                TextColor="{StaticResource TextSecondary}" />
+        </VerticalStackLayout>
+
+        <Label
+            Grid.Row="1"
+            IsVisible="{Binding HasError}"
+            Text="{Binding ErrorMessage}"
+            TextColor="{StaticResource Danger}" />
+
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Padding="12"
+                            BackgroundColor="{Binding ColorBrush}"
+                            Style="{StaticResource CardBorder}">
+                            <Grid ColumnDefinitions="Auto,*,96" ColumnSpacing="10">
+                                <Border
+                                    HeightRequest="32"
+                                    Stroke="#66FFFFFF"
+                                    StrokeShape="RoundRectangle 16"
+                                    WidthRequest="32">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Position}"
+                                        VerticalTextAlignment="Center" />
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                    <Label FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
+                                    <Label FontSize="12" Text="{Binding ColorName}" />
+                                    <Label FontSize="12" Text="{Binding ZooPlanNumber, StringFormat='Zooplan {0}'}" />
+                                </VerticalStackLayout>
+
+                                <Border
+                                    Grid.Column="2"
+                                    Padding="4"
+                                    BackgroundColor="#BFFFFFFF"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10">
+                                    <Grid HeightRequest="64">
+                                        <Image
+                                            Aspect="Fill"
+                                            HeightRequest="64"
+                                            Source="{Binding ZooPlanIconSource}" />
+                                        <Border
+                                            Margin="0,3,0,0"
+                                            Padding="6,1"
+                                            BackgroundColor="#DFFFFFFF"
+                                            HorizontalOptions="Center"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 10"
+                                            VerticalOptions="Start">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="12"
+                                                Text="{Binding ZooPlanNumber}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <Button
+                Clicked="OnEndClicked"
+                Style="{StaticResource PrimaryCompactButton}"
+                Text="Partie beenden" />
+            <Button
+                Grid.Column="1"
+                BackgroundColor="Transparent"
+                Clicked="OnDiscardClicked"
+                Text="Verwerfen"
+                TextColor="{StaticResource Danger}" />
+        </Grid>
+
+        <Grid
+            Grid.RowSpan="4"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="{Binding IsBusy}">
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

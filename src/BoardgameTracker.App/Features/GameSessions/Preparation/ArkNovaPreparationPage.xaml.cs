@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.GameSessions.Running;
 using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.GameSessions.Preparation;
@@ -102,9 +103,18 @@ public partial class ArkNovaPreparationPage : ContentPage
             return;
         }
 
-        await DisplayAlertAsync(
-            "Vorbereitung vollständig",
-            "Die Partievorbereitung ist vollständig.",
-            "OK");
+        Guid? sessionId = await _viewModel.StartAsync();
+
+        if (sessionId is null)
+        {
+            return;
+        }
+
+        await Shell.Current.GoToAsync(
+            nameof(ArkNovaRunningPage),
+            new Dictionary<string, object>
+            {
+                ["SessionId"] = sessionId.Value
+            });
     }
 }

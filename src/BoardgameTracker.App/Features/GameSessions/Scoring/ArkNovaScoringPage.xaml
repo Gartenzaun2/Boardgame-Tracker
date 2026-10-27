@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.GameSessions.Scoring.ArkNovaScoringPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.NavBarIsVisible="False">
+
+    <Grid Padding="18" RowDefinitions="Auto,*" RowSpacing="20">
+        <Label FontAttributes="Bold" FontSize="23" Text="Wertung" />
+        <Border Grid.Row="1" Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
+            <Label
+                Text="Die Partie ist beendet und für die Wertung gespeichert. Die eigentliche Wertungserfassung folgt im nächsten Slice."
+                TextColor="{StaticResource TextSecondary}" />
+        </Border>
+    </Grid>
+</ContentPage>

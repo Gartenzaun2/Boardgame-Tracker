@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Games.ArkNova.Preparation;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,56 +52,54 @@ public sealed class SqliteArkNovaPreparationQuery(
                     : arkNovaPlayer.DefaultColor))
             .ToArrayAsync(cancellationToken);
 
-
-        // SQLite cannot translate ORDER BY for DateTimeOffset. The number of
-        // sessions for one group is small, so load the minimal projection and
-        // choose the latest session on the client.
-        var groupSessions = await dbContext.GameSessions
+        Guid? arkNovaGameId = await dbContext.Games
             .AsNoTracking()
-            .Where(session => session.GroupId == groupId)
-            .Select(session => new
-            {
-                session.Id,
-                session.StartedAt
-            })
-            .ToArrayAsync(cancellationToken);
-
-        var lastSession = groupSessions
-            .OrderByDescending(session => session.StartedAt)
-            .FirstOrDefault();
+            .Where(game => game.Key == "ark-nova")
+            .Select(game => (Guid?)game.Id)
+            .SingleOrDefaultAsync(cancellationToken);
 
         ArkNovaLastSession? lastSessionData = null;
 
-        if (lastSession is not null)
+        if (arkNovaGameId is Guid gameId)
         {
-            var placements = await (
-                from sessionPlayer in dbContext.GameSessionPlayers.AsNoTracking()
-                join person in dbContext.Persons.AsNoTracking()
-                    on sessionPlayer.PersonId equals person.Id
-                where sessionPlayer.GameSessionId == lastSession.Id
-                      && sessionPlayer.Placement != null
-                select new
+            // SQLite cannot translate ORDER BY for DateTimeOffset. The number of
+            // completed sessions for one group is small, so load the minimal
+            // projection and choose the latest session on the client.
+            var groupSessions = await dbContext.GameSessions
+                .AsNoTracking()
+                .Where(session => session.GroupId == groupId
+                                  && session.GameId == gameId
+                                  && session.Status == GameSessionStatus.Completed)
+                .Select(session => new
                 {
-                    PersonId = person.Id,
-                    person.Name,
-                    Placement = sessionPlayer.Placement!.Value
+                    session.Id,
+                    session.StartedAt
                 })
                 .ToArrayAsync(cancellationToken);
 
-            var winner = placements
-                .Where(player => player.Placement == 1)
-                .OrderBy(player => player.Name)
+            var lastSession = groupSessions
+                .OrderByDescending(session => session.StartedAt)
                 .FirstOrDefault();
 
-            var lastPlace = placements
-                .OrderByDescending(player => player.Placement)
-                .ThenBy(player => player.Name)
-                .FirstOrDefault();
+            if (lastSession is not null)
+            {
+                ArkNovaLastSessionPlacement[] placements = await (
+                    from sessionPlayer in dbContext.GameSessionPlayers.AsNoTracking()
+                    join person in dbContext.Persons.AsNoTracking()
+                        on sessionPlayer.PersonId equals person.Id
+                    where sessionPlayer.GameSessionId == lastSession.Id
+                          && sessionPlayer.Placement != null
+                    orderby sessionPlayer.Placement, person.Name
+                    select new ArkNovaLastSessionPlacement(
+                        person.Id,
+                        person.Name,
+                        sessionPlayer.Placement!.Value))
+                    .ToArrayAsync(cancellationToken);
 
-            lastSessionData = new ArkNovaLastSession(
-                lastSession.StartedAt,
-                lastPlace?.PersonId,
-                winner?.Name);
+                lastSessionData = new ArkNovaLastSession(
+                    lastSession.StartedAt,
+                    placements);
+            }
         }
 
         return new ArkNovaPreparationData(
