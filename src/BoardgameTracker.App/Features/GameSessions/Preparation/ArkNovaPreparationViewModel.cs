@@ -328,8 +328,15 @@ public partial class ArkNovaPreparationPlayerViewModel(
     public bool CanChooseBlack => Color != ArkNovaPlayerColor.Black;
 
     public bool HasZooPlans => ZooPlanOption1 is not null && ZooPlanOption2 is not null;
-    public bool Option1Selected => ZooPlanOption1?.Id == SelectedZooPlanId;
-    public bool Option2Selected => ZooPlanOption2?.Id == SelectedZooPlanId;
+    public bool Option1Selected =>
+        SelectedZooPlanId.HasValue
+        && ZooPlanOption1 is not null
+        && ZooPlanOption1.Id == SelectedZooPlanId.Value;
+
+    public bool Option2Selected =>
+        SelectedZooPlanId.HasValue
+        && ZooPlanOption2 is not null
+        && ZooPlanOption2.Id == SelectedZooPlanId.Value;
     public Microsoft.Maui.Graphics.Color Option1Stroke =>
         Option1Selected ? Microsoft.Maui.Graphics.Colors.Green : Microsoft.Maui.Graphics.Colors.Transparent;
 
