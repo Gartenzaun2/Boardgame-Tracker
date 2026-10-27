@@ -34,8 +34,6 @@ Desktop.ini
 *.tmp
 *.bak
 
-# BoardgameTracker local documentation
-*.md
 
 # BoardgameTracker delta/update helper files
 APPLY_UPDATE.cmd

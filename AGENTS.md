@@ -1,0 +1,69 @@
+# Repository Guidelines
+
+## Projekt und Struktur
+Boardgame Tracker ist eine bestehende mobile .NET-MAUI-App zur Erfassung und Auswertung von Brettspielpartien; Arche Nova ist das erste vollständig unterstützte Spiel. Ohne ausdrücklichen Auftrag weder neu aufbauen noch grundlegend umstrukturieren.
+
+`BoardgameTracker.sln` bündelt vier Projekte unter `src/`; `tests/` enthält Core- und Application-Tests (xUnit v3/Microsoft Testing Platform). Ressourcen und Lokalisierung liegen unter `src/BoardgameTracker.App/Resources/`.
+
+## Quellen der Wahrheit
+Vor relevanten Änderungen die zuständigen Dokumente lesen:
+
+| Entscheidung | Maßgebliche Datei |
+|---|---|
+| Produktverhalten und Anforderungen | `docs/PRODUCT_SPEC.md` |
+| Architektur und Abhängigkeiten | `docs/ARCHITECTURE.md` |
+| Domain und Persistenzmodell | `docs/DATA_MODEL.md` |
+| UI-Regeln | `docs/UI_DESIGN_GUIDE.md` |
+| Screens und Navigation | `docs/UI_WIREFRAME.md` |
+| Umgebung, Build, Tests, Versionierung, Lieferung | `SETUP.md` |
+| Projektüberblick | `README.md` |
+| Historische Änderungen | `CHANGELOG.md` |
+
+Die kanonischen Spezifikationen liegen unter `docs/`; gleichnamige alte Root-Dateien ersetzen sie nicht. Dokumentation nicht durch Annahmen ersetzen. Widersprüche zwischen Code und Dokumentation untersuchen; bei fachlich oder architektonisch relevanten Entscheidungen nachfragen, statt stillschweigend eine Seite zu wählen. Keine Anforderungen zum Füllen von Lücken erfinden.
+
+## Architektur
+Modularer Monolith mit pragmatischen Vertical Slices:
+
+```text
+App -> Application -> Core
+Infrastructure -> Application + Core
+```
+
+- Core: Domainmodell, Invarianten, Berechnungen, reine Fachregeln.
+- Application: Use Cases, Orchestrierung, Read Models, notwendige technische Ports.
+- Infrastructure: EF Core, SQLite, DbContext, technische Implementierungen.
+- App: MAUI, XAML, ViewModels, Navigation, Presentation, Lokalisierung, Composition Root.
+
+Autoritative Fachregeln gehören nicht in ViewModels; Feature-ViewModels kennen keine konkreten EF-/SQLite-Implementierungen. Infrastructure nur im technischen Startup/Composition Root der App anbinden. Vertical Slices und Composition erhalten; Arche-Nova-Logik bleibt unter `Games/ArkNova/`. Domänenbegriffe `Game`, `GameSession`, `Group`, `Player` beibehalten.
+
+Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-/Helper-/Utils-Abstraktionen und keine Interfaces ausschließlich für Mockbarkeit oder Symmetrie einführen.
+
+## Vorgehen und Entscheidungsgrenze
+Vor jeder Änderung betroffene Dateien und relevante Dokumentation lesen, die Implementierung verstehen und Auswirkungen auf Tests, Persistenz, UI und Dokumentation prüfen. Danach die kleinste sinnvolle Änderung durchführen; funktionierenden Code nicht unnötig neu schreiben.
+
+Keine Architektur-, Persistenz- oder Paketänderungen außerhalb des Auftrags; neue NuGet-Pakete nur bei klarem Bedarf. Kleine technische Entscheidungen innerhalb bestehender Spezifikation selbstständig treffen. Vor Änderungen an Architekturgrundsätzen, grundlegendem Datenmodell, Persistenzstrategie/Migration, wesentlichen Benutzerabläufen, größeren Abhängigkeiten oder bestehenden Anforderungen nachfragen; ebenso bei nicht spezifiziertem Fachverhalten.
+
+Neue/geänderte Fachlogik geeignet testen. Tests niemals für einen grünen Lauf entfernen, abschwächen oder umgehen. Sichtbare Texte über bestehende Lokalisierung führen; UI-Änderungen anhand beider UI-Dokumente prüfen.
+
+## Verifikation und Lieferung
+Relevante Tests, bei Bedarf die breitere Suite und soweit lokal möglich den Build ausführen. Beispiele ab Solution-Root:
+
+```powershell
+dotnet build BoardgameTracker.sln
+dotnet test --project tests/BoardgameTracker.Core.Tests
+dotnet test --project tests/BoardgameTracker.Application.Tests
+```
+
+Build-/Restore-Voraussetzungen und relevante Geräte-Smoke-Tests gemäß `SETUP.md` beachten. `git diff` auf unbeabsichtigte Änderungen prüfen, einschließlich neuer Dateien. Fehlgeschlagene/nicht ausführbare Prüfungen ausdrücklich nennen; nur tatsächlich ausgeführte Verifikation als erfolgreich melden.
+
+Pre-Alpha verwendet `EnsureCreatedAsync`, keine automatische Schemamigration. Versions- und Lieferregeln aus `SETUP.md` einhalten; keine Lieferarchive ohne ausdrücklichen Auftrag erzeugen.
+
+## Dokumentation und Git
+Vor Änderungen `git status` prüfen. Bereits vorhandene, nicht zum aktuellen Auftrag gehörende Änderungen des Benutzers niemals zurücksetzen, überschreiben oder verwerfen. Nach Abschluss erneut `git status` und `git diff` prüfen. Neue, noch unversionierte Dateien zusätzlich direkt prüfen, da `git diff` sie nicht anzeigt.
+
+Dokumentation nur bei geändertem gültigem Projektstand aktualisieren; Versionshistorie ausschließlich in `CHANGELOG.md` pflegen. Lokale Dateien im Rahmen ausdrücklich erteilter Implementierungsaufträge bearbeiten; vorhandene fremde Änderungen bewahren.
+
+Commit und Push ausschließlich auf ausdrückliche Anweisung, vorher Änderungen und ausgeführte Tests zusammenfassen. Ohne ausdrücklichen Auftrag keine Branches löschen oder History umschreiben.
+
+## Abschlussbericht
+Kurz nennen: Änderungen und wichtige Dateien, tatsächlich ausgeführte Tests/Builds samt Ergebnis, offene Probleme/Entscheidungen, Dokumentationsanpassungen und Bereitschaft für Commit/Push. Bereitschaft ist keine Erlaubnis zur Ausführung.
