@@ -64,8 +64,10 @@ public sealed class SqliteStartArkNovaGameSessionDataAccess(
         bool hasOpenGameSession = await dbContext.GameSessions
             .AsNoTracking()
             .AnyAsync(
-                gameSession => gameSession.Status == GameSessionStatus.Running
-                           || gameSession.Status == GameSessionStatus.Scoring,
+                gameSession => gameSession.GameId == gameId.Value
+                            && gameSession.GroupId == groupId
+                            && (gameSession.Status == GameSessionStatus.Running
+                             || gameSession.Status == GameSessionStatus.Scoring),
                 cancellationToken);
 
         return new StartArkNovaGameSessionContext(

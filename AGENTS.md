@@ -19,7 +19,7 @@ Vor relevanten Änderungen die zuständigen Dokumente lesen:
 | Projektüberblick | `README.md` |
 | Historische Änderungen | `CHANGELOG.md` |
 
-Die kanonischen Spezifikationen liegen unter `docs/`; gleichnamige alte Root-Dateien ersetzen sie nicht. Dokumentation nicht durch Annahmen ersetzen. Widersprüche zwischen Code und Dokumentation untersuchen; bei fachlich oder architektonisch relevanten Entscheidungen nachfragen, statt stillschweigend eine Seite zu wählen. Keine Anforderungen zum Füllen von Lücken erfinden.
+Die kanonischen Spezifikationen liegen ausschließlich unter `docs/`; keine gleichnamigen Kopien an anderen Stellen anlegen. Dokumentation nicht durch Annahmen ersetzen. Widersprüche zwischen Code und Dokumentation untersuchen; bei fachlich oder architektonisch relevanten Entscheidungen nachfragen, statt stillschweigend eine Seite zu wählen. Keine Anforderungen zum Füllen von Lücken erfinden.
 
 ## Architektur
 Modularer Monolith mit pragmatischen Vertical Slices:
