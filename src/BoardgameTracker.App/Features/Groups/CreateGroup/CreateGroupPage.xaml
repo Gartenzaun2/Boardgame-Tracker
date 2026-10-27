@@ -75,10 +75,10 @@
                         <Label
                             FontAttributes="Bold"
                             FontSize="18"
-                            Text="{x:Static res:AppResources.GroupMembers}"
+                            Text="{x:Static res:AppResources.GroupPlayers}"
                             VerticalOptions="Center" />
                         <ImageButton
-                            Clicked="OnMembersInfoClicked"
+                            Clicked="OnPlayersInfoClicked"
                             Source="icon_info.png"
                             Style="{StaticResource IconButton}"
                             SemanticProperties.Description="{x:Static res:AppResources.DefaultOrderHint}"
@@ -86,13 +86,13 @@
                     </HorizontalStackLayout>
 
                     <Label
-                        IsVisible="{Binding HasNoMembers}"
-                        Text="{x:Static res:AppResources.NoMembersYet}"
+                        IsVisible="{Binding HasNoPlayers}"
+                        Text="{x:Static res:AppResources.NoPlayersYet}"
                         TextColor="{StaticResource TextSecondary}" />
 
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="application:CreateGroupMemberInput">
+                            <DataTemplate x:DataType="application:CreateGroupPlayerInput">
                                 <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
                                     <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                         <VerticalStackLayout Spacing="2">
@@ -103,9 +103,9 @@
                                                 Text="{x:Static res:AppResources.Guest}"
                                                 TextColor="{StaticResource TextSecondary}" />
                                         </VerticalStackLayout>
-                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
-                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemoveMemberCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
+                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemovePlayerCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -115,34 +115,34 @@
 
                 <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPerson}" />
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePersons}">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPlayer}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePlayers}">
                             <Picker
-                                ItemDisplayBinding="{Binding Name, x:DataType=application:SelectablePerson}"
-                                ItemsSource="{Binding AvailablePersons}"
-                                SelectedItem="{Binding SelectedExistingPerson}"
-                                Title="{x:Static res:AppResources.SelectPerson}" />
+                                ItemDisplayBinding="{Binding Name, x:DataType=application:SelectablePlayer}"
+                                ItemsSource="{Binding AvailablePlayers}"
+                                SelectedItem="{Binding SelectedExistingPlayer}"
+                                Title="{x:Static res:AppResources.SelectPlayer}" />
                             <Button
                                 Grid.Column="1"
-                                Command="{Binding AddSelectedPersonCommand}"
+                                Command="{Binding AddSelectedPlayerCommand}"
                                 Style="{StaticResource CompactActionButton}"
-                                SemanticProperties.Description="{x:Static res:AppResources.AddExistingPerson}"
+                                SemanticProperties.Description="{x:Static res:AppResources.AddExistingPlayer}"
                                 Text="+"
                                 VerticalOptions="Center" />
                         </Grid>
-                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePersons}" Text="{x:Static res:AppResources.NoAvailablePersons}" TextColor="{StaticResource TextSecondary}" />
+                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePlayers}" Text="{x:Static res:AppResources.NoAvailablePlayers}" TextColor="{StaticResource TextSecondary}" />
                     </VerticalStackLayout>
                 </Border>
 
                 <Border Padding="16" BackgroundColor="{StaticResource SurfaceGreen}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
-                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPerson}" />
-                        <Entry Placeholder="{x:Static res:AppResources.PersonNamePlaceholder}" Text="{Binding NewPersonName}" />
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayer}" />
+                        <Entry Placeholder="{x:Static res:AppResources.PlayerNamePlaceholder}" Text="{Binding NewPlayerName}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                             <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
-                            <Switch Grid.Column="1" IsToggled="{Binding NewPersonIsGuest}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
                         </Grid>
-                        <Button Command="{Binding AddNewPersonCommand}" HorizontalOptions="End" Style="{StaticResource CompactActionButton}" Text="{x:Static res:AppResources.AddPerson}" />
+                        <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="End" Style="{StaticResource CompactActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
                     </VerticalStackLayout>
                 </Border>
 

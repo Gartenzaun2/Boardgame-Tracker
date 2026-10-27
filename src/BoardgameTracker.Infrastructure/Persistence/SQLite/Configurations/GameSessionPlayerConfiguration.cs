@@ -1,12 +1,12 @@
 using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.People;
+using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
 /// <summary>
-/// Maps persisted session participants, ordering constraints and person references to SQLite.
+/// Maps persisted gameSession participants, ordering constraints and player references to SQLite.
 /// </summary>
 internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<GameSessionPlayer>
 {
@@ -20,7 +20,7 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
                 table.HasCheckConstraint("CK_GameSessionPlayers_Placement_Positive", "Placement IS NULL OR Placement > 0");
             });
 
-        builder.HasKey(x => new { x.GameSessionId, x.PersonId });
+        builder.HasKey(x => new { x.GameSessionId, x.PlayerId });
         builder.Property(x => x.Order).IsRequired();
 
         builder.HasOne<GameSession>()
@@ -29,9 +29,9 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Person>()
+        builder.HasOne<Player>()
             .WithMany()
-            .HasForeignKey(x => x.PersonId)
+            .HasForeignKey(x => x.PlayerId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 

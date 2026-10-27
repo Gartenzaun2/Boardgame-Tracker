@@ -2,8 +2,10 @@ using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.People;
+using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
+using BoardgameTracker.Core.Games.ArkNova.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova.Groups;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 
@@ -13,16 +15,16 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 public sealed class BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerDbContext> options)
     : DbContext(options)
 {
-    public DbSet<Person> Persons => Set<Person>();
+    public DbSet<Player> Players => Set<Player>();
     public DbSet<Group> Groups => Set<Group>();
-    public DbSet<GroupPerson> GroupPersons => Set<GroupPerson>();
+    public DbSet<GroupPlayer> GroupPlayers => Set<GroupPlayer>();
     public DbSet<Game> Games => Set<Game>();
     public DbSet<GameSession> GameSessions => Set<GameSession>();
     public DbSet<GameSessionPlayer> GameSessionPlayers => Set<GameSessionPlayer>();
     public DbSet<ArkNovaGroupPlayer> ArkNovaGroupPlayers => Set<ArkNovaGroupPlayer>();
-    public DbSet<ArkNovaSessionPlayer> ArkNovaSessionPlayers => Set<ArkNovaSessionPlayer>();
+    public DbSet<ArkNovaGameSessionPlayer> ArkNovaGameSessionPlayers => Set<ArkNovaGameSessionPlayer>();
     public DbSet<ArkNovaZooPlan> ArkNovaZooPlans => Set<ArkNovaZooPlan>();
-    public DbSet<ArkNovaSessionSpecialCardAssignment> ArkNovaSessionSpecialCardAssignments => Set<ArkNovaSessionSpecialCardAssignment>();
+    public DbSet<ArkNovaGameSessionSpecialCardAssignment> ArkNovaGameSessionSpecialCardAssignments => Set<ArkNovaGameSessionSpecialCardAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

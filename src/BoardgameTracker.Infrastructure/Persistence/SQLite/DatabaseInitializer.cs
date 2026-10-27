@@ -1,3 +1,4 @@
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;

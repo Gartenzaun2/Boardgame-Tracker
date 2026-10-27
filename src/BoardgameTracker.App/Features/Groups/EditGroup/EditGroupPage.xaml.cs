@@ -56,11 +56,11 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
             AppResources.Ok);
     }
 
-    private async void OnMembersInfoClicked(object? sender, EventArgs e)
+    private async void OnPlayersInfoClicked(object? sender, EventArgs e)
     {
         await DisplayAlertAsync(
-            AppResources.GroupMembers,
-            AppResources.EditGroupMembersHint,
+            AppResources.GroupPlayers,
+            AppResources.EditGroupPlayersHint,
             AppResources.Ok);
     }
 

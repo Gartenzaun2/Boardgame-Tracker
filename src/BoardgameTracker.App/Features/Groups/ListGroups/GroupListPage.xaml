@@ -82,14 +82,14 @@
                                     <Image
                                         HeightRequest="20"
                                         WidthRequest="20"
-                                        IsVisible="{Binding HasOpenSession}"
+                                        IsVisible="{Binding HasOpenGameSession}"
                                         Source="icon_active_session.png"
                                         SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
                                         ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
                                         VerticalOptions="Center" />
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Label Text="{Binding MemberNames}" />
+                                    <Label Text="{Binding PlayerNames}" />
                                     <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{StaticResource TextSecondary}" />
                                     <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{StaticResource TextSecondary}" />
                                 </HorizontalStackLayout>

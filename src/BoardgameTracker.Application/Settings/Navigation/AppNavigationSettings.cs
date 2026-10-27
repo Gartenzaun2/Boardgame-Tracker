@@ -18,7 +18,7 @@ public sealed record AppNavigationSettings(
     string? DefaultGameKey,
     string? SelectedGameKey,
     AppMainSection? LastMainSection,
-    Guid? LastSessionId)
+    Guid? LastGameSessionId)
 {
     public static AppNavigationSettings Default { get; } = new(null, null, null, null);
 }

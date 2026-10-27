@@ -1,5 +1,7 @@
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
@@ -23,7 +25,7 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
         ArgumentNullException.ThrowIfNull(command);
         ArgumentOutOfRangeException.ThrowIfEqual(command.GroupId, Guid.Empty);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
-        ArgumentNullException.ThrowIfNull(command.OrderedPersonIds);
+        ArgumentNullException.ThrowIfNull(command.OrderedPlayerIds);
         ArgumentNullException.ThrowIfNull(command.ArkNovaDefaultColors);
 
         Group group = await dataAccess.GetAggregateAsync(
@@ -31,12 +33,12 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
             cancellationToken)
             ?? throw new InvalidOperationException("The group does not exist.");
 
-        HashSet<Guid> memberIds = [.. group.Members.Select(member => member.PersonId)];
+        HashSet<Guid> playerIds = [.. group.Players.Select(player => player.PlayerId)];
 
-        if (!memberIds.SetEquals(command.ArkNovaDefaultColors.Keys))
+        if (!playerIds.SetEquals(command.ArkNovaDefaultColors.Keys))
         {
             throw new ArgumentException(
-                "Ark Nova default colors must describe exactly the fixed group members.",
+                "Ark Nova default colors must describe exactly the fixed group players.",
                 nameof(command));
         }
 
@@ -68,7 +70,7 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess)
         }
 
         group.SetArchived(command.IsArchived);
-        group.SetDefaultOrder(command.OrderedPersonIds);
+        group.SetDefaultOrder(command.OrderedPlayerIds);
 
         await dataAccess.SaveAsync(group, command.ArkNovaDefaultColors, cancellationToken);
     }

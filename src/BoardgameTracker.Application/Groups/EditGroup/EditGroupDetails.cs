@@ -1,4 +1,6 @@
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
@@ -10,13 +12,13 @@ public sealed record EditGroupDetails(
     string Name,
     bool IsTemporary,
     bool IsArchived,
-    IReadOnlyList<EditGroupMember> Members);
+    IReadOnlyList<EditGroupPlayer> Players);
 
 /// <summary>
-/// Projected member data used while editing a group, including its Ark Nova default color.
+/// Projected player data used while editing a group, including its Ark Nova default color.
 /// </summary>
-public sealed record EditGroupMember(
-    Guid PersonId,
+public sealed record EditGroupPlayer(
+    Guid PlayerId,
     string Name,
     bool IsGuest,
     int DefaultOrder,

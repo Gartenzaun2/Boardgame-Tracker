@@ -1,5 +1,6 @@
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Players;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 

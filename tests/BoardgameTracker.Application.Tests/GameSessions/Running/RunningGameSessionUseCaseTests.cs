@@ -6,82 +6,82 @@ namespace BoardgameTracker.Application.Tests.GameSessions.Running;
 public sealed class RunningGameSessionUseCaseTests
 {
     [Fact]
-    public async Task BeginScoringAsync_TransitionsAndSavesSession()
+    public async Task BeginScoringAsync_TransitionsAndSavesGameSession()
     {
         DateTimeOffset startedAt = new(2026, 10, 27, 10, 0, 0, TimeSpan.Zero);
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
-        FakeDataAccess dataAccess = new(session);
+        FakeDataAccess dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
         DateTimeOffset endedAt = startedAt.AddHours(2);
 
-        await useCase.BeginScoringAsync(session.Id, endedAt);
+        await useCase.BeginScoringAsync(gameSession.Id, endedAt);
 
-        Assert.Same(session, dataAccess.SavedSession);
-        Assert.Equal(GameSessionStatus.Scoring, session.Status);
-        Assert.Equal(endedAt, session.EndedAt);
+        Assert.Same(gameSession, dataAccess.SavedGameSession);
+        Assert.Equal(GameSessionStatus.Scoring, gameSession.Status);
+        Assert.Equal(endedAt, gameSession.EndedAt);
     }
 
     [Fact]
-    public async Task DiscardAsync_DeletesRunningSession()
+    public async Task DiscardAsync_DeletesRunningGameSession()
     {
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             DateTimeOffset.UtcNow,
             [Guid.NewGuid()]);
-        FakeDataAccess dataAccess = new(session);
+        FakeDataAccess dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
 
-        await useCase.DiscardAsync(session.Id);
+        await useCase.DiscardAsync(gameSession.Id);
 
-        Assert.Same(session, dataAccess.DeletedSession);
+        Assert.Same(gameSession, dataAccess.DeletedGameSession);
     }
 
     [Fact]
-    public async Task BeginScoringAsync_WhenSessionIsNotRunning_Throws()
+    public async Task BeginScoringAsync_WhenGameSessionIsNotRunning_Throws()
     {
         DateTimeOffset startedAt = DateTimeOffset.UtcNow;
-        GameSession session = new(
+        GameSession gameSession = new(
             Guid.NewGuid(),
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
-        session.BeginScoring(startedAt.AddMinutes(1));
-        FakeDataAccess dataAccess = new(session);
+        gameSession.BeginScoring(startedAt.AddMinutes(1));
+        FakeDataAccess dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            useCase.BeginScoringAsync(session.Id, startedAt.AddMinutes(2)));
+            useCase.BeginScoringAsync(gameSession.Id, startedAt.AddMinutes(2)));
     }
 
-    private sealed class FakeDataAccess(GameSession? session)
+    private sealed class FakeDataAccess(GameSession? gameSession)
         : IRunningGameSessionDataAccess
     {
-        public GameSession? SavedSession { get; private set; }
-        public GameSession? DeletedSession { get; private set; }
+        public GameSession? SavedGameSession { get; private set; }
+        public GameSession? DeletedGameSession { get; private set; }
 
         public Task<GameSession?> FindAsync(
-            Guid sessionId,
+            Guid gameSessionId,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(session?.Id == sessionId ? session : null);
+            Task.FromResult(gameSession?.Id == gameSessionId ? gameSession : null);
 
         public Task SaveAsync(
-            GameSession sessionToSave,
+            GameSession gameSessionToSave,
             CancellationToken cancellationToken = default)
         {
-            SavedSession = sessionToSave;
+            SavedGameSession = gameSessionToSave;
             return Task.CompletedTask;
         }
 
         public Task DeleteAsync(
-            GameSession sessionToDelete,
+            GameSession gameSessionToDelete,
             CancellationToken cancellationToken = default)
         {
-            DeletedSession = sessionToDelete;
+            DeletedGameSession = gameSessionToDelete;
             return Task.CompletedTask;
         }
     }

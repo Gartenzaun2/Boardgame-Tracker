@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Resources;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Resources.Localization;
 
@@ -42,39 +43,39 @@ public static class AppResources
     public static string TemporaryGroup =>
         GetString(nameof(TemporaryGroup));
 
-    public static string NewPerson =>
-        GetString(nameof(NewPerson));
+    public static string NewPlayer =>
+        GetString(nameof(NewPlayer));
 
-    public static string PersonNamePlaceholder =>
-        GetString(nameof(PersonNamePlaceholder));
+    public static string PlayerNamePlaceholder =>
+        GetString(nameof(PlayerNamePlaceholder));
 
     public static string Guest =>
         GetString(nameof(Guest));
 
-    public static string AddPerson =>
-        GetString(nameof(AddPerson));
+    public static string AddPlayer =>
+        GetString(nameof(AddPlayer));
 
 
-    public static string NoAvailablePersons =>
-        GetString(nameof(NoAvailablePersons));
+    public static string NoAvailablePlayers =>
+        GetString(nameof(NoAvailablePlayers));
 
 
-    public static string GroupMembers =>
-        GetString(nameof(GroupMembers));
+    public static string GroupPlayers =>
+        GetString(nameof(GroupPlayers));
 
     public static string DefaultOrderHint =>
         GetString(nameof(DefaultOrderHint));
 
-    public static string NoMembersYet =>
-        GetString(nameof(NoMembersYet));
+    public static string NoPlayersYet =>
+        GetString(nameof(NoPlayersYet));
 
 
-    public static string EnterPersonName =>
-        GetString(nameof(EnterPersonName));
+    public static string EnterPlayerName =>
+        GetString(nameof(EnterPlayerName));
 
 
-    public static string LoadPersonsFailed =>
-        GetString(nameof(LoadPersonsFailed));
+    public static string LoadPlayersFailed =>
+        GetString(nameof(LoadPlayersFailed));
 
     public static string SaveGroupFailed =>
         GetString(nameof(SaveGroupFailed));
@@ -88,11 +89,11 @@ public static class AppResources
     public static string Ok =>
         GetString(nameof(Ok));
 
-    public static string AddExistingPerson =>
-        GetString(nameof(AddExistingPerson));
+    public static string AddExistingPlayer =>
+        GetString(nameof(AddExistingPlayer));
 
-    public static string SelectPerson =>
-        GetString(nameof(SelectPerson));
+    public static string SelectPlayer =>
+        GetString(nameof(SelectPlayer));
 
     public static string EditGroup =>
         GetString(nameof(EditGroup));
@@ -100,8 +101,8 @@ public static class AppResources
     public static string EditGroupHint =>
         GetString(nameof(EditGroupHint));
 
-    public static string EditGroupMembersHint =>
-        GetString(nameof(EditGroupMembersHint));
+    public static string EditGroupPlayersHint =>
+        GetString(nameof(EditGroupPlayersHint));
 
     public static string GroupNotFound =>
         GetString(nameof(GroupNotFound));
@@ -175,8 +176,8 @@ public static class AppResources
     public static string ScoringPlaceholder =>
         GetString(nameof(ScoringPlaceholder));
 
-    public static string NoPreviousSession =>
-        GetString(nameof(NoPreviousSession));
+    public static string NoPreviousGameSession =>
+        GetString(nameof(NoPreviousGameSession));
 
     public static string GroupNotFoundForPreparation =>
         GetString(nameof(GroupNotFoundForPreparation));
@@ -193,8 +194,8 @@ public static class AppResources
     public static string StartGameFailed =>
         GetString(nameof(StartGameFailed));
 
-    public static string PreviousSessionFormat =>
-        GetString(nameof(PreviousSessionFormat));
+    public static string PreviousGameSessionFormat =>
+        GetString(nameof(PreviousGameSessionFormat));
 
     public static string Blue =>
         GetString(nameof(Blue));
@@ -217,11 +218,11 @@ public static class AppResources
     public static string ZooPlanSelectionRequired =>
         GetString(nameof(ZooPlanSelectionRequired));
 
-    public static string RunningSessionNotFound =>
-        GetString(nameof(RunningSessionNotFound));
+    public static string RunningGameSessionNotFound =>
+        GetString(nameof(RunningGameSessionNotFound));
 
-    public static string LoadRunningSessionFailed =>
-        GetString(nameof(LoadRunningSessionFailed));
+    public static string LoadRunningGameSessionFailed =>
+        GetString(nameof(LoadRunningGameSessionFailed));
 
     public static string DurationHoursFormat =>
         GetString(nameof(DurationHoursFormat));

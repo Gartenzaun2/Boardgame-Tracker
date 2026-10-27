@@ -1,17 +1,17 @@
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
 /// <summary>
-/// Input for the create-group use case, including all members that must be persisted atomically with the group.
+/// Input for the create-group use case, including all players that must be persisted atomically with the group.
 /// </summary>
 public sealed record CreateGroupCommand(
     string Name,
     bool IsTemporary,
-    IReadOnlyList<CreateGroupMemberInput> Members);
+    IReadOnlyList<CreateGroupPlayerInput> Players);
 
 /// <summary>
-/// Describes one existing or newly entered member in a create-group request.
+/// Describes one existing or newly entered player in a create-group request.
 /// </summary>
-public sealed record CreateGroupMemberInput(
-    Guid? ExistingPersonId,
+public sealed record CreateGroupPlayerInput(
+    Guid? ExistingPlayerId,
     string Name,
     bool IsGuest);

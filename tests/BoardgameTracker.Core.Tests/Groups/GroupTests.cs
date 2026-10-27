@@ -5,7 +5,7 @@ namespace BoardgameTracker.Core.Tests.Groups;
 public sealed class GroupTests
 {
     [Fact]
-    public void Constructor_CreatesMembersInGivenOrder()
+    public void Constructor_CreatesPlayersInGivenOrder()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
@@ -13,30 +13,30 @@ public sealed class GroupTests
         Group group = new("Freitagabend", false, [first, second]);
 
         Assert.Collection(
-            group.Members.OrderBy(member => member.DefaultOrder),
-            member =>
+            group.Players.OrderBy(player => player.DefaultOrder),
+            player =>
             {
-                Assert.Equal(first, member.PersonId);
-                Assert.Equal(1, member.DefaultOrder);
+                Assert.Equal(first, player.PlayerId);
+                Assert.Equal(1, player.DefaultOrder);
             },
-            member =>
+            player =>
             {
-                Assert.Equal(second, member.PersonId);
-                Assert.Equal(2, member.DefaultOrder);
+                Assert.Equal(second, player.PlayerId);
+                Assert.Equal(2, player.DefaultOrder);
             });
     }
 
     [Fact]
-    public void Constructor_RejectsDuplicateMembers()
+    public void Constructor_RejectsDuplicatePlayers()
     {
-        Guid personId = Guid.NewGuid();
+        Guid playerId = Guid.NewGuid();
 
         Assert.Throws<ArgumentException>(() =>
-            new Group("Freitagabend", false, [personId, personId]));
+            new Group("Freitagabend", false, [playerId, playerId]));
     }
 
     [Fact]
-    public void SetDefaultOrder_RequiresExactlyTheExistingMembers()
+    public void SetDefaultOrder_RequiresExactlyTheExistingPlayers()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
@@ -44,19 +44,19 @@ public sealed class GroupTests
 
         group.SetDefaultOrder([second, first]);
 
-        Assert.Equal(1, group.Members.Single(x => x.PersonId == second).DefaultOrder);
-        Assert.Equal(2, group.Members.Single(x => x.PersonId == first).DefaultOrder);
+        Assert.Equal(1, group.Players.Single(x => x.PlayerId == second).DefaultOrder);
+        Assert.Equal(2, group.Players.Single(x => x.PlayerId == first).DefaultOrder);
     }
 
     [Fact]
-    public void Constructor_RejectsEmptyMembership()
+    public void Constructor_RejectsEmptyPlayership()
     {
         Assert.Throws<ArgumentException>(() =>
             new Group("Freitagabend", false, []));
     }
 
     [Fact]
-    public void SetDefaultOrder_RejectsMissingOrUnknownMembers()
+    public void SetDefaultOrder_RejectsMissingOrUnknownPlayers()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();

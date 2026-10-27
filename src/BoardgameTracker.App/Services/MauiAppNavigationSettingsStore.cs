@@ -11,7 +11,7 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
     private const string DefaultGameKey = "Navigation.DefaultGameKey";
     private const string SelectedGameKey = "Navigation.SelectedGameKey";
     private const string LastMainSectionKey = "Navigation.LastMainSection";
-    private const string LastSessionIdKey = "Navigation.LastSessionId";
+    private const string LastGameSessionIdKey = "Navigation.LastGameSessionId";
 
     public AppNavigationSettings Get()
     {
@@ -22,11 +22,11 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
             ? (AppMainSection)rawSection
             : null;
 
-        Guid? sessionId = Guid.TryParse(GetNullableString(LastSessionIdKey), out Guid parsedSessionId)
-            ? parsedSessionId
+        Guid? gameSessionId = Guid.TryParse(GetNullableString(LastGameSessionIdKey), out Guid parsedGameSessionId)
+            ? parsedGameSessionId
             : null;
 
-        return new AppNavigationSettings(defaultGame, selectedGame, section, sessionId);
+        return new AppNavigationSettings(defaultGame, selectedGame, section, gameSessionId);
     }
 
     public void Save(AppNavigationSettings settings)
@@ -44,7 +44,7 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
             Preferences.Default.Remove(LastMainSectionKey);
         }
 
-        SetNullableString(LastSessionIdKey, settings.LastSessionId?.ToString("D"));
+        SetNullableString(LastGameSessionIdKey, settings.LastGameSessionId?.ToString("D"));
     }
 
     private static string? GetNullableString(string key)

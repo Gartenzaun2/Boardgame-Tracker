@@ -48,13 +48,13 @@
 
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="2">
-                        <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupMembers}" VerticalOptions="Center" />
-                        <ImageButton Clicked="OnMembersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupMembersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupMembersHint}" />
+                        <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupPlayers}" VerticalOptions="Center" />
+                        <ImageButton Clicked="OnPlayersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
                     </HorizontalStackLayout>
 
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="local:EditGroupMemberItemViewModel">
+                            <DataTemplate x:DataType="local:EditGroupPlayerItemViewModel">
                                 <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
                                     <VerticalStackLayout Spacing="8">
                                         <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
@@ -80,8 +80,8 @@
                                                     Source="icon_palette.png"
                                                     WidthRequest="18" />
                                             </Border>
-                                            <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                            <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MoveMemberDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                            <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                            <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
                                         </Grid>
 
                                         <HorizontalStackLayout

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
 /// <summary>
-/// Maps the fixed-membership group aggregate and its backing member collection to SQLite.
+/// Maps the fixed-membership group aggregate and its backing player collection to SQLite.
 /// </summary>
 internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 {
@@ -25,7 +25,7 @@ internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
         builder.Property(x => x.IsArchived)
             .IsRequired();
 
-        builder.Navigation(x => x.Members)
+        builder.Navigation(x => x.Players)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

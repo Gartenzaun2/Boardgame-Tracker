@@ -22,13 +22,13 @@
     <value>Neue Gruppe</value>
   </data>
   <data name="CreateFirstGroupHint" xml:space="preserve">
-    <value>Lege deine erste Gruppe an und füge Personen hinzu.</value>
+    <value>Lege deine erste Gruppe an und füge Spieler hinzu.</value>
   </data>
   <data name="CreateGroup" xml:space="preserve">
     <value>Gruppe anlegen</value>
   </data>
   <data name="CreateGroupHint" xml:space="preserve">
-    <value>Wähle vorhandene Personen oder lege neue an. Die Reihenfolge wird als Standard-Sitzreihenfolge gespeichert.</value>
+    <value>Wähle vorhandene Spieler oder lege neue an. Die Reihenfolge wird als Standard-Sitzreihenfolge gespeichert.</value>
   </data>
   <data name="GroupName" xml:space="preserve">
     <value>Gruppenname</value>
@@ -39,35 +39,35 @@
   <data name="TemporaryGroup" xml:space="preserve">
     <value>Temporäre Gruppe</value>
   </data>
-  <data name="NewPerson" xml:space="preserve">
-    <value>Neue Person</value>
+  <data name="NewPlayer" xml:space="preserve">
+    <value>Neue Player</value>
   </data>
-  <data name="PersonNamePlaceholder" xml:space="preserve">
+  <data name="PlayerNamePlaceholder" xml:space="preserve">
     <value>Name</value>
   </data>
   <data name="Guest" xml:space="preserve">
     <value>Gast</value>
   </data>
-  <data name="AddPerson" xml:space="preserve">
-    <value>Person hinzufügen</value>
+  <data name="AddPlayer" xml:space="preserve">
+    <value>Player hinzufügen</value>
   </data>
-  <data name="NoAvailablePersons" xml:space="preserve">
-    <value>Keine weiteren Personen vorhanden.</value>
+  <data name="NoAvailablePlayers" xml:space="preserve">
+    <value>Keine weiteren Spieler vorhanden.</value>
   </data>
-  <data name="GroupMembers" xml:space="preserve">
+  <data name="GroupPlayers" xml:space="preserve">
     <value>Gruppenmitglieder</value>
   </data>
   <data name="DefaultOrderHint" xml:space="preserve">
     <value>Mit ↑ und ↓ legst du die Standard-Reihenfolge fest.</value>
   </data>
-  <data name="NoMembersYet" xml:space="preserve">
-    <value>Noch keine Personen in der Gruppe.</value>
+  <data name="NoPlayersYet" xml:space="preserve">
+    <value>Noch keine Spieler in der Gruppe.</value>
   </data>
-  <data name="EnterPersonName" xml:space="preserve">
+  <data name="EnterPlayerName" xml:space="preserve">
     <value>Bitte einen Namen eingeben.</value>
   </data>
-  <data name="LoadPersonsFailed" xml:space="preserve">
-    <value>Die Personen konnten nicht geladen werden.</value>
+  <data name="LoadPlayersFailed" xml:space="preserve">
+    <value>Die Spieler konnten nicht geladen werden.</value>
   </data>
   <data name="SaveGroupFailed" xml:space="preserve">
     <value>Die Gruppe konnte nicht gespeichert werden.</value>
@@ -90,19 +90,19 @@
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
-  <data name="AddExistingPerson" xml:space="preserve">
-    <value>Vorhandene Person hinzufügen</value>
+  <data name="AddExistingPlayer" xml:space="preserve">
+    <value>Vorhandene Player hinzufügen</value>
   </data>
-  <data name="SelectPerson" xml:space="preserve">
-    <value>Person auswählen</value>
+  <data name="SelectPlayer" xml:space="preserve">
+    <value>Player auswählen</value>
   </data>
   <data name="EditGroup" xml:space="preserve">
     <value>Gruppe bearbeiten</value>
   </data>
   <data name="EditGroupHint" xml:space="preserve">
-    <value>Bearbeite Gruppenname, temporären Status und die Standard-Reihenfolge. Eine andere Personenzusammensetzung ist eine andere Gruppe.</value>
+    <value>Bearbeite Gruppenname, temporären Status und die Standard-Reihenfolge. Eine andere Spielerzusammensetzung ist eine andere Gruppe.</value>
   </data>
-  <data name="EditGroupMembersHint" xml:space="preserve">
+  <data name="EditGroupPlayersHint" xml:space="preserve">
     <value>Mit ↑ und ↓ änderst du die Standard-Reihenfolge. Die Mitgliederzusammensetzung bleibt unverändert.</value>
   </data>
   <data name="GroupNotFound" xml:space="preserve">
@@ -171,7 +171,7 @@
   <data name="ScoringPlaceholder" xml:space="preserve">
     <value>Die Partie ist beendet und für die Wertung gespeichert. Die eigentliche Wertungserfassung folgt im nächsten Slice.</value>
   </data>
-  <data name="NoPreviousSession" xml:space="preserve">
+  <data name="NoPreviousGameSession" xml:space="preserve">
     <value>Keine letzte Partie vorhanden.</value>
   </data>
   <data name="GroupNotFoundForPreparation" xml:space="preserve">
@@ -181,7 +181,7 @@
     <value>Archivierte Gruppen können keine neue Partie starten.</value>
   </data>
   <data name="ArkNovaPlayerCountError" xml:space="preserve">
-    <value>Arche Nova unterstützt in dieser App Gruppen mit 1 bis 4 Personen.</value>
+    <value>Arche Nova unterstützt in dieser App Gruppen mit 1 bis 4 Spieler.</value>
   </data>
   <data name="LoadPreparationFailed" xml:space="preserve">
     <value>Die Partievorbereitung konnte nicht geladen werden.</value>
@@ -189,7 +189,7 @@
   <data name="StartGameFailed" xml:space="preserve">
     <value>Die Partie konnte nicht gestartet werden.</value>
   </data>
-  <data name="PreviousSessionFormat" xml:space="preserve">
+  <data name="PreviousGameSessionFormat" xml:space="preserve">
     <value>Letzte Partie: {0}</value>
   </data>
   <data name="Blue" xml:space="preserve">
@@ -213,10 +213,10 @@
   <data name="ZooPlanSelectionRequired" xml:space="preserve">
     <value>Jeder Spieler muss vor dem Start einen Zooplan ausgewählt haben.</value>
   </data>
-  <data name="RunningSessionNotFound" xml:space="preserve">
+  <data name="RunningGameSessionNotFound" xml:space="preserve">
     <value>Die laufende Partie wurde nicht gefunden.</value>
   </data>
-  <data name="LoadRunningSessionFailed" xml:space="preserve">
+  <data name="LoadRunningGameSessionFailed" xml:space="preserve">
     <value>Die laufende Partie konnte nicht geladen werden.</value>
   </data>
   <data name="DurationHoursFormat" xml:space="preserve">

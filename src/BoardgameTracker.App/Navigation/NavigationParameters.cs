@@ -1,3 +1,4 @@
+using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.App.Navigation;
 
 /// <summary>
@@ -7,6 +8,6 @@ namespace BoardgameTracker.App.Navigation;
 internal static class NavigationParameters
 {
     public const string GroupId = nameof(GroupId);
-    public const string SessionId = nameof(SessionId);
-    public const string PersonId = nameof(PersonId);
+    public const string GameSessionId = nameof(GameSessionId);
+    public const string PlayerId = nameof(PlayerId);
 }

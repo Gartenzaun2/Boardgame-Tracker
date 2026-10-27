@@ -1,11 +1,12 @@
+using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.Groups;
 
 /// <summary>
-/// Aggregate root for a fixed group composition, its default member order and lifecycle flags.
+/// Aggregate root for a fixed group composition, its default player order and lifecycle flags.
 /// </summary>
 public sealed class Group
 {
-    private readonly List<GroupPerson> _members = [];
+    private readonly List<GroupPlayer> _players = [];
 
     private Group()
     {
@@ -14,14 +15,14 @@ public sealed class Group
     public Group(
         string name,
         bool isTemporary,
-        IReadOnlyList<Guid> memberIds)
+        IReadOnlyList<Guid> playerIds)
     {
-        ArgumentNullException.ThrowIfNull(memberIds);
+        ArgumentNullException.ThrowIfNull(playerIds);
 
         Id = Guid.NewGuid();
         SetName(name);
         IsTemporary = isTemporary;
-        SetInitialMembers(memberIds);
+        SetInitialPlayers(playerIds);
     }
 
     public Guid Id { get; private set; }
@@ -32,7 +33,7 @@ public sealed class Group
 
     public bool IsArchived { get; private set; }
 
-    public IReadOnlyCollection<GroupPerson> Members => _members;
+    public IReadOnlyCollection<GroupPlayer> Players => _players;
 
     public void SetName(string name)
     {
@@ -44,53 +45,53 @@ public sealed class Group
 
     public void SetArchived(bool isArchived) => IsArchived = isArchived;
 
-    public void SetDefaultOrder(IReadOnlyList<Guid> orderedPersonIds)
+    public void SetDefaultOrder(IReadOnlyList<Guid> orderedPlayerIds)
     {
-        ArgumentNullException.ThrowIfNull(orderedPersonIds);
+        ArgumentNullException.ThrowIfNull(orderedPlayerIds);
 
-        if (orderedPersonIds.Count != _members.Count
-            || orderedPersonIds.Distinct().Count() != orderedPersonIds.Count
-            || orderedPersonIds.Any(id => _members.All(member => member.PersonId != id)))
+        if (orderedPlayerIds.Count != _players.Count
+            || orderedPlayerIds.Distinct().Count() != orderedPlayerIds.Count
+            || orderedPlayerIds.Any(id => _players.All(player => player.PlayerId != id)))
         {
             throw new ArgumentException(
-                "The order must contain every group member exactly once.",
-                nameof(orderedPersonIds));
+                "The order must contain every group player exactly once.",
+                nameof(orderedPlayerIds));
         }
 
-        for (int index = 0; index < orderedPersonIds.Count; index++)
+        for (int index = 0; index < orderedPlayerIds.Count; index++)
         {
-            GroupPerson member = _members.Single(
-                candidate => candidate.PersonId == orderedPersonIds[index]);
-            member.SetDefaultOrder(index + 1);
+            GroupPlayer player = _players.Single(
+                candidate => candidate.PlayerId == orderedPlayerIds[index]);
+            player.SetDefaultOrder(index + 1);
         }
     }
 
-    private void SetInitialMembers(IReadOnlyList<Guid> memberIds)
+    private void SetInitialPlayers(IReadOnlyList<Guid> playerIds)
     {
-        if (memberIds.Count == 0)
+        if (playerIds.Count == 0)
         {
             throw new ArgumentException(
-                "A group must contain at least one person.",
-                nameof(memberIds));
+                "A group must contain at least one player.",
+                nameof(playerIds));
         }
 
-        if (memberIds.Any(id => id == Guid.Empty))
+        if (playerIds.Any(id => id == Guid.Empty))
         {
             throw new ArgumentException(
-                "A group member must reference a valid person.",
-                nameof(memberIds));
+                "A group player must reference a valid player.",
+                nameof(playerIds));
         }
 
-        if (memberIds.Distinct().Count() != memberIds.Count)
+        if (playerIds.Distinct().Count() != playerIds.Count)
         {
             throw new ArgumentException(
-                "A person can only be a member of a group once.",
-                nameof(memberIds));
+                "A player can only belong to a group once.",
+                nameof(playerIds));
         }
 
-        for (int index = 0; index < memberIds.Count; index++)
+        for (int index = 0; index < playerIds.Count; index++)
         {
-            _members.Add(new GroupPerson(Id, memberIds[index], index + 1));
+            _players.Add(new GroupPlayer(Id, playerIds[index], index + 1));
         }
     }
 }

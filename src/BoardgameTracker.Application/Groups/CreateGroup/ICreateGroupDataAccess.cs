@@ -1,5 +1,5 @@
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.People;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
@@ -8,15 +8,15 @@ namespace BoardgameTracker.Application.Groups.CreateGroup;
 /// </summary>
 public interface ICreateGroupDataAccess
 {
-    Task<IReadOnlyList<SelectablePerson>> GetSelectablePeopleAsync(
+    Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlySet<Guid>> GetActivePersonIdsAsync(
-        IReadOnlyCollection<Guid> personIds,
+    Task<IReadOnlySet<Guid>> GetActivePlayerIdsAsync(
+        IReadOnlyCollection<Guid> playerIds,
         CancellationToken cancellationToken = default);
 
     Task SaveAsync(
         Group group,
-        IReadOnlyCollection<Person> newPeople,
+        IReadOnlyCollection<Player> newPlayers,
         CancellationToken cancellationToken = default);
 }

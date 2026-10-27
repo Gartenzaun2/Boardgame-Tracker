@@ -1,5 +1,0 @@
-# BoardgameTracker Update-Operationen
-# DELETE|relativer/pfad
-# MOVE|quelle|ziel
-# RENAME|quelle|ziel
-DELETE|src/BoardgameTracker.App/Resources/AppIcon/appiconbg.png

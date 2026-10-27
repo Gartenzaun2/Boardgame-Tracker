@@ -1,13 +1,50 @@
-bin/
-obj/
+# .NET / MAUI build output
+[Bb]in/
+[Oo]bj/
+artifacts/
+TestResults/
+
+# Visual Studio / Rider / VS Code user state
 .vs/
+.idea/
+.vscode/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-artifacts/
-TestResults/
-.DS_Store
+*.rsuser
+
+# NuGet / local packages
+packages/
+*.nupkg
+*.snupkg
+
+# Local databases / SQLite runtime files
 *.db
 *.db-shm
 *.db-wal
+*.sqlite
+*.sqlite3
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.tmp
+*.bak
+
+# BoardgameTracker local documentation
+*.md
+
+# BoardgameTracker delta/update helper files
+APPLY_UPDATE.cmd
+APPLY_UPDATE.ps1
+DELETE_FILES.txt
+UPDATE_FILES.txt
+MOVE_FILES.txt
+RENAME_FILES.txt
+
+# Optional local patch/update archives
+BoardgameTracker_*_update.zip
+BoardgameTracker_*_FULL.zip
