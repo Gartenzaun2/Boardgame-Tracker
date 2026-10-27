@@ -1,169 +1,302 @@
-# Boardgame Tracker v0.8.2.0 – Setup / Upgrade
+# Boardgame Tracker – Setup und Entwicklungsregeln
 
-## Upgrade auf v0.8.2.0
+## Voraussetzungen
 
-v0.8.2.0 ändert das Datenbankschema nicht. Das Update ergänzt lokale Navigationseinstellungen über MAUI Preferences; ein Datenbank-Reset ist nicht erforderlich.
-Der Stand führt einen lokalen Spiel-/Navigationskontext und ein optionales
-Standardspiel ein. Gruppen- und Sessiondaten selbst bleiben unverändert; die neuen
-Werte werden ausschließlich über MAUI Preferences gespeichert.
+Zielplattformen:
 
-Nach dem Übernehmen der geänderten/neuen Dateien:
+- Android
+- iOS
 
-1. NuGet Restore ausführen,
-2. `Clean Solution`,
-3. `Rebuild Solution` und insbesondere XAML-/Binding-Warnungen prüfen,
-4. beide Testprojekte ausführen,
-5. App starten und die unten genannten Smoke Tests durchführen.
+Technologie:
 
-Von v0.8.1.6 auf v0.8.1.7 ist **kein Datenbank-Reset** erforderlich.
+- .NET 10
+- .NET MAUI
+- EF Core 10
+- SQLite
+- xUnit v3 mit Microsoft Testing Platform
 
-Es werden für dieses Update keine bestehenden App-/Projektquelldateien gelöscht;
-deshalb gibt es kein neues Upgrade-/Löschskript.
+Empfohlene lokale Entwicklungsumgebung ist Visual Studio mit installierter
+.NET-MAUI-Workload.
 
-## Testprojekte
+## Repository-Struktur
 
-Die Tests verwenden ab v0.8.1 xUnit v3 mit Microsoft Testing Platform. Das
-Root-`global.json` wählt für `.NET 10` den MTP-Test-Runner; die Testprojekte
-sind ausführbare Testprojekte und referenzieren `xunit.v3.mtp-v2`.
+```text
+BoardgameTracker.sln
 
-In Visual Studio 2026 sollten die Tests nach einem Restore/Build im Test
-Explorer erscheinen. Alternativ kann mit einem .NET-10-SDK aus dem
-Repository-Root ausgeführt werden:
+src/
+  BoardgameTracker.App/
+  BoardgameTracker.Application/
+  BoardgameTracker.Core/
+  BoardgameTracker.Infrastructure/
+
+tests/
+  BoardgameTracker.Core.Tests/
+  BoardgameTracker.Application.Tests/
+
+docs/
+  PRODUCT_SPEC.md
+  ARCHITECTURE.md
+  DATA_MODEL.md
+  UI_DESIGN_GUIDE.md
+  UI_WIREFRAME.md
+
+README.md
+SETUP.md
+CHANGELOG.md
+```
+
+`README.md`, `SETUP.md` und `CHANGELOG.md` liegen nur im Repository-Root.
+Die übrigen kanonischen Dokumente liegen nur unter `docs/`. Doppelte Kopien
+derselben Dokumente an mehreren Stellen sind nicht vorgesehen.
+
+## Standardablauf nach einem Update
+
+1. Geänderte/neue Dateien relativ zum Repository-Root übernehmen.
+2. Falls `UPDATE_FILES.txt`/`DELETE_FILES.txt` vorhanden ist, müssen auch
+   `APPLY_UPDATE.cmd` und `APPLY_UPDATE.ps1` enthalten sein.
+   `APPLY_UPDATE.cmd` aus dem Repository-Root ausführen. Der CMD-Wrapper startet
+   die robuste PowerShell-Implementierung, die Lösch-, Verschiebe- und
+   Umbenennungsanweisungen automatisch verarbeitet.
+3. NuGet Restore ausführen.
+4. `Clean Solution`.
+5. `Rebuild Solution`.
+6. XAML-/Binding-Warnungen prüfen.
+7. beide Testprojekte ausführen.
+8. App starten und relevante Smoke Tests durchführen.
+
+CLI, sofern ein passendes .NET-10-SDK und die nötigen Workloads installiert
+sind:
 
 ```text
 dotnet test
 ```
 
-## Empfohlene Smoke Tests
+## Datenbankstrategie in der Pre-Alpha-Phase
 
-### Gruppen
-
-- Gruppenliste laden und `Temporär`/`Archiviert` schnell umschalten.
-- Gruppe anlegen und bearbeiten.
-- Ark-Nova-Defaultfarben ändern.
-- Prüfen, dass Fehlerbereiche ohne Fehlermeldung keinen Leerraum reservieren.
-
-### Partievorbereitung
-
-- Gruppe öffnen.
-- Prüfen, dass nur die letzte **abgeschlossene** Arche-Nova-Partie angezeigt
-  wird.
-- Bei gemeinsamem letzten Platz prüfen, dass alphabetisch der erste Name auf
-  Position 1 rotiert wird.
-- Zoopläne auslosen und je Spieler einen Plan auswählen.
-- Doppelte Farben zulassen, aber Start dadurch blockieren.
-- Danach eindeutige Farben wählen und Partie starten.
-
-### Laufende Partie
-
-- Prüfen, dass Spieler, Reihenfolge, Farbe, Zooplan und Dauer geladen werden.
-- App schließen/neu öffnen und Wiederaufnahme der offenen Partie prüfen.
-- `Partie beenden` testen (`Running -> Scoring`).
-- In einem separaten Lauf `Verwerfen` einschließlich Sicherheitsabfrage testen.
-
-### Wertung
-
-- Prüfen, dass alle Spielerkacheln selbst antippbar sind und den numerischen
-  Eingabescreen öffnen.
-- Prüfen, dass Farbe und lokalisierter Zooplanname gut lesbar angezeigt werden.
-- `Verwerfen` in der Wertung einschließlich Sicherheitsabfrage testen.
-- Untere Navigation `Spiele / Gruppen / Historie / Einstellungen` von mehreren
-  Screens aus testen. `Gruppen` muss immer zur Gruppenübersicht führen und bleibt
-  beim normalen App-Start der aktive Bereich.
-- In der Gruppenübersicht bei einer offenen Session das Aktiv-Icon neben dem
-  Gruppennamen prüfen.
-- Nach `Partie beenden` prüfen, dass die Session in `Scoring` wieder aufgenommen
-  werden kann und noch nicht als abgeschlossen gilt.
-- Für einen Spieler Attraktivität/Artenschutz eingeben, kurz warten, zurückgehen
-  und prüfen, dass der gültige Zwischenstand per Autosave erhalten bleibt.
-- Wertebereich prüfen: Attraktivität 0–113, Artenschutz 0–41, Ruf leer oder 1–15.
-- In den Arche-Nova-Einstellungen `Ruf erfassen` aus-/einschalten und prüfen,
-  dass die Eingabe entsprechend ein-/ausgeblendet wird.
-- Neue/alte Punkteanzeige umschalten; die angezeigten Werte müssen exakt 100
-  Punkte auseinanderliegen, ohne die Rohwerte zu verändern.
-- Das Spezialkarten-Icon rechts in jeder Spielerkachel antippen; freie Spezialkarten
-  müssen hervorgehoben sein und sich per Auswahl zuordnen lassen. Das Flyout muss
-  nach Auswahl direkt schließen. Unter Attraktivität/Artenschutz muss die kompakte
-  Zusammenfassung der Spezialkartenanzahl und – bei aktivierter Erfassung – des
-  Rufs erscheinen.
-- Dieselbe Spezialkarte einem zweiten Spieler zuordnen und die explizite
-  Mehrfachzuordnungs-Abfrage prüfen.
-- `Wertung abschließen` darf erst aktiv sein, wenn bei allen Spielern
-  Attraktivität und Artenschutz vorhanden sind.
-- Bei Punktgleichstand prüfen, dass alle Platzrahmen sichtbar sind, aber nur die
-  punktgleichen Spieler innerhalb ihres ursprünglichen Rangbereichs verschoben
-  werden können; Gleichstand unverändert lassen und alternativ auflösen.
-- Nach vollständiger Eingabe prüfen, dass die berechneten Punkte direkt hinter
-  dem Spielernamen stehen.
-- Nach Abschluss den Ergebnis-Screen prüfen; dort muss zusätzlich die Partiedauer
-  stehen. Erst `Fertig` soll zur Gruppenübersicht zurückführen.
-- Kamera-Button ist bereits am endgültigen Platz sichtbar, die eigentliche
-  Fotoerkennung gehört noch nicht zu v0.8.1.5.
-
-### Navigation / Spielkontext v0.8.2.0
-
-- App ohne Standardspiel und ohne bisherigen Navigationskontext starten: `Spiele` muss aktiv sein.
-- `Arche Nova` antippen: `Gruppen` öffnet sich und zeigt `Arche Nova` direkt unter der Überschrift.
-- Prüfen, dass der Spielname nicht zusätzlich auf jeder Gruppenkarte wiederholt wird.
-- In Einstellungen `Arche Nova` als Standardspiel setzen, Navigationskontext zurücksetzen bzw. frischen App-Stand verwenden und prüfen, dass `Gruppen` der erste Bereich ist.
-- Zwischen `Spiele`, `Gruppen`, `Historie` und `Einstellungen` wechseln, App schließen und prüfen, dass der zuletzt verwendete Hauptbereich wiederhergestellt wird.
-- Eine laufende Partie öffnen, App schließen und prüfen, dass genau diese Session wiederhergestellt wird. Bei mehreren offenen Sessions darf nicht pauschal die zuletzt geänderte andere Session geöffnet werden.
-- In der Wertungsübersicht prüfen, dass Gruppe, Datum, Attraktivität/Artenschutz sowie `Besondere Karten · Ruf` dieselbe gut lesbare Textfarbe verwenden.
-- Prüfen, dass `Besondere Karten` und `Ruf` auch dann deutsch angezeigt werden, wenn die neutrale Ressourcenbasis verwendet wird.
-
-## Datenbankstrategie während der Programmierphase
-
-Der Runtime-Code verwendet aktuell:
+Der aktuelle Runtime-Pfad verwendet:
 
 ```text
 Database.EnsureCreatedAsync()
 ```
 
-Danach werden das Spiel `ark-nova` und alle 14 Zoopläne idempotent als
-Referenzdaten sichergestellt. Dadurch ist keine Initialmigration erforderlich.
+Danach stellt ein idempotentes Seeding sicher:
 
-Daher gibt es in diesem Entwicklungsstand bewusst auch **kein**
-`create-*-migration.cmd`: Es wäre mit `EnsureCreatedAsync()` widersprüchlich.
+- Spiel `ark-nova`
+- Zoopläne 1–14
 
-`EnsureCreated` aktualisiert ein bereits vorhandenes, älteres Schema nicht. Bei
-einer Schemaänderung wird die lokale Entwicklungsdatenbank deshalb gelöscht und
-neu erzeugt. Für Android ist das beispielsweise durch Deinstallieren der App
-`de.boardgametracker.app` oder Löschen ihres App-Speichers möglich.
+Für den aktuellen Entwicklungsbetrieb ist deshalb keine neue Migration für
+jeden Schemawechsel vorgesehen.
 
-Sobald veröffentlichte Nutzerdaten über Schemaänderungen hinweg erhalten werden
-müssen, wird diese Entwicklungsstrategie beendet und ein versionierter
-EF-Core-Migrationsverlauf eingeführt.
+### Bei Schemaänderungen
 
-## v0.8.1.3 – Entwicklungsdatenbank neu erstellen
+`EnsureCreated` aktualisiert ein vorhandenes älteres Schema nicht.
 
-v0.8.1.3 vereinfacht die Ark-Nova-Zooplanschlüssel: `Number` ist jetzt der Primärschlüssel und die Session-Fremdschlüssel heißen entsprechend `...Number`. Da die aktuelle Entwicklungsphase bewusst `EnsureCreatedAsync()` statt EF-Migrationen verwendet, kann ein vorhandenes altes Schema nicht automatisch angepasst werden.
+Solange noch keine veröffentlichten Nutzerdaten erhalten werden müssen:
 
-Nach dem Update auf v0.8.1.3 daher einmal die App-Daten löschen oder die App deinstallieren und neu installieren. Anschließend wird die Datenbank aus dem aktuellen Modell neu erzeugt und die Ark-Nova-Referenzdaten werden automatisch angelegt.
+1. App-Daten löschen oder App deinstallieren,
+2. App neu installieren/starten,
+3. Datenbank aus dem aktuellen EF-Core-Modell neu erzeugen lassen.
+
+Sobald reale Nutzerdaten versionsübergreifend erhalten werden müssen, endet
+diese Strategie. Dann wird ein kanonischer EF-Core-Migrationsverlauf samt
+`ModelSnapshot` verbindlich.
+
+Im Repository vorhandene historische Migrationsdateien sind während des
+`EnsureCreatedAsync()`-Betriebs nicht die autoritative Upgrade-Strategie.
+
+## Lokale Preferences
+
+Nicht-historische Einstellungen werden nicht in SQLite gespeichert.
+
+### Arche Nova
+
+- Punkteanzeige: neu/alt
+- Ruf erfassen
+
+### Navigation
+
+- Standardspiel
+- ausgewähltes Spiel
+- letzter Hauptbereich
+- zuletzt betrachtete offene Session
+
+Die MAUI-Implementierungen verwenden native `Preferences`.
+
+## Versionsregel
+
+Auch in der Pre-Alpha-Phase wird jeder **ausgelieferte installierbare
+Entwicklungsstand** eindeutig versioniert.
+
+In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
+
+```xml
+<ApplicationDisplayVersion>x.y.z</ApplicationDisplayVersion>
+<ApplicationVersion>n</ApplicationVersion>
+```
+
+Regeln:
+
+- `ApplicationDisplayVersion` entspricht exakt der ausgelieferten semantischen
+  Entwicklungsversion, z. B. `0.8.2.2`.
+- `ApplicationVersion` ist eine monoton steigende technische Buildnummer.
+- Die Buildnummer muss nicht für jeden lokalen Zwischencommit steigen, aber für
+  jedes ausgelieferte installierbare Update.
+- Vor Erstellen eines Update-Pakets werden beide Werte geprüft.
+- `README.md` beschreibt den funktionalen Stand; Versionshistorie steht in
+  `CHANGELOG.md`.
+
+Aktueller bekannter technischer Rückstand: Im Code-Stand v0.8.2.1 steht
+`ApplicationDisplayVersion` noch auf `0.8.1.6` und `ApplicationVersion` auf `1`.
+Das wird mit dem nächsten Code-Update korrigiert.
+
 ## Lieferregel für Entwicklungs-Updates
 
-Update-Pakete enthalten standardmäßig **nur geänderte oder neu hinzugekommene
-Dateien**. Ein vollständiges Repository-ZIP wird nur auf ausdrücklichen Wunsch
-erstellt.
+Standardmäßig wird **kein vollständiges Repository-ZIP** geliefert.
 
-- Unveränderte Projektdateien werden nicht erneut mitgeliefert.
-- Generierte Ordner und Dateien wie `bin` und `obj` gehören nicht in das Paket.
-- Müssen vorhandene Dateien entfernt werden, enthält das Paket eine
-  `DELETE_FILES.txt` mit den relativ zum Repository-Root zu löschenden Pfaden;
-  bei komplexeren Upgrade-Schritten kann stattdessen bzw. zusätzlich ein
-  passendes Upgrade-Skript mitgeliefert werden.
-- Neue und geänderte Dateien behalten im Paket ihre Pfade relativ zum
-  Repository-Root, damit das Update direkt über den bestehenden Stand kopiert
-  werden kann.
+Ein Update-Paket enthält nur:
 
+- geänderte Dateien,
+- neu hinzugekommene Dateien,
+- bei Dateioperationen `UPDATE_FILES.txt` (bzw. aus Kompatibilitätsgründen auch
+  `DELETE_FILES.txt`),
+- **immer wenn eine solche Operationsdatei enthalten ist:** `APPLY_UPDATE.cmd`
+  **und** `APPLY_UPDATE.ps1`.
 
+`APPLY_UPDATE.cmd` bleibt der vom Benutzer gestartete generische Runner. Er ruft
+die danebenliegende `APPLY_UPDATE.ps1` auf; die PowerShell-Datei enthält die
+eigentliche, über Updates wiederverwendbare Dateioperationslogik. Es werden keine
+update-spezifischen Dateinamen in den Skripten fest codiert. Die Operationen werden
+relativ zum Repository-Root aus der TXT-Datei gelesen. Unterstützte Befehle:
 
-## Smoke Tests v0.8.2.1
+```text
+DELETE|pfad/zur/datei
+MOVE|alter/pfad|neuer/pfad
+RENAME|alter/pfad|neuer/pfad
+```
 
-- Ohne letzten Kontext und mit gesetztem Standardspiel App neu starten: `Gruppen`
-  muss direkt für dieses Spiel erscheinen.
-- Unter `Spiele` Arche Nova wählen: vor dem Öffnen der Gruppenübersicht muss der
-  Arche-Nova-Kontext aktiv sein; der Spielname steht direkt unter `Gruppen`.
-- Offene Arche-Nova-Session wiederherstellen und anschließend `Gruppen` öffnen: die
-  Gruppenübersicht bleibt im Arche-Nova-Kontext.
-- Eine abgeschlossene Partie anzeigen: jede Ergebnis-Spielerkachel ist dezent in
-  der jeweiligen Spielerfarbe getönt.
+Für Abwärtskompatibilität darf `DELETE_FILES.txt` weiterhin reine Pfadzeilen
+enthalten; diese werden als `DELETE` interpretiert. Leerzeilen und Zeilen mit `#`
+am Anfang werden ignoriert. Das Skript muss vor jeder Operation Pfade auf das
+Repository begrenzen, fehlende Quelldateien beim Löschen tolerieren und bei
+Fehlern mit einem Fehlercode abbrechen. Dadurch bleibt das Skript über Updates
+hinweg gleich; normalerweise ändert sich nur die Operationsdatei.
+
+Nicht enthalten:
+
+- unveränderte Dateien,
+- `bin/`,
+- `obj/`,
+- sonstige generierte Build-Artefakte.
+
+Alle Pfade im Update-Paket sind relativ zum Repository-Root.
+
+Ein vollständiges Repository-Archiv wird nur auf ausdrücklichen Wunsch erstellt.
+
+## Dokumentationsregel
+
+Die kanonischen Spezifikationen beschreiben immer den aktuellen Stand.
+Überholte Versionsabschnitte werden integriert oder entfernt.
+
+Versionshistorie gehört nur in:
+
+```text
+CHANGELOG.md
+```
+
+Bei Änderungen werden betroffene Dokumente inhaltlich konsolidiert; neue
+Versionsnotizen werden nicht einfach unten an Spezifikationsdateien angehängt.
+
+## Smoke Tests
+
+### Start und Navigation
+
+- Frischer Start ohne Standardspiel: `Spiele`.
+- Frischer Start mit Standardspiel: `Gruppen` für dieses Spiel.
+- Unter `Spiele` Arche Nova wählen: Spielkontext wird vor dem Öffnen von
+  `Gruppen` gespeichert.
+- `Gruppen` darf im normalen Bedienfluss nie ohne gültigen Spielkontext
+  erscheinen.
+- Zwischen `Spiele`, `Gruppen`, `Historie`, `Einstellungen` wechseln, App
+  schließen und letzten Hauptbereich prüfen.
+- Eine offene Session öffnen, App schließen und prüfen, dass genau diese Session
+  wiederhergestellt wird.
+- Bei ungültigem/fehlendem Gruppen-Spielkontext auf `Spiele` zurückfallen bzw.
+  das Standardspiel verwenden.
+
+### Gruppen
+
+- reguläre Gruppen laden,
+- Filter `Temporär` und `Archiviert`,
+- Gruppe anlegen,
+- Gruppe bearbeiten,
+- temporär -> permanent,
+- archivieren/reaktivieren,
+- Default-Reihenfolge ändern,
+- Arche-Nova-Defaultfarben ändern,
+- Aktiv-Icon nur für eine offene Session des aktuell ausgewählten Spiels,
+- letzte Partie nur für das aktuell ausgewählte Spiel.
+
+### Partievorbereitung
+
+- letzte **abgeschlossene** Arche-Nova-Partie laden,
+- vorherigen Verlierer auf Position 1 rotieren,
+- bei geteiltem letzten Platz alphabetische Auflösung,
+- zwei eindeutige Zoopläne pro Spieler auslosen,
+- sessionweit keinen Zooplan doppelt anbieten,
+- pro Spieler genau einen Zooplan auswählen,
+- doppelte Spielerfarben vorübergehend zulassen,
+- `Starten` bei unvollständigen Plänen oder doppelten Farben sichtbar
+  deaktivieren,
+- gültige Partie starten.
+
+### Laufende Partie
+
+- Reihenfolge, Spielerfarbe, Zooplan und Dauer,
+- Wiederaufnahme nach App-Neustart,
+- `Running -> Scoring`,
+- `Verwerfen` mit Sicherheitsabfrage.
+
+### Wertung
+
+- Spielerkachel nur einmal öffnen, auch bei schnellem Doppeltap,
+- Autosave für gültige Werte,
+- Attraktivität `0..113`,
+- Artenschutz `0..41`,
+- Ruf leer oder `1..15`,
+- Ruf-Feld gemäß Einstellung ein-/ausblenden,
+- neue/alte Punkte unterscheiden sich exakt um 100,
+- berechnete Punkte nach vollständigen Pflichtwerten hinter dem Namen,
+- `Besondere Karten` als lokalisierte UI-Bezeichnung,
+- Anzahl besonderer Karten in der Infozeile, kein Counter-Badge am Icon,
+- Auswahl schließt nach Zuordnung/Entfernen,
+- Mehrfachzuordnung derselben Karte an einen zweiten Spieler fragt explizit,
+- `Wertung abschließen` bis zur Vollständigkeit sichtbar deaktiviert,
+- Competition Ranking und Gleichstandsauflösung,
+- Ergebnis bleibt bis `Fertig` sichtbar,
+- Partiedauer wird angezeigt.
+
+### Kontrast und Ergebnis
+
+Auf **jeder spielerfarbig getönten Kachel** prüfen:
+
+- Name/Punkte gut lesbar,
+- Farbe/Zooplan gut lesbar,
+- Attraktivität/Artenschutz gut lesbar,
+- Ruf und besondere Karten gut lesbar,
+- keine fachlichen Inhalte in grauer Sekundärtextfarbe.
+
+Insbesondere den Ergebnis-Screen auf Blau, Gelb, Rot und Schwarz testen.
+
+### Noch ausstehende fachliche Session-Regel
+
+Zielregel:
+
+> Pro Kombination aus Spiel + Gruppe darf höchstens eine Session in
+> `Running` oder `Scoring` existieren.
+
+Mehrere offene Sessions mit unterschiedlichen Spielen und/oder Gruppen sind
+zulässig.
+
+Der aktuelle Arche-Nova-Startpfad blockiert noch global bei irgendeiner offenen
+Session. Bis zur Umsetzung dieser Regel muss dieser Punkt als bekannter
+Implementierungsunterschied behandelt werden.
