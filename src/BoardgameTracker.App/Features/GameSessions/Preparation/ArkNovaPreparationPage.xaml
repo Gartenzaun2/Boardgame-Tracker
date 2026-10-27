@@ -19,6 +19,7 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.PrepareGame}" VerticalOptions="Center" />
                     <ImageButton
+                        x:Name="RandomStartButton"
                         Grid.Column="1"
                         Clicked="OnRandomStartClicked"
                         Margin="12,0,0,0"

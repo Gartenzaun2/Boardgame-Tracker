@@ -256,6 +256,12 @@ public static class AppResources
     public static string Remove =>
         GetString(nameof(Remove));
 
+    /// <summary>
+    /// Resolves a persisted localization resource key, for example an Ark Nova
+    /// zoo-plan name stored as reference data.
+    /// </summary>
+    public static string GetByKey(string key) => GetString(key);
+
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(

@@ -77,6 +77,7 @@ public partial class ArkNovaRunningViewModel(
                     player.Order,
                     player.Color,
                     player.ZooPlanNumber,
+                    player.ZooPlanNameResourceKey,
                     player.ZooPlanIconSource));
             }
 
@@ -184,12 +185,13 @@ public sealed class ArkNovaRunningPlayerViewModel(
     int position,
     ArkNovaPlayerColor color,
     int zooPlanNumber,
+    string zooPlanNameResourceKey,
     string zooPlanIconSource)
 {
     public string Name { get; } = name;
     public int Position { get; } = position;
     public int ZooPlanNumber { get; } = zooPlanNumber;
-    public string ZooPlanText => string.Format(AppResources.ZooPlanFormat, zooPlanNumber);
+    public string ZooPlanText { get; } = AppResources.GetByKey(zooPlanNameResourceKey);
     public string ZooPlanIconSource { get; } = zooPlanIconSource;
 
     public string ColorName => ArkNovaPlayerColorPresentation.GetName(color);

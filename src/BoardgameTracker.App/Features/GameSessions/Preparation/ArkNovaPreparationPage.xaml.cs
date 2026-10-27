@@ -50,8 +50,29 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
     private void OnDrawZooPlansClicked(object? sender, EventArgs e) =>
         _viewModel.DrawZooPlans();
 
-    private void OnRandomStartClicked(object? sender, EventArgs e) =>
-        _viewModel.RotateToRandomStartingPlayer();
+    private async void OnRandomStartClicked(object? sender, EventArgs e)
+    {
+        RandomStartButton.IsEnabled = false;
+
+        try
+        {
+            await Task.WhenAll(
+                RandomStartButton.RotateToAsync(180, 180, Easing.CubicOut),
+                RandomStartButton.ScaleToAsync(0.82, 180, Easing.CubicOut));
+
+            _viewModel.RotateToRandomStartingPlayer();
+
+            await Task.WhenAll(
+                RandomStartButton.RotateToAsync(360, 180, Easing.CubicIn),
+                RandomStartButton.ScaleToAsync(1.0, 180, Easing.CubicIn));
+        }
+        finally
+        {
+            RandomStartButton.Rotation = 0;
+            RandomStartButton.Scale = 1;
+            RandomStartButton.IsEnabled = true;
+        }
+    }
 
     private void OnRotateOrderClicked(object? sender, EventArgs e) =>
         _viewModel.RotateOrder();

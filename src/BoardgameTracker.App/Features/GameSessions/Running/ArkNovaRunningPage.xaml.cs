@@ -59,6 +59,17 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
         base.OnDisappearing();
     }
 
+
+    private async void OnBackClicked(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+
+    protected override bool OnBackButtonPressed()
+    {
+        Dispatcher.Dispatch(async () =>
+            await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}"));
+        return true;
+    }
+
     private async void OnEndClicked(object? sender, EventArgs e)
     {
         if (!await _viewModel.BeginScoringAsync())

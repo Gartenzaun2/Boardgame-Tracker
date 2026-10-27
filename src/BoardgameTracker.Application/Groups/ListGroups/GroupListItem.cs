@@ -1,3 +1,5 @@
+using BoardgameTracker.Core.GameSessions;
+
 namespace BoardgameTracker.Application.Groups.ListGroups;
 
 /// <summary>
@@ -10,4 +12,6 @@ public sealed record GroupListItem(
     bool IsArchived,
     int MemberCount,
     IReadOnlyList<string> MemberNames,
-    DateTimeOffset? LastPlayedAt);
+    DateTimeOffset? LastPlayedAt,
+    Guid? OpenSessionId,
+    GameSessionStatus? OpenSessionStatus);

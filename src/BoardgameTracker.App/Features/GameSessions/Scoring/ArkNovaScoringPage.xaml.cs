@@ -1,4 +1,5 @@
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Features.Groups.ListGroups;
 
 namespace BoardgameTracker.App.Features.GameSessions.Scoring;
 
@@ -27,4 +28,15 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
         SessionId = sessionId;
     }
+
+    private async void OnBackClicked(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+
+    protected override bool OnBackButtonPressed()
+    {
+        Dispatcher.Dispatch(async () =>
+            await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}"));
+        return true;
+    }
+
 }
