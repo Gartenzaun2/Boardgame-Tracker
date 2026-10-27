@@ -1,4 +1,4 @@
-# Boardgame Tracker – v0.8.3.1
+# Boardgame Tracker
 
 Boardgame Tracker ist eine .NET-MAUI-App für Android und iOS zum Verwalten von
 Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist

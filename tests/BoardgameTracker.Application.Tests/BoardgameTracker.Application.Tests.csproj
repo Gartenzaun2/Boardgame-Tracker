@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\BoardgameTracker.Application\BoardgameTracker.Application.csproj" />
     <ProjectReference Include="..\..\src\BoardgameTracker.Core\BoardgameTracker.Core.csproj" />
   </ItemGroup>

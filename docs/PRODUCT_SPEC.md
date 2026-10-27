@@ -68,7 +68,7 @@ Startverhalten:
 3. Gibt es noch keinen gespeicherten Navigationskontext und ist ein Standardspiel gesetzt, startet die App in **Gruppen** für dieses Spiel.
 4. Ohne gespeicherten Kontext und ohne Standardspiel startet die App in **Spiele**.
 
-Damit können perspektivisch mehrere Partien gleichzeitig offen sein, ohne beim
+Je Spiel und Gruppe ist maximal eine offene Partie erlaubt. Andere Gruppen oder Spiele dürfen parallel offene Partien haben. Damit können mehrere Partien gleichzeitig offen sein, ohne beim
 App-Start willkürlich die zuletzt geänderte Partie auszuwählen.
 
 ## Gruppenübersicht
@@ -151,14 +151,7 @@ verwaisten Spieler.
 Jede regulär angezeigte Gruppe kann über das Bearbeiten-Icon der
 Gruppenübersicht geöffnet werden.
 
-Bearbeitbar sind zunächst:
-
-- Gruppenname
-- temporär/regulär
-- Default-Reihenfolge
-
-Spielspezifische Gruppeneinstellungen wie Arche-Nova-Defaultfarben
-werden später ebenfalls hier gepflegt.
+Bearbeitbar sind Gruppenname, Default-Reihenfolge, Archivstatus und Arche-Nova-Defaultfarben. Temporäre Gruppen können permanent gemacht werden; die umgekehrte Richtung ist ausgeschlossen.
 
 Die Spielerzusammensetzung einer bestehenden Gruppe wird nicht beliebig
 verändert. Eine andere Zusammensetzung repräsentiert fachlich eine
@@ -400,9 +393,9 @@ Nach der gegebenenfalls nötigen Gleichstandsauflösung werden die finalen
 Ergebnis-Screen bleibt anschließend sichtbar, bis der Nutzer explizit `Fertig`
 wählt.
 
-## Historie
+## Historie – geplanter Slice (Tab derzeit Platzhalter)
 
-Zeigt alle gespeicherten Partien:
+Die geplante Liste zeigt ausschließlich abgeschlossene Partien:
 
 - Spiel
 - Gruppe
@@ -415,7 +408,7 @@ Zeigt alle gespeicherten Partien:
 Eine historische Partie kann über einen expliziten **Bearbeiten**-Button
 geändert werden.
 
-## Statistik im MVP
+## Statistik – geplanter Slice
 
 Je regulärer Gruppe:
 
@@ -469,7 +462,7 @@ Vor dem Start können Reihenfolge und Farben geändert werden. `Startspieler aus
 
 `Zoopläne auslosen` verteilt pro Spieler zwei Pläne aus dem Katalog der 14 Pläne. Kein Plan wird innerhalb derselben Vorbereitung zweimal angeboten. Pro Spieler muss genau einer der beiden Pläne gewählt werden.
 
-Die Vorbereitung ist bis zum eigentlichen Start UI-Zustand. Persistenz der `GameSession`, tatsächlichen Farben, Reihenfolge sowie angebotenen/gewählten Zooplänen erfolgt erst im nachfolgenden Start-Slice.
+Die Vorbereitung ist bis zum eigentlichen Start UI-Zustand. Beim Start werden `GameSession`, tatsächliche Farben, Reihenfolge sowie angebotene/gewählte Zoopläne atomar persistiert.
 
 ## Manuell erfasste Spiele – Zielbild
 

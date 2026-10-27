@@ -10,10 +10,7 @@
 
 Hauptbereiche:
 
-- Gruppen
-- Historie
-- Statistik
-- Optionen
+- Spiele · Gruppen · Historie · Einstellungen
 
 ## Gruppen → Partievorbereitung
 
@@ -80,7 +77,7 @@ Bei Erstellung/Bearbeitung einer Gruppe:
 - Spieler auswählen
 - Gäste anlegen
 - für das jeweilige Spiel Default-Farben setzen
-- Sitz-/Spielreihenfolge per Drag & Drop festlegen
+- Default-Reihenfolge mit Hoch-/Runter-Aktionen festlegen
 
 ## Startspieler-Auslosung
 
@@ -125,15 +122,11 @@ Direkte Eingabe der drei Werte zunächst bevorzugt.
 
 Kamera-Button prominent sichtbar.
 
-Spezialkarten: **Icon antippen → Spieler antippen**
+Besondere Karten: **Karten-Icon beim Spieler antippen → konkrete Karte wählen**
 
 ## Wireframe-Basis
 
-Aktueller klickbarer HTML-Prototyp:
-`boardgame_tracker_wireframe_v02_mobile.html`
-
-Dieser dient als visuelle und interaktive Grundlage für weitere
-UI-Iterationen.
+Der frühere HTML-Prototyp ist nicht im Repository enthalten. Maßgeblich sind dieses Dokument und `UI_DESIGN_GUIDE.md`.
 
 ------------------------------------------------------------------------
 
@@ -260,80 +253,9 @@ verhindern Mehrfachtaps.
 
 ------------------------------------------------------------------------
 
-## Partie vorbereiten
-
-``` text
-┌──────────────────────────────────────┐
-│ ←  Partie vorbereiten        Starten │
-│    <Gruppenname>                     │
-├──────────────────────────────────────┤
-│ Zoopläne                    Auslosen │
-│ 2 eindeutige Pläne je Player         │
-├──────────────────────────────────────┤
-│ 1  Anna                 ●   ↑   ↓    │
-│    Blau                              │
-│  ┌──────────┐  ┌──────────┐          │
-│  │ Skizze   │  │ Skizze   │          │
-│  │ Plan 3   │  │ Plan 11  │          │
-│  │ wählen   │  │ wählen   │          │
-│  └──────────┘  └──────────┘          │
-├──────────────────────────────────────┤
-│ 2  Ben                  ●   ↑   ↓    │
-│    Gelb                              │
-│  ...                                 │
-├──────────────────────────────────────┤
-│          Startspieler auslosen       │
-└──────────────────────────────────────┘
-```
-
-Die Spielerkarte ist dezent in der aktuellen Spielerfarbe eingefärbt.
-Reihenfolge wird direkt über Hoch/Runter angepasst. Die Zufallsfunktion
-rotiert die vorhandene Reihenfolge und öffnet keinen Dialog.
-
-------------------------------------------------------------------------
-
-## Partievorbereitung – Interaktion
-
-- Direkt unter Gruppenname steht die letzte Partie; ohne Historie:
-  „Keine letzte Partie vorhanden.“
-- „Zoopläne auslosen“ und „Startspieler bestimmen“ stehen nebeneinander.
-- Die Spielerreihenfolge ist nicht frei tauschbar. Eine separate Aktion
-  rotiert die Reihenfolge zyklisch.
-- Zooplan-Kacheln zeigen nur Skizze und Plannummer. Die Nummer steht
-  oben mittig in der Skizze.
-- Ein gewählter Zooplan erhält einen kleinen grünen Rahmen.
-- Die Zooplan-Skizzen sind gegenüber v0.7.0 kompakter.
-- Die Palette öffnet eine Auswahl der vier Arche-Nova-Farben. Doppelte
-  Farben sind während der Vorbereitung erlaubt, verhindern aber den
-  Start.
-- „Starten“ steht am unteren Bildschirmrand.
-- Erläuterungen wie der Zeitpunkt der Persistierung gehören nicht
-  dauerhaft in die Hauptoberfläche; falls erforderlich werden sie als
-  Hilfe/Hinweis angeboten.
-
-------------------------------------------------------------------------
-
-## Partievorbereitung und Gruppenfarben
-
-- Der **Verlierer** der letzten abgeschlossenen Partie wird beim Öffnen
-  der Vorbereitung automatisch durch zyklische Rotation auf Position 1
-  gesetzt.
-- „Startspieler bestimmen“ ist kein eigener Textbutton mehr, sondern ein
-  Würfel-Icon direkt neben „Partie vorbereiten“.
-- Die Farbauswahl zeigt die vier auswählbaren Farben als tatsächlich
-  farbige Flächen.
-- Zoopläne sind initial nicht ausgewählt. Auswahl erfolgt durch Tippen
-  auf die Skizze; nur der ausgewählte Plan erhält einen grünen Rahmen.
-- In „Gruppe bearbeiten“ kann für jedes Spieler die
-  Ark-Nova-Standardfarbe gesetzt werden. Diese wird später als Default
-  in die Partievorbereitung übernommen.
-
-
-------------------------------------------------------------------------
-
 ## Vorbereitungsscreen – aktueller Aufbau
 
-Der aktuelle Aufbau ist kompakter als die frühen v0.7.0-Wireframes:
+Aktueller Aufbau:
 
 ``` text
 ┌──────────────────────────────────────┐
@@ -421,7 +343,7 @@ Untere Hauptnavigation:
 Spiele · Gruppen · Historie · Einstellungen
 ```
 
-`Gruppen` bleibt der normale Startbereich. Ein Tap auf den Gruppen-Tab führt
+Der Startbereich richtet sich nach gespeichertem Kontext und Standardspiel. Ein Tap auf den Gruppen-Tab führt
 zur Gruppenübersicht.
 
 Spielerkachel in der Wertungsübersicht:
@@ -434,7 +356,7 @@ Spielerkachel in der Wertungsübersicht:
 └──────────────────────────────────────┘
 ```
 
-Der rechte Kartenbutton verwendet den Arche-Nova-Zookartenrücken. Seine
+Der rechte Kartenbutton verwendet das neutrale Besondere-Karten-Icon. Seine
 Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Zahl
 zeigt nur die Anzahl zugewiesener Spezialkarten; konkrete Karten werden erst
 in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
@@ -468,3 +390,12 @@ in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
 - Ergebnis-Spielerkacheln verwenden wieder dieselbe dezente Spielerfarbtönung wie
   Vorbereitung, laufende Partie und Wertung; die Farbe bleibt zusätzlich als Text
   verfügbar.
+
+## Verbindliche Vorbereitungsregeln
+
+- Die letzte abgeschlossene Partie zeigt alle Platzierungen. Ihr Verlierer wird durch zyklische Rotation Startspieler; bei geteiltem letzten Platz entscheidet der alphabetisch erste Name.
+- Ohne Historie erscheint „Keine letzte Partie vorhanden.“
+- Der Würfel neben dem Titel lost den Startspieler aus. Die separate Rotationsaktion verschiebt zyklisch; die relative Reihenfolge bleibt erhalten.
+- Doppelte Farben sind während der Vorbereitung erlaubt, verhindern aber den Start. Starten liegt am unteren Bildschirmrand.
+- Defaultfarben werden in der Gruppenbearbeitung gepflegt; Farbänderungen der Vorbereitung gelten nur für diese Partie.
+- Zooplanauswahl erfolgt durch Tippen auf die Skizze; initial ist kein Plan ausgewählt.
