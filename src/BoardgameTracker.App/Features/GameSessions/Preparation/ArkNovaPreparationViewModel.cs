@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.Application.Games.ArkNova.Preparation;
+using BoardgameTracker.Application.Games.ArkNova.StartSession;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Setup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +12,7 @@ namespace BoardgameTracker.App.Features.GameSessions.Preparation;
 
 public partial class ArkNovaPreparationViewModel(
     IArkNovaPreparationQuery preparationQuery,
+    StartArkNovaSessionUseCase startSessionUseCase,
     ILogger<ArkNovaPreparationViewModel> logger) : ObservableObject
 {
     private static readonly ArkNovaPlayerColor[] AllColors = Enum.GetValues<ArkNovaPlayerColor>();
@@ -26,13 +29,17 @@ public partial class ArkNovaPreparationViewModel(
     public partial string LastSessionText { get; private set; } = "Keine letzte Partie vorhanden.";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanStart))]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
     public partial bool PlansDrawn { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     public bool CanStart =>
         !IsBusy
@@ -66,11 +73,7 @@ public partial class ArkNovaPreparationViewModel(
 
             GroupId = data.GroupId;
             GroupName = data.GroupName;
-            LastSessionText = data.LastSession is null
-                ? "Keine letzte Partie vorhanden."
-                : data.LastSession.WinnerName is null
-                    ? $"Letzte Partie: {data.LastSession.StartedAt.ToLocalTime():d}"
-                    : $"Letzte Partie: {data.LastSession.StartedAt.ToLocalTime():d} · Gewinner: {data.LastSession.WinnerName}";
+            LastSessionText = FormatLastSession(data.LastSession);
             Players.Clear();
             PlansDrawn = false;
 
@@ -98,20 +101,31 @@ public partial class ArkNovaPreparationViewModel(
                     assignedColors[index]));
             }
 
-            if (data.LastSession?.LastPlacePersonId is Guid lastPlacePersonId)
+            if (data.LastSession is not null)
             {
-                int lastPlaceIndex = Players
-                    .Select((player, index) => new { player.PersonId, Index = index })
-                    .Where(item => item.PersonId == lastPlacePersonId)
-                    .Select(item => item.Index)
-                    .DefaultIfEmpty(-1)
-                    .First();
+                Guid? startingPlayerId = ArkNovaStartingPlayerRule.SelectFromPreviousPlacements(
+                    data.LastSession.Placements
+                        .Select(placement => new ArkNovaPreviousPlacement(
+                            placement.PersonId,
+                            placement.Name,
+                            placement.Placement))
+                        .ToArray());
 
-                if (lastPlaceIndex > 0)
+                if (startingPlayerId is Guid personId)
                 {
-                    IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
-                        StartingPlayerRotation.RotateToStart(Players.ToArray(), lastPlaceIndex);
-                    ReplacePlayers(rotated);
+                    int startIndex = Players
+                        .Select((player, index) => new { player.PersonId, Index = index })
+                        .Where(item => item.PersonId == personId)
+                        .Select(item => item.Index)
+                        .DefaultIfEmpty(-1)
+                        .First();
+
+                    if (startIndex > 0)
+                    {
+                        IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
+                            StartingPlayerRotation.RotateToStart(Players.ToArray(), startIndex);
+                        ReplacePlayers(rotated);
+                    }
                 }
             }
         }
@@ -136,13 +150,15 @@ public partial class ArkNovaPreparationViewModel(
             return;
         }
 
-        List<ArkNovaZooPlanOption> available = [.. ArkNovaZooPlanCatalog.All];
-        Shuffle(available);
+        IReadOnlyList<ArkNovaZooPlanDraw> draws = ArkNovaPreparationDraw.Draw(
+            Players.Select(player => player.PersonId).ToArray(),
+            Random.Shared);
 
-        for (int index = 0; index < Players.Count; index++)
+        foreach (ArkNovaZooPlanDraw draw in draws)
         {
-            int offset = index * 2;
-            Players[index].SetZooPlans(available[offset], available[offset + 1]);
+            ArkNovaPreparationPlayerViewModel player = Players.Single(
+                candidate => candidate.PersonId == draw.PersonId);
+            player.SetZooPlans(draw.Option1, draw.Option2);
         }
 
         PlansDrawn = true;
@@ -204,6 +220,70 @@ public partial class ArkNovaPreparationViewModel(
         OnPropertyChanged(nameof(CanStart));
     }
 
+    public async Task<Guid?> StartAsync(CancellationToken cancellationToken = default)
+    {
+        if (!CanStart || IsBusy)
+        {
+            return null;
+        }
+
+        try
+        {
+            IsBusy = true;
+            ErrorMessage = null;
+
+            var command = new StartArkNovaSessionCommand(
+                GroupId,
+                DateTimeOffset.UtcNow,
+                Players.Select(player => new ArkNovaSessionSetupPlayer(
+                    player.PersonId,
+                    player.Color,
+                    player.ZooPlanOption1!.Id,
+                    player.ZooPlanOption2!.Id,
+                    player.SelectedZooPlanId)).ToList()
+                 );
+
+            return await startSessionUseCase.ExecuteAsync(command, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not start Ark Nova session for group {GroupId}.", GroupId);
+            ErrorMessage = UserErrorMessage.Create(
+                "Die Partie konnte nicht gestartet werden.",
+                exception);
+            return null;
+        }
+        finally
+        {
+            IsBusy = false;
+            OnPropertyChanged(nameof(CanStart));
+        }
+    }
+
+    private static string FormatLastSession(ArkNovaLastSession? lastSession)
+    {
+        if (lastSession is null)
+        {
+            return "Keine letzte Partie vorhanden.";
+        }
+
+        string header = $"Letzte Partie: {lastSession.StartedAt.ToLocalTime():d}";
+
+        if (lastSession.Placements.Count == 0)
+        {
+            return header;
+        }
+
+        string placements = string.Join(
+            " · ",
+            lastSession.Placements
+                .OrderBy(player => player.Placement)
+                .ThenBy(player => player.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(player => $"{player.Placement}. {player.Name}"));
+
+        return $"{header}\n{placements}";
+    }
+
     private static ArkNovaPlayerColor[] AssignColors(
         IReadOnlyList<ArkNovaPreparationPlayer> players)
     {
@@ -226,15 +306,6 @@ public partial class ArkNovaPreparationViewModel(
         }
 
         return result;
-    }
-
-    private static void Shuffle<T>(IList<T> items)
-    {
-        for (int index = items.Count - 1; index > 0; index--)
-        {
-            int swapIndex = Random.Shared.Next(index + 1);
-            (items[index], items[swapIndex]) = (items[swapIndex], items[index]);
-        }
     }
 
     private void ReplacePlayers(IReadOnlyList<ArkNovaPreparationPlayerViewModel> orderedPlayers)
