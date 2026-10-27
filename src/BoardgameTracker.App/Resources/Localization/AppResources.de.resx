@@ -294,4 +294,103 @@
   <data name="ArkNovaZooPlan14Name" xml:space="preserve">
     <value>Lagune</value>
   </data>
+  <data name="Games" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="ArkNova" xml:space="preserve">
+    <value>Arche Nova</value>
+  </data>
+  <data name="SupportedGame" xml:space="preserve">
+    <value>Vollständig unterstützt</value>
+  </data>
+  <data name="GameCatalogHint" xml:space="preserve">
+    <value>Unterstützte Spiele und spätere manuelle Spiele werden hier gebündelt.</value>
+  </data>
+  <data name="AppSettingsTitle" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="GameSettings" xml:space="preserve">
+    <value>Spieleinstellungen</value>
+  </data>
+  <data name="GameSettingsHint" xml:space="preserve">
+    <value>Spielspezifische Darstellung und Erfassung konfigurieren.</value>
+  </data>
+  <data name="ActiveGame" xml:space="preserve">
+    <value>Aktive Partie</value>
+  </data>
+  <data name="AddSpecialCard" xml:space="preserve">
+    <value>Spezialkarte hinzufügen</value>
+  </data>
+  <data name="SpecialCards" xml:space="preserve">
+    <value>Spezialkarten</value>
+  </data>
+  <data name="SpecialCardAvailable" xml:space="preserve">
+    <value>Noch nicht zugewiesen</value>
+  </data>
+  <data name="SpecialCardAlreadyAssigned" xml:space="preserve">
+    <value>Bereits einem anderen Spieler zugewiesen</value>
+  </data>
+  <data name="SpecialCardAssignedHere" xml:space="preserve">
+    <value>Diesem Spieler zugewiesen</value>
+  </data>
+  <data name="SpecialCardPickerTitleFormat" xml:space="preserve">
+    <value>Spezialkarte für {0}</value>
+  </data>
+  <data name="SpecialCardMultipleTitle" xml:space="preserve">
+    <value>Spezialkarte mehrfach zuordnen?</value>
+  </data>
+  <data name="SpecialCardMultipleMessageFormat" xml:space="preserve">
+    <value>Hatten wirklich beide Spieler einen {0}?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="DiscardScoringTitle" xml:space="preserve">
+    <value>Wertung verwerfen?</value>
+  </data>
+  <data name="DiscardScoringMessage" xml:space="preserve">
+    <value>Die Partie und die bisher erfasste Wertung werden dauerhaft entfernt.</value>
+  </data>
+  <data name="DiscardScoringFailed" xml:space="preserve">
+    <value>Die Wertung konnte nicht verworfen werden.</value>
+  </data>
+  <data name="ArkNovaSpecialCardAfricanElephantName" xml:space="preserve">
+    <value>Afrikanischer Elefant</value>
+  </data>
+  <data name="ArkNovaSpecialCardAsianElephantName" xml:space="preserve">
+    <value>Asiatischer Elefant</value>
+  </data>
+  <data name="ArkNovaSpecialCardBaldEagleName" xml:space="preserve">
+    <value>Weißkopfseeadler</value>
+  </data>
+  <data name="ArkNovaSpecialCardGoldenEagleName" xml:space="preserve">
+    <value>Steinadler</value>
+  </data>
+  <data name="ArkNovaSpecialCardSunBearName" xml:space="preserve">
+    <value>Malaienbär</value>
+  </data>
+  <data name="ArkNovaSpecialCardAfricanElephantSymbols" xml:space="preserve">
+    <value>Afrika · 🐘</value>
+  </data>
+  <data name="ArkNovaSpecialCardAsianElephantSymbols" xml:space="preserve">
+    <value>Asien · 🐘</value>
+  </data>
+  <data name="ArkNovaSpecialCardBaldEagleSymbols" xml:space="preserve">
+    <value>Nordamerika · 🦅</value>
+  </data>
+  <data name="ArkNovaSpecialCardGoldenEagleSymbols" xml:space="preserve">
+    <value>Europa · 🦅</value>
+  </data>
+  <data name="ArkNovaSpecialCardSunBearSymbols" xml:space="preserve">
+    <value>🐻</value>
+  </data>
+  <data name="NoSpecialCards" xml:space="preserve">
+    <value>Keine Spezialkarten</value>
+  </data>
 </root>

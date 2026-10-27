@@ -22,6 +22,15 @@ internal sealed class ArkNovaSessionPlayerConfiguration : IEntityTypeConfigurati
                 table.HasCheckConstraint(
                     "CK_ArkNovaSessionPlayers_SelectedZooPlanWasOffered",
                     "SelectedZooPlanNumber = ZooPlanOption1Number OR SelectedZooPlanNumber = ZooPlanOption2Number");
+                table.HasCheckConstraint(
+                    "CK_ArkNovaSessionPlayers_Attractiveness_Range",
+                    "Attractiveness IS NULL OR (Attractiveness >= 0 AND Attractiveness <= 113)");
+                table.HasCheckConstraint(
+                    "CK_ArkNovaSessionPlayers_Conservation_Range",
+                    "Conservation IS NULL OR (Conservation >= 0 AND Conservation <= 41)");
+                table.HasCheckConstraint(
+                    "CK_ArkNovaSessionPlayers_Reputation_Range",
+                    "Reputation IS NULL OR (Reputation >= 1 AND Reputation <= 15)");
             });
 
         builder.HasKey(x => new { x.GameSessionId, x.PersonId });

@@ -1,8 +1,7 @@
-# Boardgame Tracker – v0.8.1.1
+# Boardgame Tracker – v0.8.1.6
 
-v0.8.1.1 ist ein kleiner technischer Folgestand auf Basis des v0.8.1-Reviews.
-Er korrigiert die lokale Datenbankinitialisierung, vereinheitlicht Shell-
-Navigationsparameter und ordnet die beiden Gruppenlistenfilter horizontal an.
+v0.8.1.6 verbessert den bestehenden Arche-Nova-Scoring-Slice und ergänzt eine
+appweite untere Hauptnavigation zu Gruppen, Spielen und Einstellungen.
 
 ## Aktueller Funktionsstand
 
@@ -16,8 +15,29 @@ Navigationsparameter und ordnet die beiden Gruppenlistenfilter horizontal an.
 - Beim Start werden allgemeine Sessiondaten und Arche-Nova-Snapshots atomar
   persistiert.
 - Laufende Partien können beendet oder nach Bestätigung verworfen werden.
-- Eine offene Partie wird beim App-Start wieder aufgenommen.
-- Die eigentliche Wertungserfassung ist der nächste größere Feature-Slice.
+- Eine offene Partie bzw. Wertung wird beim App-Start wieder aufgenommen.
+- Wertungsrohwerte werden während `Scoring` automatisch zwischengespeichert;
+  erst `Completed` zählt für Historie und Statistik.
+- Attraktivität und Artenschutz werden validiert und über das feste
+  Artenschutz-Lookup in alte/neue Punkteanzeige umgerechnet.
+- Die fünf Spezialkarten können Spielern zugeordnet und wieder entfernt werden;
+  seltene Mehrfachzuordnungen derselben Karte werden explizit bestätigt.
+- Punktgleichstände können innerhalb ihres ursprünglichen Rangbereichs per
+  Drag-and-drop beibehalten oder aufgelöst werden.
+- Ruf-Erfassung und alte/neue Punkteanzeige sind globale lokale
+  Arche-Nova-Präferenzen.
+- Der Kamera-Button ist im Wertungsscreen bereits an seinem vorgesehenen Platz;
+  die eigentliche Fotoerkennung folgt als eigener Slice.
+- Die Shell besitzt eine permanente untere Hauptnavigation für Gruppen, Spiele
+  und Einstellungen; die Arche-Nova-Einstellungen sind dort erreichbar.
+- Gruppen mit laufender Partie oder offener Wertung zeigen ein Aktiv-Icon neben
+  dem Gruppennamen.
+- Die Wertung kann nach Sicherheitsabfrage verworfen werden.
+- Spielerkacheln sind wieder zuverlässig antippbar; Spezialkarten werden über
+  eine gut lesbare Auswahl je Spieler zugeordnet.
+- Spezialkartennamen und -symbole liegen in den Localization-Ressourcen.
+- Die Spielerkachel zeigt Spielerfarbe und lokalisierten Zooplannamen statt der
+  bloßen Zooplan-Nummer.
 
 ## Technischer Review v0.8.1
 

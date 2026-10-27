@@ -62,8 +62,9 @@ direkt in diese Partie.
 - reguläre Gruppen standardmäßig sichtbar
 - temporäre Gruppen standardmäßig verborgen
 - Button für neue Gruppe
-- Zugang zu Personen und Einstellungen
+- allgemeine untere Navigation zu Gruppen, Spielen und Einstellungen
 - jede Gruppe besitzt rechts ein kleines Bearbeiten-Icon
+- besitzt eine Gruppe eine laufende Partie oder offene Wertung, steht ein Aktiv-Icon direkt neben dem Gruppennamen
 
 Beim Antippen einer Gruppe wird **direkt die Partievorbereitung**
 geöffnet. Ein separater Gruppendetail-Screen ist im MVP nicht notwendig.
@@ -262,58 +263,72 @@ automatisch wieder geöffnet.
 
 ## Wertung
 
+Die Wertung ist ein eigener persistenter Arbeitszustand der `GameSession`.
+Zwischenstände dürfen während `Scoring` automatisch gespeichert werden, zählen
+aber noch nicht als abgeschlossen und erscheinen weder in Historie noch
+Statistik. Erst `GameSession.Status = Completed` macht das Ergebnis fachlich
+fertig.
+
 Pro Spieler werden erfasst:
 
-- Attraktivität
-- Artenschutz
-- Ruf
-- Spezialkarten
+- Attraktivität: optional während der Eingabe, für den Abschluss erforderlich,
+  Wertebereich 0–113,
+- Artenschutz: optional während der Eingabe, für den Abschluss erforderlich,
+  Wertebereich 0–41,
+- Ruf: optional, Wertebereich 1–15; ob die Eingabe angeboten wird, ist eine
+  globale Arche-Nova-Einstellung,
+- konkrete Spezialkarten.
 
-Direkte Eingabe wird für den ersten Prototyp bevorzugt.
+Die Spielerwerte werden auf einem eigenen kompakten Eingabescreen mit
+numerischer Tastatur erfasst. Gültige Änderungen werden automatisch
+zwischengespeichert. Es gibt keinen zusätzlichen „Spieler fertig“-Status.
+`Wertung abschließen` wird möglich, sobald für alle Spieler Attraktivität und
+Artenschutz vorliegen.
+
+Eine offene Wertung kann über eine weniger prominente Aktion **Verwerfen** nach
+Sicherheitsabfrage vollständig entfernt werden.
+
+Ruf und Punkteanzeige sind globale lokale Arche-Nova-Einstellungen. Ist
+`Ruf erfassen` deaktiviert, wird für neue Eingaben kein Ruf verlangt und `null`
+ist ein gültiger Wert. Bereits abgeschlossene Partien werden durch spätere
+Einstellungsänderungen nicht umgeschrieben; fehlender Ruf wird als „nicht
+erfasst“ dargestellt.
 
 ### Fotoerkennung
 
-Kamera-Button zum Fotografieren der Wertungstafel.
+Der Kamera-Button erhält bereits im Wertungsscreen seinen endgültigen
+prominenten Platz. Die spätere Bildauswertung soll über Spielerfarben:
 
-Die Bildauswertung soll über Spielerfarben:
-
-- Attraktivität
-- Artenschutz
+- Attraktivität,
+- Artenschutz,
 - Ruf
 
-erkennen und vorausfüllen.
+erkennen und in exakt dieselben Wertungsfelder wie die manuelle Eingabe
+vorausfüllen. Alle erkannten Werte bleiben manuell korrigierbar. Es gibt keinen
+separaten fachlichen Kamera-Wertungspfad.
 
-Alle Werte bleiben manuell korrigierbar.
-
-Unterstützte Wertungstafeln werden in den Arche-Nova-Einstellungen
-ausgewählt, z. B.:
-
-- Original
-- Custom kompakt
+Unterstützte Wertungstafeln werden perspektivisch in den
+Arche-Nova-Einstellungen ausgewählt, z. B. Original oder Custom kompakt. Die
+eigentliche Fotoerkennung ist ein eigener nachfolgender Implementierungsslice.
 
 ## Punkteanzeige
 
-Rohdaten:
+Dauerhaft gespeichert werden die Rohwerte Attraktivität und Artenschutz, nicht
+die daraus berechneten Punkte.
 
-- Attraktivität
-- Artenschutz
+Für die neue Wertung gilt ein festes Lookup `Artenschutz -> Addend`; die Punkte
+sind:
 
-werden dauerhaft gespeichert.
+`Punkte_neu = Attraktivität + Addend(Artenschutz)`
 
-### Alte Wertung
+Die alte Darstellung ist exakt um 100 Punkte verschoben:
 
-Der zur Artenschutzposition gehörende Attraktions-Zielwert wird von der
-tatsächlichen Attraktivität abgezogen.
+`Punkte_alt = Punkte_neu - 100`
 
-`Punkte_alt = Attraktivität - Zielwert(Artenschutz)`
-
-### Neue Wertung
-
-Wird aus Attraktivität und Artenschutz gemäß aktueller Arche-Nova-Regel
-berechnet.
-
-Die gewünschte Darstellung ist eine Arche-Nova-Einstellung und verändert
-nicht die Rohdaten.
+Die globale Arche-Nova-Einstellung `Neue Wertung / Alte Wertung` verändert nur
+die Darstellung und niemals historische Rohdaten. Die Arche-Nova-Einstellungen
+sind sowohl aus der Wertung als auch über den allgemeinen Bereich
+`Einstellungen` der unteren Hauptnavigation erreichbar.
 
 ## Spezialkarten
 
@@ -330,26 +345,40 @@ nicht die Rohdaten.
 
 Der Malaienbär gehört für die Statistik zur Adler-Kategorie.
 
-Bedienung: **Karte antippen → Spieler antippen**
+Bedienung: Jede Spielerkachel bietet **Spezialkarte hinzufügen**. Die Auswahl
+öffnet eine kompakte Kachelansicht mit Kontinent-/Tiersymbol und lokalisiertem
+Kartennamen; noch nicht zugewiesene Karten werden hervorgehoben. Durch Antippen
+einer bereits beim Spieler angezeigten Spezialkarte wird die Zuordnung wieder
+entfernt.
 
-Es wird die konkrete Karte gespeichert, nicht nur eine Anzahl.
+Es wird die konkrete Karte gespeichert, nicht nur eine Anzahl. Dieselbe
+konkrete Karte darf in seltenen Fällen mehreren Spielern derselben Partie
+zugeordnet sein. Beim Versuch einer solchen Mehrfachzuordnung fragt die App
+explizit nach, ob wirklich beide Spieler diese Karte hatten. Dieselbe Karte
+kann demselben Spieler nicht zweimal zugeordnet werden.
 
 ## Gleichstand
 
-Bei Punktgleichstand muss der Nutzer entscheiden:
+Bei Punktgleichstand öffnet `Wertung abschließen` einen eigenen Screen
+`Gleichstände bearbeiten`. Alle Platzierungsrahmen bleiben sichtbar; nur die
+Spieler eines tatsächlichen Punktegleichstands sind innerhalb ihres
+ursprünglichen Rangbereichs verschiebbar. Nicht punktgleiche Spieler bleiben
+fest.
 
-### Tatsächlicher Gleichstand
+Bleiben punktgleiche Spieler im selben Rahmen, bleibt der tatsächliche
+Gleichstand bestehen. Competition Ranking wird verwendet, z. B.:
 
-Beispiel: `1, 1, 3`
+- `1, 1, 3`
+- `1, 2, 2, 4`
 
-Alle Spieler auf Platz 1 zählen als Gewinner.
+Bei einem Dreifachgleichstand sind auch Aufteilungen wie `2,2,2`, `2,2,4`,
+`2,3,3` oder `2,3,4` möglich, sofern sie dem Competition Ranking entsprechen.
+Die Anzahl unterstützter Artenschutzprojekte wird nicht gespeichert.
 
-### Manuell auflösen
-
-Der Nutzer legt die Reihenfolge fest.
-
-Die Anzahl unterstützter Artenschutzprojekte wird nicht dauerhaft
-gespeichert.
+Nach der gegebenenfalls nötigen Gleichstandsauflösung werden die finalen
+`Placement`-Werte gespeichert und die Session auf `Completed` gesetzt. Der
+Ergebnis-Screen bleibt anschließend sichtbar, bis der Nutzer explizit `Fertig`
+wählt.
 
 ## Historie
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.Settings.AppSettings.AppSettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    Shell.NavBarIsVisible="False">
+    <Grid Padding="20,22" RowDefinitions="Auto,Auto,*" RowSpacing="14">
+        <Label Text="{x:Static res:AppResources.AppSettingsTitle}" FontAttributes="Bold" FontSize="28" />
+        <Label Grid.Row="1" Text="{x:Static res:AppResources.GameSettingsHint}" TextColor="{StaticResource TextSecondary}" />
+        <Border Grid.Row="2" Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />
+            </Border.GestureRecognizers>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="18" />
+                    <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>

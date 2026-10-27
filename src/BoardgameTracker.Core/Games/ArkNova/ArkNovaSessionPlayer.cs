@@ -65,6 +65,8 @@ public sealed class ArkNovaSessionPlayer
 
     public void SetScoreValues(int? attractiveness, int? conservation, int? reputation)
     {
+        ArkNovaScoringRules.ValidateScoreValues(attractiveness, conservation, reputation);
+
         Attractiveness = attractiveness;
         Conservation = conservation;
         Reputation = reputation;
