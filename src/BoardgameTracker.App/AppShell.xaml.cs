@@ -10,23 +10,33 @@ using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Settings.Navigation;
 
 namespace BoardgameTracker.App;
 
 /// <summary>
-/// Defines the MAUI Shell root and registers feature routes; it does not contain domain or persistence logic.
+/// Defines the MAUI Shell root, persistent main tabs and feature routes.
 /// </summary>
 public partial class AppShell : Shell
 {
-    private bool _isResettingGroupTab;
+    private readonly IAppNavigationSettingsStore _navigationSettingsStore;
+    private readonly Tab _gamesTab;
+    private readonly Tab _groupsTab;
+    private readonly Tab _historyTab;
+    private readonly Tab _settingsTab;
+    private bool _isProgrammaticMainNavigation;
+    private bool _isNavigationMemoryEnabled;
 
     public AppShell(
         GroupListPage groupListPage,
         GamesPage gamesPage,
         HistoryPage historyPage,
-        AppSettingsPage settingsPage)
+        AppSettingsPage settingsPage,
+        IAppNavigationSettingsStore navigationSettingsStore)
     {
         InitializeComponent();
+        _navigationSettingsStore = navigationSettingsStore;
+
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
         Routing.RegisterRoute(nameof(ArkNovaPreparationPage), typeof(ArkNovaPreparationPage));
@@ -38,47 +48,123 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ArkNovaSettingsPage), typeof(ArkNovaSettingsPage));
 
         TabBar tabBar = new();
-        Tab gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));
-        Tab groupsTab = CreateTab(AppResources.Groups, "icon_groups.png", groupListPage, nameof(GroupListPage));
-        Tab historyTab = CreateTab(AppResources.History, "icon_history.png", historyPage, nameof(HistoryPage));
-        Tab settingsTab = CreateTab(AppResources.Settings, "icon_settings.png", settingsPage, nameof(AppSettingsPage));
-        tabBar.Items.Add(gamesTab);
-        tabBar.Items.Add(groupsTab);
-        tabBar.Items.Add(historyTab);
-        tabBar.Items.Add(settingsTab);
-        tabBar.CurrentItem = groupsTab;
+        _gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));
+        _groupsTab = CreateTab(AppResources.Groups, "icon_groups.png", groupListPage, nameof(GroupListPage));
+        _historyTab = CreateTab(AppResources.History, "icon_history.png", historyPage, nameof(HistoryPage));
+        _settingsTab = CreateTab(AppResources.Settings, "icon_settings.png", settingsPage, nameof(AppSettingsPage));
+        tabBar.Items.Add(_gamesTab);
+        tabBar.Items.Add(_groupsTab);
+        tabBar.Items.Add(_historyTab);
+        tabBar.Items.Add(_settingsTab);
+        tabBar.CurrentItem = _gamesTab;
 
         Items.Add(tabBar);
-        Navigating += OnShellNavigating;
+        Navigated += OnShellNavigated;
     }
 
-    private async void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
+    public async Task NavigateToMainSectionAsync(AppMainSection section, bool remember = true)
     {
-        if (_isResettingGroupTab
-            || e.Source is not (ShellNavigationSource.ShellSectionChanged or ShellNavigationSource.ShellContentChanged)
-            || !e.Target.Location.OriginalString.Contains(nameof(GroupListPage), StringComparison.Ordinal))
+        Tab target = section switch
         {
-            return;
-        }
+            AppMainSection.Games => _gamesTab,
+            AppMainSection.Groups => _groupsTab,
+            AppMainSection.History => _historyTab,
+            AppMainSection.Settings => _settingsTab,
+            _ => _gamesTab
+        };
 
-        string current = CurrentState.Location.OriginalString;
-        if (current.EndsWith(nameof(GroupListPage), StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        var deferral = e.GetDeferral();
-        e.Cancel();
-        _isResettingGroupTab = true;
+        _isProgrammaticMainNavigation = !remember;
         try
         {
-            await GoToAsync($"//{nameof(GroupListPage)}");
+            await GoToAsync($"//{target.Route}");
         }
         finally
         {
-            _isResettingGroupTab = false;
-            deferral.Complete();
+            _isProgrammaticMainNavigation = false;
         }
+
+        if (remember)
+        {
+            RememberMainSection(section);
+        }
+    }
+
+
+    public async Task NavigateToGroupsForGameAsync(string gameKey, bool remember = true)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
+
+        AppNavigationSettings current = _navigationSettingsStore.Get();
+        _navigationSettingsStore.Save(current with
+        {
+            SelectedGameKey = gameKey,
+            LastMainSection = remember ? AppMainSection.Groups : current.LastMainSection,
+            LastSessionId = null
+        });
+
+        await NavigateToMainSectionAsync(AppMainSection.Groups, remember);
+    }
+
+    public void EnableNavigationMemory() => _isNavigationMemoryEnabled = true;
+
+    public void RememberSession(Guid sessionId, string gameKey)
+    {
+        AppNavigationSettings current = _navigationSettingsStore.Get();
+        _navigationSettingsStore.Save(current with
+        {
+            SelectedGameKey = gameKey,
+            LastSessionId = sessionId
+        });
+    }
+
+    private async void OnShellNavigated(object? sender, ShellNavigatedEventArgs e)
+    {
+        if (!_isNavigationMemoryEnabled || _isProgrammaticMainNavigation)
+        {
+            return;
+        }
+
+        string location = CurrentState.Location.OriginalString;
+        if (location.EndsWith(nameof(GamesPage), StringComparison.Ordinal))
+        {
+            RememberMainSection(AppMainSection.Games);
+        }
+        else if (location.EndsWith(nameof(GroupListPage), StringComparison.Ordinal))
+        {
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            if (string.IsNullOrWhiteSpace(current.SelectedGameKey)
+                && string.IsNullOrWhiteSpace(current.DefaultGameKey))
+            {
+                await NavigateToMainSectionAsync(AppMainSection.Games);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(current.SelectedGameKey)
+                && !string.IsNullOrWhiteSpace(current.DefaultGameKey))
+            {
+                _navigationSettingsStore.Save(current with { SelectedGameKey = current.DefaultGameKey });
+            }
+
+            RememberMainSection(AppMainSection.Groups);
+        }
+        else if (location.EndsWith(nameof(HistoryPage), StringComparison.Ordinal))
+        {
+            RememberMainSection(AppMainSection.History);
+        }
+        else if (location.EndsWith(nameof(AppSettingsPage), StringComparison.Ordinal))
+        {
+            RememberMainSection(AppMainSection.Settings);
+        }
+    }
+
+    private void RememberMainSection(AppMainSection section)
+    {
+        AppNavigationSettings current = _navigationSettingsStore.Get();
+        _navigationSettingsStore.Save(current with
+        {
+            LastMainSection = section,
+            LastSessionId = null
+        });
     }
 
     private static Tab CreateTab(string title, string icon, Page content, string route)

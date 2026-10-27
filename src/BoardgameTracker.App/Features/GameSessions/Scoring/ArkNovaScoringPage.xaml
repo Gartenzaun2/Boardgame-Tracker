@@ -13,8 +13,8 @@
             <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                 <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
-                <Label Text="{Binding GroupName}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-                <Label Text="{Binding DateText}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding GroupName}" FontSize="12" TextColor="{StaticResource TextPrimary}" />
+                <Label Text="{Binding DateText}" FontSize="11" TextColor="{StaticResource TextPrimary}" />
             </VerticalStackLayout>
             <ImageButton Grid.Column="2" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
             <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
@@ -36,7 +36,7 @@
                                     <Label Text="{Binding NameWithScore}" FontAttributes="Bold" FontSize="16" />
                                     <Label Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                                     <Label Grid.Row="2" Text="{Binding RawValuesText}" FontSize="12" />
-                                    <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{StaticResource TextPrimary}" />
                                 </Grid>
                             </Grid>
 

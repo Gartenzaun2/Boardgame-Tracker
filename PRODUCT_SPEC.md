@@ -48,26 +48,43 @@ festgelegt werden.
 Im MVP existiert zunächst nur **Arche Nova**. Weitere Spiele können
 später eigene typisierte Datenmodelle erhalten.
 
-## App-Start
+## App-Start und Navigationskontext
 
-Wenn keine laufende oder noch nicht vollständig gewertete Partie
-existiert, startet die App auf der Gruppenübersicht.
+Die Hauptnavigation lautet **Spiele · Gruppen · Historie · Einstellungen**.
+Die Gruppenübersicht besitzt immer einen ausgewählten Spielkontext; eine
+spielunabhängige Gruppenübersicht gibt es im normalen Startflow nicht.
 
-Existiert eine laufende Partie oder eine offene Wertung, startet die App
-direkt in diese Partie.
+Lokale Navigationseinstellungen speichern:
+
+- optionales `Standardspiel`,
+- zuletzt ausgewähltes Spiel,
+- zuletzt verwendeten Hauptbereich,
+- falls zuletzt eine laufende Partie oder Wertung geöffnet war: genau diese Session.
+
+Startverhalten:
+
+1. War zuletzt eine konkrete noch offene Session aktiv, wird genau diese wieder geöffnet.
+2. Andernfalls wird der zuletzt verwendete Hauptbereich wiederhergestellt.
+3. Gibt es noch keinen gespeicherten Navigationskontext und ist ein Standardspiel gesetzt, startet die App in **Gruppen** für dieses Spiel.
+4. Ohne gespeicherten Kontext und ohne Standardspiel startet die App in **Spiele**.
+
+Damit können perspektivisch mehrere Partien gleichzeitig offen sein, ohne beim
+App-Start willkürlich die zuletzt geänderte Session auszuwählen.
 
 ## Gruppenübersicht
 
-- Gruppen nach letzter Nutzung sortiert
-- reguläre Gruppen standardmäßig sichtbar
-- temporäre Gruppen standardmäßig verborgen
-- Button für neue Gruppe
-- allgemeine untere Navigation zu Gruppen, Spielen und Einstellungen
-- jede Gruppe besitzt rechts ein kleines Bearbeiten-Icon
-- besitzt eine Gruppe eine laufende Partie oder offene Wertung, steht ein Aktiv-Icon direkt neben dem Gruppennamen
+- immer im Kontext des aktuell gewählten Spiels,
+- Spielname direkt unter der Überschrift `Gruppen`,
+- Gruppen nach letzter Nutzung **für dieses Spiel** sortiert,
+- reguläre Gruppen standardmäßig sichtbar,
+- temporäre Gruppen standardmäßig verborgen,
+- Button für neue Gruppe,
+- jede Gruppe besitzt rechts ein kleines Bearbeiten-Icon,
+- besitzt eine Gruppe für das ausgewählte Spiel eine laufende Partie oder offene Wertung, steht ein Aktiv-Icon direkt neben dem Gruppennamen.
 
-Beim Antippen einer Gruppe wird **direkt die Partievorbereitung**
-geöffnet. Ein separater Gruppendetail-Screen ist im MVP nicht notwendig.
+Beim Antippen einer Gruppe wird für das ausgewählte Spiel entweder die offene
+Session fortgesetzt oder die entsprechende Partievorbereitung geöffnet. Ein
+separater Gruppendetail-Screen ist im MVP nicht notwendig.
 
 Das Bearbeiten-Icon ist eine getrennte Touch-Fläche. Es öffnet **Gruppe
 bearbeiten** und darf nicht die Partievorbereitung auslösen.
@@ -151,8 +168,11 @@ andere Gruppe.
 
 Flow:
 
-**Gruppe auswählen → Zoopläne auslosen → je Spieler Zooplan wählen →
+**Spiel auswählen → Gruppe auswählen → Zoopläne auslosen → je Spieler Zooplan wählen →
 ggf. Farbe/Reihenfolge ändern → Partie starten**
+
+Ist bereits ein Spielkontext aktiv (z. B. durch Standardspiel oder zuletzt gewähltes
+Spiel), beginnt der sichtbare Flow direkt bei der Gruppenübersicht.
 
 ### Spielerkacheln
 
@@ -498,3 +518,24 @@ Neben speziell unterstützten Spielen wie Arche Nova sollen Benutzer später eig
   Punkte direkt hinter dem Spielernamen.
 - Der Ergebnis-Screen zeigt zusätzlich die aus `StartedAt` und `EndedAt`
   berechnete Partiedauer. Die Dauer wird weiterhin nicht redundant persistiert.
+
+
+## Navigationseinstellungen – v0.8.2.0
+
+Das `Standardspiel` ist eine lokale App-Einstellung und keine historische
+Spieldatei. Es wird zusammen mit dem zuletzt verwendeten Spiel-/Navigationskontext
+über den nativen MAUI-Preferences-Speicher gehalten, nicht in SQLite. Gruppen
+bleiben fachlich spielunabhängig; nur ihre Darstellung und Session-Metadaten werden
+im aktuell ausgewählten Spielkontext betrachtet.
+
+
+## Navigationspräzisierung – v0.8.2.1
+
+Ein Wechsel in den Hauptbereich `Gruppen` ist nur zusammen mit einem gültigen
+Spielkontext zulässig. Spielauswahl, Standardspiel-Start und Wiederaufnahme einer
+offenen Session setzen deshalb zuerst das aktuelle Spiel und öffnen anschließend
+die Gruppenübersicht. Fehlt ein gültiger Spielkontext, fällt die App auf `Spiele`
+zurück.
+
+Auf der Ergebnisseite behalten die Spielerkacheln die dezente Spielerfarbtönung
+der übrigen Session-Screens; Farbe bleibt zusätzlich textuell erkennbar.

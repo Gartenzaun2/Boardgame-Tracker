@@ -20,6 +20,7 @@ using BoardgameTracker.Application.Games.ArkNova.Scoring;
 using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Application.GameSessions.Running;
 using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Games.ArkNova;
@@ -65,6 +66,7 @@ public static class MauiProgram
         builder.Services.AddTransient<IArkNovaScoringDataAccess, SqliteArkNovaScoringDataAccess>();
         builder.Services.AddTransient<ArkNovaScoringUseCase>();
         builder.Services.AddSingleton<IArkNovaSettingsStore, MauiArkNovaSettingsStore>();
+        builder.Services.AddSingleton<IAppNavigationSettingsStore, MauiAppNavigationSettingsStore>();
 
         builder.Services.AddSingleton<GroupListViewModel>();
         builder.Services.AddSingleton<GroupListPage>();

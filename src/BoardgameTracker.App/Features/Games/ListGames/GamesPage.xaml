@@ -13,10 +13,16 @@
                          ToolTipProperties.Text="{x:Static res:AppResources.GameCatalogHint}" />
         </Grid>
         <Border Grid.Row="1" Padding="18" Style="{StaticResource CardBorder}" VerticalOptions="Start">
-            <VerticalStackLayout Spacing="5">
-                <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="20" />
-                <Label Text="{x:Static res:AppResources.SupportedGame}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-            </VerticalStackLayout>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnArkNovaTapped" />
+            </Border.GestureRecognizers>
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="20" />
+                    <Label Text="{x:Static res:AppResources.SupportedGame}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
+            </Grid>
         </Border>
     </Grid>
 </ContentPage>

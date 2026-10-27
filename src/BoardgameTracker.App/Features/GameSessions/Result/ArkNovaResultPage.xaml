@@ -15,7 +15,7 @@
         <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ArkNovaResultPlayerViewModel">
-                    <Border Margin="0,0,0,8" Padding="12" Style="{StaticResource CardBorder}">
+                    <Border Margin="0,0,0,8" Padding="12" Style="{StaticResource CardBorder}" BackgroundColor="{Binding Tint}">
                         <Grid ColumnDefinitions="44,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
                             <Label Text="{Binding PlacementText}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" Grid.RowSpan="3" />
                             <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />

@@ -11,11 +11,17 @@
     <Grid Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
         <VerticalStackLayout Spacing="4">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="28"
-                    Text="{x:Static res:AppResources.Groups}"
-                    VerticalOptions="Center" />
+                <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="28"
+                        Text="{x:Static res:AppResources.Groups}" />
+                    <Label
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        Text="{Binding SelectedGameName}"
+                        TextColor="{StaticResource TextPrimary}" />
+                </VerticalStackLayout>
                 <Button
                     Grid.Column="1"
                     Clicked="OnCreateGroupClicked"
@@ -82,7 +88,6 @@
                                         ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
                                         VerticalOptions="Center" />
                                 </HorizontalStackLayout>
-                                <Label Text="{Binding GameName}" FontAttributes="Bold" FontSize="12" TextColor="{StaticResource Secondary}" />
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="{Binding MemberNames}" />
                                     <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{StaticResource TextSecondary}" />

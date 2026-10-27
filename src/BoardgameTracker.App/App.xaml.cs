@@ -1,10 +1,11 @@
 using BoardgameTracker.App.Features.GameSessions.Running;
 using BoardgameTracker.App.Features.GameSessions.Scoring;
+using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace BoardgameTracker.App;
 
 /// <summary>
 /// MAUI application bootstrap. It initializes the database before showing the Shell
-/// and resumes an unfinished supported game session when one exists.
+/// and restores the last explicit navigation context when possible.
 /// </summary>
 public partial class App : Microsoft.Maui.Controls.Application
 {
@@ -49,35 +50,116 @@ public partial class App : Microsoft.Maui.Controls.Application
             AppShell shell = _services.GetRequiredService<AppShell>();
             window.Page = shell;
 
+            IAppNavigationSettingsStore navigationStore =
+                _services.GetRequiredService<IAppNavigationSettingsStore>();
             IOpenGameSessionQuery openSessionQuery =
                 _services.GetRequiredService<IOpenGameSessionQuery>();
-            OpenGameSession? openSession = await openSessionQuery.ExecuteAsync();
 
-            if (openSession is not null && openSession.GameKey == ArkNovaGame.Key)
+            AppNavigationSettings state = navigationStore.Get();
+
+            if (state.LastSessionId is Guid rememberedSessionId)
             {
-                string route = openSession.Status switch
-                {
-                    GameSessionStatus.Running => nameof(ArkNovaRunningPage),
-                    GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
-                    _ => string.Empty
-                };
+                OpenGameSession? rememberedSession =
+                    await openSessionQuery.GetAsync(rememberedSessionId);
 
-                if (!string.IsNullOrEmpty(route))
+                if (rememberedSession is not null && rememberedSession.GameKey == ArkNovaGame.Key)
                 {
-                    await shell.GoToAsync(
-                        route,
-                        new ShellNavigationQueryParameters
-                        {
-                            [NavigationParameters.SessionId] = openSession.SessionId
-                        });
+                    await RestoreSessionAsync(shell, rememberedSession);
+                    shell.EnableNavigationMemory();
+                    return;
+                }
+
+                state = state with { LastSessionId = null };
+                navigationStore.Save(state);
+            }
+
+            // Compatibility for an existing development database created before
+            // explicit navigation context existed: restore only when there is
+            // exactly one unfinished session. Never choose arbitrarily among several.
+            if (state.LastMainSection is null)
+            {
+                IReadOnlyList<OpenGameSession> openSessions = await openSessionQuery.GetAllAsync();
+                if (openSessions.Count == 1 && openSessions[0].GameKey == ArkNovaGame.Key)
+                {
+                    await RestoreSessionAsync(shell, openSessions[0]);
+                    shell.EnableNavigationMemory();
+                    return;
                 }
             }
+
+            AppMainSection initialSection = ResolveInitialSection(state);
+            if (initialSection == AppMainSection.Groups)
+            {
+                string? gameKey = state.SelectedGameKey ?? state.DefaultGameKey;
+                if (!string.IsNullOrWhiteSpace(gameKey))
+                {
+                    await shell.NavigateToGroupsForGameAsync(gameKey, remember: false);
+                }
+                else
+                {
+                    await shell.NavigateToMainSectionAsync(AppMainSection.Games, remember: false);
+                }
+            }
+            else
+            {
+                await shell.NavigateToMainSectionAsync(initialSection, remember: false);
+            }
+
+            shell.EnableNavigationMemory();
         }
         catch (Exception exception)
         {
             _logger.LogCritical(exception, "The application database could not be initialized.");
             window.Page = CreateStartupErrorPage(window, exception);
         }
+    }
+
+    private static async Task RestoreSessionAsync(
+        AppShell shell,
+        OpenGameSession session)
+    {
+        await shell.NavigateToGroupsForGameAsync(session.GameKey, remember: false);
+        shell.RememberSession(session.SessionId, session.GameKey);
+        await NavigateToSessionAsync(shell, session);
+    }
+
+    private static AppMainSection ResolveInitialSection(AppNavigationSettings state)
+    {
+        if (state.LastMainSection is AppMainSection rememberedSection)
+        {
+            if (rememberedSection != AppMainSection.Groups
+                || !string.IsNullOrWhiteSpace(state.SelectedGameKey)
+                || !string.IsNullOrWhiteSpace(state.DefaultGameKey))
+            {
+                return rememberedSection;
+            }
+        }
+
+        return !string.IsNullOrWhiteSpace(state.DefaultGameKey)
+            ? AppMainSection.Groups
+            : AppMainSection.Games;
+    }
+
+    private static async Task NavigateToSessionAsync(AppShell shell, OpenGameSession openSession)
+    {
+        string route = openSession.Status switch
+        {
+            GameSessionStatus.Running => nameof(ArkNovaRunningPage),
+            GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(route))
+        {
+            return;
+        }
+
+        await shell.GoToAsync(
+            route,
+            new ShellNavigationQueryParameters
+            {
+                [NavigationParameters.SessionId] = openSession.SessionId
+            });
     }
 
     private static ContentPage CreateStartupPage() =>

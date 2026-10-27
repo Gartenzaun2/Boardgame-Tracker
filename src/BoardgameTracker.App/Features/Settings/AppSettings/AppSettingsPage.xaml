@@ -12,17 +12,35 @@
                          SemanticProperties.Description="{x:Static res:AppResources.GameSettingsHint}"
                          ToolTipProperties.Text="{x:Static res:AppResources.GameSettingsHint}" />
         </Grid>
-        <Border Grid.Row="1" Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />
-            </Border.GestureRecognizers>
-            <Grid ColumnDefinitions="*,Auto">
-                <VerticalStackLayout Spacing="3">
-                    <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="18" />
-                    <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
-            </Grid>
-        </Border>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="12">
+            <Border Padding="16" Style="{StaticResource CardBorder}">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{x:Static res:AppResources.DefaultGame}" FontAttributes="Bold" FontSize="17" VerticalOptions="Center" />
+                        <ImageButton Grid.Column="1" Clicked="OnDefaultGameInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                                     SemanticProperties.Description="{x:Static res:AppResources.DefaultGameHint}"
+                                     ToolTipProperties.Text="{x:Static res:AppResources.DefaultGameHint}" />
+                    </Grid>
+                    <Picker x:Name="DefaultGamePicker"
+                            Grid.Row="1"
+                            Title="{x:Static res:AppResources.NoDefaultGame}"
+                            SelectedIndexChanged="OnDefaultGameChanged" />
+                </Grid>
+            </Border>
+
+            <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />
+                </Border.GestureRecognizers>
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="18" />
+                        <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                    <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>
