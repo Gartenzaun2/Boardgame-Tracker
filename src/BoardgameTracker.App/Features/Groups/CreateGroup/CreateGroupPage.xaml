@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BoardgameTracker.App.Features.Groups.CreateGroup.CreateGroupPage"
+    x:Name="Page"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:application="clr-namespace:BoardgameTracker.Application.Groups.CreateGroup;assembly=BoardgameTracker.Application"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.CreateGroup"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:DataType="local:CreateGroupViewModel"
+    Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid
+            Padding="8,8,12,8"
+            ColumnDefinitions="Auto,*,Auto"
+            ColumnSpacing="4">
+            <ImageButton
+                Clicked="OnBackClicked"
+                Source="icon_back.png"
+                Style="{StaticResource IconButton}"
+                SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+
+            <HorizontalStackLayout
+                Grid.Column="1"
+                Spacing="2"
+                VerticalOptions="Center">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="21"
+                    Text="{x:Static res:AppResources.CreateGroup}"
+                    VerticalOptions="Center" />
+                <ImageButton
+                    Clicked="OnInfoClicked"
+                    Source="icon_info.png"
+                    Style="{StaticResource IconButton}"
+                    SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
+                    ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
+            </HorizontalStackLayout>
+
+            <Button
+                Grid.Column="2"
+                Command="{Binding SaveCommand}"
+                Style="{StaticResource PrimaryCompactButton}"
+                Text="{x:Static res:AppResources.Save}"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                            <Label
+                                FontAttributes="Bold"
+                                Text="{x:Static res:AppResources.GroupName}"
+                                VerticalOptions="Center" />
+                            <Entry
+                                Grid.Column="1"
+                                Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}"
+                                Text="{Binding GroupName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <Label
+                                Text="{x:Static res:AppResources.TemporaryGroup}"
+                                VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="2">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="{x:Static res:AppResources.GroupPlayers}"
+                            VerticalOptions="Center" />
+                        <ImageButton
+                            Clicked="OnPlayersInfoClicked"
+                            Source="icon_info.png"
+                            Style="{StaticResource IconButton}"
+                            SemanticProperties.Description="{x:Static res:AppResources.DefaultOrderHint}"
+                            ToolTipProperties.Text="{x:Static res:AppResources.DefaultOrderHint}" />
+                    </HorizontalStackLayout>
+
+                    <Label
+                        IsVisible="{Binding HasNoPlayers}"
+                        Text="{x:Static res:AppResources.NoPlayersYet}"
+                        TextColor="{StaticResource TextSecondary}" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="application:CreateGroupPlayerInput">
+                                <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                            <Label
+                                                FontSize="12"
+                                                IsVisible="{Binding IsGuest}"
+                                                Text="{x:Static res:AppResources.Guest}"
+                                                TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemovePlayerCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPlayer}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePlayers}">
+                            <Picker
+                                ItemDisplayBinding="{Binding Name, x:DataType=application:SelectablePlayer}"
+                                ItemsSource="{Binding AvailablePlayers}"
+                                SelectedItem="{Binding SelectedExistingPlayer}"
+                                Title="{x:Static res:AppResources.SelectPlayer}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding AddSelectedPlayerCommand}"
+                                Style="{StaticResource CompactActionButton}"
+                                SemanticProperties.Description="{x:Static res:AppResources.AddExistingPlayer}"
+                                Text="+"
+                                VerticalOptions="Center" />
+                        </Grid>
+                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePlayers}" Text="{x:Static res:AppResources.NoAvailablePlayers}" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Padding="16" BackgroundColor="{StaticResource SurfaceGreen}" Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayer}" />
+                        <Entry Placeholder="{x:Static res:AppResources.PlayerNamePlaceholder}" Text="{Binding NewPlayerName}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
+                        </Grid>
+                        <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="End" Style="{StaticResource CompactActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid
+            Grid.RowSpan="2"
+            BackgroundColor="#40FFFFFF"
+            InputTransparent="False"
+            IsVisible="{Binding IsBusy}">
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

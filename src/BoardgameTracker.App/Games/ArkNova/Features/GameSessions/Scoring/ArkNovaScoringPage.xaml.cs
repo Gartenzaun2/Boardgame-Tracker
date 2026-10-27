@@ -1,0 +1,155 @@
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
+using BoardgameTracker.App.Games.ArkNova;
+using BoardgameTracker.App.Games.ArkNova.Features.Settings;
+using BoardgameTracker.App.Features.Groups.ListGroups;
+using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
+using BoardgameTracker.Core.Players;
+
+namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
+
+public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
+{
+    private readonly ArkNovaScoringViewModel _viewModel;
+    private Guid _gameSessionId;
+
+    public ArkNovaScoringPage(ArkNovaScoringViewModel viewModel)
+    {
+        InitializeComponent();
+        _viewModel = viewModel;
+        BindingContext = viewModel;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
+            || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
+        {
+            throw new InvalidOperationException($"Required navigation parameter '{NavigationParameters.GameSessionId}' is missing or invalid.");
+        }
+
+        _gameSessionId = gameSessionId;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (_gameSessionId != Guid.Empty)
+        {
+            await _viewModel.LoadAsync(_gameSessionId);
+        }
+    }
+
+    private async void OnPlayerTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is not ArkNovaScoringPlayerViewModel player || !_viewModel.TryBeginNavigation())
+        {
+            return;
+        }
+
+        try
+        {
+            await Shell.Current.GoToAsync(
+                nameof(ArkNovaPlayerScoringPage),
+                new ShellNavigationQueryParameters
+                {
+                    [NavigationParameters.GameSessionId] = _gameSessionId,
+                    [NavigationParameters.PlayerId] = player.PlayerId
+                });
+        }
+        finally
+        {
+            _viewModel.EndNavigation();
+        }
+    }
+
+    private void OnAddSpecialCardTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is Guid playerId)
+        {
+            _viewModel.OpenSpecialCardPicker(playerId);
+        }
+    }
+
+    private async void OnSpecialCardOptionTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is not ArkNovaSpecialCardOptionViewModel option
+            || _viewModel.SpecialCardTargetPlayerId is not Guid playerId)
+        {
+            return;
+        }
+
+        if (option.IsAssignedToTarget)
+        {
+            await _viewModel.RemoveSpecialCardAsync(playerId, option.Card);
+            return;
+        }
+
+        if (option.IsAssignedToOtherPlayer)
+        {
+            bool confirmed = await DisplayAlertAsync(
+                AppResources.SpecialCardMultipleTitle,
+                string.Format(
+                    AppResources.SpecialCardMultipleMessageFormat,
+                    ArkNovaSpecialCardPresentation.GetName(option.Card)),
+                AppResources.Yes,
+                AppResources.Cancel);
+
+            if (!confirmed)
+            {
+                return;
+            }
+        }
+
+        await _viewModel.AssignSpecialCardAsync(playerId, option.Card);
+    }
+
+    private void OnCloseSpecialCardPickerClicked(object? sender, EventArgs e) =>
+        _viewModel.CloseSpecialCardPicker();
+
+    private async void OnCompleteClicked(object? sender, EventArgs e)
+    {
+        ArkNovaCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
+        if (plan is null) return;
+
+        string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
+        if (!plan.HasTies)
+        {
+            await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+        }
+
+        await Shell.Current.GoToAsync(
+            route,
+            new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
+    }
+
+    private async void OnDiscardClicked(object? sender, EventArgs e)
+    {
+        bool confirmed = await DisplayAlertAsync(
+            AppResources.DiscardScoringTitle,
+            AppResources.DiscardScoringMessage,
+            AppResources.Discard,
+            AppResources.Cancel);
+
+        if (confirmed && await _viewModel.DiscardAsync())
+        {
+            await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+        }
+    }
+
+    private async void OnCameraClicked(object? sender, EventArgs e) =>
+        await DisplayAlertAsync("Fotoerkennung", "Der Kamera-Einstieg ist vorbereitet. Die Bilderkennung folgt im nächsten Feature-Slice.", AppResources.Ok);
+
+    private async void OnSettingsClicked(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+
+    private async void OnBackClicked(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+
+    protected override bool OnBackButtonPressed()
+    {
+        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}"));
+        return true;
+    }
+}

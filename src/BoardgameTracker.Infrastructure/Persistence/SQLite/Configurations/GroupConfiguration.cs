@@ -1,9 +1,12 @@
-using BoardgameTracker.Core.Domain;
+using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps the fixed-membership group aggregate and its backing player collection to SQLite.
+/// </summary>
 internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 {
     public void Configure(EntityTypeBuilder<Group> builder)
@@ -18,5 +21,11 @@ internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 
         builder.Property(x => x.IsTemporary)
             .IsRequired();
+
+        builder.Property(x => x.IsArchived)
+            .IsRequired();
+
+        builder.Navigation(x => x.Players)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

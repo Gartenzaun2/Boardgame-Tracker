@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BoardgameTracker.Application</RootNamespace>
+    <AssemblyName>BoardgameTracker.Application</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BoardgameTracker.Core\BoardgameTracker.Core.csproj" />
+  </ItemGroup>
+</Project>

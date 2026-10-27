@@ -1,32 +1,38 @@
-using BoardgameTracker.Core.Domain;
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games;
+using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps the GameSession aggregate root, lifecycle fields and owned player relationship to SQLite.
+/// </summary>
 internal sealed class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
 {
     public void Configure(EntityTypeBuilder<GameSession> builder)
     {
         builder.ToTable("GameSessions");
-
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Status).HasConversion<int>().IsRequired();
+        builder.Property(x => x.StartedAt).IsRequired();
+        builder.Property(x => x.ModifiedAt).IsRequired();
 
-        builder.Property(x => x.Status)
-            .HasConversion<int>()
-            .IsRequired();
+        builder.Navigation(x => x.Players)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        builder.Property(x => x.StartedAt)
-            .IsRequired();
-
-        builder.HasOne(x => x.Game)
+        builder.HasOne<Game>()
             .WithMany()
             .HasForeignKey(x => x.GameId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x => x.Group)
+        builder.HasOne<Group>()
             .WithMany()
             .HasForeignKey(x => x.GroupId)
+            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

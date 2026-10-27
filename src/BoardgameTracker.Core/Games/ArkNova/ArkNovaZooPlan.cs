@@ -1,12 +1,20 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
+/// <summary>
+/// Represents one of the fourteen fixed Ark Nova zoo plans. The printed plan number
+/// is its stable domain identity and therefore also its persistence key.
+/// </summary>
 public sealed class ArkNovaZooPlan
 {
-    public int Id { get; init; }
+    private ArkNovaZooPlan()
+    {
+    }
 
-    public int Number { get; init; }
+    public ArkNovaZooPlan(int number)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(number);
+        Number = number;
+    }
 
-    public required string NameResourceKey { get; init; }
-
-    public required string IconKey { get; init; }
+    public int Number { get; private set; }
 }

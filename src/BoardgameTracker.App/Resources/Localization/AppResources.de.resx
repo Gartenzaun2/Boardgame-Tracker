@@ -12,7 +12,406 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
   </resheader>
-  <data name="Groups" xml:space="preserve"><value>Gruppen</value></data>
-  <data name="FirstRunHint" xml:space="preserve"><value>Die technische Basis läuft. Als Nächstes verbinden wir die Gruppenübersicht mit SQLite.</value></data>
-  <data name="NoGroupsYet" xml:space="preserve"><value>Noch keine Gruppen vorhanden.</value></data>
-<data name="Initializing" xml:space="preserve"><value>Datenbank wird vorbereitet …</value></data><data name="StartupErrorTitle" xml:space="preserve"><value>Start fehlgeschlagen</value></data><data name="StartupErrorMessage" xml:space="preserve"><value>Die lokale Datenbank konnte nicht initialisiert werden.</value></data></root>
+  <data name="Groups" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="NoGroupsYet" xml:space="preserve">
+    <value>Noch keine Gruppen vorhanden.</value>
+  </data>
+  <data name="NewGroup" xml:space="preserve">
+    <value>Neue Gruppe</value>
+  </data>
+  <data name="CreateFirstGroupHint" xml:space="preserve">
+    <value>Lege deine erste Gruppe an und füge Spieler hinzu.</value>
+  </data>
+  <data name="CreateGroup" xml:space="preserve">
+    <value>Gruppe anlegen</value>
+  </data>
+  <data name="CreateGroupHint" xml:space="preserve">
+    <value>Wähle vorhandene Spieler oder lege neue an. Die Reihenfolge wird als Standard-Sitzreihenfolge gespeichert.</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>Gruppenname</value>
+  </data>
+  <data name="GroupNamePlaceholder" xml:space="preserve">
+    <value>z. B. Freitagabend</value>
+  </data>
+  <data name="TemporaryGroup" xml:space="preserve">
+    <value>Temporäre Gruppe</value>
+  </data>
+  <data name="NewPlayer" xml:space="preserve">
+    <value>Neue Player</value>
+  </data>
+  <data name="PlayerNamePlaceholder" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Guest" xml:space="preserve">
+    <value>Gast</value>
+  </data>
+  <data name="AddPlayer" xml:space="preserve">
+    <value>Player hinzufügen</value>
+  </data>
+  <data name="NoAvailablePlayers" xml:space="preserve">
+    <value>Keine weiteren Spieler vorhanden.</value>
+  </data>
+  <data name="GroupPlayers" xml:space="preserve">
+    <value>Gruppenmitglieder</value>
+  </data>
+  <data name="DefaultOrderHint" xml:space="preserve">
+    <value>Mit ↑ und ↓ legst du die Standard-Reihenfolge fest.</value>
+  </data>
+  <data name="NoPlayersYet" xml:space="preserve">
+    <value>Noch keine Spieler in der Gruppe.</value>
+  </data>
+  <data name="EnterPlayerName" xml:space="preserve">
+    <value>Bitte einen Namen eingeben.</value>
+  </data>
+  <data name="LoadPlayersFailed" xml:space="preserve">
+    <value>Die Spieler konnten nicht geladen werden.</value>
+  </data>
+  <data name="SaveGroupFailed" xml:space="preserve">
+    <value>Die Gruppe konnte nicht gespeichert werden.</value>
+  </data>
+  <data name="LoadGroupsFailed" xml:space="preserve">
+    <value>Die Gruppen konnten nicht geladen werden.</value>
+  </data>
+  <data name="Initializing" xml:space="preserve">
+    <value>Datenbank wird vorbereitet …</value>
+  </data>
+  <data name="StartupErrorTitle" xml:space="preserve">
+    <value>Start fehlgeschlagen</value>
+  </data>
+  <data name="StartupErrorMessage" xml:space="preserve">
+    <value>Die lokale Datenbank konnte nicht initialisiert werden.</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="AddExistingPlayer" xml:space="preserve">
+    <value>Vorhandene Player hinzufügen</value>
+  </data>
+  <data name="SelectPlayer" xml:space="preserve">
+    <value>Player auswählen</value>
+  </data>
+  <data name="EditGroup" xml:space="preserve">
+    <value>Gruppe bearbeiten</value>
+  </data>
+  <data name="EditGroupHint" xml:space="preserve">
+    <value>Bearbeite Gruppenname, temporären Status und die Standard-Reihenfolge. Eine andere Spielerzusammensetzung ist eine andere Gruppe.</value>
+  </data>
+  <data name="EditGroupPlayersHint" xml:space="preserve">
+    <value>Mit ↑ und ↓ änderst du die Standard-Reihenfolge. Die Mitgliederzusammensetzung bleibt unverändert.</value>
+  </data>
+  <data name="GroupNotFound" xml:space="preserve">
+    <value>Die Gruppe wurde nicht gefunden.</value>
+  </data>
+  <data name="LoadGroupFailed" xml:space="preserve">
+    <value>Die Gruppe konnte nicht geladen werden.</value>
+  </data>
+  <data name="LastPlayedFormat" xml:space="preserve">
+    <value>Zuletzt gespielt: {0}</value>
+  </data>
+  <data name="NeverPlayed" xml:space="preserve">
+    <value>Noch keine Partie gespielt.</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="TechnicalDetails" xml:space="preserve">
+    <value>Technische Details</value>
+  </data>
+  <data name="Temporary" xml:space="preserve">
+    <value>Temporär</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Archiviert</value>
+  </data>
+  <data name="MakePermanent" xml:space="preserve">
+    <value>Als permanente Gruppe übernehmen</value>
+  </data>
+  <data name="ArchiveHint" xml:space="preserve">
+    <value>Archivierte Gruppen werden in der normalen Übersicht ausgeblendet.</value>
+  </data>
+  <data name="PrepareGame" xml:space="preserve">
+    <value>Partie vorbereiten</value>
+  </data>
+  <data name="DetermineStartingPlayer" xml:space="preserve">
+    <value>Startspieler bestimmen</value>
+  </data>
+  <data name="DrawZooPlans" xml:space="preserve">
+    <value>Zoopläne auslosen</value>
+  </data>
+  <data name="RotateOrder" xml:space="preserve">
+    <value>Reihenfolge durchrotieren</value>
+  </data>
+  <data name="ChooseColor" xml:space="preserve">
+    <value>Farbe wählen</value>
+  </data>
+  <data name="StartGame" xml:space="preserve">
+    <value>Starten</value>
+  </data>
+  <data name="RunningGame" xml:space="preserve">
+    <value>Laufende Partie</value>
+  </data>
+  <data name="EndGame" xml:space="preserve">
+    <value>Partie beenden</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Verwerfen</value>
+  </data>
+  <data name="Scoring" xml:space="preserve">
+    <value>Wertung</value>
+  </data>
+  <data name="ScoringPlaceholder" xml:space="preserve">
+    <value>Die Partie ist beendet und für die Wertung gespeichert. Die eigentliche Wertungserfassung folgt im nächsten Slice.</value>
+  </data>
+  <data name="NoPreviousGameSession" xml:space="preserve">
+    <value>Keine letzte Partie vorhanden.</value>
+  </data>
+  <data name="GroupNotFoundForPreparation" xml:space="preserve">
+    <value>Die Gruppe wurde nicht gefunden.</value>
+  </data>
+  <data name="ArchivedGroupCannotStart" xml:space="preserve">
+    <value>Archivierte Gruppen können keine neue Partie starten.</value>
+  </data>
+  <data name="ArkNovaPlayerCountError" xml:space="preserve">
+    <value>Arche Nova unterstützt in dieser App Gruppen mit 1 bis 4 Spieler.</value>
+  </data>
+  <data name="LoadPreparationFailed" xml:space="preserve">
+    <value>Die Partievorbereitung konnte nicht geladen werden.</value>
+  </data>
+  <data name="StartGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht gestartet werden.</value>
+  </data>
+  <data name="PreviousGameSessionFormat" xml:space="preserve">
+    <value>Letzte Partie: {0}</value>
+  </data>
+  <data name="Blue" xml:space="preserve">
+    <value>Blau</value>
+  </data>
+  <data name="Yellow" xml:space="preserve">
+    <value>Gelb</value>
+  </data>
+  <data name="Red" xml:space="preserve">
+    <value>Rot</value>
+  </data>
+  <data name="Black" xml:space="preserve">
+    <value>Schwarz</value>
+  </data>
+  <data name="StartValidationTitle" xml:space="preserve">
+    <value>Partie kann nicht gestartet werden</value>
+  </data>
+  <data name="UniqueColorsRequired" xml:space="preserve">
+    <value>Jeder Spieler muss vor dem Start eine eigene Farbe haben.</value>
+  </data>
+  <data name="ZooPlanSelectionRequired" xml:space="preserve">
+    <value>Jeder Spieler muss vor dem Start einen Zooplan ausgewählt haben.</value>
+  </data>
+  <data name="RunningGameSessionNotFound" xml:space="preserve">
+    <value>Die laufende Partie wurde nicht gefunden.</value>
+  </data>
+  <data name="LoadRunningGameSessionFailed" xml:space="preserve">
+    <value>Die laufende Partie konnte nicht geladen werden.</value>
+  </data>
+  <data name="DurationHoursFormat" xml:space="preserve">
+    <value>Dauer: {0}:{1:00} h</value>
+  </data>
+  <data name="DurationMinutesFormat" xml:space="preserve">
+    <value>Dauer: {0} min</value>
+  </data>
+  <data name="EndGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht beendet werden.</value>
+  </data>
+  <data name="DiscardGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht verworfen werden.</value>
+  </data>
+  <data name="DiscardGameTitle" xml:space="preserve">
+    <value>Partie verwerfen?</value>
+  </data>
+  <data name="DiscardGameMessage" xml:space="preserve">
+    <value>Die laufende Partie wird dauerhaft entfernt.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="ZooPlanFormat" xml:space="preserve">
+    <value>Zooplan {0}</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Nach oben</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Nach unten</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="ArkNovaZooPlan01Name" xml:space="preserve">
+    <value>Aussichtsplattform</value>
+  </data>
+  <data name="ArkNovaZooPlan02Name" xml:space="preserve">
+    <value>Freilaufflächen</value>
+  </data>
+  <data name="ArkNovaZooPlan03Name" xml:space="preserve">
+    <value>Silbersee</value>
+  </data>
+  <data name="ArkNovaZooPlan04Name" xml:space="preserve">
+    <value>Handelshafen</value>
+  </data>
+  <data name="ArkNovaZooPlan05Name" xml:space="preserve">
+    <value>Parkrestaurant</value>
+  </data>
+  <data name="ArkNovaZooPlan06Name" xml:space="preserve">
+    <value>Forschungsinstitut</value>
+  </data>
+  <data name="ArkNovaZooPlan07Name" xml:space="preserve">
+    <value>Eisdielen</value>
+  </data>
+  <data name="ArkNovaZooPlan08Name" xml:space="preserve">
+    <value>Hollywood Hills</value>
+  </data>
+  <data name="ArkNovaZooPlan09Name" xml:space="preserve">
+    <value>Geozoo</value>
+  </data>
+  <data name="ArkNovaZooPlan10Name" xml:space="preserve">
+    <value>Auffangstation</value>
+  </data>
+  <data name="ArkNovaZooPlan11Name" xml:space="preserve">
+    <value>Höhlen</value>
+  </data>
+  <data name="ArkNovaZooPlan12Name" xml:space="preserve">
+    <value>Künstliche Intelligenz</value>
+  </data>
+  <data name="ArkNovaZooPlan13Name" xml:space="preserve">
+    <value>Reißbrett</value>
+  </data>
+  <data name="ArkNovaZooPlan14Name" xml:space="preserve">
+    <value>Lagune</value>
+  </data>
+  <data name="Games" xml:space="preserve">
+    <value>Spiele</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>Historie</value>
+  </data>
+  <data name="HistoryHint" xml:space="preserve">
+    <value>Abgeschlossene Partien werden hier in einem späteren Slice angezeigt.</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="ArkNova" xml:space="preserve">
+    <value>Arche Nova</value>
+  </data>
+  <data name="SupportedGame" xml:space="preserve">
+    <value>Vollständig unterstützt</value>
+  </data>
+  <data name="GameCatalogHint" xml:space="preserve">
+    <value>Unterstützte Spiele und spätere manuelle Spiele werden hier gebündelt.</value>
+  </data>
+  <data name="AppSettingsTitle" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="GameSettings" xml:space="preserve">
+    <value>Spieleinstellungen</value>
+  </data>
+  <data name="GameSettingsHint" xml:space="preserve">
+    <value>Spielspezifische Darstellung und Erfassung konfigurieren.</value>
+  </data>
+  <data name="ActiveGame" xml:space="preserve">
+    <value>Aktive Partie</value>
+  </data>
+  <data name="AddSpecialCard" xml:space="preserve">
+    <value>Besondere Karte hinzufügen</value>
+  </data>
+  <data name="SpecialCards" xml:space="preserve">
+    <value>Besondere Karten</value>
+  </data>
+  <data name="SpecialCardAvailable" xml:space="preserve">
+    <value>Noch nicht zugewiesen</value>
+  </data>
+  <data name="SpecialCardAlreadyAssigned" xml:space="preserve">
+    <value>Bereits einem anderen Spieler zugewiesen</value>
+  </data>
+  <data name="SpecialCardAssignedHere" xml:space="preserve">
+    <value>Diesem Spieler zugewiesen</value>
+  </data>
+  <data name="SpecialCardPickerTitleFormat" xml:space="preserve">
+    <value>Besondere Karte für {0}</value>
+  </data>
+  <data name="SpecialCardMultipleTitle" xml:space="preserve">
+    <value>Besondere Karte mehrfach zuordnen?</value>
+  </data>
+  <data name="SpecialCardMultipleMessageFormat" xml:space="preserve">
+    <value>Hatten wirklich beide Spieler einen {0}?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="DiscardScoringTitle" xml:space="preserve">
+    <value>Wertung verwerfen?</value>
+  </data>
+  <data name="DiscardScoringMessage" xml:space="preserve">
+    <value>Die Partie und die bisher erfasste Wertung werden dauerhaft entfernt.</value>
+  </data>
+  <data name="DiscardScoringFailed" xml:space="preserve">
+    <value>Die Wertung konnte nicht verworfen werden.</value>
+  </data>
+  <data name="ArkNovaSpecialCardAfricanElephantName" xml:space="preserve">
+    <value>Afrikanischer Elefant</value>
+  </data>
+  <data name="ArkNovaSpecialCardAsianElephantName" xml:space="preserve">
+    <value>Asiatischer Elefant</value>
+  </data>
+  <data name="ArkNovaSpecialCardBaldEagleName" xml:space="preserve">
+    <value>Weißkopfseeadler</value>
+  </data>
+  <data name="ArkNovaSpecialCardGoldenEagleName" xml:space="preserve">
+    <value>Steinadler</value>
+  </data>
+  <data name="ArkNovaSpecialCardSunBearName" xml:space="preserve">
+    <value>Malaienbär</value>
+  </data>
+  <data name="ArkNovaSpecialCardAfricanElephantSymbols" xml:space="preserve">
+    <value>Afrika · 🐘</value>
+  </data>
+  <data name="ArkNovaSpecialCardAsianElephantSymbols" xml:space="preserve">
+    <value>Asien · 🐘</value>
+  </data>
+  <data name="ArkNovaSpecialCardBaldEagleSymbols" xml:space="preserve">
+    <value>Nordamerika · 🦅</value>
+  </data>
+  <data name="ArkNovaSpecialCardGoldenEagleSymbols" xml:space="preserve">
+    <value>Europa · 🦅</value>
+  </data>
+  <data name="ArkNovaSpecialCardSunBearSymbols" xml:space="preserve">
+    <value>🐻</value>
+  </data>
+  <data name="ScoringSecondaryValuesFormat" xml:space="preserve">
+    <value>Besondere Karten: {0}</value>
+  </data>
+  <data name="ScoringSecondaryValuesWithReputationFormat" xml:space="preserve">
+    <value>Besondere Karten: {0} · Ruf: {1}</value>
+  </data>
+  <data name="NoSpecialCards" xml:space="preserve">
+    <value>Keine besonderen Karten</value>
+  </data>
+  <data name="DefaultGame" xml:space="preserve">
+    <value>Standardspiel</value>
+  </data>
+  <data name="NoDefaultGame" xml:space="preserve">
+    <value>Kein Standardspiel</value>
+  </data>
+  <data name="DefaultGameHint" xml:space="preserve">
+    <value>Ohne Standardspiel startet die App bei Spiele. Mit Standardspiel startet sie beim ersten Mal direkt in dessen Gruppenübersicht. Danach wird der zuletzt verwendete Bereich wiederhergestellt.</value>
+  </data>
+</root>

@@ -1,49 +1,169 @@
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.Settings.Navigation;
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App;
 
-public partial class App : Application
+/// <summary>
+/// MAUI application bootstrap. It initializes the database before showing the Shell
+/// and restores the last explicit navigation context when possible.
+/// </summary>
+public partial class App : Microsoft.Maui.Controls.Application
 {
-    private readonly AppShell _shell;
+    private readonly IServiceProvider _services;
     private readonly DatabaseInitializer _databaseInitializer;
+    private readonly ILogger<App> _logger;
 
     public App(
-        AppShell shell,
-        DatabaseInitializer databaseInitializer)
+        IServiceProvider services,
+        DatabaseInitializer databaseInitializer,
+        ILogger<App> logger)
     {
         InitializeComponent();
-
-        _shell = shell;
+        _services = services;
         _databaseInitializer = databaseInitializer;
+        _logger = logger;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        ContentPage startupPage = CreateStartupPage();
-
-        Window window = new(startupPage);
-
-        window.Created += async (_, _) =>
-        {
-            try
-            {
-                await _databaseInitializer.InitializeAsync();
-
-                window.Page = _shell;
-            }
-            catch (Exception exception)
-            {
-                window.Page = CreateStartupErrorPage(exception);
-            }
-        };
-
+        Window window = new(CreateStartupPage());
+        window.Created += async (_, _) => await InitializeApplicationAsync(window);
         return window;
     }
 
-    private static ContentPage CreateStartupPage()
+    private async Task InitializeApplicationAsync(Window window)
     {
-        return new ContentPage
+        window.Page = CreateStartupPage();
+
+        try
+        {
+            await _databaseInitializer.InitializeAsync();
+            AppShell shell = _services.GetRequiredService<AppShell>();
+            window.Page = shell;
+
+            IAppNavigationSettingsStore navigationStore =
+                _services.GetRequiredService<IAppNavigationSettingsStore>();
+            IOpenGameSessionQuery openGameSessionQuery =
+                _services.GetRequiredService<IOpenGameSessionQuery>();
+
+            AppNavigationSettings state = navigationStore.Get();
+
+            if (state.LastGameSessionId is Guid rememberedGameSessionId)
+            {
+                OpenGameSession? rememberedGameSession =
+                    await openGameSessionQuery.GetAsync(rememberedGameSessionId);
+
+                if (rememberedGameSession is not null && rememberedGameSession.GameKey == ArkNovaGame.Key)
+                {
+                    await RestoreGameSessionAsync(shell, rememberedGameSession);
+                    shell.EnableNavigationMemory();
+                    return;
+                }
+
+                state = state with { LastGameSessionId = null };
+                navigationStore.Save(state);
+            }
+
+            // Compatibility for an existing development database created before
+            // explicit navigation context existed: restore only when there is
+            // exactly one unfinished GameSession. Never choose arbitrarily among several.
+            if (state.LastMainSection is null)
+            {
+                IReadOnlyList<OpenGameSession> openGameSessions = await openGameSessionQuery.GetAllAsync();
+                if (openGameSessions.Count == 1 && openGameSessions[0].GameKey == ArkNovaGame.Key)
+                {
+                    await RestoreGameSessionAsync(shell, openGameSessions[0]);
+                    shell.EnableNavigationMemory();
+                    return;
+                }
+            }
+
+            AppMainSection initialSection = ResolveInitialSection(state);
+            if (initialSection == AppMainSection.Groups)
+            {
+                string? gameKey = state.SelectedGameKey ?? state.DefaultGameKey;
+                if (!string.IsNullOrWhiteSpace(gameKey))
+                {
+                    await shell.NavigateToGroupsForGameAsync(gameKey, remember: false);
+                }
+                else
+                {
+                    await shell.NavigateToMainSectionAsync(AppMainSection.Games, remember: false);
+                }
+            }
+            else
+            {
+                await shell.NavigateToMainSectionAsync(initialSection, remember: false);
+            }
+
+            shell.EnableNavigationMemory();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogCritical(exception, "The application database could not be initialized.");
+            window.Page = CreateStartupErrorPage(window, exception);
+        }
+    }
+
+    private static async Task RestoreGameSessionAsync(
+        AppShell shell,
+        OpenGameSession gameSession)
+    {
+        await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false);
+        shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
+        await NavigateToGameSessionAsync(shell, gameSession);
+    }
+
+    private static AppMainSection ResolveInitialSection(AppNavigationSettings state)
+    {
+        if (state.LastMainSection is AppMainSection rememberedSection)
+        {
+            if (rememberedSection != AppMainSection.Groups
+                || !string.IsNullOrWhiteSpace(state.SelectedGameKey)
+                || !string.IsNullOrWhiteSpace(state.DefaultGameKey))
+            {
+                return rememberedSection;
+            }
+        }
+
+        return !string.IsNullOrWhiteSpace(state.DefaultGameKey)
+            ? AppMainSection.Groups
+            : AppMainSection.Games;
+    }
+
+    private static async Task NavigateToGameSessionAsync(AppShell shell, OpenGameSession openGameSession)
+    {
+        string route = openGameSession.Status switch
+        {
+            GameSessionStatus.Running => nameof(ArkNovaRunningPage),
+            GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(route))
+        {
+            return;
+        }
+
+        await shell.GoToAsync(
+            route,
+            new ShellNavigationQueryParameters
+            {
+                [NavigationParameters.GameSessionId] = openGameSession.GameSessionId
+            });
+    }
+
+    private static ContentPage CreateStartupPage() =>
+        new()
         {
             Content = new Grid
             {
@@ -72,38 +192,59 @@ public partial class App : Application
                 }
             }
         };
-    }
 
-    private static ContentPage CreateStartupErrorPage(Exception exception)
+    private ContentPage CreateStartupErrorPage(Window window, Exception exception)
     {
+        VerticalStackLayout content = new()
+        {
+            VerticalOptions = LayoutOptions.Center,
+            Spacing = 12,
+            Children =
+            {
+                new Label
+                {
+                    Text = AppResources.StartupErrorTitle,
+                    FontSize = 24,
+                    FontAttributes = FontAttributes.Bold
+                },
+                new Label { Text = AppResources.StartupErrorMessage }
+            }
+        };
+
+        Button retryButton = new()
+        {
+            Text = AppResources.Retry,
+            HorizontalOptions = LayoutOptions.Start
+        };
+        retryButton.Clicked += async (_, _) =>
+        {
+            retryButton.IsEnabled = false;
+            await InitializeApplicationAsync(window);
+        };
+        content.Children.Add(retryButton);
+
+#if DEBUG
+        content.Children.Add(new Label
+        {
+            Text = AppResources.TechnicalDetails,
+            FontAttributes = FontAttributes.Bold,
+            Margin = new Thickness(0, 12, 0, 0)
+        });
+        content.Children.Add(new ScrollView
+        {
+            MaximumHeightRequest = 260,
+            Content = new Label
+            {
+                Text = exception.ToString(),
+                FontSize = 11
+            }
+        });
+#endif
+
         return new ContentPage
         {
             Padding = 24,
-            Content = new VerticalStackLayout
-            {
-                VerticalOptions = LayoutOptions.Center,
-                Spacing = 12,
-                Children =
-                {
-                    new Label
-                    {
-                        Text = AppResources.StartupErrorTitle,
-                        FontSize = 24,
-                        FontAttributes = FontAttributes.Bold
-                    },
-                    new Label
-                    {
-                        Text = AppResources.StartupErrorMessage
-                    },
-#if DEBUG
-                    new Label
-                    {
-                        Text = exception.ToString(),
-                        FontSize = 11
-                    }
-#endif
-                }
-            }
+            Content = content
         };
     }
 }
