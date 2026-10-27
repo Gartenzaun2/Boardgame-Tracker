@@ -5,6 +5,27 @@ Versionshistorie des Boardgame Trackers.
 Die übrigen Projekt-MD-Dateien beschreiben ausschließlich den aktuellen
 gültigen Stand.
 
+## 0.8.2.5
+
+- Android-Launcher-Icon endgültig auf den kanonischen Ressourcennamen `appicon` vereinheitlicht.
+- Ursache des Roboter-Icons behoben: Der `MauiIcon`-Hintergrund hieß zuvor `appiconbg`; Androids Manifest muss aber exakt den aus dem `MauiIcon Include`-Dateinamen abgeleiteten Mipmap-Namen referenzieren.
+- `MauiIcon Include` verwendet jetzt `Resources\AppIcon\appicon.png`, Foreground bleibt `appiconfg.png`; AndroidManifest referenziert passend `@mipmap/appicon` und `@mipmap/appicon_round`.
+- `ForegroundScale="0.70"` gesetzt, damit das Logo innerhalb der Android-Adaptive-Icon-Safe-Zone bleibt.
+- App-Version auf 0.8.2.5 / ApplicationVersion 5 erhöht.
+
+## 0.8.2.4
+
+- Android-Buildfehler APT2260/APT2067 behoben: explizite `@mipmap/appicon`- und `@mipmap/appicon_round`-Referenzen aus `AndroidManifest.xml` entfernt.
+- Das Launcher-Icon wird wieder ausschließlich über `MauiIcon` in der Projektdatei generiert und vom MAUI-Build eingebunden.
+- App-Version auf 0.8.2.4 / ApplicationVersion 4 erhöht.
+
+## 0.8.2.3
+
+- Android-Launcher-Icon auf ein explizites MAUI Adaptive Icon umgestellt.
+- Farbige Logo-Grafik wird als Foreground mit deckendem App-Hintergrund erzeugt.
+- AndroidManifest referenziert `@mipmap/appicon` und `@mipmap/appicon_round` explizit.
+- App-Version auf 0.8.2.3 / ApplicationVersion 3 erhöht.
+
 ## Unreleased – Dokumentationskonsolidierung
 
 - Update-Pakete mit Dateioperationen erhalten künftig einen generischen `APPLY_UPDATE.cmd`; Lösch-, Verschiebe- und Umbenennungsaktionen werden deklarativ aus der Operationsdatei gelesen.

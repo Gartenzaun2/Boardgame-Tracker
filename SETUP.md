@@ -300,3 +300,12 @@ zulässig.
 Der aktuelle Arche-Nova-Startpfad blockiert noch global bei irgendeiner offenen
 Session. Bis zur Umsetzung dieser Regel muss dieser Punkt als bekannter
 Implementierungsunterschied behandelt werden.
+
+
+## Android-AppIcon
+
+Der Dateiname im `MauiIcon Include` ist gleichzeitig der Android-Ressourcenname.
+Bei `Include="Resources\AppIcon\appicon.png"` muss `Platforms/Android/AndroidManifest.xml` daher
+`android:icon="@mipmap/appicon"` und `android:roundIcon="@mipmap/appicon_round"` verwenden.
+Beim Umbenennen der AppIcon-Hintergrunddatei müssen diese Manifest-Verweise immer synchron angepasst werden.
+
