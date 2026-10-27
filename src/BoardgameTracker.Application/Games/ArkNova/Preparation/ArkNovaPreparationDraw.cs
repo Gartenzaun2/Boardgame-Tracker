@@ -1,5 +1,10 @@
+using BoardgameTracker.Core.Games.ArkNova.Setup;
+
 namespace BoardgameTracker.Application.Games.ArkNova.Preparation;
 
+/// <summary>
+/// Creates a random, session-wide unique assignment of two Ark Nova zoo plans per player for a non-persisted preparation.
+/// </summary>
 public static class ArkNovaPreparationDraw
 {
     public static IReadOnlyList<ArkNovaZooPlanDraw> Draw(
@@ -9,7 +14,7 @@ public static class ArkNovaPreparationDraw
         ArgumentNullException.ThrowIfNull(playerIds);
         ArgumentNullException.ThrowIfNull(random);
 
-        if (playerIds.Count is < 1 or > 4)
+        if (playerIds.Count is < ArkNovaSessionSetup.MinimumPlayerCount or > ArkNovaSessionSetup.MaximumPlayerCount)
         {
             throw new ArgumentException(
                 "Ark Nova preparation requires between one and four players.",
@@ -47,6 +52,9 @@ public static class ArkNovaPreparationDraw
     }
 }
 
+/// <summary>
+/// Represents the two zoo-plan options drawn for one player during preparation.
+/// </summary>
 public sealed record ArkNovaZooPlanDraw(
     Guid PersonId,
     ArkNovaZooPlanOption Option1,

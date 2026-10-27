@@ -1,7 +1,11 @@
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
+/// <summary>
+/// MAUI view for editing group metadata, order and Ark Nova default colors.
+/// </summary>
 public partial class EditGroupPage : ContentPage, IQueryAttributable
 {
     private readonly EditGroupViewModel _viewModel;
@@ -18,11 +22,15 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("GroupId", out object? value)
-            && value is Guid groupId)
+        if (!query.TryGetValue(NavigationParameters.GroupId, out object? value)
+            || value is not Guid groupId
+            || groupId == Guid.Empty)
         {
-            _groupId = groupId;
+            throw new InvalidOperationException(
+                $"Required navigation parameter '{NavigationParameters.GroupId}' is missing or invalid.");
         }
+
+        _groupId = groupId;
     }
 
     protected override async void OnAppearing()

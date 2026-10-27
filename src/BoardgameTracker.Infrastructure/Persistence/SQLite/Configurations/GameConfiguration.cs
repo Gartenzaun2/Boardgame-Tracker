@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps supported-game reference data and its stable unique key to SQLite.
+/// </summary>
 internal sealed class GameConfiguration : IEntityTypeConfiguration<Game>
 {
     public void Configure(EntityTypeBuilder<Game> builder)

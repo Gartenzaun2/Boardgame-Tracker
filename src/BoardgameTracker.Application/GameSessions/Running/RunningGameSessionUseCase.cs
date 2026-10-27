@@ -2,6 +2,10 @@ using BoardgameTracker.Core.GameSessions;
 
 namespace BoardgameTracker.Application.GameSessions.Running;
 
+/// <summary>
+/// Orchestrates lifecycle actions that are available while a game session is
+/// running. Domain state transitions remain protected by <see cref="GameSession"/>.
+/// </summary>
 public sealed class RunningGameSessionUseCase(
     IRunningGameSessionDataAccess dataAccess)
 {
@@ -10,31 +14,17 @@ public sealed class RunningGameSessionUseCase(
         DateTimeOffset endedAt,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
-            session.BeginScoring(endedAt);
-            await dataAccess.SaveAsync(cancellationToken);
-        }
-        finally
-        {
-            await dataAccess.DisposeAsync();
-        }
+        GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
+        session.BeginScoring(endedAt);
+        await dataAccess.SaveAsync(session, cancellationToken);
     }
 
     public async Task DiscardAsync(
         Guid sessionId,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
-            await dataAccess.DeleteAsync(session, cancellationToken);
-        }
-        finally
-        {
-            await dataAccess.DisposeAsync();
-        }
+        GameSession session = await GetRunningSessionAsync(sessionId, cancellationToken);
+        await dataAccess.DeleteAsync(session, cancellationToken);
     }
 
     private async Task<GameSession> GetRunningSessionAsync(

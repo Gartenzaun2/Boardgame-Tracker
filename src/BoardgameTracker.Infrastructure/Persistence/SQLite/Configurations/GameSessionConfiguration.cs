@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps the game-session aggregate root, lifecycle fields and owned player relationship to SQLite.
+/// </summary>
 internal sealed class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
 {
     public void Configure(EntityTypeBuilder<GameSession> builder)

@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.GameSessions;
 
+/// <summary>
+/// Represents one participant snapshot inside a game-session aggregate, including order and optional final placement.
+/// </summary>
 public sealed class GameSessionPlayer
 {
     private GameSessionPlayer()

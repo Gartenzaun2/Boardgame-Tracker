@@ -16,9 +16,10 @@ public sealed class ArkNovaPreparationDrawTests
         Assert.Equal(4, result.Count);
         Assert.Equal(players, result.Select(draw => draw.PersonId));
 
-        int[] offeredPlans = result
-            .SelectMany(draw => new[] { draw.Option1.Id, draw.Option2.Id })
-            .ToArray();
+        int[] offeredPlans =
+        [
+            .. result.SelectMany(draw => new[] { draw.Option1.Id, draw.Option2.Id })
+        ];
 
         Assert.Equal(8, offeredPlans.Distinct().Count());
     }

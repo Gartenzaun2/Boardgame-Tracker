@@ -3,6 +3,9 @@ using System.Resources;
 
 namespace BoardgameTracker.App.Resources.Localization;
 
+/// <summary>
+/// Provides strongly named access to localized UI strings used by the MAUI app.
+/// </summary>
 public static class AppResources
 {
     private static readonly ResourceManager ResourceManager =
@@ -51,14 +54,10 @@ public static class AppResources
     public static string AddPerson =>
         GetString(nameof(AddPerson));
 
-    public static string ExistingPersons =>
-        GetString(nameof(ExistingPersons));
 
     public static string NoAvailablePersons =>
         GetString(nameof(NoAvailablePersons));
 
-    public static string Add =>
-        GetString(nameof(Add));
 
     public static string GroupMembers =>
         GetString(nameof(GroupMembers));
@@ -69,14 +68,10 @@ public static class AppResources
     public static string NoMembersYet =>
         GetString(nameof(NoMembersYet));
 
-    public static string SaveGroup =>
-        GetString(nameof(SaveGroup));
 
     public static string EnterPersonName =>
         GetString(nameof(EnterPersonName));
 
-    public static string PersonAlreadyInGroup =>
-        GetString(nameof(PersonAlreadyInGroup));
 
     public static string LoadPersonsFailed =>
         GetString(nameof(LoadPersonsFailed));
@@ -128,6 +123,138 @@ public static class AppResources
 
     public static string StartupErrorMessage =>
         GetString(nameof(StartupErrorMessage));
+
+    public static string Retry =>
+        GetString(nameof(Retry));
+
+    public static string TechnicalDetails =>
+        GetString(nameof(TechnicalDetails));
+
+    public static string Temporary =>
+        GetString(nameof(Temporary));
+
+    public static string Archived =>
+        GetString(nameof(Archived));
+
+    public static string MakePermanent =>
+        GetString(nameof(MakePermanent));
+
+    public static string ArchiveHint =>
+        GetString(nameof(ArchiveHint));
+
+    public static string PrepareGame =>
+        GetString(nameof(PrepareGame));
+
+    public static string DetermineStartingPlayer =>
+        GetString(nameof(DetermineStartingPlayer));
+
+    public static string DrawZooPlans =>
+        GetString(nameof(DrawZooPlans));
+
+    public static string RotateOrder =>
+        GetString(nameof(RotateOrder));
+
+    public static string ChooseColor =>
+        GetString(nameof(ChooseColor));
+
+    public static string StartGame =>
+        GetString(nameof(StartGame));
+
+    public static string RunningGame =>
+        GetString(nameof(RunningGame));
+
+    public static string EndGame =>
+        GetString(nameof(EndGame));
+
+    public static string Discard =>
+        GetString(nameof(Discard));
+
+    public static string Scoring =>
+        GetString(nameof(Scoring));
+
+    public static string ScoringPlaceholder =>
+        GetString(nameof(ScoringPlaceholder));
+
+    public static string NoPreviousSession =>
+        GetString(nameof(NoPreviousSession));
+
+    public static string GroupNotFoundForPreparation =>
+        GetString(nameof(GroupNotFoundForPreparation));
+
+    public static string ArchivedGroupCannotStart =>
+        GetString(nameof(ArchivedGroupCannotStart));
+
+    public static string ArkNovaPlayerCountError =>
+        GetString(nameof(ArkNovaPlayerCountError));
+
+    public static string LoadPreparationFailed =>
+        GetString(nameof(LoadPreparationFailed));
+
+    public static string StartGameFailed =>
+        GetString(nameof(StartGameFailed));
+
+    public static string PreviousSessionFormat =>
+        GetString(nameof(PreviousSessionFormat));
+
+    public static string Blue =>
+        GetString(nameof(Blue));
+
+    public static string Yellow =>
+        GetString(nameof(Yellow));
+
+    public static string Red =>
+        GetString(nameof(Red));
+
+    public static string Black =>
+        GetString(nameof(Black));
+
+    public static string StartValidationTitle =>
+        GetString(nameof(StartValidationTitle));
+
+    public static string UniqueColorsRequired =>
+        GetString(nameof(UniqueColorsRequired));
+
+    public static string ZooPlanSelectionRequired =>
+        GetString(nameof(ZooPlanSelectionRequired));
+
+    public static string RunningSessionNotFound =>
+        GetString(nameof(RunningSessionNotFound));
+
+    public static string LoadRunningSessionFailed =>
+        GetString(nameof(LoadRunningSessionFailed));
+
+    public static string DurationHoursFormat =>
+        GetString(nameof(DurationHoursFormat));
+
+    public static string DurationMinutesFormat =>
+        GetString(nameof(DurationMinutesFormat));
+
+    public static string EndGameFailed =>
+        GetString(nameof(EndGameFailed));
+
+    public static string DiscardGameFailed =>
+        GetString(nameof(DiscardGameFailed));
+
+    public static string DiscardGameTitle =>
+        GetString(nameof(DiscardGameTitle));
+
+    public static string DiscardGameMessage =>
+        GetString(nameof(DiscardGameMessage));
+
+    public static string Cancel =>
+        GetString(nameof(Cancel));
+
+    public static string ZooPlanFormat =>
+        GetString(nameof(ZooPlanFormat));
+
+    public static string MoveUp =>
+        GetString(nameof(MoveUp));
+
+    public static string MoveDown =>
+        GetString(nameof(MoveDown));
+
+    public static string Remove =>
+        GetString(nameof(Remove));
 
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)

@@ -1,4 +1,5 @@
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Setup;
 
 namespace BoardgameTracker.Application.Games.ArkNova.Preparation;
 
@@ -29,15 +30,7 @@ public sealed record ArkNovaPreparationData(
 /// </summary>
 public sealed record ArkNovaLastSession(
     DateTimeOffset StartedAt,
-    IReadOnlyList<ArkNovaLastSessionPlacement> Placements);
-
-/// <summary>
-/// One displayed placement from the previous completed session.
-/// </summary>
-public sealed record ArkNovaLastSessionPlacement(
-    Guid PersonId,
-    string Name,
-    int Placement);
+    IReadOnlyList<ArkNovaPreviousPlacement> Placements);
 
 /// <summary>
 /// Group member plus Ark Nova defaults required to initialize one preparation tile.

@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Groups;
 
+/// <summary>
+/// Aggregate root for a fixed group composition, its default member order and lifecycle flags.
+/// </summary>
 public sealed class Group
 {
     private readonly List<GroupPerson> _members = [];

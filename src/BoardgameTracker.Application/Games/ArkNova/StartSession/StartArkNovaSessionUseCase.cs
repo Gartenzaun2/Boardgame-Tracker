@@ -4,6 +4,10 @@ using BoardgameTracker.Core.Games.ArkNova.Setup;
 
 namespace BoardgameTracker.Application.Games.ArkNova.StartSession;
 
+/// <summary>
+/// Validates a prepared Ark Nova setup against persisted group/reference data,
+/// creates the domain session snapshot and persists it atomically.
+/// </summary>
 public sealed class StartArkNovaSessionUseCase(
     IStartArkNovaSessionDataAccess dataAccess)
 {
@@ -47,14 +51,16 @@ public sealed class StartArkNovaSessionUseCase(
                 "The session players must match the fixed group membership.");
         }
 
-        int[] requestedZooPlanIds = command.Players
-            .SelectMany(player => new[]
-            {
-                player.ZooPlanOption1Id,
-                player.ZooPlanOption2Id
-            })
-            .Distinct()
-            .ToArray();
+        IReadOnlyList<int> requestedZooPlanIds =
+        [
+            .. command.Players
+                .SelectMany(player => new[]
+                {
+                    player.ZooPlanOption1Id,
+                    player.ZooPlanOption2Id
+                })
+                .Distinct()
+        ];
 
         if (requestedZooPlanIds.Any(id => !context.AvailableZooPlanIds.Contains(id)))
         {
@@ -62,21 +68,23 @@ public sealed class StartArkNovaSessionUseCase(
                 "The session contains an unknown Ark Nova zoo plan.");
         }
 
-        var session = new GameSession(
+        IReadOnlyList<Guid> playerIds = [.. command.Players.Select(player => player.PersonId)];
+        GameSession session = new(
             context.GameId,
             command.GroupId,
             command.StartedAt,
-            command.Players.Select(player => player.PersonId).ToArray());
+            playerIds);
 
-        ArkNovaSessionPlayer[] arkNovaPlayers = command.Players
-            .Select(player => new ArkNovaSessionPlayer(
+        IReadOnlyCollection<ArkNovaSessionPlayer> arkNovaPlayers =
+        [
+            .. command.Players.Select(player => new ArkNovaSessionPlayer(
                 session.Id,
                 player.PersonId,
                 player.Color,
                 player.ZooPlanOption1Id,
                 player.ZooPlanOption2Id,
-                player.SelectedZooPlanId!.Value))
-            .ToArray();
+                player.SelectedZooPlanId.GetValueOrDefault()))
+        ];
 
         await dataAccess.SaveAsync(session, arkNovaPlayers, cancellationToken);
 

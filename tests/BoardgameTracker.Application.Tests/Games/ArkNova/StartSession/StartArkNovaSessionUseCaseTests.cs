@@ -14,13 +14,13 @@ public sealed class StartArkNovaSessionUseCaseTests
         Guid gameId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
         Guid ben = Guid.NewGuid();
-        var dataAccess = new FakeDataAccess(new StartArkNovaSessionContext(
+        FakeDataAccess dataAccess = new(new StartArkNovaSessionContext(
             gameId,
             false,
             false,
             [anna, ben],
             Enumerable.Range(1, 14).ToHashSet()));
-        var useCase = new StartArkNovaSessionUseCase(dataAccess);
+        StartArkNovaSessionUseCase useCase = new(dataAccess);
         DateTimeOffset startedAt = new(2026, 10, 27, 10, 0, 0, TimeSpan.Zero);
 
         Guid sessionId = await useCase.ExecuteAsync(new StartArkNovaSessionCommand(
@@ -48,13 +48,13 @@ public sealed class StartArkNovaSessionUseCaseTests
         Guid anna = Guid.NewGuid();
         Guid ben = Guid.NewGuid();
         Guid chris = Guid.NewGuid();
-        var dataAccess = new FakeDataAccess(new StartArkNovaSessionContext(
+        FakeDataAccess dataAccess = new(new StartArkNovaSessionContext(
             Guid.NewGuid(),
             false,
             false,
             [anna, ben],
             Enumerable.Range(1, 14).ToHashSet()));
-        var useCase = new StartArkNovaSessionUseCase(dataAccess);
+        StartArkNovaSessionUseCase useCase = new(dataAccess);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
             new StartArkNovaSessionCommand(
@@ -66,19 +66,58 @@ public sealed class StartArkNovaSessionUseCaseTests
                 ])));
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WhenGroupIsArchived_Throws()
+    {
+        Guid groupId = Guid.NewGuid();
+        Guid anna = Guid.NewGuid();
+        FakeDataAccess dataAccess = new(new StartArkNovaSessionContext(
+            Guid.NewGuid(),
+            true,
+            false,
+            [anna],
+            Enumerable.Range(1, 14).ToHashSet()));
+        StartArkNovaSessionUseCase useCase = new(dataAccess);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+            new StartArkNovaSessionCommand(
+                groupId,
+                DateTimeOffset.UtcNow,
+                [new(anna, ArkNovaPlayerColor.Blue, 1, 2, 1)])));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenZooPlanIsUnknown_Throws()
+    {
+        Guid groupId = Guid.NewGuid();
+        Guid anna = Guid.NewGuid();
+        FakeDataAccess dataAccess = new(new StartArkNovaSessionContext(
+            Guid.NewGuid(),
+            false,
+            false,
+            [anna],
+            Enumerable.Range(1, 14).ToHashSet()));
+        StartArkNovaSessionUseCase useCase = new(dataAccess);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+            new StartArkNovaSessionCommand(
+                groupId,
+                DateTimeOffset.UtcNow,
+                [new(anna, ArkNovaPlayerColor.Blue, 1, 99, 1)])));
+    }
 
     [Fact]
     public async Task ExecuteAsync_WhenAnotherSessionIsOpen_Throws()
     {
         Guid groupId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
-        var dataAccess = new FakeDataAccess(new StartArkNovaSessionContext(
+        FakeDataAccess dataAccess = new(new StartArkNovaSessionContext(
             Guid.NewGuid(),
             false,
             true,
             [anna],
             Enumerable.Range(1, 14).ToHashSet()));
-        var useCase = new StartArkNovaSessionUseCase(dataAccess);
+        StartArkNovaSessionUseCase useCase = new(dataAccess);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
             new StartArkNovaSessionCommand(
@@ -104,7 +143,7 @@ public sealed class StartArkNovaSessionUseCaseTests
             CancellationToken cancellationToken = default)
         {
             SavedSession = session;
-            SavedArkNovaPlayers = arkNovaPlayers.ToArray();
+            SavedArkNovaPlayers = [.. arkNovaPlayers];
             return Task.CompletedTask;
         }
     }

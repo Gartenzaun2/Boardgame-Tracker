@@ -51,14 +51,8 @@
   <data name="AddPerson" xml:space="preserve">
     <value>Person hinzufügen</value>
   </data>
-  <data name="ExistingPersons" xml:space="preserve">
-    <value>Vorhandene Personen</value>
-  </data>
   <data name="NoAvailablePersons" xml:space="preserve">
     <value>Keine weiteren Personen vorhanden.</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>Hinzufügen</value>
   </data>
   <data name="GroupMembers" xml:space="preserve">
     <value>Gruppenmitglieder</value>
@@ -69,14 +63,8 @@
   <data name="NoMembersYet" xml:space="preserve">
     <value>Noch keine Personen in der Gruppe.</value>
   </data>
-  <data name="SaveGroup" xml:space="preserve">
-    <value>Gruppe speichern</value>
-  </data>
   <data name="EnterPersonName" xml:space="preserve">
     <value>Bitte einen Namen eingeben.</value>
-  </data>
-  <data name="PersonAlreadyInGroup" xml:space="preserve">
-    <value>Diese Person ist bereits in der Gruppe.</value>
   </data>
   <data name="LoadPersonsFailed" xml:space="preserve">
     <value>Die Personen konnten nicht geladen werden.</value>
@@ -131,5 +119,137 @@
   </data>
   <data name="Back" xml:space="preserve">
     <value>Zurück</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Erneut versuchen</value>
+  </data>
+  <data name="TechnicalDetails" xml:space="preserve">
+    <value>Technische Details</value>
+  </data>
+  <data name="Temporary" xml:space="preserve">
+    <value>Temporär</value>
+  </data>
+  <data name="Archived" xml:space="preserve">
+    <value>Archiviert</value>
+  </data>
+  <data name="MakePermanent" xml:space="preserve">
+    <value>Als permanente Gruppe übernehmen</value>
+  </data>
+  <data name="ArchiveHint" xml:space="preserve">
+    <value>Archivierte Gruppen werden in der normalen Übersicht ausgeblendet.</value>
+  </data>
+  <data name="PrepareGame" xml:space="preserve">
+    <value>Partie vorbereiten</value>
+  </data>
+  <data name="DetermineStartingPlayer" xml:space="preserve">
+    <value>Startspieler bestimmen</value>
+  </data>
+  <data name="DrawZooPlans" xml:space="preserve">
+    <value>Zoopläne auslosen</value>
+  </data>
+  <data name="RotateOrder" xml:space="preserve">
+    <value>Reihenfolge durchrotieren</value>
+  </data>
+  <data name="ChooseColor" xml:space="preserve">
+    <value>Farbe wählen</value>
+  </data>
+  <data name="StartGame" xml:space="preserve">
+    <value>Starten</value>
+  </data>
+  <data name="RunningGame" xml:space="preserve">
+    <value>Laufende Partie</value>
+  </data>
+  <data name="EndGame" xml:space="preserve">
+    <value>Partie beenden</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Verwerfen</value>
+  </data>
+  <data name="Scoring" xml:space="preserve">
+    <value>Wertung</value>
+  </data>
+  <data name="ScoringPlaceholder" xml:space="preserve">
+    <value>Die Partie ist beendet und für die Wertung gespeichert. Die eigentliche Wertungserfassung folgt im nächsten Slice.</value>
+  </data>
+  <data name="NoPreviousSession" xml:space="preserve">
+    <value>Keine letzte Partie vorhanden.</value>
+  </data>
+  <data name="GroupNotFoundForPreparation" xml:space="preserve">
+    <value>Die Gruppe wurde nicht gefunden.</value>
+  </data>
+  <data name="ArchivedGroupCannotStart" xml:space="preserve">
+    <value>Archivierte Gruppen können keine neue Partie starten.</value>
+  </data>
+  <data name="ArkNovaPlayerCountError" xml:space="preserve">
+    <value>Arche Nova unterstützt in dieser App Gruppen mit 1 bis 4 Personen.</value>
+  </data>
+  <data name="LoadPreparationFailed" xml:space="preserve">
+    <value>Die Partievorbereitung konnte nicht geladen werden.</value>
+  </data>
+  <data name="StartGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht gestartet werden.</value>
+  </data>
+  <data name="PreviousSessionFormat" xml:space="preserve">
+    <value>Letzte Partie: {0}</value>
+  </data>
+  <data name="Blue" xml:space="preserve">
+    <value>Blau</value>
+  </data>
+  <data name="Yellow" xml:space="preserve">
+    <value>Gelb</value>
+  </data>
+  <data name="Red" xml:space="preserve">
+    <value>Rot</value>
+  </data>
+  <data name="Black" xml:space="preserve">
+    <value>Schwarz</value>
+  </data>
+  <data name="StartValidationTitle" xml:space="preserve">
+    <value>Partie kann nicht gestartet werden</value>
+  </data>
+  <data name="UniqueColorsRequired" xml:space="preserve">
+    <value>Jeder Spieler muss vor dem Start eine eigene Farbe haben.</value>
+  </data>
+  <data name="ZooPlanSelectionRequired" xml:space="preserve">
+    <value>Jeder Spieler muss vor dem Start einen Zooplan ausgewählt haben.</value>
+  </data>
+  <data name="RunningSessionNotFound" xml:space="preserve">
+    <value>Die laufende Partie wurde nicht gefunden.</value>
+  </data>
+  <data name="LoadRunningSessionFailed" xml:space="preserve">
+    <value>Die laufende Partie konnte nicht geladen werden.</value>
+  </data>
+  <data name="DurationHoursFormat" xml:space="preserve">
+    <value>Dauer: {0}:{1:00} h</value>
+  </data>
+  <data name="DurationMinutesFormat" xml:space="preserve">
+    <value>Dauer: {0} min</value>
+  </data>
+  <data name="EndGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht beendet werden.</value>
+  </data>
+  <data name="DiscardGameFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht verworfen werden.</value>
+  </data>
+  <data name="DiscardGameTitle" xml:space="preserve">
+    <value>Partie verwerfen?</value>
+  </data>
+  <data name="DiscardGameMessage" xml:space="preserve">
+    <value>Die laufende Partie wird dauerhaft entfernt.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="ZooPlanFormat" xml:space="preserve">
+    <value>Zooplan {0}</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Nach oben</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Nach unten</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Entfernen</value>
   </data>
 </root>

@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.People;
 
+/// <summary>
+/// Aggregate root for a reusable person or guest referenced by groups and game sessions.
+/// </summary>
 public sealed class Person
 {
     private Person()

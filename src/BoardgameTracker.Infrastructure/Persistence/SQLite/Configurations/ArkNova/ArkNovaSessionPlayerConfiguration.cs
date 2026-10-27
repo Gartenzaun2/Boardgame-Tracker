@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations.ArkNova;
 
+/// <summary>
+/// Maps the Ark Nova per-session player snapshot, zoo-plan relationships and color uniqueness to SQLite.
+/// </summary>
 internal sealed class ArkNovaSessionPlayerConfiguration : IEntityTypeConfiguration<ArkNovaSessionPlayer>
 {
     public void Configure(EntityTypeBuilder<ArkNovaSessionPlayer> builder)

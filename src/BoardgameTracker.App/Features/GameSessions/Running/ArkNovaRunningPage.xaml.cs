@@ -1,11 +1,16 @@
-using Microsoft.Maui.Dispatching;
 using BoardgameTracker.App.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Features.Groups.ListGroups;
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Navigation;
+using Microsoft.Maui.Dispatching;
 
 namespace BoardgameTracker.App.Features.GameSessions.Running;
 
-[QueryProperty(nameof(SessionId), "SessionId")]
-public partial class ArkNovaRunningPage : ContentPage
+/// <summary>
+/// MAUI view for an active Ark Nova session. It owns the visual duration timer and
+/// delegates lifecycle actions to the running-session view model.
+/// </summary>
+public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaRunningViewModel _viewModel;
     private readonly IDispatcherTimer _durationTimer;
@@ -22,10 +27,17 @@ public partial class ArkNovaRunningPage : ContentPage
         _durationTimer.Tick += (_, _) => _viewModel.RefreshDuration(DateTimeOffset.UtcNow);
     }
 
-    public Guid SessionId
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        get => _sessionId;
-        set => _sessionId = value;
+        if (!query.TryGetValue(NavigationParameters.SessionId, out object? value)
+            || value is not Guid sessionId
+            || sessionId == Guid.Empty)
+        {
+            throw new InvalidOperationException(
+                $"Required navigation parameter '{NavigationParameters.SessionId}' is missing or invalid.");
+        }
+
+        _sessionId = sessionId;
     }
 
     protected override async void OnAppearing()
@@ -56,19 +68,19 @@ public partial class ArkNovaRunningPage : ContentPage
 
         await Shell.Current.GoToAsync(
             nameof(ArkNovaScoringPage),
-            new Dictionary<string, object>
+            new ShellNavigationQueryParameters
             {
-                ["SessionId"] = _viewModel.SessionId
+                [NavigationParameters.SessionId] = _viewModel.SessionId
             });
     }
 
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {
         bool confirmed = await DisplayAlertAsync(
-            "Partie verwerfen?",
-            "Die laufende Partie wird dauerhaft entfernt.",
-            "Verwerfen",
-            "Abbrechen");
+            AppResources.DiscardGameTitle,
+            AppResources.DiscardGameMessage,
+            AppResources.Discard,
+            AppResources.Cancel);
 
         if (!confirmed || !await _viewModel.DiscardAsync())
         {

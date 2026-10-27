@@ -1,5 +1,6 @@
 using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Groups;
+using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.Application.Tests.Groups.EditGroup;
 
@@ -15,7 +16,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, "Neu", false, true, [second, first], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
+            group.Id, "Neu", false, true, [second, first], NoColors(group)));
 
         Assert.Same(group, dataAccess.SavedGroup);
         Assert.Equal("Neu", group.Name);
@@ -34,7 +35,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, group.Name, true, false, [group.Members.Single().PersonId], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
+            group.Id, group.Name, true, false, [group.Members.Single().PersonId], NoColors(group)));
 
         Assert.False(group.IsTemporary);
     }
@@ -47,7 +48,7 @@ public sealed class EditGroupUseCaseTests
         EditGroupUseCase useCase = new(dataAccess);
 
         await useCase.ExecuteAsync(new EditGroupCommand(
-            group.Id, group.Name, false, false, [group.Members.Single().PersonId], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>()));
+            group.Id, group.Name, false, false, [group.Members.Single().PersonId], NoColors(group)));
 
         Assert.False(group.IsTemporary);
     }
@@ -63,8 +64,65 @@ public sealed class EditGroupUseCaseTests
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.ExecuteAsync(new EditGroupCommand(
-                group.Id, group.Name, false, false, [first, Guid.NewGuid()], new Dictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?>())));
+                group.Id, group.Name, false, false, [first, Guid.NewGuid()], NoColors(group))));
     }
+
+    [Fact]
+    public async Task ExecuteAsync_RejectsDefaultColorForUnknownMember()
+    {
+        Group group = new("Freitagabend", false, [Guid.NewGuid()]);
+        FakeEditGroupDataAccess dataAccess = new(group);
+        EditGroupUseCase useCase = new(dataAccess);
+        Dictionary<Guid, ArkNovaPlayerColor?> colors = NoColors(group);
+        colors.Remove(group.Members.Single().PersonId);
+        colors.Add(Guid.NewGuid(), ArkNovaPlayerColor.Blue);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => useCase.ExecuteAsync(
+            new EditGroupCommand(
+                group.Id,
+                group.Name,
+                false,
+                false,
+                [group.Members.Single().PersonId],
+                colors)));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_RejectsDuplicateDefaultColors()
+    {
+        Guid first = Guid.NewGuid();
+        Guid second = Guid.NewGuid();
+        Group group = new("Freitagabend", false, [first, second]);
+        FakeEditGroupDataAccess dataAccess = new(group);
+        EditGroupUseCase useCase = new(dataAccess);
+        Dictionary<Guid, ArkNovaPlayerColor?> colors = new()
+        {
+            [first] = ArkNovaPlayerColor.Blue,
+            [second] = ArkNovaPlayerColor.Blue
+        };
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+            new EditGroupCommand(group.Id, group.Name, false, false, [first, second], colors)));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_RejectsUndefinedDefaultColor()
+    {
+        Guid personId = Guid.NewGuid();
+        Group group = new("Freitagabend", false, [personId]);
+        FakeEditGroupDataAccess dataAccess = new(group);
+        EditGroupUseCase useCase = new(dataAccess);
+        Dictionary<Guid, ArkNovaPlayerColor?> colors = new()
+        {
+            [personId] = (ArkNovaPlayerColor)999
+        };
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => useCase.ExecuteAsync(
+            new EditGroupCommand(group.Id, group.Name, false, false, [personId], colors)));
+    }
+
+    private static Dictionary<Guid, ArkNovaPlayerColor?> NoColors(Group group) =>
+        group.Members.ToDictionary(member => member.PersonId, _ => (ArkNovaPlayerColor?)null);
 
     private sealed class FakeEditGroupDataAccess(Group group) : IEditGroupDataAccess
     {
@@ -82,7 +140,7 @@ public sealed class EditGroupUseCaseTests
 
         public Task SaveAsync(
             Group groupToSave,
-            IReadOnlyDictionary<Guid, BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColor?> arkNovaDefaultColors,
+            IReadOnlyDictionary<Guid, ArkNovaPlayerColor?> arkNovaDefaultColors,
             CancellationToken cancellationToken = default)
         {
             SavedGroup = groupToSave;

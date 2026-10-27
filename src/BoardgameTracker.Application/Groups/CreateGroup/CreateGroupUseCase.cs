@@ -3,6 +3,9 @@ using BoardgameTracker.Core.People;
 
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
+/// <summary>
+/// Creates a valid fixed-membership group and coordinates person reuse/creation through the slice-specific persistence port.
+/// </summary>
 public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
 {
     public Task<IReadOnlyList<SelectablePerson>> GetSelectablePeopleAsync(
@@ -15,6 +18,7 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
+        ArgumentNullException.ThrowIfNull(command.Members);
 
         if (command.Members.Count == 0)
         {
@@ -23,12 +27,14 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
                 nameof(command));
         }
 
-        Guid[] requestedExistingIds = command.Members
-            .Where(member => member.ExistingPersonId.HasValue)
-            .Select(member => member.ExistingPersonId!.Value)
-            .ToArray();
+        IReadOnlyList<Guid> requestedExistingIds =
+        [
+            .. command.Members
+                .Where(member => member.ExistingPersonId.HasValue)
+                .Select(member => member.ExistingPersonId.GetValueOrDefault())
+        ];
 
-        if (requestedExistingIds.Distinct().Count() != requestedExistingIds.Length)
+        if (requestedExistingIds.Distinct().Count() != requestedExistingIds.Count)
         {
             throw new ArgumentException(
                 "An existing person can only be selected once.",
@@ -40,7 +46,7 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
                 requestedExistingIds,
                 cancellationToken);
 
-        if (activePersonIds.Count != requestedExistingIds.Length)
+        if (activePersonIds.Count != requestedExistingIds.Count)
         {
             throw new InvalidOperationException(
                 "At least one selected person does not exist or is inactive.");

@@ -1,67 +1,88 @@
-# Boardgame Tracker – Scaffold v0.8.0
+# Boardgame Tracker – v0.8.1.1
 
-Mit v0.8.0 wird aus der bisher nur im UI gehaltenen Arche-Nova-Vorbereitung
-eine echte laufende Partie.
+v0.8.1.1 ist ein kleiner technischer Folgestand auf Basis des v0.8.1-Reviews.
+Er korrigiert die lokale Datenbankinitialisierung, vereinheitlicht Shell-
+Navigationsparameter und ordnet die beiden Gruppenlistenfilter horizontal an.
 
-## Umgesetzter Stand
+## Aktueller Funktionsstand
 
+- Gruppen können angelegt, bearbeitet, permanent gemacht und archiviert werden.
+- Arche-Nova-Defaultfarben werden pro Gruppe und Person gepflegt.
 - Die Partievorbereitung bleibt bis `Starten` nicht persistent.
-- Beim Start werden `GameSession`, `GameSessionPlayer` und
-  `ArkNovaSessionPlayer` gemeinsam gespeichert.
-- Gespeichert werden Gruppe, Startzeit, Teilnehmer, Reihenfolge,
-  tatsächliche Spielerfarben, beide angebotenen Zoopläne und der gewählte
-  Zooplan.
-- Core validiert beim Start nochmals Spielerzahl, eindeutige Farben,
-  vollständige Zooplanauswahl und die sessionweite Eindeutigkeit der
-  angebotenen Zoopläne.
-- Application prüft zusätzlich, dass die gestarteten Personen exakt der
-  festen Gruppenbesetzung entsprechen.
-- Die letzte Partie der Vorbereitung ist ausdrücklich die letzte
-  **abgeschlossene Arche-Nova-Partie**.
-- Die Platzierungen der letzten Partie werden oberhalb der Vorbereitung
-  angezeigt.
-- Der Spieler auf dem letzten Platz wird durch zyklische Rotation auf
-  Position 1 gesetzt. Teilen sich mehrere Personen den letzten Platz, wird
-  alphabetisch nach Name entschieden.
-- Das Zooplan-Auslosen liegt nicht mehr als Shuffle-Implementierung im
-  MAUI-ViewModel, sondern in Application.
-- Nach erfolgreichem Start öffnet sich eine minimale Ansicht der laufenden
-  Partie mit Spielern, Reihenfolge, Farben, gewählten Zooplänen und Dauer.
-- `Partie beenden` wechselt den Status von `Running` nach `Scoring` und
-  öffnet den vorbereiteten Wertungs-Einstieg.
-- `Verwerfen` löscht eine laufende Partie erst nach Bestätigung.
+- Zoopläne werden sessionweit eindeutig ausgelost; jeder Spieler wählt genau
+  einen der beiden angebotenen Pläne.
+- Der Verlierer der letzten abgeschlossenen Partie startet die nächste Partie;
+  bei gemeinsamem letzten Platz entscheidet der Name alphabetisch.
+- Beim Start werden allgemeine Sessiondaten und Arche-Nova-Snapshots atomar
+  persistiert.
+- Laufende Partien können beendet oder nach Bestätigung verworfen werden.
+- Eine offene Partie wird beim App-Start wieder aufgenommen.
+- Die eigentliche Wertungserfassung ist der nächste größere Feature-Slice.
+
+## Technischer Review v0.8.1
+
+Der Review hat die bestehenden Architekturgrenzen beibehalten und mehrere
+konkrete Qualitätsprobleme bereinigt:
+
+- kein `LangVersion=latest`; `net10.0` bestimmt die unterstützte C#-Version,
+- C#-Collection-Expressions dort, wo der Zieltyp eindeutig und der Code klarer
+  wird,
+- `StartAsync` erzeugt seinen Setup-Input explizit als
+  `IReadOnlyList<ArkNovaSessionSetupPlayer>`,
+- Shell-Navigation verwendet `IQueryAttributable` statt `QueryProperty`,
+- einmalige Navigationsdaten verwenden `ShellNavigationQueryParameters`,
+- XAML-Bindings deklarieren `x:DataType` auf Seiten- und Template-Ebene, damit
+  normale Binding-Pfade kompiliert und beim Build typgeprüft werden können,
+- der Running-Session-Persistenzport ist zustandslos und hält keinen
+  `DbContext` zwischen Use-Case-Aufrufen offen,
+- wiederverwendete Ark-Nova-Farbdarstellung liegt an einer gemeinsamen
+  App-Präsentationsstelle,
+- sichtbare UI-Texte des neuen Session-Flows liegen in den Localization-
+  Ressourcen,
+- bedingte Fehlerlabels reservieren ohne Fehler keinen Platz,
+- interaktive Farbfelder und kompakte Aktionen erfüllen mindestens 44 dp,
+- öffentliche Projekt-Typen besitzen kurze XML-Summaries, die insbesondere bei
+  Ports, Commands und Read Models ihre Rolle erklären,
+- die Testprojekte verwenden xUnit v3 mit Microsoft Testing Platform.
 
 ## Architektur
 
-Die bestehende Projektgrenze bleibt unverändert:
+Die Projektgrenzen bleiben unverändert:
 
-- Core: fachliche Invarianten und reine Arche-Nova-Regeln,
-- Application: Start-/Running-Use-Cases und Ports,
-- Infrastructure: EF-Core-/SQLite-Implementierungen,
-- App: Screen-State, MAUI-Darstellung und Shell-Navigation.
+```text
+App -> Application -> Core
+          ^
+          |
+Infrastructure -> Core
+```
 
-Es wurde kein generisches Repository, kein MediatR und kein zusätzlicher
-Navigation-Service eingeführt.
+`App` darf `Infrastructure` ausschließlich im Composition Root bzw. beim
+technischen Startup verwenden. Feature-ViewModels kennen keine konkrete
+SQLite-/EF-Core-Implementierung.
 
-## Datenbank
+Es werden weiterhin keine generischen Repositories, MediatR-Handler,
+Navigation-Service-Abstraktionen oder `Common`-/`Utils`-Sammelbereiche
+verwendet.
 
-v0.8.0 benötigt **keine Schemaänderung** gegenüber dem vorhandenen
-Session-/Arche-Nova-Modell und daher keine neue EF-Core-Migration.
-Die bereits vorhandenen Referenzdaten für `ark-nova` und die 14 Zoopläne
-werden vorausgesetzt.
+## Datenbank in der aktuellen Entwicklungsphase
 
-## Noch offen
+Solange noch keine produktiven Nutzerdaten erhalten werden müssen, verwendet der
+Runtime-Start bewusst `Database.EnsureCreatedAsync()`. Eine frische lokale
+SQLite-Datenbank wird damit direkt aus dem aktuellen EF-Core-Modell erzeugt.
 
-- Die eigentliche Wertungserfassung ist noch nicht implementiert; nach
-  `Partie beenden` existiert zunächst nur der Einstieg in den Scoring-Slice.
-- Beim App-Start wird eine vorhandene laufende bzw. in Wertung befindliche
-  Arche-Nova-Partie automatisch wieder geöffnet. Solange eine offene Partie
-  existiert, kann keine zweite Partie gestartet werden.
-- Die bereits dokumentierten kleineren UI-Punkte (Touch-Ziele der
-  Farbauswahl und Error-Label-Sichtbarkeit auf weiteren Gruppenseiten)
-  bleiben unverändert offen.
+Anschließend stellt ein idempotentes Seeding sicher, dass das Spiel `ark-nova`
+und alle 14 Ark-Nova-Zoopläne als verpflichtende Referenzdaten vorhanden sind.
+Damit kann eine strukturell aktuelle Bestandsdatenbank mit fehlenden
+Referenzdaten ebenfalls repariert werden.
 
-Ein vollständiger `dotnet build` / `dotnet test` kann in der
-Erstellungsumgebung nicht ausgeführt werden, weil dort kein .NET SDK
-installiert ist. XAML/XML und die geänderten Abhängigkeitsgrenzen werden
-statisch geprüft.
+Bei einer künftigen Schemaänderung wird die lokale App-Datenbank in dieser
+Entwicklungsphase gelöscht und neu erzeugt. Erst sobald Datenbank-Upgrades
+zwischen veröffentlichten Versionen erhalten werden müssen, wird wieder ein
+kanonischer EF-Core-Migrationsverlauf eingeführt.
+
+## Review-Grenze
+
+In der Erstellungsumgebung ist kein .NET-SDK bzw. keine MAUI-Workload
+installiert. XML/XAML, Abhängigkeiten und Quelltext wurden statisch geprüft;
+der verbindliche Abschlusscheck bleibt deshalb ein `Rebuild Solution` sowie
+das Ausführen beider Testprojekte in der lokalen Visual-Studio-Umgebung.

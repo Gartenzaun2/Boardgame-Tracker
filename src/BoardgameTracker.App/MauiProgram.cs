@@ -20,15 +20,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BoardgameTracker.App;
 
+/// <summary>
+/// Composition root for MAUI, EF Core, Application use cases, persistence ports, pages and view models.
+/// </summary>
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts => { });
+        builder.UseMauiApp<App>();
 
         string databasePath = Path.Combine(
             FileSystem.AppDataDirectory,

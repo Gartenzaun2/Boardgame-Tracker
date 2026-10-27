@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations.ArkNova;
 
+/// <summary>
+/// Maps Ark Nova group-specific default player colors and their uniqueness constraint to SQLite.
+/// </summary>
 internal sealed class ArkNovaGroupPlayerConfiguration : IEntityTypeConfiguration<ArkNovaGroupPlayer>
 {
     public void Configure(EntityTypeBuilder<ArkNovaGroupPlayer> builder)

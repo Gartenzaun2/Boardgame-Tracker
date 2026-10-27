@@ -2,6 +2,9 @@ using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
+/// <summary>
+/// MAUI view for group creation; visual dialogs and concrete Shell navigation remain view responsibilities.
+/// </summary>
 public partial class CreateGroupPage : ContentPage
 {
     private readonly CreateGroupViewModel _viewModel;

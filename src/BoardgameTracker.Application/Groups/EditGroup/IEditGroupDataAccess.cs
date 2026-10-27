@@ -3,6 +3,9 @@ using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
+/// <summary>
+/// Application-owned persistence boundary for the group-edit use case.
+/// </summary>
 public interface IEditGroupDataAccess
 {
     Task<EditGroupDetails?> GetDetailsAsync(

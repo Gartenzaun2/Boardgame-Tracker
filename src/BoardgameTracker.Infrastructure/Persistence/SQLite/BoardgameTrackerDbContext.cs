@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 
+/// <summary>
+/// EF Core unit-of-work and mapping root for the local Boardgame Tracker SQLite database.
+/// </summary>
 public sealed class BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerDbContext> options)
     : DbContext(options)
 {

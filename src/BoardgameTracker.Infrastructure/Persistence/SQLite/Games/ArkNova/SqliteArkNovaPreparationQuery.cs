@@ -1,10 +1,14 @@
 using BoardgameTracker.Application.Games.ArkNova.Preparation;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.Games.ArkNova.Setup;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Games.ArkNova;
 
+/// <summary>
+/// SQLite projection for Ark Nova preparation data, including group defaults and the last completed session.
+/// </summary>
 public sealed class SqliteArkNovaPreparationQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IArkNovaPreparationQuery
@@ -54,7 +58,7 @@ public sealed class SqliteArkNovaPreparationQuery(
 
         Guid? arkNovaGameId = await dbContext.Games
             .AsNoTracking()
-            .Where(game => game.Key == "ark-nova")
+            .Where(game => game.Key == ArkNovaGame.Key)
             .Select(game => (Guid?)game.Id)
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -83,14 +87,14 @@ public sealed class SqliteArkNovaPreparationQuery(
 
             if (lastSession is not null)
             {
-                ArkNovaLastSessionPlacement[] placements = await (
+                ArkNovaPreviousPlacement[] placements = await (
                     from sessionPlayer in dbContext.GameSessionPlayers.AsNoTracking()
                     join person in dbContext.Persons.AsNoTracking()
                         on sessionPlayer.PersonId equals person.Id
                     where sessionPlayer.GameSessionId == lastSession.Id
                           && sessionPlayer.Placement != null
                     orderby sessionPlayer.Placement, person.Name
-                    select new ArkNovaLastSessionPlacement(
+                    select new ArkNovaPreviousPlacement(
                         person.Id,
                         person.Name,
                         sessionPlayer.Placement!.Value))

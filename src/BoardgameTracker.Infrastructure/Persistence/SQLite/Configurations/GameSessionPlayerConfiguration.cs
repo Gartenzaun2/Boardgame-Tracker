@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps persisted session participants, ordering constraints and person references to SQLite.
+/// </summary>
 internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<GameSessionPlayer>
 {
     public void Configure(EntityTypeBuilder<GameSessionPlayer> builder)

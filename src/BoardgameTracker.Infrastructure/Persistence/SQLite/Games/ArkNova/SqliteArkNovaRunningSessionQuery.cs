@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Games.ArkNova;
 
+/// <summary>
+/// SQLite projection for the running Ark Nova screen, mapped to Application read models after provider-side materialization.
+/// </summary>
 public sealed class SqliteArkNovaRunningSessionQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IArkNovaRunningSessionQuery
@@ -59,15 +62,16 @@ public sealed class SqliteArkNovaRunningSessionQuery(
             })
             .ToArrayAsync(cancellationToken);
 
-        ArkNovaRunningSessionPlayer[] players = playerRows
-            .Select(player => new ArkNovaRunningSessionPlayer(
+        IReadOnlyList<ArkNovaRunningSessionPlayer> players =
+        [
+            .. playerRows.Select(player => new ArkNovaRunningSessionPlayer(
                 player.PersonId,
                 player.Name,
                 player.Order,
                 player.Color,
                 player.ZooPlanNumber,
                 player.ZooPlanIconSource))
-            .ToArray();
+        ];
 
         return new ArkNovaRunningSessionData(
             session.SessionId,

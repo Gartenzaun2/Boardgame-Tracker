@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Features.Games.ArkNova;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions.Running;
 using BoardgameTracker.Application.Games.ArkNova.Running;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -8,6 +10,10 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.GameSessions.Running;
 
+/// <summary>
+/// Holds UI state for a persisted running Ark Nova session and invokes lifecycle
+/// actions such as ending or discarding the session.
+/// </summary>
 public partial class ArkNovaRunningViewModel(
     IArkNovaRunningSessionQuery runningSessionQuery,
     RunningGameSessionUseCase runningSessionUseCase,
@@ -55,7 +61,7 @@ public partial class ArkNovaRunningViewModel(
 
             if (data is null)
             {
-                ErrorMessage = "Die laufende Partie wurde nicht gefunden.";
+                ErrorMessage = AppResources.RunningSessionNotFound;
                 return;
             }
 
@@ -80,7 +86,7 @@ public partial class ArkNovaRunningViewModel(
         {
             logger.LogError(exception, "Could not load running Ark Nova session {SessionId}.", sessionId);
             ErrorMessage = UserErrorMessage.Create(
-                "Die laufende Partie konnte nicht geladen werden.",
+                AppResources.LoadRunningSessionFailed,
                 exception);
         }
         finally
@@ -106,8 +112,8 @@ public partial class ArkNovaRunningViewModel(
 
         int totalHours = (int)duration.TotalHours;
         DurationText = totalHours > 0
-            ? $"Dauer: {totalHours}:{duration.Minutes:00} h"
-            : $"Dauer: {duration.Minutes} min";
+            ? string.Format(AppResources.DurationHoursFormat, totalHours, duration.Minutes)
+            : string.Format(AppResources.DurationMinutesFormat, duration.Minutes);
     }
 
     public async Task<bool> BeginScoringAsync(CancellationToken cancellationToken = default)
@@ -131,7 +137,7 @@ public partial class ArkNovaRunningViewModel(
         {
             logger.LogError(exception, "Could not end Ark Nova session {SessionId}.", SessionId);
             ErrorMessage = UserErrorMessage.Create(
-                "Die Partie konnte nicht beendet werden.",
+                AppResources.EndGameFailed,
                 exception);
             return false;
         }
@@ -159,7 +165,7 @@ public partial class ArkNovaRunningViewModel(
         {
             logger.LogError(exception, "Could not discard Ark Nova session {SessionId}.", SessionId);
             ErrorMessage = UserErrorMessage.Create(
-                "Die Partie konnte nicht verworfen werden.",
+                AppResources.DiscardGameFailed,
                 exception);
             return false;
         }
@@ -170,6 +176,9 @@ public partial class ArkNovaRunningViewModel(
     }
 }
 
+/// <summary>
+/// Presentation projection for one player on the running-session screen.
+/// </summary>
 public sealed class ArkNovaRunningPlayerViewModel(
     string name,
     int position,
@@ -180,23 +189,11 @@ public sealed class ArkNovaRunningPlayerViewModel(
     public string Name { get; } = name;
     public int Position { get; } = position;
     public int ZooPlanNumber { get; } = zooPlanNumber;
+    public string ZooPlanText => string.Format(AppResources.ZooPlanFormat, zooPlanNumber);
     public string ZooPlanIconSource { get; } = zooPlanIconSource;
 
-    public string ColorName => color switch
-    {
-        ArkNovaPlayerColor.Blue => "Blau",
-        ArkNovaPlayerColor.Yellow => "Gelb",
-        ArkNovaPlayerColor.Red => "Rot",
-        ArkNovaPlayerColor.Black => "Schwarz",
-        _ => color.ToString()
-    };
+    public string ColorName => ArkNovaPlayerColorPresentation.GetName(color);
 
-    public Microsoft.Maui.Graphics.Color ColorBrush => color switch
-    {
-        ArkNovaPlayerColor.Blue => Microsoft.Maui.Graphics.Color.FromArgb("#8BC4E8"),
-        ArkNovaPlayerColor.Yellow => Microsoft.Maui.Graphics.Color.FromArgb("#F2D65C"),
-        ArkNovaPlayerColor.Red => Microsoft.Maui.Graphics.Color.FromArgb("#E98A84"),
-        ArkNovaPlayerColor.Black => Microsoft.Maui.Graphics.Color.FromArgb("#808080"),
-        _ => Microsoft.Maui.Graphics.Colors.Transparent
-    };
+    public Microsoft.Maui.Graphics.Color ColorBrush =>
+        ArkNovaPlayerColorPresentation.GetTint(color);
 }

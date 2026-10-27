@@ -1,11 +1,12 @@
-using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.People;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Configurations;
 
+/// <summary>
+/// Maps the fixed-membership group aggregate and its backing member collection to SQLite.
+/// </summary>
 internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 {
     public void Configure(EntityTypeBuilder<Group> builder)

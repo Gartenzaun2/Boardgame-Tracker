@@ -1,5 +1,5 @@
-using BoardgameTracker.App.Features.Groups;
 using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Features.Games.ArkNova;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
@@ -10,6 +10,9 @@ using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
+/// <summary>
+/// Owns group-edit screen state and delegates loading/saving to the edit-group Application use case.
+/// </summary>
 public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<EditGroupMemberItemViewModel> Members { get; } = [];
@@ -35,7 +38,10 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     public event EventHandler? Saved;
 
@@ -196,9 +202,8 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             IsBusy = true;
             ErrorMessage = null;
 
-            Guid[] orderedPersonIds = Members
-                .Select(member => member.PersonId)
-                .ToArray();
+            IReadOnlyList<Guid> orderedPersonIds =
+                [.. Members.Select(member => member.PersonId)];
 
             Dictionary<Guid, ArkNovaPlayerColor?> defaultColors = Members
                 .ToDictionary(member => member.PersonId, member => member.DefaultColor);
@@ -226,6 +231,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
 }
 
 
+/// <summary>
+/// Presentation model for one fixed group member while editing order and Ark Nova default color.
+/// </summary>
 public partial class EditGroupMemberItemViewModel(
     Guid personId,
     string name,
@@ -243,12 +251,7 @@ public partial class EditGroupMemberItemViewModel(
     [ObservableProperty]
     public partial bool IsColorPickerOpen { get; set; }
 
-    public Microsoft.Maui.Graphics.Color ColorBrush => DefaultColor switch
-    {
-        ArkNovaPlayerColor.Blue => Microsoft.Maui.Graphics.Color.FromArgb("#8BC4E8"),
-        ArkNovaPlayerColor.Yellow => Microsoft.Maui.Graphics.Color.FromArgb("#F2D65C"),
-        ArkNovaPlayerColor.Red => Microsoft.Maui.Graphics.Color.FromArgb("#E98A84"),
-        ArkNovaPlayerColor.Black => Microsoft.Maui.Graphics.Color.FromArgb("#404040"),
-        _ => Microsoft.Maui.Graphics.Color.FromArgb("#E7E7E7")
-    };
+    public Microsoft.Maui.Graphics.Color ColorBrush => DefaultColor is ArkNovaPlayerColor color
+        ? ArkNovaPlayerColorPresentation.GetTint(color, darkBlack: true)
+        : Microsoft.Maui.Graphics.Color.FromArgb("#E7E7E7");
 }

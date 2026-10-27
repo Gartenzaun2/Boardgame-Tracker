@@ -1,5 +1,8 @@
 namespace BoardgameTracker.Core.Games.ArkNova.Setup;
 
+/// <summary>
+/// Selects the previous loser as next starting player; a shared last place is resolved alphabetically by player name.
+/// </summary>
 public static class ArkNovaStartingPlayerRule
 {
     public static Guid? SelectFromPreviousPlacements(
@@ -23,6 +26,9 @@ public static class ArkNovaStartingPlayerRule
     }
 }
 
+/// <summary>
+/// Carries the minimal previous-session placement data required by the starting-player rule.
+/// </summary>
 public sealed record ArkNovaPreviousPlacement(
     Guid PersonId,
     string Name,

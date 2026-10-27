@@ -8,10 +8,15 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
+/// <summary>
+/// Owns group-overview screen state, filters and navigation re-entry protection.
+/// </summary>
 public partial class GroupListViewModel(
     IListGroupsQuery listGroupsQuery,
     ILogger<GroupListViewModel> logger) : ObservableObject
 {
+    private bool _reloadRequested;
+
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
 
     [ObservableProperty]
@@ -27,7 +32,10 @@ public partial class GroupListViewModel(
     public partial bool IsNavigating { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     partial void OnIncludeTemporaryChanged(bool value) => _ = LoadAsync();
     partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
@@ -49,40 +57,47 @@ public partial class GroupListViewModel(
     {
         if (IsBusy)
         {
+            _reloadRequested = true;
             return;
         }
 
         try
         {
             IsBusy = true;
-            ErrorMessage = null;
 
-            IReadOnlyList<GroupListItem> groups =
-                await listGroupsQuery.ExecuteAsync(
-                    IncludeTemporary,
-                    IncludeArchived,
-                    cancellationToken);
-
-            Groups.Clear();
-
-            foreach (GroupListItem group in groups)
+            do
             {
-                string lastPlayedText = group.LastPlayedAt is DateTimeOffset lastPlayed
-                    ? string.Format(
-                        CultureInfo.CurrentCulture,
-                        AppResources.LastPlayedFormat,
-                        lastPlayed.ToLocalTime().ToString("d", CultureInfo.CurrentCulture))
-                    : AppResources.NeverPlayed;
+                _reloadRequested = false;
+                ErrorMessage = null;
 
-                Groups.Add(new GroupListItemViewModel(
-                    group.Id,
-                    group.Name,
-                    group.IsTemporary,
-                    group.IsArchived,
-                    group.MemberCount,
-                    string.Join(" · ", group.MemberNames),
-                    lastPlayedText));
+                IReadOnlyList<GroupListItem> groups =
+                    await listGroupsQuery.ExecuteAsync(
+                        IncludeTemporary,
+                        IncludeArchived,
+                        cancellationToken);
+
+                Groups.Clear();
+
+                foreach (GroupListItem group in groups)
+                {
+                    string lastPlayedText = group.LastPlayedAt is DateTimeOffset lastPlayed
+                        ? string.Format(
+                            CultureInfo.CurrentCulture,
+                            AppResources.LastPlayedFormat,
+                            lastPlayed.ToLocalTime().ToString("d", CultureInfo.CurrentCulture))
+                        : AppResources.NeverPlayed;
+
+                    Groups.Add(new GroupListItemViewModel(
+                        group.Id,
+                        group.Name,
+                        group.IsTemporary,
+                        group.IsArchived,
+                        group.MemberCount,
+                        string.Join(" · ", group.MemberNames),
+                        lastPlayedText));
+                }
             }
+            while (_reloadRequested && !cancellationToken.IsCancellationRequested);
         }
         catch (Exception exception)
         {
@@ -96,6 +111,9 @@ public partial class GroupListViewModel(
     }
 }
 
+/// <summary>
+/// Presentation model for one group card in the group overview.
+/// </summary>
 public sealed record GroupListItemViewModel(
     Guid Id,
     string Name,

@@ -2,13 +2,19 @@ using BoardgameTracker.App.Features.GameSessions.Running;
 using BoardgameTracker.App.Features.GameSessions.Scoring;
 using BoardgameTracker.Application.GameSessions.Resume;
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App;
 
+/// <summary>
+/// MAUI application bootstrap. It initializes the database before showing the Shell
+/// and resumes an unfinished supported game session when one exists.
+/// </summary>
 public partial class App : Microsoft.Maui.Controls.Application
 {
     private readonly IServiceProvider _services;
@@ -47,7 +53,7 @@ public partial class App : Microsoft.Maui.Controls.Application
                 _services.GetRequiredService<IOpenGameSessionQuery>();
             OpenGameSession? openSession = await openSessionQuery.ExecuteAsync();
 
-            if (openSession is not null && openSession.GameKey == "ark-nova")
+            if (openSession is not null && openSession.GameKey == ArkNovaGame.Key)
             {
                 string route = openSession.Status switch
                 {
@@ -60,9 +66,9 @@ public partial class App : Microsoft.Maui.Controls.Application
                 {
                     await shell.GoToAsync(
                         route,
-                        new Dictionary<string, object>
+                        new ShellNavigationQueryParameters
                         {
-                            ["SessionId"] = openSession.SessionId
+                            [NavigationParameters.SessionId] = openSession.SessionId
                         });
                 }
             }
@@ -125,7 +131,7 @@ public partial class App : Microsoft.Maui.Controls.Application
 
         Button retryButton = new()
         {
-            Text = "Erneut versuchen",
+            Text = AppResources.Retry,
             HorizontalOptions = LayoutOptions.Start
         };
         retryButton.Clicked += async (_, _) =>
@@ -138,7 +144,7 @@ public partial class App : Microsoft.Maui.Controls.Application
 #if DEBUG
         content.Children.Add(new Label
         {
-            Text = "Technische Details",
+            Text = AppResources.TechnicalDetails,
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 12, 0, 0)
         });

@@ -1,5 +1,9 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
+/// <summary>
+/// Represents the Ark Nova-specific snapshot for one player in a persisted game session,
+/// including the actual color, offered zoo plans and the selected zoo plan.
+/// </summary>
 public sealed class ArkNovaSessionPlayer
 {
     private ArkNovaSessionPlayer()
@@ -16,6 +20,10 @@ public sealed class ArkNovaSessionPlayer
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(personId, Guid.Empty);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption1Id);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(zooPlanOption2Id);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(selectedZooPlanId);
+        ValidateColor(color);
 
         if (zooPlanOption1Id == zooPlanOption2Id)
         {
@@ -49,12 +57,24 @@ public sealed class ArkNovaSessionPlayer
     public int? Conservation { get; private set; }
     public int? Reputation { get; private set; }
 
-    public void SetColor(ArkNovaPlayerColor color) => Color = color;
+    public void SetColor(ArkNovaPlayerColor color)
+    {
+        ValidateColor(color);
+        Color = color;
+    }
 
     public void SetScoreValues(int? attractiveness, int? conservation, int? reputation)
     {
         Attractiveness = attractiveness;
         Conservation = conservation;
         Reputation = reputation;
+    }
+
+    private static void ValidateColor(ArkNovaPlayerColor color)
+    {
+        if (!Enum.IsDefined(color))
+        {
+            throw new ArgumentOutOfRangeException(nameof(color), color, "Unknown Ark Nova player color.");
+        }
     }
 }

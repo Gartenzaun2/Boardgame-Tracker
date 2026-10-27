@@ -9,11 +9,14 @@ namespace BoardgameTracker.Core.Games.ArkNova.Setup;
 /// </summary>
 public static class ArkNovaSessionSetup
 {
+    public const int MinimumPlayerCount = 1;
+    public const int MaximumPlayerCount = 4;
+
     public static void Validate(IReadOnlyCollection<ArkNovaSessionSetupPlayer> players)
     {
         ArgumentNullException.ThrowIfNull(players);
 
-        if (players.Count is < 1 or > 4)
+        if (players.Count is < MinimumPlayerCount or > MaximumPlayerCount)
         {
             throw new ArgumentException(
                 "Ark Nova sessions must contain between one and four players.",
@@ -26,6 +29,13 @@ public static class ArkNovaSessionSetup
             throw new ArgumentException(
                 "Every player must occur exactly once.",
                 nameof(players));
+        }
+
+        if (players.Any(player => !Enum.IsDefined(player.Color)))
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(players),
+                "Every Ark Nova player must use a defined player color.");
         }
 
         if (players.Select(player => player.Color).Distinct().Count() != players.Count)
@@ -63,15 +73,16 @@ public static class ArkNovaSessionSetup
             }
         }
 
-        int[] offeredZooPlans = players
-            .SelectMany(player => new[]
+        IReadOnlyList<int> offeredZooPlans =
+        [
+            .. players.SelectMany(player => new[]
             {
                 player.ZooPlanOption1Id,
                 player.ZooPlanOption2Id
             })
-            .ToArray();
+        ];
 
-        if (offeredZooPlans.Distinct().Count() != offeredZooPlans.Length)
+        if (offeredZooPlans.Distinct().Count() != offeredZooPlans.Count)
         {
             throw new InvalidOperationException(
                 "A zoo plan may only be offered once within an Ark Nova session.");
