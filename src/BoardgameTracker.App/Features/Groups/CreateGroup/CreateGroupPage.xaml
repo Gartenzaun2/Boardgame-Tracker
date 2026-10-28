@@ -10,7 +10,7 @@
     x:DataType="local:CreateGroupViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*">
         <Grid
             Padding="8,8,12,8"
             ColumnDefinitions="Auto,*,Auto"
@@ -47,28 +47,28 @@
                 VerticalOptions="Center" />
         </Grid>
 
-        <ScrollView Grid.Row="1">
+        <BoxView Grid.Row="1" HeightRequest="1" Color="{DynamicResource Outline}" />
+        <ScrollView Grid.Row="2">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" BackgroundColor="{DynamicResource Surface}" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="16">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                            <Label
-                                FontAttributes="Bold"
-                                Text="{x:Static res:AppResources.GroupName}"
-                                VerticalOptions="Center" />
-                            <Entry
-                                Grid.Column="1"
-                                Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}"
-                                Text="{Binding GroupName}" />
-                        </Grid>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                            <Label
-                                Text="{x:Static res:AppResources.TemporaryGroup}"
-                                VerticalOptions="Center" />
-                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                        <Label
+                            FontAttributes="Bold"
+                            Text="{x:Static res:AppResources.GroupName}"
+                            VerticalOptions="Center" />
+                        <Entry
+                            Grid.Column="1"
+                            Style="{StaticResource InlineFormEntry}"
+                            Placeholder="{x:Static res:AppResources.GroupNameExample}"
+                            Text="{Binding GroupName}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <Label
+                            Text="{x:Static res:AppResources.TemporaryGroup}"
+                            VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
+                    </Grid>
+                </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="2">
@@ -88,7 +88,7 @@
                     <Label
                         IsVisible="{Binding HasNoPlayers}"
                         Text="{x:Static res:AppResources.NoPlayersYet}"
-                        TextColor="{DynamicResource TextSecondary}" />
+                        TextColor="{DynamicResource TextPrimary}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                         <BindableLayout.ItemTemplate>
@@ -113,46 +113,58 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Border Padding="16" BackgroundColor="{DynamicResource SurfaceSecondary}" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPlayer}" />
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePlayers}">
-                            <Picker
-                                ItemDisplayBinding="{Binding Name, x:DataType=application:SelectablePlayer}"
-                                ItemsSource="{Binding AvailablePlayers}"
-                                SelectedItem="{Binding SelectedExistingPlayer}"
-                                Title="{x:Static res:AppResources.SelectPlayer}" />
-                            <Button
-                                Grid.Column="1"
-                                Command="{Binding AddSelectedPlayerCommand}"
-                                Style="{StaticResource CompactActionButton}"
-                                SemanticProperties.Description="{x:Static res:AppResources.AddExistingPlayer}"
-                                Text="+"
-                                VerticalOptions="Center" />
-                        </Grid>
-                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePlayers}" Text="{x:Static res:AppResources.NoAvailablePlayers}" TextColor="{DynamicResource TextSecondary}" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <Border Padding="16" BackgroundColor="{DynamicResource SurfaceSecondary}" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayer}" />
-                        <Entry Placeholder="{x:Static res:AppResources.PlayerNamePlaceholder}" Text="{Binding NewPlayerName}" />
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
-                            <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
-                        </Grid>
-                        <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="End" Style="{StaticResource CompactActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
-                    </VerticalStackLayout>
-                </Border>
+                <VerticalStackLayout Spacing="8">
+                    <Button Text="{x:Static res:AppResources.AddExistingPlayerAction}"
+                            Style="{StaticResource SecondaryActionButton}" Clicked="OnChooseExistingPlayerClicked"
+                            IsVisible="{Binding HasAvailablePlayers}" HorizontalOptions="Start"
+                            SemanticProperties.Description="{x:Static res:AppResources.SelectExistingPlayerTitle}" />
+                    <Label Text="{x:Static res:AppResources.NoAvailablePlayers}" IsVisible="{Binding HasNoAvailablePlayers}" FontSize="13" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="12">
+                    <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayerInline}" />
+                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                        <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Entry Grid.Column="1" Style="{StaticResource InlineFormEntry}" Placeholder="{x:Static res:AppResources.PlayerNameExample}" Text="{Binding NewPlayerName}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
+                    </Grid>
+                    <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
+                </VerticalStackLayout>
 
                 <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
             </VerticalStackLayout>
         </ScrollView>
 
+        <Grid x:Name="ExistingPlayerOverlay" Grid.RowSpan="3" IsVisible="False" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+            <Border Style="{StaticResource SelectionDialog}">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Label Text="{x:Static res:AppResources.SelectExistingPlayerTitle}" FontAttributes="Bold" FontSize="19" VerticalOptions="Center" LineBreakMode="WordWrap" />
+                        <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Style="{StaticResource TextActionButton}" Clicked="OnCloseExistingPlayerClicked" />
+                    </Grid>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding AvailablePlayers}" SelectionMode="None" HeightRequest="300" BackgroundColor="{DynamicResource AppBackground}">
+                        <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="7" /></CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="application:SelectablePlayer">
+                                <Border Padding="12,9" Style="{StaticResource CardBorder}" MinimumHeightRequest="48" SemanticProperties.Description="{Binding Name}">
+                                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnExistingPlayerTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                        <Label Text="{x:Static res:AppResources.Guest}" IsVisible="{Binding IsGuest}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
+
         <Grid
-            Grid.RowSpan="2"
+            Grid.RowSpan="3"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">

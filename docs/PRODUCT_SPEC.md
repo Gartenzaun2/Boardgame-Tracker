@@ -99,7 +99,7 @@ Anlegen neuer Spieler.
 - links: Zurück-Pfeil
 - Titel: **Gruppe anlegen**
 - direkt beim Titel: Informations-Icon
-- rechts: gut sichtbare grüne Aktion **Speichern**
+- rechts: gut sichtbare Primary-Aktion **Speichern**
 - kein zweiter Seitentitel „Gruppe anlegen“ im Inhaltsbereich
 
 Das Informations-Icon zeigt den Erklärungstext auf Geräten mit Maus per
@@ -128,9 +128,7 @@ kann später ergänzt werden.
 Vorhandene aktive Spieler sind der primäre Weg, Spieler
 hinzuzufügen.
 
-Die Auswahl erfolgt kompakt über ein Dropdown/Picker. Spieler, die
-bereits Spieler der aktuellen Gruppe sind, werden nicht erneut
-angeboten.
+Ein einzelner Secondary-Button öffnet ein einheitlich gestaltetes App-Auswahlfenster. Ein Tap auf einen verfügbaren Spieler fügt ihn unmittelbar hinzu und schließt die Auswahl; keine weitere Bestätigung. Bereits enthaltene Spieler werden nicht angeboten.
 
 ### Neue Spieler
 
