@@ -44,6 +44,9 @@ public sealed class ThemeTests
         Assert.True(Contrast(palette["NavigationSelectedText"], palette["NavigationSelectedSurface"]) >= 4.5);
         Assert.True(Contrast(palette["DisabledText"], palette["DisabledSurface"]) >= 4.5);
         Assert.NotEqual(palette["Outline"], palette["Surface"]);
+        Assert.Equal(palette["Surface"], palette["SurfaceSecondary"]);
+        Assert.Equal(palette["Surface"], palette["DisabledSurface"]);
+        Assert.Equal(palette["Surface"], palette["NavigationBackground"]);
         Assert.True(Contrast(palette["GameGraphicText"], "#FFFFFF") >= 4.5);
     }
     private static double Contrast(string a, string b)
