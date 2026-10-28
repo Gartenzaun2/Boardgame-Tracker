@@ -9,12 +9,15 @@ public partial class AppSettingsPage : ContentPage
 {
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly IReadOnlyList<DefaultGameOption> _defaultGameOptions;
+    private readonly BoardgameTracker.App.Theming.ThemeManager _themes;
     private bool _isLoading;
 
-    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore)
+    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
     {
         InitializeComponent();
         _navigationSettingsStore = navigationSettingsStore;
+        _themes = themes;
+        ThemePicker.ItemsSource = new[] { AppResources.ThemeDeepForest, AppResources.ThemeRoyalBlue, AppResources.ThemeDark };
         _defaultGameOptions =
         [
             new(null, AppResources.NoDefaultGame),
@@ -29,6 +32,7 @@ public partial class AppSettingsPage : ContentPage
         base.OnAppearing();
         _isLoading = true;
         AppNavigationSettings settings = _navigationSettingsStore.Get();
+        ThemePicker.SelectedIndex = (int)settings.Theme;
         DefaultGamePicker.SelectedItem = _defaultGameOptions.FirstOrDefault(option => option.GameKey == settings.DefaultGameKey)
             ?? _defaultGameOptions[0];
         _isLoading = false;
@@ -56,6 +60,12 @@ public partial class AppSettingsPage : ContentPage
             DefaultGameKey = option.GameKey,
             SelectedGameKey = current.SelectedGameKey ?? option.GameKey
         });
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        if (!_isLoading && ThemePicker.SelectedIndex >= 0)
+            _themes.Apply(AppThemeSelection.FromStoredValue(ThemePicker.SelectedIndex));
     }
 
     private sealed record DefaultGameOption(string? GameKey, string Name);

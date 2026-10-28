@@ -268,6 +268,7 @@ public sealed class ArkNovaScoringPlayerViewModel
     public bool HasRequiredValues => Attractiveness is not null && Conservation is not null;
     public bool HasSpecialCards => SpecialCards.Count > 0;
     public string SpecialCardCountText => SpecialCards.Count.ToString();
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(Color);
     public string ColorText => ArkNovaPlayerColorPresentation.GetName(Color);
     public Microsoft.Maui.Graphics.Color Tint => ArkNovaPlayerColorPresentation.GetTint(Color);
     public string ZooPlanText => ArkNovaZooPlanPresentation.GetName(ZooPlanNumber);

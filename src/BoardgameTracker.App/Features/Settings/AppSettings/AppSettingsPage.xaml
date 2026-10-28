@@ -15,6 +15,12 @@
 
         <VerticalStackLayout Grid.Row="1" Spacing="12">
             <Border Padding="16" Style="{StaticResource CardBorder}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{x:Static res:AppResources.AppearanceTheme}" FontAttributes="Bold" />
+                    <Picker x:Name="ThemePicker" Title="{x:Static res:AppResources.AppearanceTheme}" SelectedIndexChanged="OnThemeChanged" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Padding="16" Style="{StaticResource CardBorder}">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{x:Static res:AppResources.DefaultGame}" FontAttributes="Bold" FontSize="17" VerticalOptions="Center" />
@@ -36,7 +42,7 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <VerticalStackLayout Spacing="3">
                         <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="18" />
-                        <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                        <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                     <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
                 </Grid>

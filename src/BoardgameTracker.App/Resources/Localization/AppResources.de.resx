@@ -453,4 +453,19 @@
 <data name="ResolveTies" xml:space="preserve"><value>Gleichstände bearbeiten</value></data>
 <data name="ResolveTiesHint" xml:space="preserve"><value>Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden.</value></data>
 <data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
+<data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
+<data name="ThemeDeepForest" xml:space="preserve"><value>Deep Forest</value></data>
+<data name="ThemeRoyalBlue" xml:space="preserve"><value>Königsblau</value></data>
+<data name="ThemeDark" xml:space="preserve"><value>Dunkel</value></data>
+<data name="HistoryFilterSelectedFormat" xml:space="preserve"><value>✓ {0} ▾</value></data>
+<data name="HistoryFilterFormat" xml:space="preserve"><value>{0} ▾</value></data>
+<data name="ZooPlanSelected" xml:space="preserve"><value>Ausgewählt</value></data>
+<data name="PlayerColorGreen" xml:space="preserve"><value>Grün</value></data>
+<data name="PlayerColorWhite" xml:space="preserve"><value>Weiß</value></data>
+<data name="PlayerColorOrange" xml:space="preserve"><value>Orange</value></data>
+<data name="PlayerColorBrown" xml:space="preserve"><value>Braun</value></data>
+<data name="PlayerColorPurple" xml:space="preserve"><value>Lila</value></data>
+<data name="PlayerColorPink" xml:space="preserve"><value>Pink</value></data>
+<data name="PlayerColorTurquoise" xml:space="preserve"><value>Türkis</value></data>
+<data name="PlayerColorGray" xml:space="preserve"><value>Grau</value></data>
 </root>

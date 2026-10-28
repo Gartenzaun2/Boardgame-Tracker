@@ -329,3 +329,11 @@ Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter 
 ## Navigationsparameter
 
 Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.
+
+## Zentrales Theme-System
+
+App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Das bestehende `AppNavigationSettings`-/Preferences-Port erhält eine Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.
+
+## Spielerfarben-Präsentation
+
+`App/Presentation/PlayerColors` definiert die kleine gemeinsame UI-Palette mit gekoppelten Hintergrund-/Textwerten und separater Lokalisierung. `Games/ArkNova/ArkNovaPlayerColorMapping` ordnet die vier Domainfarben diesen UI-Kategorien zu; `ArkNovaPlayerColorPresentation` stellt MAUI-Farben und Namen bereit. Die Palette ist themeunabhängig und kein Erkennungskatalog. Das Domain-/Persistenzmodell und die erlaubten Arche-Nova-Farben bleiben unverändert.

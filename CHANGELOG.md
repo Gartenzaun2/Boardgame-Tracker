@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.8.5.3
+
+- Normale Iconbuttons transparent und themeabhängig getönt; letzte Partie verwendet die gemeinsame Kartenfläche.
+- Historienabstand durch unsichtbare Picker-Mindesthöhen korrigiert.
+- Android-TabBar mit fester Icon-/Beschriftungsanordnung und kompakten Textmaßen.
+- App-Version 0.8.5.3 / ApplicationVersion 13.
+
+
+## 0.8.5.2
+
+- Globalen Theme-Hintergrund auf abgeleitete ContentPages angewendet.
+- Android-Shell: aktive Auswahlfläche umfasst Icon und Beschriftung gemeinsam, ohne abweichende Randfarbe.
+- App-Version 0.8.5.2 / ApplicationVersion 12.
+
+
+## 0.8.5.1
+
+- Finale UI-Spielerfarben-Palette mit zwölf Hintergrund-/Textpaaren und mindestens 4,5:1 Textkontrast; Arche Nova verwendet weiterhin vier semantische Domainfarben.
+- Spielertext und Farbauswahl folgen der themeunabhängigen Palette, Zooplan-Badges behalten eigenen Grafiktext.
+- App-Version 0.8.5.1 / ApplicationVersion 11; keine Schemaänderung und keine Fotoerkennung.
+
+
+## 0.8.5.0
+
+- Zentrale semantische Themes Deep Forest, Königsblau und Dunkel mit persistenter Auswahl in den allgemeinen Einstellungen.
+- Dynamische Farbressourcen, native Shell-Tab-Auswahl und Kontur, Historienchips und Monatsgruppen.
+- App-Version 0.8.5.0 / ApplicationVersion 10; keine Schemaänderung.
+
+
 ## 0.8.4.0
 
 - Completed-Partien mit Spiel-/Gruppenfiltern, aktuellen Namen und gespeicherten Platzierungen.

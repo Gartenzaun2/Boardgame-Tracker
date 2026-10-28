@@ -20,11 +20,11 @@
                 <Label
                     FontSize="13"
                     Text="{Binding GroupName}"
-                    TextColor="{StaticResource TextSecondary}" />
+                    TextColor="{DynamicResource TextPrimary}" />
                 <Label
                     FontSize="13"
                     Text="{Binding DurationText}"
-                    TextColor="{StaticResource TextSecondary}" />
+                    TextColor="{DynamicResource TextPrimary}" />
             </VerticalStackLayout>
         </Grid>
 
@@ -32,7 +32,7 @@
             Grid.Row="1"
             IsVisible="{Binding HasError}"
             Text="{Binding ErrorMessage}"
-            TextColor="{StaticResource Danger}" />
+            TextColor="{DynamicResource Danger}" />
 
         <ScrollView Grid.Row="2">
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="10">
@@ -48,7 +48,7 @@
                                     Stroke="#66FFFFFF"
                                     StrokeShape="RoundRectangle 16"
                                     WidthRequest="32">
-                                    <Label
+                                    <Label TextColor="{Binding PlayerTextColor}"
                                         FontAttributes="Bold"
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding Position}"
@@ -56,9 +56,9 @@
                                 </Border>
 
                                 <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
-                                    <Label FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
-                                    <Label FontSize="12" Text="{Binding ColorName}" />
-                                    <Label FontSize="12" Text="{Binding ZooPlanText}" />
+                                    <Label TextColor="{Binding PlayerTextColor}" FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
+                                    <Label TextColor="{Binding PlayerTextColor}" FontSize="12" Text="{Binding ColorName}" />
+                                    <Label TextColor="{Binding PlayerTextColor}" FontSize="12" Text="{Binding ZooPlanText}" />
                                 </VerticalStackLayout>
 
                                 <Border
@@ -80,7 +80,7 @@
                                             StrokeThickness="0"
                                             StrokeShape="RoundRectangle 10"
                                             VerticalOptions="Start">
-                                            <Label
+                                            <Label TextColor="{DynamicResource GameGraphicText}"
                                                 FontAttributes="Bold"
                                                 FontSize="12"
                                                 Text="{Binding ZooPlanNumber}" />
@@ -99,20 +99,18 @@
                 Clicked="OnEndClicked"
                 Style="{StaticResource PrimaryCompactButton}"
                 Text="{x:Static res:AppResources.EndGame}" />
-            <Button
+            <Button Style="{StaticResource DangerButton}"
                 Grid.Column="1"
-                BackgroundColor="Transparent"
                 Clicked="OnDiscardClicked"
-                Text="{x:Static res:AppResources.Discard}"
-                TextColor="{StaticResource Danger}" />
+                Text="{x:Static res:AppResources.Discard}" />
         </Grid>
 
         <Grid
             Grid.RowSpan="4"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center" />

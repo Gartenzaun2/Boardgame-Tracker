@@ -25,9 +25,12 @@ public partial class App : Microsoft.Maui.Controls.Application
     public App(
         IServiceProvider services,
         DatabaseInitializer databaseInitializer,
-        ILogger<App> logger)
+        ILogger<App> logger,
+        BoardgameTracker.App.Theming.ThemeManager themes,
+        IAppNavigationSettingsStore settings)
     {
         InitializeComponent();
+        themes.Apply(settings.Get().Theme, persist: false);
         _services = services;
         _databaseInitializer = databaseInitializer;
         _logger = logger;

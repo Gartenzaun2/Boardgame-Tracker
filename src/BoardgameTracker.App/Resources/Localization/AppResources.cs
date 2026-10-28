@@ -356,6 +356,23 @@ public static class AppResources
     public static string ResolveTiesHint => GetString(nameof(ResolveTiesHint));
     public static string SaveScoring => GetString(nameof(SaveScoring));
 
+    public static string AppearanceTheme => GetString(nameof(AppearanceTheme));
+    public static string ThemeDeepForest => GetString(nameof(ThemeDeepForest));
+    public static string ThemeRoyalBlue => GetString(nameof(ThemeRoyalBlue));
+    public static string ThemeDark => GetString(nameof(ThemeDark));
+    public static string HistoryFilterSelectedFormat => GetString(nameof(HistoryFilterSelectedFormat));
+    public static string HistoryFilterFormat => GetString(nameof(HistoryFilterFormat));
+    public static string ZooPlanSelected => GetString(nameof(ZooPlanSelected));
+
+    public static string PlayerColorGreen => GetString(nameof(PlayerColorGreen));
+    public static string PlayerColorWhite => GetString(nameof(PlayerColorWhite));
+    public static string PlayerColorOrange => GetString(nameof(PlayerColorOrange));
+    public static string PlayerColorBrown => GetString(nameof(PlayerColorBrown));
+    public static string PlayerColorPurple => GetString(nameof(PlayerColorPurple));
+    public static string PlayerColorPink => GetString(nameof(PlayerColorPink));
+    public static string PlayerColorTurquoise => GetString(nameof(PlayerColorTurquoise));
+    public static string PlayerColorGray => GetString(nameof(PlayerColorGray));
+
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(

@@ -12,13 +12,13 @@
             <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
             <VerticalStackLayout Grid.Column="1" Spacing="1">
                 <Label Text="{x:Static res:AppResources.ResolveTies}" FontAttributes="Bold" FontSize="22" />
-                <Label Text="{x:Static res:AppResources.ResolveTiesHint}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{x:Static res:AppResources.ResolveTiesHint}" FontSize="11" TextColor="{DynamicResource TextSecondary}" />
             </VerticalStackLayout>
         </Grid>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout x:Name="FramesHost" Spacing="8" />
         </ScrollView>
-        <Label Grid.Row="2" Text="{Binding ValidationMessage}" TextColor="{StaticResource Danger}" FontSize="12" />
+        <Label Grid.Row="2" Text="{Binding ValidationMessage}" TextColor="{DynamicResource Danger}" FontSize="12" />
         <Button Grid.Row="3" Text="{x:Static res:AppResources.SaveScoring}" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanFinish}" Clicked="OnFinishClicked" />
     </Grid>
 </ContentPage>

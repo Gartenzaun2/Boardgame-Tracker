@@ -482,3 +482,7 @@ Spieldatei. Es wird zusammen mit dem zuletzt verwendeten Spiel-/Navigationskonte
 über den nativen MAUI-Preferences-Speicher gehalten, nicht in SQLite. Gruppen
 bleiben fachlich spielunabhängig; nur ihre Darstellung und Partiemetadaten werden
 im aktuell ausgewählten Spielkontext betrachtet.
+
+## App-Darstellung
+
+Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. Die Auswahl wird lokal in Preferences gespeichert und sofort angewendet. Sie ist spielunabhängig, verändert keine historischen Daten und folgt der verbindlichen Palette in `UI_DESIGN_GUIDE.md`. Historie zeigt Monatsgruppen ohne notwendige Sticky-Überschriften und kompakte Spiel-/Gruppenfilter.

@@ -39,6 +39,15 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
         builder.UseMauiApp<App>();
+        builder.Services.AddSingleton<BoardgameTracker.App.Theming.ThemeManager>();
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+#if ANDROID
+            handlers.AddHandler<Shell, BoardgameTracker.App.Platforms.Android.ThemeShellRenderer>();
+#elif IOS
+            handlers.AddHandler<Shell, BoardgameTracker.App.Platforms.iOS.ThemeShellRenderer>();
+#endif
+        });
 
         string databasePath = Path.Combine(
             FileSystem.AppDataDirectory,

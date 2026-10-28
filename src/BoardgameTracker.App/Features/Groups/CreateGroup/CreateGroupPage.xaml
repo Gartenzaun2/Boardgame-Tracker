@@ -49,7 +49,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{DynamicResource Surface}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="16">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                             <Label
@@ -88,7 +88,7 @@
                     <Label
                         IsVisible="{Binding HasNoPlayers}"
                         Text="{x:Static res:AppResources.NoPlayersYet}"
-                        TextColor="{StaticResource TextSecondary}" />
+                        TextColor="{DynamicResource TextSecondary}" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                         <BindableLayout.ItemTemplate>
@@ -101,7 +101,7 @@
                                                 FontSize="12"
                                                 IsVisible="{Binding IsGuest}"
                                                 Text="{x:Static res:AppResources.Guest}"
-                                                TextColor="{StaticResource TextSecondary}" />
+                                                TextColor="{DynamicResource TextSecondary}" />
                                         </VerticalStackLayout>
                                         <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
                                         <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
@@ -113,7 +113,7 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{DynamicResource SurfaceSecondary}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.AddExistingPlayer}" />
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" IsVisible="{Binding HasAvailablePlayers}">
@@ -130,11 +130,11 @@
                                 Text="+"
                                 VerticalOptions="Center" />
                         </Grid>
-                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePlayers}" Text="{x:Static res:AppResources.NoAvailablePlayers}" TextColor="{StaticResource TextSecondary}" />
+                        <Label FontSize="12" IsVisible="{Binding HasNoAvailablePlayers}" Text="{x:Static res:AppResources.NoAvailablePlayers}" TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceGreen}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{DynamicResource SurfaceSecondary}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="12">
                         <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayer}" />
                         <Entry Placeholder="{x:Static res:AppResources.PlayerNamePlaceholder}" Text="{Binding NewPlayerName}" />
@@ -146,17 +146,17 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
             </VerticalStackLayout>
         </ScrollView>
 
         <Grid
             Grid.RowSpan="2"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center" />

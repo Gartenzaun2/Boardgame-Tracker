@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\BoardgameTracker.App\Theming\ThemePalette.cs" Link="Theming\ThemePalette.cs" />
+    <Compile Include="..\..\src\BoardgameTracker.App\Presentation\PlayerColors\PlayerColorPalette.cs" Link="Presentation\PlayerColorPalette.cs" />
+    <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\ArkNovaPlayerColorMapping.cs" Link="Presentation\ArkNovaPlayerColorMapping.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 
