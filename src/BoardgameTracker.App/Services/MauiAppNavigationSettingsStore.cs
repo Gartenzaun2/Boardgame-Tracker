@@ -8,6 +8,7 @@ namespace BoardgameTracker.App.Services;
 /// </summary>
 public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
 {
+    private const string ThemeKey = "Appearance.Theme";
     private const string DefaultGameKey = "Navigation.DefaultGameKey";
     private const string SelectedGameKey = "Navigation.SelectedGameKey";
     private const string LastMainSectionKey = "Navigation.LastMainSection";
@@ -26,12 +27,14 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
             ? parsedGameSessionId
             : null;
 
-        return new AppNavigationSettings(defaultGame, selectedGame, section, gameSessionId);
+        return new AppNavigationSettings(defaultGame, selectedGame, section, gameSessionId,
+            AppThemeSelection.FromStoredValue(Preferences.Default.Get(ThemeKey, 0)));
     }
 
     public void Save(AppNavigationSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
+        Preferences.Default.Set(ThemeKey, (int)AppThemeSelection.FromStoredValue((int)settings.Theme));
         SetNullableString(DefaultGameKey, settings.DefaultGameKey);
         SetNullableString(SelectedGameKey, settings.SelectedGameKey);
 

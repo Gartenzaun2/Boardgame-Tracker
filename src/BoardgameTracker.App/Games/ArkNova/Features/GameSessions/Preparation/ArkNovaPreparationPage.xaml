@@ -2,6 +2,8 @@
 <ContentPage
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation.ArkNovaPreparationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:colors="clr-namespace:BoardgameTracker.App.Games.ArkNova"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
@@ -32,7 +34,7 @@
                     Margin="0,-4,0,0"
                     FontSize="13"
                     Text="{Binding GroupName}"
-                    TextColor="{StaticResource TextSecondary}" />
+                    TextColor="{DynamicResource TextPrimary}" />
             </VerticalStackLayout>
         </Grid>
 
@@ -40,11 +42,11 @@
             Grid.Row="1"
             IsVisible="{Binding HasError}"
             Text="{Binding ErrorMessage}"
-            TextColor="{StaticResource Danger}" />
+            TextColor="{DynamicResource Danger}" />
 
         <ScrollView Grid.Row="2" Margin="0,-6,0,0">
             <VerticalStackLayout Spacing="12">
-                <Border Padding="12" BackgroundColor="{StaticResource SurfaceBlue}" Style="{StaticResource CardBorder}">
+                <Border Padding="12" Style="{StaticResource CardBorder}">
                     <Label Text="{Binding LastGameSessionText}" />
                 </Border>
 
@@ -75,20 +77,21 @@
                                             Stroke="#66FFFFFF"
                                             StrokeShape="RoundRectangle 16"
                                             WidthRequest="32">
-                                            <Label
+                                            <Label TextColor="{Binding PlayerTextColor}"
                                                 FontAttributes="Bold"
                                                 HorizontalTextAlignment="Center"
                                                 Text="{Binding Position}"
                                                 VerticalTextAlignment="Center" />
                                         </Border>
                                         <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                                            <Label FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
-                                            <Label FontSize="12" Text="{Binding ColorName}" />
+                                            <Label TextColor="{Binding PlayerTextColor}" FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
+                                            <Label TextColor="{Binding PlayerTextColor}" FontSize="12" Text="{Binding ColorName}" />
                                         </VerticalStackLayout>
                                         <ImageButton
                                             Grid.Column="2"
                                             Clicked="OnColorClicked"
                                             Source="icon_palette.png"
+                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
                                             Style="{StaticResource IconButton}"
                                             SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}"
                                             ToolTipProperties.Text="{x:Static res:AppResources.ChooseColor}" />
@@ -99,7 +102,7 @@
                                         IsVisible="{Binding IsColorPickerOpen}"
                                         Spacing="8">
                                         <Button
-                                            BackgroundColor="#8BC4E8"
+                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlueBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Blue}"
                                             Clicked="OnBlueColorClicked"
                                             IsVisible="{Binding CanChooseBlue}"
@@ -108,7 +111,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="#F2D65C"
+                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.YellowBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Yellow}"
                                             Clicked="OnYellowColorClicked"
                                             IsVisible="{Binding CanChooseYellow}"
@@ -117,7 +120,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="#E98A84"
+                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.RedBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Red}"
                                             Clicked="OnRedColorClicked"
                                             IsVisible="{Binding CanChooseRed}"
@@ -126,7 +129,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="#404040"
+                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlackBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Black}"
                                             Clicked="OnBlackColorClicked"
                                             IsVisible="{Binding CanChooseBlack}"
@@ -140,7 +143,7 @@
                                         <Border
                                             Padding="4"
                                             BackgroundColor="#BFFFFFFF"
-                                            Stroke="{Binding Option1Stroke}"
+                                            Stroke="{DynamicResource SelectedBorder}"
                                             StrokeShape="RoundRectangle 10"
                                             StrokeThickness="{Binding Option1StrokeThickness}">
                                             <Border.GestureRecognizers>
@@ -153,6 +156,7 @@
                                                     Aspect="Fill"
                                                     HeightRequest="81"
                                                     Source="{Binding ZooPlanOption1IconSource}" />
+                                                <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option1Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
 
                                                 <Border
                                                     Margin="0,3,0,0"
@@ -162,7 +166,7 @@
                                                     StrokeThickness="0"
                                                     StrokeShape="RoundRectangle 10"
                                                     VerticalOptions="Start">
-                                                    <Label
+                                                    <Label TextColor="{DynamicResource GameGraphicText}"
                                                         FontAttributes="Bold"
                                                         FontSize="14"
                                                         Text="{Binding ZooPlanOption1.Number}" />
@@ -173,7 +177,7 @@
                                             Grid.Column="1"
                                             Padding="4"
                                             BackgroundColor="#BFFFFFFF"
-                                            Stroke="{Binding Option2Stroke}"
+                                            Stroke="{DynamicResource SelectedBorder}"
                                             StrokeShape="RoundRectangle 10"
                                             StrokeThickness="{Binding Option2StrokeThickness}">
                                             <Border.GestureRecognizers>
@@ -186,6 +190,7 @@
                                                     Aspect="Fill"
                                                     HeightRequest="81"
                                                     Source="{Binding ZooPlanOption2IconSource}" />
+                                                <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option2Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
 
                                                 <Border
                                                     Margin="0,3,0,0"
@@ -195,7 +200,7 @@
                                                     StrokeThickness="0"
                                                     StrokeShape="RoundRectangle 10"
                                                     VerticalOptions="Start">
-                                                    <Label
+                                                    <Label TextColor="{DynamicResource GameGraphicText}"
                                                         FontAttributes="Bold"
                                                         FontSize="14"
                                                         Text="{Binding ZooPlanOption2.Number}" />
@@ -220,10 +225,10 @@
 
         <Grid
             Grid.RowSpan="4"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center" />

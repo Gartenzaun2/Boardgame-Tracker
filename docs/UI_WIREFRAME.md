@@ -181,7 +181,7 @@ Gast                             [ ○ ]
 #### Verhalten
 
 - Die Kopfzeile bleibt die primäre Aktionszone; `Speichern` befindet
-  sich oben rechts und ist grün hervorgehoben.
+  sich oben rechts und verwendet die Primary-Rolle.
 - Es gibt keinen redundanten zweiten Titel im Inhaltsbereich.
 - Das Informations-Icon zeigt Hilfetext per Hover, wenn Hover vorhanden
   ist, ansonsten per Tippen.
@@ -220,8 +220,7 @@ Für die Gruppen-Screens gelten zusätzlich:
 - Zurück, Information und Bearbeiten werden als sichtbare Bild-Icons
   umgesetzt und nicht als fontabhängige Unicode-Zeichen.
 - `Neue Gruppe` und `Speichern` verwenden kompakte Button-Flächen.
-- Die App verwendet eine sanfte Pastellpalette, die von den
-  Arche-Nova-Rückseiten inspiriert ist.
+- Die App verwendet eine zentrale semantische Theme-Palette gemäß `UI_DESIGN_GUIDE.md`.
 - Der Erklärungstext zur Spielerreihenfolge wird nicht dauerhaft
   angezeigt, sondern über ein Info-Icon bei `Gruppenmitglieder`
   geöffnet.
@@ -282,7 +281,7 @@ Aktueller Aufbau:
 - Die Fehlermeldungszeile existiert layoutseitig nur, wenn tatsächlich ein
   Fehlertext vorhanden ist.
 - Die Zooplan-Kacheln sind initial ohne Auswahlrahmen.
-- Bei Auswahl liegt der grüne Rahmen außen um die komplette helle
+- Bei Auswahl liegt der Auswahlrahmen außen um die komplette helle
   Zooplan-Kachel.
 - Die Kacheln zeigen nur Skizze und Nummer.
 - Die aktuellen Bildressourcen sind quadratische Bleistiftskizzen; im
@@ -403,3 +402,7 @@ Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Anzahl
 Zwei kompakte Picker (Spiel, Gruppe) oberhalb der scrollbaren Liste. Karten mit drei umbrechenden Informationszeilen: `Arche Nova · 2 h 14 min · 26.10.26`, `Freitagabend`, `1. Anna · 2. Ben · 3. Chris`. Leer- und Fehlerzustand sowie Busy-Schutz vorsehen. Tap öffnet spielabhängige Wertung, keine generische Detailseite.
 
 Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placement sortiert. Bestehende Eingaben und Kartenwahl verwenden; `Korrektur speichern` führt bei Gleichstand in die vorhandene Auflösung. Sekundäre Aktion `Partie löschen` nur nach ausdrücklicher Bestätigung. Zurück verwirft ungespeicherte Korrekturen. Statistik folgt separat mit unabhängigen Filtern.
+
+## Theme und Historiengliederung
+
+Allgemeine Einstellungen enthalten den Picker „Darstellung“ mit Deep Forest, Königsblau und Dunkel. Alle Screens verwenden dieselbe Struktur in allen Themes. Die bestehende Shell-TabBar hat eine obere Kontur und einen aktiven Eintrag mit einer gemeinsamen abgerundeten Auswahlfläche hinter Icon und Text. Der Rand der Auswahlfläche hat keine vom Füllton abweichende Farbe. Historienfilter stehen als kompakte, bei Platzmangel umbrechende Chips oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter; die Auswahl erfolgt weiterhin nativ. Die Liste gruppiert Partiekarten nach lokalem Kalendermonat, z. B. „Oktober 2026“, mit einfacher Überschrift ohne Karte und ohne Sticky-Verhalten.

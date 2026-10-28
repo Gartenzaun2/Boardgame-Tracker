@@ -1,324 +1,425 @@
-# Boardgame Tracker – UI Design Guide v0.1
+# Boardgame Tracker – UI Design Guide
 
-## 1. Ziel
+## 1. Grundprinzip
 
-Die Oberfläche soll ruhig, freundlich und auf einem 6,1-Zoll-Smartphone
-zuverlässig mit einer Hand bedienbar sein.
+Die App verwendet ein zentrales, tokenbasiertes Farbsystem.
 
-Die visuelle Sprache orientiert sich lose an den farbigen
-Arche-Nova-Rückseiten, übernimmt deren kräftige Farben aber nicht
-direkt. Stattdessen verwendet die App sanfte Pastelltöne.
+Die visuelle Struktur eines Screens bleibt unabhängig vom gewählten Theme gleich. Ein Theme ändert Farben, aber nicht Navigation, Abstände, Größen, Informationshierarchie oder fachliches Verhalten.
 
-Funktionale Klarheit hat Vorrang vor Dekoration.
+Der Nutzer kann zwischen drei Themes wählen:
 
-## 2. Farbkonzept
+1. **Deep Forest**
+2. **Königsblau**
+3. **Dunkel**
 
-Zentrale App-Farben:
+Die Theme-Auswahl gehört in die allgemeinen App-Einstellungen und wird dauerhaft gespeichert.
 
-| Rolle           | Farbe     | Verwendung                      |
-|-----------------|-----------|---------------------------------|
-| App-Hintergrund | `#F8F5EA` | warmer, heller Grund            |
-| Oberfläche      | `#FFFDF7` | Karten und Eingabebereiche      |
-| Pastell-Blau    | `#EAF4F7` | sekundäre Bereiche              |
-| Pastell-Grün    | `#EDF5E8` | ergänzende/positive Bereiche    |
-| Pastell-Gelb    | `PaleGoldenrod` | Gruppen-/Auswahlflächen         |
-| Pastell-Violett | `#F1ECF7` | spätere ergänzende Akzente      |
-| Primär-Akzent   | `YellowGreen` | bestätigende Hauptaktion        |
-| Sekundär-Akzent | `#3E6E83` | Icons und sekundäre Aktionen    |
-| Primärtext      | `#28322D` | Haupttext                       |
-| Sekundärtext    | `#65706A` | Hilfs- und Metatext             |
-| Kontur          | `#D8D5C8` | Karten-/Bereichsgrenzen         |
+**Deep Forest ist das Standard-Theme.**
 
-Die Farben werden als zentrale MAUI-Ressourcen definiert. Einzelne
-Screens sollen keine eigene, davon unabhängige Farbpalette entwickeln.
+Spielbezogene Farben und Grafiken bleiben vom App-Theme getrennt. Insbesondere werden nicht verändert:
 
-Die fachlichen Arche-Nova-Spielerfarben Blau, Gelb, Rot und Schwarz
-bleiben von diesem UI-Farbsystem getrennt. Sie dürfen später nicht die
-einzige Kennzeichnung eines Spielers oder Zustands sein.
+- Arche-Nova-Spielerfarben
+- farblich getönte Spielerkarten
+- Zooplan-Grafiken
+- Spiel-Logos und Illustrationen
+- fachlich notwendige Status- und Warnfarben
 
-## 3. Touch-Ziele und Icons
+Dadurch bleibt die App-Oberfläche ruhig, während die eigentlichen Brettspielinhalte Farbe und Persönlichkeit liefern.
 
-Ein sichtbares Icon darf klein und zurückhaltend sein, seine
-Touch-Fläche muss aber komfortabel bleiben.
+---
 
-Richtlinie:
+## 2. Gemeinsame Farbrollen
 
-- sichtbares Icon ungefähr 20–24 dp,
-- Touch-Ziel ungefähr 44–48 dp,
-- genügend Abstand zwischen benachbarten Touch-Zielen.
+Screens dürfen keine eigenen unabhängigen Farbpaletten definieren.
 
-Wiederkehrende Icons behalten überall dieselbe Bedeutung:
+Stattdessen verwenden alle Oberflächen semantische Theme-Tokens.
 
-- Pfeil nach links: zurück,
-- Info: zusätzliche Erklärung,
-- Stift: bearbeiten,
-- Palette: Spielerfarbe ändern.
+Verbindliche Rollen:
 
-Wichtige Funktionen dürfen niemals nur über eine unsichtbare
-Touch-Fläche erreichbar sein.
+- `AppBackground`
+- `Surface`
+- `SurfaceSecondary`
+- `Primary`
+- `PrimaryPressed`
+- `PrimaryForeground`
+- `SelectedSurface`
+- `SelectedBorder`
+- `TextPrimary`
+- `TextSecondary`
+- `Outline`
+- `NavigationBackground`
+- `NavigationText`
+- `NavigationSelectedSurface`
+- `NavigationSelectedText`
+- `Danger`
+- `DangerSurface`
 
-## 4. Buttons
+Bestehende Komponenten sollen diese semantischen Rollen verwenden und nicht konkrete Theme-Farben kennen.
 
-Buttons sollen nicht deutlich größer wirken als der zugehörige Text.
+---
+
+## 3. Theme: Deep Forest
+
+Deep Forest ist das Standard-Theme.
+
+Es soll ruhig, natürlich und hochwertig wirken, ohne einen beigen oder papierartigen Eindruck zu erzeugen.
+
+| Rolle | Farbe |
+|---|---|
+| AppBackground | `#D9E6DF` |
+| Surface | `#FFFFFF` |
+| SurfaceSecondary | `#EEF5F1` |
+| Primary | `#466655` |
+| PrimaryPressed | `#385346` |
+| PrimaryForeground | `#FFFFFF` |
+| SelectedSurface | `#C7DCCF` |
+| SelectedBorder | `#789A85` |
+| TextPrimary | `#263D31` |
+| TextSecondary | `#68776F` |
+| Outline | `#B8CAC0` |
+| NavigationBackground | `#FFFFFF` |
+| NavigationText | `#68776F` |
+| NavigationSelectedSurface | `#C7DCCF` |
+| NavigationSelectedText | `#263D31` |
+| Danger | `#B3261E` |
+| DangerSurface | `#F9DEDC` |
+
+Deep Forest soll nicht durch zusätzliche gelbe oder beige Standardflächen ergänzt werden.
+
+---
+
+## 4. Theme: Königsblau
+
+Königsblau ist das alternative helle Theme.
+
+Es soll etwas klarer, kühler und digitaler wirken als Deep Forest, ohne kräftig oder technisch steril zu werden.
+
+| Rolle | Farbe |
+|---|---|
+| AppBackground | `#DCE5F4` |
+| Surface | `#FFFFFF` |
+| SurfaceSecondary | `#EEF3FB` |
+| Primary | `#315B9B` |
+| PrimaryPressed | `#274A80` |
+| PrimaryForeground | `#FFFFFF` |
+| SelectedSurface | `#C8D8F1` |
+| SelectedBorder | `#708EBE` |
+| TextPrimary | `#18386A` |
+| TextSecondary | `#66758E` |
+| Outline | `#BCCAE1` |
+| NavigationBackground | `#FFFFFF` |
+| NavigationText | `#65748D` |
+| NavigationSelectedSurface | `#C8D8F1` |
+| NavigationSelectedText | `#18386A` |
+| Danger | `#B3261E` |
+| DangerSurface | `#F9DEDC` |
+
+Auch in diesem Theme bleiben Spielerfarben, Zoopläne und sonstige Spielgrafiken unverändert.
+
+---
+
+## 5. Theme: Dunkel
+
+Das dunkle Theme ist ein eigenständiges Theme und keine einfache automatische Invertierung der hellen Farben.
+
+| Rolle | Farbe |
+|---|---|
+| AppBackground | `#141A17` |
+| Surface | `#222A26` |
+| SurfaceSecondary | `#29352F` |
+| Primary | `#5B8A70` |
+| PrimaryPressed | `#6D9B82` |
+| PrimaryForeground | `#101713` |
+| SelectedSurface | `#355244` |
+| SelectedBorder | `#668875` |
+| TextPrimary | `#F0F4F1` |
+| TextSecondary | `#C6D0CA` |
+| Outline | `#3B4942` |
+| NavigationBackground | `#222A26` |
+| NavigationText | `#AEBBB4` |
+| NavigationSelectedSurface | `#355244` |
+| NavigationSelectedText | `#FFFFFF` |
+| Danger | `#FFB4AB` |
+| DangerSurface | `#5F2423` |
+
+Das dunkle Theme verwendet keine rein schwarzen großen Flächen und keine rein weißen Konturen.
+
+---
+
+## 6. Flächenhierarchie
+
+Die App verwendet grundsätzlich drei visuelle Ebenen:
+
+### Ebene 1 – AppBackground
+
+Große Grundfläche eines Screens.
+
+Sie darf deutlich sichtbar sein und soll nicht wie eine weiße Standard-App wirken.
+
+### Ebene 2 – Surface
+
+Interaktive oder inhaltlich abgeschlossene Bereiche:
+
+- Partiekarten
+- Gruppenkarten
+- Einstellungskarten
+- Dialoge
+- Bottom-Navigation
+- Eingabebereiche, wenn eine klare Gruppierung erforderlich ist
+
+### Ebene 3 – SelectedSurface / SurfaceSecondary
+
+Für:
+
+- ausgewählte Filter
+- aktiven Navigationseintrag
+- sekundäre Auswahlbereiche
+- zurückhaltende hervorgehobene Zustände
+
+Farbe soll nicht verwendet werden, nur um möglichst viele Flächen voneinander zu unterscheiden.
+
+---
+
+## 7. Karten
+
+Karten liegen auf `Surface`.
 
 Standard:
 
-- normale Schriftgröße,
-- kompakter horizontaler und vertikaler Innenabstand,
-- leicht gerundeter Hintergrund,
-- keine unnötig großen farbigen Flächen.
+- moderate Rundung
+- dezente `Outline`
+- kein starker Standardschatten
+- ausreichend Abstand zum App-Hintergrund
 
-Pro Screen gibt es möglichst eine klar erkennbare Hauptaktion. Sekundäre
-und destruktive Aktionen werden visuell zurückgenommen.
+Der stärkere Unterschied zwischen `AppBackground` und `Surface` übernimmt den größten Teil der visuellen Trennung.
 
-## 5. Informationshierarchie
-
-Die Oberfläche verwendet eine klare Hierarchie:
-
-1.  Seitentitel
-2.  Abschnittstitel
-3.  primäre Inhalte
-4.  sekundäre Informationen
-5.  Hilfetexte
-
-Längere Erklärungen werden nicht dauerhaft zwischen die Arbeitsinhalte
-gestellt, wenn sie nur gelegentlich benötigt werden. Dafür wird ein
-Info-Icon verwendet.
-
-Info-Icons:
-
-- Pointer-Geräte: Tooltip/Hover,
-- Touch-Geräte: Tippen öffnet die Erklärung.
-
-## 6. Abstände
-
-Bevorzugte Abstufungen:
-
-``` text
-4 / 8 / 12 / 16 / 20 / 24 / 32
-```
-
-Ähnliche Elemente verwenden ähnliche Abstände. Abstände sollen
-Hierarchie erzeugen und nicht zufällig variieren.
-
-## 7. Karten und Bereiche
-
-Karten werden sparsam eingesetzt, um funktionale Bereiche zu gruppieren.
-
-Sie verwenden:
-
-- hellen Hintergrund,
-- dezente Kontur,
-- moderate Rundung,
-- keine starken Schatten als Standard.
-
-Pastellflächen dürfen verschiedene funktionale Bereiche unterscheiden,
-sollen aber nicht jeden einzelnen Inhalt bunt einfärben.
-
-## 8. Zustände und Feedback
-
-Ein Zustand darf nicht nur durch Farbe dargestellt werden.
+Karten sollen nur dort eingesetzt werden, wo ein Inhalt tatsächlich eine eigenständige Einheit bildet.
 
 Beispiele:
 
-- ausgewählter Zooplan: Farbe plus sichtbare Auswahlmarkierung,
-- Spielerfarbe: Farbe plus Name/Position,
-- deaktivierte Aktion: visuell deaktiviert und nicht nur andersfarbig.
+- Gruppe: Karte
+- abgeschlossene Partie: Karte
+- Spieler in Wertungsübersicht: Karte
+- einzelne einfache Einstellungszeilen: gegebenenfalls keine eigene Karte erforderlich
 
-Aktionen geben unmittelbar Feedback:
-
-- Speichern während der Ausführung nicht mehrfach auslösen,
-- Fehler möglichst nahe am betroffenen Kontext anzeigen,
-- längere Aktionen zeigen einen Busy-Zustand.
-
-## 9. Destruktive Aktionen
-
-Entfernen, Verwerfen und Löschen sind weniger prominent als Speichern
-oder Starten.
-
-Irreversible bzw. weitreichende Aktionen erhalten eine Bestätigung, wenn
-ein versehentliches Auslösen realistisch ist.
-
-## 10. Plattformen
-
-Android und iOS teilen dieselbe visuelle Sprache und
-Informationsarchitektur.
-
-Native Bedienerwartungen dürfen trotzdem respektiert werden. Pixelgenaue
-Gleichheit zwischen beiden Plattformen ist kein Ziel.
-
-## 11. Gruppen-Screens
-
-### Gruppenübersicht
-
-- `Neue Gruppe` ist kompakt.
-- Jede Gruppenkarte besitzt rechts ein sichtbares Stift-Icon.
-- Das Stift-Icon hat eine eigene Touch-Fläche.
-- Das Antippen der Gruppenkarte und das Bearbeiten bleiben getrennte
-  Aktionen.
-
-### Gruppe anlegen / bearbeiten
-
-Kopfzeile:
-
-``` text
-[←]  Gruppe anlegen  [i]              [Speichern]
-```
-
-bzw.
-
-``` text
-[←]  Gruppe bearbeiten  [i]           [Speichern]
-```
-
-Die Icons sind echte Bildressourcen und keine fontabhängigen
-Unicode-Glyphen.
-
-Spieler:
-
-``` text
-Gruppenmitglieder [i]
-
-Anna                         ↑  ↓  ×
-Ben                          ↑  ↓  ×
-```
-
-Der Erklärungstext zur Default-Reihenfolge steht hinter dem Info-Icon
-und wird nicht dauerhaft angezeigt.
-
-## 12. Review-Checkliste für neue Screens
-
-Vor Abschluss eines Screens prüfen:
-
-- Ist die Hauptaktion sofort erkennbar?
-- Sind alle interaktiven Elemente sichtbar?
-- Sind Touch-Ziele ausreichend groß?
-- Gibt es eine Funktion, die nur durch Farbe verständlich ist?
-- Sind Icons konsistent verwendet?
-- Sind selten benötigte Erklärungen aus dem Hauptfluss entfernt?
-- Ist der Screen auf 6,1 Zoll ohne unnötige Informationsdichte
-  bedienbar?
-- Sind destruktive Aktionen klar von normalen Aktionen getrennt?
-- Sind Abstände und Typografie konsistent?
-- Funktioniert die Interaktion sowohl per Touch als auch – wo sinnvoll –
-  mit Pointer/Tooltip?
-
-------------------------------------------------------------------------
-
-## 13. Busy-Zustände und Mehrfachtaps
-
-Eine asynchrone Aktion wird nach dem ersten Tap sofort gegen erneutes
-Auslösen geschützt.
-
-- Während einer laufenden Navigation darf dieselbe Navigation nicht
-  erneut auf den Stack gelegt werden.
-- Bei wahrnehmbaren Ladezeiten erscheint ein `ActivityIndicator`.
-- Während kritischer Lade-/Speicheraktionen blockiert ein dezentes
-  Overlay weitere Eingaben.
-- Ein deaktivierter Button allein genügt nur bei praktisch sofortigen
-  Aktionen.
-- Nach Abschluss oder Fehler wird die Interaktion wieder freigegeben.
-
-### Empty States
-
-Nicht verfügbare Bedienelemente sollen nicht ohne Nutzen angezeigt
-werden. Gibt es beim Anlegen einer Gruppe keine weitere vorhandenen
-Spieler, verschwinden Picker und Hinzufügen-Button vollständig.
-Stattdessen steht dezent: `Keine weiteren Spieler vorhanden.`
-
-### Gelb
-
-Das gelbe Oberflächen-Token ist bewusst klarer gelb und weniger beige
-als in v0.6.1. Gruppenkarten dürfen dieses sanfte Gelb als
-wiederkehrende Identitätsfläche verwenden.
-
-------------------------------------------------------------------------
-
-## 14. Farbsemantik
-
-- **Grün** ist die verbindliche Farbe für bestätigende Hauptaktionen wie
-  `Speichern`, `Starten` oder vergleichbare Abschlüsse.
-- **PaleGoldenrod** ist das Gruppen-/Auswahlgelb und wird für
-  Gruppenkarten sowie passende Gruppenflächen verwendet.
-- Die Farbe einer Aktion folgt ihrer Bedeutung; ein Bestätigen soll
-  nicht nur aufgrund des aktuellen Screens gelb werden.
+Die bestehenden farblich getönten Arche-Nova-Spielerkarten bleiben erhalten.
 
 ---
 
-## 15. Vorbereitungsscreen und Farbfeinschliff
+## 8. Bottom-Navigation
 
-- Bestätigende Primäraktionen verwenden vorläufig `YellowGreen` statt eines kräftigen dunklen Grüns.
-- `PaleGoldenrod` bleibt die visuelle Gruppenfarbe.
-- Sekundäre Auswahlbereiche wie `Vorhandene Spieler hinzufügen` verwenden wieder `SurfaceBlue`.
-- Die beiden kurzen Gruppenlistenfilter `Temporär` und `Archiviert` stehen kompakt nebeneinander, solange sie auf dem Referenzgerät ohne Enge darstellbar sind.
-- In der Partievorbereitung ist die gesamte Spielerkarte leicht in der tatsächlichen Spielerfarbe getönt; Farbe bleibt zusätzlich als Text sichtbar.
-- Zooplan-Karten verwenden die abgestimmten monochromen Bleistiftskizzen. In der Vorbereitung bleibt die Plannummer sichtbar; der Planname wird dort zugunsten der kompakten Darstellung nicht zusätzlich eingeblendet.
+Die Hauptnavigation enthält weiterhin:
 
+`Spiele · Gruppen · Historie · Einstellungen`
 
-------------------------------------------------------------------------
+Die Bottom-Bar verwendet grundsätzlich dieselbe Farbe wie `Surface`.
 
-## 16. Bedingte Meldungen und Zooplan-Auswahl
+Damit bildet sie dieselbe visuelle Ebene wie Karten und andere feste Oberflächen.
 
-Bedingte Status- und Fehlermeldungen dürfen keinen leeren Layoutbereich
-reservieren. Ist kein Text vorhanden, wird das zugehörige UI-Element
-komplett ausgeblendet (`IsVisible = false` bzw. äquivalentes Verhalten).
+Sie wird vom App-Inhalt abgegrenzt durch:
 
-Für die Zooplanauswahl gilt:
+- eine sichtbare obere Kontur in `Outline`,
+- optional einen sehr zurückhaltenden Schatten nach oben,
+- eine eindeutige Markierung des aktiven Tabs.
 
-- die helle/transluzente Zooplan-Kachel bleibt als gemeinsame Fläche für
-  Bild und Plannummer erhalten,
-- der grüne Auswahlrahmen umfasst die **gesamte Kachel**,
-- ohne Auswahl existiert kein grüner Rahmen,
-- das Bild selbst besitzt keinen zusätzlichen Auswahlrahmen.
+Der aktive Tab erhält:
 
-Farbwähler bleiben kompakt, ihre Touch-Flächen sollen trotzdem die bereits
-festgelegten 44–48 dp erreichen. Da die Farbfelder visuell nur aus Farbe
-bestehen, sollen sie bei der späteren Accessibility-Runde zusätzlich einen
-semantischen Namen wie `Blau`, `Gelb`, `Rot` oder `Schwarz` erhalten.
+- `NavigationSelectedSurface`,
+- `NavigationSelectedText`,
+- eine gemeinsame abgerundete Fläche hinter Icon **und Beschriftung**, nicht nur hinter dem Icon. Die Fläche verwendet `NavigationSelectedSurface` ohne abweichende Randfarbe; die obere Kontur der gesamten TabBar bleibt `Outline`.
 
-------------------------------------------------------------------------
-
-## 17. Touch-Ziele und bedingte Zustände
-
-Die allgemeine Touch-Richtlinie von 44–48 dp gilt auch für kompakte Aktionen
-und reine Farbauswahlflächen. Die sichtbare Farbfläche darf optisch klein
-bleiben, die interaktive Fläche selbst soll jedoch mindestens 44 dp erreichen.
-
-Fehlerlabels auf Gruppen-, Vorbereitungs- und Running-Screens werden nur dann
-in das Layout aufgenommen, wenn tatsächlich ein Fehlertext vorhanden ist.
-Dadurch entstehen keine leeren reservierten Fehlerzeilen.
-
-Sichtbare Texte des Partien-Flows werden über die App-Lokalisierungsressourcen
-bereitgestellt. Farbname und Farbton sind gemeinsame Präsentationslogik der
-App; die Domain-Farbe selbst bleibt frei von MAUI- und Lokalisierungswissen.
-
-### Accessibility
-
-Reine Icon- und Farbaktionen erhalten zusätzlich zu Tooltip bzw. visueller
-Darstellung eine semantische Beschreibung. Das gilt insbesondere für Zurück,
-Information, Bearbeiten, Reihenfolge-Aktionen, Entfernen, Farbpalette und die
-einzelnen Spielerfarben. Eine Funktion soll damit weder nur durch ein Symbol
-noch nur durch Farbe verständlich sein.
-
+Die aktive Navigation darf nicht ausschließlich anhand einer anderen Textfarbe erkennbar sein.
 
 ---
 
-## 18. Wertung und Tabs
+## 9. Filter und Auswahl
 
-- Die Tab-Reihenfolge lautet `Spiele`, `Gruppen`, `Historie`, `Einstellungen`.
-- Der Gruppen-Tab ist ein Root-Ziel und soll keine alte Detailnavigation wiederherstellen.
-- Navigation aus antippbaren Wertungskacheln wird gegen schnelle Mehrfachtaps geschützt.
-- Spezialkarten verwenden in der Übersicht einen kompakten Bildbutton mit komfortabler
-  Touch-Fläche; mehrere Karten werden dort nur als Anzahl dargestellt.
-- Berechnete Punkte gehören bei vorhandenen Pflichtwerten direkt in die primäre
-  Spielerzeile.
+Kurze Filter sollen bevorzugt als kompakte Filterflächen bzw. Chips dargestellt werden.
 
+Beispiele:
+
+`[ Arche Nova ▾ ] [ Alle Gruppen ▾ ]`
+
+Ein aktiver oder bewusst gewählter Filter darf zusätzlich eine Auswahlmarkierung erhalten:
+
+`[ ✓ Arche Nova ▾ ]`
+
+Filter:
+
+- sind nicht standardmäßig vollbreit,
+- stehen bei ausreichendem Platz nebeneinander,
+- besitzen komfortable Touch-Ziele,
+- verwenden `Surface` im normalen Zustand,
+- verwenden `SelectedSurface` und `SelectedBorder` im ausgewählten Zustand.
+
+Die eigentliche Auswahl darf weiterhin über Picker, Popup, Dialog oder eine geeignete native Auswahloberfläche erfolgen.
+
+Lange Listen sollen später bei Bedarf über eine suchbare Auswahl oder ein Bottom Sheet dargestellt werden.
 
 ---
 
-## 19. UI-Cleanup
+## 10. Historie
 
-- Deaktivierte bestätigende Primäraktionen erhalten appweit denselben klar erkennbaren Disabled-Zustand; technisch deaktiviert allein genügt nicht.
-- Mehrzeilige Spielerkacheln reservieren für jede Informationszeile eine eigene Layoutzeile; Status- und Werteinformationen dürfen sich nicht überlagern.
-- Fehlende Wertungswerte werden direkt mit `–` gezeigt, statt zusätzlich einen konkurrierenden Text wie „Wertung nicht vollständig“ einzublenden.
-- Selten benötigte Erläuterungen auf Hauptübersichten werden über ein Info-Icon angeboten und nicht dauerhaft zwischen Arbeitsinhalten angezeigt.
+Abgeschlossene Partien werden nach Monaten gruppiert.
+
+Beispiel:
+
+`Oktober 2026`
+
+darunter die entsprechenden Partiekarten.
+
+Die Monatsüberschrift verwendet keine eigene Karte.
+
+Die Historienfilter für Spiel und Gruppe stehen kompakt oberhalb der Liste.
+
+Ob Monatsüberschriften später beim Scrollen sticky werden, ist keine Voraussetzung für den ersten Design-Umbau.
+
+---
+
+## 11. Primär- und Sekundäraktionen
+
+Bestätigende Hauptaktionen verwenden `Primary` und `PrimaryForeground`.
+
+Beispiele:
+
+- Speichern
+- Starten
+- Änderungen übernehmen
+- Wertung abschließen
+
+Die Komponentenrolle bestimmt die Aktionsfarbe.
+
+Sekundäraktionen verwenden bevorzugt:
+
+- `SurfaceSecondary`,
+- Kontur,
+- oder eine zurückhaltende textuelle Aktion.
+
+Destruktive Aktionen verwenden `Danger`, bleiben aber weniger prominent als die Hauptaktion.
+
+---
+
+## 12. Farbsemantik
+
+Hauptaktionen verwenden `Primary` und `PrimaryForeground`, unabhängig vom konkreten Farbton. Gefahr/Löschen verwendet `Danger` und `DangerSurface`.
+
+---
+
+## 13. Theme-Auswahl
+
+In den allgemeinen Einstellungen wird eine neue Einstellung **Darstellung / Theme** angeboten.
+
+Optionen:
+
+- Deep Forest
+- Königsblau
+- Dunkel
+
+Deep Forest ist der Standard für neue Installationen bzw. wenn noch keine Auswahl gespeichert ist.
+
+Ein Theme-Wechsel soll ohne Neustart der App sichtbar werden, sofern dies mit vertretbarem Aufwand innerhalb der bestehenden MAUI-Struktur möglich ist.
+
+Die Auswahl wird dauerhaft gespeichert.
+
+Das Theme ist eine App-Einstellung und keine Einstellung eines einzelnen Spiels.
+
+---
+
+## 14. Accessibility und Kontrast
+
+Ein Zustand darf nie ausschließlich anhand einer Farbe vermittelt werden.
+
+Dies gilt insbesondere für:
+
+- aktive Navigation
+- ausgewählte Filter
+- ausgewählte Zoopläne
+- Spielerfarben
+- Disabled-Zustände
+- Fehlerzustände
+
+Text- und UI-Kontraste sollen für alle drei Themes geprüft werden.
+
+Insbesondere der Dunkelmodus darf nicht lediglich durch Austausch von Hintergrundfarben entstehen; Text, Konturen, Disabled-Zustände, Icons und destruktive Aktionen müssen separat geprüft werden.
+
+---
+
+## 15. Bestehende Spielgestaltung
+
+Folgende bereits funktionierende Gestaltung soll durch den Theme-Umbau möglichst nicht verändert werden:
+
+- App-Logo
+- Zooplan-Grafiken
+- Arche-Nova-Spielerfarben
+- leichte Färbung der Spielerkarten anhand der Spielerfarbe
+- kompakte Wertungsdarstellung
+- fachlich benötigte Symbole und Spielgrafiken
+
+Das Theme bildet den neutralen Rahmen um diese Inhalte.
+
+---
+
+## 16. Technische Leitlinie
+
+Themes sollen zentral definiert werden.
+
+Kein Screen soll anhand des Theme-Namens selbst entscheiden:
+
+`if Forest ...`
+`if Blue ...`
+`if Dark ...`
+
+Stattdessen greifen Screens ausschließlich auf semantische Ressourcen wie `AppBackground`, `Surface`, `Primary`, `TextPrimary` usw. zu.
+
+Die Theme-Umschaltung ersetzt bzw. aktualisiert diese Ressourcen zentral.
+
+Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie ausschließlich die semantischen Ressourcen verwenden.
+
+## Bedienung und Layout
+
+- Zielgerät: 6,1 Zoll, Hochformat, 1170 × 2532 px. Ruhige Informationshierarchie und einhändige Bedienung haben Vorrang vor Dekoration.
+- Abstände bevorzugt 4 / 8 / 12 / 16 / 20 / 24 / 32 dp. Moderate Rundungen, keine starken Standardschatten.
+- Icons ca. 20–24 dp, Touch-Ziele mindestens 44–48 dp. Kleine Symbole behalten komfortable interaktive Flächen und semantische Beschreibungen.
+- Zurück, Info, Bearbeiten und Farbpalette behalten ihre Bedeutung; Bildressourcen statt fontabhängiger Unicode-Icons. Hinweise über Info-Aktionen, bei Pointer zusätzlich Tooltip.
+- Gruppenkarte und Bearbeiten haben getrennte Touch-Ziele. Gruppenerstellung priorisiert vorhandene Spieler; leere Auswahl verschwindet zugunsten eines Leerzustands.
+- Asynchrone Navigation und Speicherung gegen Mehrfachtaps schützen. Busy-Overlays blockieren Eingaben und zeigen einen Indikator. Fehlermeldungen nur bei vorhandenem Text anzeigen.
+- Destruktive Aktionen sekundär gestalten und bei weitreichenden Folgen ausdrücklich bestätigen.
+- Wertungskarten reservieren eigene Zeilen für Name/Punkte, Zooplan, Rohwerte und Karten/Ruf. Fehlende Werte als „–“. Karten-Icon ohne Zähler; Kartenanzahl in der Informationszeile.
+- Zooplanauswahl markiert die gesamte Kachel mit `SelectedBorder` und einer sichtbaren Auswahlmarkierung; Skizze und Nummer bleiben fachliche Inhalte.
+- Texte über bestehende Lokalisierung führen. Android und iOS teilen Informationsarchitektur, native Bedienerwartungen bleiben erhalten.
+
+## Zusätzliche semantische Rollen
+
+`DisabledSurface` und `DisabledText` kennzeichnen nicht bedienbare Aktionen; reduzierte Opazität unterstützt die technische Deaktivierung. `BusyOverlay` ist eine abgedunkelte Sperrfläche, `IconSurface` eine helle Unterlage ausschließlich für eingebettete Grafik-/Farbwahlfelder. Normale Info-, Zurück- und Bearbeiten-Iconbuttons sind transparent und verwenden den Theme-Textton als Icon-Tint; auf Spielerflächen gilt die Spieler-Textfarbe. `GameGraphicText` ist ein fester dunkler Textton ausschließlich auf hellen Zooplan-Grafikbadges. Spielerkarten verwenden ihre eigene Textfarbe aus der globalen Spielerfarben-Palette. `BusyIndicator` ist ein heller Indikator auf dem abgedunkelten Busy-Overlay. Disabled-Text verwendet den kontrastreichen Primärtextton; Opazität und die deaktivierte Interaktion kennzeichnen den Zustand.
+
+Sekundärtext ist für Surface-Flächen bestimmt. Kleine Texte direkt auf `AppBackground` verwenden `TextPrimary`, da die verbindlichen hellen Paletten dort für `TextSecondary` unter 4,5:1 liegen. Spielerkarten verwenden unabhängig vom App-Theme ihre gekoppelte Spieler-Textfarbe.
+
+
+## Spielerfarben: fachliche Kategorie und UI-Darstellung
+
+Physische/fachliche Farben bleiben semantische Kategorien im jeweiligen Spielmodul. Die globale UI-Palette ist ausschließlich Presentation in der App-Schicht und ordnet einer UI-Farbe Hintergrund und Textfarbe gemeinsam zu. Core kennt weder MAUI-Farben noch Theme-Ressourcen. Ein späterer Erkennungspfad lautet `physische Farbe → semantische Spielfarbe → UI-Spielerfarbe`; UI-Hexwerte sind keine Kamera-Messwerte, Trainingsdaten oder RGB-/HSV-Schwellen.
+
+| Spielerfarbe | UI-Hintergrund | UI-Text |
+|---|---|---|
+| Rot | `#D96B63` | `#312220` |
+| Gelb | `#E7C84A` | `#403716` |
+| Grün | `#73A66F` | `#243723` |
+| Blau | `#6FA9D2` | `#253B4B` |
+| Schwarz | `#555B58` | `#E4E9E6` |
+| Weiß | `#F4F4F1` | `#39413D` |
+| Orange | `#E59A45` | `#493117` |
+| Braun | `#805B42` | `#F0E8E2` |
+| Lila | `#70599E` | `#EEEAF4` |
+| Pink | `#D985AD` | `#472838` |
+| Türkis | `#6EB7B4` | `#264543` |
+| Grau | `#9AA2A0` | `#323936` |
+
+Diese Werte bleiben in Deep Forest, Königsblau und Dunkel identisch. Keine Neonfarben und keine reinen Schwarz-/Weiß-Extremwerte für Spielerflächen oder Spielertext. Weitere Varianten wie Lime, Navy oder Beige gehören nicht zum Basiskatalog.
+
+Arche Nova behält fachlich genau Blau, Gelb, Rot und Schwarz und mappt diese auf die entsprechenden globalen UI-Paare. Weitere acht Farben werden dadurch nicht in Arche Nova freigeschaltet. Unbekannte Präsentationswerte fallen definiert auf Grau zurück. Namen werden separat lokalisiert, niemals aus Hexwerten abgeleitet.
+
+Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für Sekundärtext. Eingebettete Controls bleiben App-Chrome mit Theme-Surface, Outline und passenden Text-/Iconrollen. Helle Zooplan-Badges behalten dunklen Grafiktext, auch auf schwarzen Spielerkarten. Spielername, Position und/oder ausgeschriebener Farbname bleiben sichtbar; Farbe ist nie die einzige Identifikation.
+
+Verbindliche Designregel: Jede Kombination aus globaler Spieler-Hintergrundfarbe und zugehöriger Spieler-Textfarbe muss für normalen Text mindestens **4,5:1 Kontrast** erreichen, unabhängig vom App-Theme. Die finale Palette wird automatisiert nach der relativen sRGB-Luminanz ohne Rundung der Prüfschwelle getestet. Braun und Lila verwenden bewusst dunklere Flächen, damit ihre weichen Off-White-Texte erhalten bleiben. Die UI-Hexwerte bleiben ausschließlich Darstellung und sind keine Grundlage für Kameraerkennung. Farbsehschwächen werden durch die Palette allein nicht abgedeckt; Namen und Reihenfolge bleiben notwendig.
+
+Karten mit vergleichbarer Rolle (Gruppen, letzte Partie, Historie) verwenden einheitlich `Surface`. `SurfaceSecondary` dient sekundären Aktionen oder tatsächlichen Unterbereichen, nicht der bloßen Unterscheidung zweier Kartenarten. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.

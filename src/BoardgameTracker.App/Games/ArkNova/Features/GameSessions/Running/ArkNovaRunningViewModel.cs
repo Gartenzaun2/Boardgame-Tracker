@@ -204,6 +204,8 @@ public sealed class ArkNovaRunningPlayerViewModel
     public string ZooPlanText { get; }
     public string ZooPlanIconSource { get; }
 
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(_color);
+
     public string ColorName => ArkNovaPlayerColorPresentation.GetName(_color);
 
     public Microsoft.Maui.Graphics.Color ColorBrush =>

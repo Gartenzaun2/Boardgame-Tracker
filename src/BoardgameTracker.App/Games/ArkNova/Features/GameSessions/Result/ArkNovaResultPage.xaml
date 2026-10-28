@@ -9,19 +9,19 @@
     <Grid Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="14">
         <VerticalStackLayout Spacing="1">
             <Label Text="Ergebnis" FontAttributes="Bold" FontSize="24" />
-            <Label Text="{Binding GroupName}" TextColor="{StaticResource TextSecondary}" />
-            <Label Text="{Binding DurationText}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+            <Label Text="{Binding GroupName}" TextColor="{DynamicResource TextPrimary}" />
+            <Label Text="{Binding DurationText}" FontSize="12" TextColor="{DynamicResource TextPrimary}" />
         </VerticalStackLayout>
         <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ArkNovaResultPlayerViewModel">
                     <Border Margin="0,0,0,8" Padding="12" Style="{StaticResource CardBorder}" BackgroundColor="{Binding Tint}">
                         <Grid ColumnDefinitions="44,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                            <Label Text="{Binding PlacementText}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" Grid.RowSpan="3" />
-                            <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                            <Label Grid.Column="2" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="16" />
-                            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RawValuesText}" FontSize="11" TextColor="{StaticResource TextPrimary}" />
-                            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SpecialCardsText}" FontSize="10" TextColor="{StaticResource TextPrimary}" />
+                            <Label TextColor="{Binding PlayerTextColor}" Text="{Binding PlacementText}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" Grid.RowSpan="3" />
+                            <Label TextColor="{Binding PlayerTextColor}" Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                            <Label TextColor="{Binding PlayerTextColor}" Grid.Column="2" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="16" />
+                            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RawValuesText}" FontSize="11" TextColor="{Binding PlayerTextColor}" />
+                            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SpecialCardsText}" FontSize="10" TextColor="{Binding PlayerTextColor}" />
                         </Grid>
                     </Border>
                 </DataTemplate>

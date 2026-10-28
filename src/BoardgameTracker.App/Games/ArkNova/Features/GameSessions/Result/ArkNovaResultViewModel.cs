@@ -62,6 +62,7 @@ public sealed class ArkNovaResultPlayerViewModel
         Name = player.Name;
         ColorText = ArkNovaPlayerColorPresentation.GetName(player.Color);
         Tint = ArkNovaPlayerColorPresentation.GetTint(player.Color);
+        PlayerTextColor = ArkNovaPlayerColorPresentation.GetText(player.Color);
         ZooPlanText = $"Zooplan {player.ZooPlanNumber}";
         RawValuesText = $"Attraktivität {player.Attractiveness} · Artenschutz {player.Conservation}"
             + (player.Reputation is int reputation ? $" · Ruf {reputation}" : " · Ruf nicht erfasst");
@@ -78,6 +79,7 @@ public sealed class ArkNovaResultPlayerViewModel
     public string Name { get; }
     public string ColorText { get; }
     public Microsoft.Maui.Graphics.Color Tint { get; }
+    public Microsoft.Maui.Graphics.Color PlayerTextColor { get; }
     public string ZooPlanText { get; }
     public string RawValuesText { get; }
     public int Score { get; }

@@ -20,7 +20,7 @@
                         FontSize="13"
                         FontAttributes="Bold"
                         Text="{Binding SelectedGameName}"
-                        TextColor="{StaticResource TextPrimary}" />
+                        TextColor="{DynamicResource TextPrimary}" />
                 </VerticalStackLayout>
                 <Button
                     Grid.Column="1"
@@ -46,7 +46,7 @@
             Grid.Row="1"
             IsVisible="{Binding HasError}"
             Text="{Binding ErrorMessage}"
-            TextColor="{StaticResource Danger}" />
+            TextColor="{DynamicResource Danger}" />
 
         <CollectionView
             Grid.Row="2"
@@ -67,7 +67,7 @@
                     <Border
                         Margin="0,0,0,12"
                         Padding="16"
-                        BackgroundColor="{StaticResource SurfaceYellow}"
+                        BackgroundColor="{DynamicResource Surface}"
                         Style="{StaticResource CardBorder}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                             <VerticalStackLayout Spacing="5">
@@ -79,7 +79,7 @@
                                         FontAttributes="Bold"
                                         FontSize="20"
                                         Text="{Binding Name}" />
-                                    <Image
+                                    <Image BackgroundColor="{DynamicResource IconSurface}"
                                         HeightRequest="20"
                                         WidthRequest="20"
                                         IsVisible="{Binding HasOpenGameSession}"
@@ -90,13 +90,13 @@
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="{Binding PlayerNames}" />
-                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{StaticResource TextSecondary}" />
-                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{StaticResource TextSecondary}" />
+                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{DynamicResource TextSecondary}" />
+                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{DynamicResource TextSecondary}" />
                                 </HorizontalStackLayout>
                                 <Label
                                     FontSize="12"
                                     Text="{Binding LastPlayedText}"
-                                    TextColor="{StaticResource TextSecondary}" />
+                                    TextColor="{DynamicResource TextSecondary}" />
                             </VerticalStackLayout>
                             <ImageButton
                                 Grid.Column="1"
@@ -121,10 +121,10 @@
 
         <Grid
             Grid.RowSpan="4"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center" />
@@ -132,10 +132,10 @@
 
         <Grid
             Grid.RowSpan="4"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsNavigating}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsNavigating}"
                 VerticalOptions="Center" />

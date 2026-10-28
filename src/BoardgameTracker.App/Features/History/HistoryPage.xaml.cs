@@ -44,12 +44,25 @@ public partial class HistoryPage : ContentPage
     }
     private static string GameName(string key) => key == ArkNovaGame.Key ? AppResources.ArkNova : key;
     private void OnFilterChanged(object? sender, EventArgs e) { if (!_loading) Refresh(); }
+    private void OnGameFilterClicked(object? sender, EventArgs e) => GameFilter.Focus();
+    private void OnGroupFilterClicked(object? sender, EventArgs e) => GroupFilter.Focus();
+    private static void UpdateChip(Button chip, string name, bool selected)
+    {
+        chip.Text = string.Format(selected ? AppResources.HistoryFilterSelectedFormat : AppResources.HistoryFilterFormat, name);
+        chip.SetDynamicResource(Button.BackgroundColorProperty, selected ? "SelectedSurface" : "Surface");
+        chip.SetDynamicResource(Button.BorderColorProperty, selected ? "SelectedBorder" : "Outline");
+        SemanticProperties.SetDescription(chip, chip.Text);
+    }
     private void Refresh()
     {
         var game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
         var group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
+        UpdateChip(GameChip, game is null ? AppResources.HistoryAllGames : GameName(game), game is not null);
+        UpdateChip(GroupChip, group is null ? AppResources.HistoryAllGroups : _all.First(s => s.GroupId == group).GroupName, group is not null);
         Sessions.ItemsSource = _all.Where(s => (game is null || s.GameKey == game) && (group is null || s.GroupId == group))
-            .Select(s => new HistoryCard(s, GameName(s.GameKey))).ToArray();
+            .Select(s => new HistoryCard(s, GameName(s.GameKey)))
+            .GroupBy(s => (s.Data.StartedAt.ToLocalTime().Year, s.Data.StartedAt.ToLocalTime().Month))
+            .Select(g => new HistoryMonth(new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy", System.Globalization.CultureInfo.CurrentCulture), g)).ToArray();
     }
     private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e)
     {
@@ -79,4 +92,9 @@ public sealed record HistoryCard(HistoryGameSession Data, string GameName)
         }
     }
     public string Placements => string.Join(" · ", Data.Players.Select(p => $"{p.Placement}. {p.Name}"));
+}
+
+public sealed class HistoryMonth(string title, IEnumerable<HistoryCard> cards) : List<HistoryCard>(cards)
+{
+    public string Title { get; } = title;
 }

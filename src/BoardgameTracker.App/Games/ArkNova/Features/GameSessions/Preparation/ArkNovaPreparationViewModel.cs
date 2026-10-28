@@ -358,6 +358,7 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ColorName))]
     [NotifyPropertyChangedFor(nameof(ColorBrush))]
+    [NotifyPropertyChangedFor(nameof(PlayerTextColor))]
     [NotifyPropertyChangedFor(nameof(CanChooseBlue))]
     [NotifyPropertyChangedFor(nameof(CanChooseYellow))]
     [NotifyPropertyChangedFor(nameof(CanChooseRed))]
@@ -380,11 +381,11 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Option1Selected))]
     [NotifyPropertyChangedFor(nameof(Option2Selected))]
-    [NotifyPropertyChangedFor(nameof(Option1Stroke))]
-    [NotifyPropertyChangedFor(nameof(Option2Stroke))]
     [NotifyPropertyChangedFor(nameof(Option1StrokeThickness))]
     [NotifyPropertyChangedFor(nameof(Option2StrokeThickness))]
     public partial int? SelectedZooPlanNumber { get; private set; }
+
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(Color);
 
     public string ColorName => ArkNovaPlayerColorPresentation.GetName(Color);
 
@@ -410,12 +411,6 @@ public partial class ArkNovaPreparationPlayerViewModel(
         SelectedZooPlanNumber.HasValue
         && ZooPlanOption2 is not null
         && ZooPlanOption2.Number == SelectedZooPlanNumber.Value;
-    public Microsoft.Maui.Graphics.Color Option1Stroke =>
-        Option1Selected ? Microsoft.Maui.Graphics.Colors.Green : Microsoft.Maui.Graphics.Colors.Transparent;
-
-    public Microsoft.Maui.Graphics.Color Option2Stroke =>
-        Option2Selected ? Microsoft.Maui.Graphics.Colors.Green : Microsoft.Maui.Graphics.Colors.Transparent;
-
     public double Option1StrokeThickness => Option1Selected ? 3 : 0;
     public double Option2StrokeThickness => Option2Selected ? 3 : 0;
 

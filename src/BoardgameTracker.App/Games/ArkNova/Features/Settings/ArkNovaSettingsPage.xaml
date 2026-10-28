@@ -14,7 +14,7 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <VerticalStackLayout Spacing="3">
                         <Label Text="Ruf erfassen" FontAttributes="Bold" />
-                        <Label Text="Blendet die optionale Rufeingabe in der Wertung ein." FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                        <Label Text="Blendet die optionale Rufeingabe in der Wertung ein." FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                     <Switch Grid.Column="1" IsToggled="{Binding CaptureReputation}" />
                 </Grid>
@@ -23,7 +23,7 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <VerticalStackLayout Spacing="3">
                         <Label Text="Alte Punkteanzeige" FontAttributes="Bold" />
-                        <Label Text="Zeigt die berechneten Punkte um 100 Punkte verschoben an." FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                        <Label Text="Zeigt die berechneten Punkte um 100 Punkte verschoben an." FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                     <Switch Grid.Column="1" IsToggled="{Binding UseOldScoring}" />
                 </Grid>

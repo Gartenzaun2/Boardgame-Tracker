@@ -3,6 +3,7 @@
     x:Class="BoardgameTracker.App.Features.Groups.EditGroup.EditGroupPage"
     x:Name="Page"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:colors="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.EditGroup"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
@@ -23,7 +24,7 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" BackgroundColor="{StaticResource SurfaceYellow}" Style="{StaticResource CardBorder}">
+                <Border Padding="16" BackgroundColor="{DynamicResource Surface}" Style="{StaticResource CardBorder}">
                     <VerticalStackLayout Spacing="16">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                             <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
@@ -32,14 +33,14 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
-                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{StaticResource TextSecondary}" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextSecondary}" />
                             </VerticalStackLayout>
                             <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
                         </Grid>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                                <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{StaticResource TextSecondary}" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{DynamicResource TextSecondary}" />
                             </VerticalStackLayout>
                             <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
                         </Grid>
@@ -60,13 +61,13 @@
                                         <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                             <VerticalStackLayout Spacing="2">
                                                 <Label FontAttributes="Bold" Text="{Binding Name}" />
-                                                <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" TextColor="{StaticResource TextSecondary}" />
+                                                <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" TextColor="{DynamicResource TextSecondary}" />
                                             </VerticalStackLayout>
                                             <Border
                                                 Grid.Column="1"
                                                 BackgroundColor="{Binding ColorBrush}"
                                                 HeightRequest="44"
-                                                Stroke="{StaticResource Outline}"
+                                                Stroke="{DynamicResource Outline}"
                                                 StrokeShape="RoundRectangle 16"
                                                 WidthRequest="44"
                                                 SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}">
@@ -75,7 +76,7 @@
                                                         Command="{Binding Source={x:Reference Page}, Path=BindingContext.ToggleColorPickerCommand}"
                                                         CommandParameter="{Binding .}" />
                                                 </Border.GestureRecognizers>
-                                                <Image
+                                                <Image BackgroundColor="{DynamicResource IconSurface}"
                                                     HeightRequest="18"
                                                     Source="icon_palette.png"
                                                     WidthRequest="18" />
@@ -88,10 +89,10 @@
                                             HorizontalOptions="End"
                                             IsVisible="{Binding IsColorPickerOpen}"
                                             Spacing="8">
-                                            <Button BackgroundColor="#8BC4E8" SemanticProperties.Description="{x:Static res:AppResources.Blue}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlueCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
-                                            <Button BackgroundColor="#F2D65C" SemanticProperties.Description="{x:Static res:AppResources.Yellow}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetYellowCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
-                                            <Button BackgroundColor="#E98A84" SemanticProperties.Description="{x:Static res:AppResources.Red}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetRedCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
-                                            <Button BackgroundColor="#404040" SemanticProperties.Description="{x:Static res:AppResources.Black}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlackCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlueBackground}" SemanticProperties.Description="{x:Static res:AppResources.Blue}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlueCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.YellowBackground}" SemanticProperties.Description="{x:Static res:AppResources.Yellow}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetYellowCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.RedBackground}" SemanticProperties.Description="{x:Static res:AppResources.Red}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetRedCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
+                                            <Button BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlackBackground}" SemanticProperties.Description="{x:Static res:AppResources.Black}" Command="{Binding Source={x:Reference Page}, Path=BindingContext.SetBlackCommand}" CommandParameter="{Binding .}" HeightRequest="44" Padding="0" WidthRequest="44" />
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
                                 </Border>
@@ -100,17 +101,17 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                 <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
             </VerticalStackLayout>
         </ScrollView>
 
         <Grid
             Grid.RowSpan="2"
-            BackgroundColor="#40FFFFFF"
+            BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
-            <ActivityIndicator
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
                 HorizontalOptions="Center"
                 IsRunning="{Binding IsBusy}"
                 VerticalOptions="Center" />

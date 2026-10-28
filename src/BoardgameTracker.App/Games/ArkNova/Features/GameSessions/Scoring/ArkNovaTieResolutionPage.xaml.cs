@@ -82,9 +82,11 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
             {
                 Padding = 8,
                 StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 10 },
-                Stroke = (Color)Microsoft.Maui.Controls.Application.Current!.Resources["Outline"],
+
                 Content = content
             };
+            border.SetDynamicResource(Border.StrokeProperty, "Outline");
+            border.SetDynamicResource(Border.BackgroundColorProperty, "Surface");
             DropGestureRecognizer drop = new() { AllowDrop = true };
             drop.Drop += (_, _) =>
             {

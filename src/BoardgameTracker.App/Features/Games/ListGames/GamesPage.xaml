@@ -19,7 +19,7 @@
             <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="20" />
-                    <Label Text="{x:Static res:AppResources.SupportedGame}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="{x:Static res:AppResources.SupportedGame}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                 </VerticalStackLayout>
                 <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
             </Grid>

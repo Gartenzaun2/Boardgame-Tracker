@@ -254,6 +254,6 @@ public partial class EditGroupPlayerItemViewModel(
     public partial bool IsColorPickerOpen { get; set; }
 
     public Microsoft.Maui.Graphics.Color ColorBrush => DefaultColor is ArkNovaPlayerColor color
-        ? ArkNovaPlayerColorPresentation.GetTint(color, darkBlack: true)
+        ? ArkNovaPlayerColorPresentation.GetTint(color)
         : Microsoft.Maui.Graphics.Color.FromArgb("#E7E7E7");
 }
