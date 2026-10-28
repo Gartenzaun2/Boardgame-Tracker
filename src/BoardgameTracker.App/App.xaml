@@ -16,7 +16,9 @@
             </Style>
 
             <Style x:Key="CompactActionButton" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
+                <Setter Property="BorderWidth" Value="1" />
                 <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="Padding" Value="12,6" />
@@ -32,6 +34,7 @@
 
             <Style x:Key="PrimaryCompactButton" TargetType="Button" BasedOn="{StaticResource CompactActionButton}">
                 <Setter Property="BackgroundColor" Value="{DynamicResource Primary}" />
+                <Setter Property="BorderWidth" Value="0" />
                 <Setter Property="TextColor" Value="{DynamicResource PrimaryForeground}" />
                 <Setter Property="FontAttributes" Value="Bold" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
@@ -86,7 +89,9 @@
             <Style TargetType="ActivityIndicator"><Setter Property="Color" Value="{DynamicResource Primary}" /></Style>
             <Style TargetType="Switch"><Setter Property="OnColor" Value="{DynamicResource Primary}" /></Style>
             <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
+                <Setter Property="BorderWidth" Value="1" />
                 <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
             </Style>
             <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource CompactActionButton}">

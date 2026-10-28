@@ -406,3 +406,5 @@ Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placem
 ## Theme und Historiengliederung
 
 Allgemeine Einstellungen enthalten den Picker „Darstellung“ mit Deep Forest, Königsblau und Dunkel. Alle Screens verwenden dieselbe Struktur in allen Themes. Die bestehende Shell-TabBar hat eine obere Kontur und einen aktiven Eintrag mit einer gemeinsamen abgerundeten Auswahlfläche hinter Icon und Text. Der Rand der Auswahlfläche hat keine vom Füllton abweichende Farbe. Historienfilter stehen als kompakte, bei Platzmangel umbrechende Chips oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter; die Auswahl erfolgt weiterhin nativ. Die Liste gruppiert Partiekarten nach lokalem Kalendermonat, z. B. „Oktober 2026“, mit einfacher Überschrift ohne Karte und ohne Sticky-Verhalten.
+
+Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Sekundärbuttons sind transparent mit Kontur; keine separate Sekundärflächenfarbe.

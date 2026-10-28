@@ -68,7 +68,7 @@ Es soll ruhig, natürlich und hochwertig wirken, ohne einen beigen oder papierar
 |---|---|
 | AppBackground | `#D9E6DF` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#EEF5F1` |
+| SurfaceSecondary | `#FFFFFF` (Alias von Surface) |
 | Primary | `#466655` |
 | PrimaryPressed | `#385346` |
 | PrimaryForeground | `#FFFFFF` |
@@ -98,7 +98,7 @@ Es soll etwas klarer, kühler und digitaler wirken als Deep Forest, ohne kräfti
 |---|---|
 | AppBackground | `#DCE5F4` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#EEF3FB` |
+| SurfaceSecondary | `#FFFFFF` (Alias von Surface) |
 | Primary | `#315B9B` |
 | PrimaryPressed | `#274A80` |
 | PrimaryForeground | `#FFFFFF` |
@@ -126,7 +126,7 @@ Das dunkle Theme ist ein eigenständiges Theme und keine einfache automatische I
 |---|---|
 | AppBackground | `#141A17` |
 | Surface | `#222A26` |
-| SurfaceSecondary | `#29352F` |
+| SurfaceSecondary | `#222A26` (Alias von Surface) |
 | Primary | `#5B8A70` |
 | PrimaryPressed | `#6D9B82` |
 | PrimaryForeground | `#101713` |
@@ -167,14 +167,13 @@ Interaktive oder inhaltlich abgeschlossene Bereiche:
 - Bottom-Navigation
 - Eingabebereiche, wenn eine klare Gruppierung erforderlich ist
 
-### Ebene 3 – SelectedSurface / SurfaceSecondary
+### Ebene 3 – SelectedSurface
 
 Für:
 
 - ausgewählte Filter
 - aktiven Navigationseintrag
-- sekundäre Auswahlbereiche
-- zurückhaltende hervorgehobene Zustände
+- ausdrücklich ausgewählte Zustände
 
 Farbe soll nicht verwendet werden, nur um möglichst viele Flächen voneinander zu unterscheiden.
 
@@ -289,11 +288,7 @@ Beispiele:
 
 Die Komponentenrolle bestimmt die Aktionsfarbe.
 
-Sekundäraktionen verwenden bevorzugt:
-
-- `SurfaceSecondary`,
-- Kontur,
-- oder eine zurückhaltende textuelle Aktion.
+Sekundäraktionen sind transparent mit `Outline`-Kontur und `TextPrimary`, alternativ eine zurückhaltende textuelle Aktion. Sie erhalten keine zusätzliche Flächenfarbe. Das gilt insbesondere für „Zoopläne auslosen“, „Reihenfolge durchrotieren“ und „Schließen“.
 
 Destruktive Aktionen verwenden `Danger`, bleiben aber weniger prominent als die Hauptaktion.
 
@@ -422,4 +417,8 @@ Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für
 
 Verbindliche Designregel: Jede Kombination aus globaler Spieler-Hintergrundfarbe und zugehöriger Spieler-Textfarbe muss für normalen Text mindestens **4,5:1 Kontrast** erreichen, unabhängig vom App-Theme. Die finale Palette wird automatisiert nach der relativen sRGB-Luminanz ohne Rundung der Prüfschwelle getestet. Braun und Lila verwenden bewusst dunklere Flächen, damit ihre weichen Off-White-Texte erhalten bleiben. Die UI-Hexwerte bleiben ausschließlich Darstellung und sind keine Grundlage für Kameraerkennung. Farbsehschwächen werden durch die Palette allein nicht abgedeckt; Namen und Reihenfolge bleiben notwendig.
 
-Karten mit vergleichbarer Rolle (Gruppen, letzte Partie, Historie) verwenden einheitlich `Surface`. `SurfaceSecondary` dient sekundären Aktionen oder tatsächlichen Unterbereichen, nicht der bloßen Unterscheidung zweier Kartenarten. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.
+Karten mit vergleichbarer Rolle (Gruppen, letzte Partie, Historie) verwenden einheitlich `Surface`. `SurfaceSecondary` bleibt als semantischer Alias von `Surface` erhalten, besitzt aber keine eigene Farbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.
+
+## Reduzierte UI-Flächen
+
+Die gewöhnliche App-Oberfläche verwendet drei neutrale Flächen: `AppBackground`, `Surface` und `SelectedSurface`. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits diesem Spieler zugeordnete Karten erhalten `SelectedSurface` und `SelectedBorder`. Die Zuordnung bleibt zusätzlich als Text sichtbar. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.

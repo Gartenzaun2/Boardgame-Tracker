@@ -78,13 +78,13 @@
         </VerticalStackLayout>
 
         <Grid Grid.RowSpan="3" IsVisible="{Binding IsSpecialCardPickerVisible}" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
-            <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Center" MaximumWidthRequest="520">
+            <Border Padding="16" BackgroundColor="{DynamicResource AppBackground}" Style="{StaticResource CardBorder}" VerticalOptions="Center" MaximumWidthRequest="520">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{Binding SpecialCardPickerTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
                         <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Clicked="OnCloseSpecialCardPickerClicked" Style="{StaticResource CompactActionButton}" />
                     </Grid>
-                    <CollectionView Grid.Row="1" ItemsSource="{Binding SpecialCardOptions}" SelectionMode="None" HeightRequest="330">
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding SpecialCardOptions}" BackgroundColor="{DynamicResource AppBackground}" SelectionMode="None" HeightRequest="330">
                         <CollectionView.ItemsLayout>
                             <LinearItemsLayout Orientation="Vertical" ItemSpacing="7" />
                         </CollectionView.ItemsLayout>
@@ -92,9 +92,6 @@
                             <DataTemplate x:DataType="vm:ArkNovaSpecialCardOptionViewModel">
                                 <Border Padding="12,9" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10" BackgroundColor="{DynamicResource Surface}">
                                     <Border.Triggers>
-                                        <DataTrigger TargetType="Border" Binding="{Binding IsUnassigned}" Value="True">
-                                            <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
-                                        </DataTrigger>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsAssignedToTarget}" Value="True">
                                             <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
                                             <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />

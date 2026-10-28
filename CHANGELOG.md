@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.5.4
+
+- Neutrale UI-Flächen reduziert: SurfaceSecondary und DisabledSurface verwenden Surface.
+- Sekundärbuttons transparent mit Kontur; besondere-Karten-Auswahl auf AppBackground mit Surface-Karten und gemeinsamer Auswahlmarkierung.
+- App-Version 0.8.5.4 / ApplicationVersion 14.
+
+
 ## 0.8.5.3
 
 - Normale Iconbuttons transparent und themeabhängig getönt; letzte Partie verwendet die gemeinsame Kartenfläche.
