@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.6.0
+
+- Klarere UI-Hierarchie in Partievorbereitung, Gruppen und Gruppe anlegen: flache Metainformation/Formulare, Primary-Create-Aktion und gemeinsame Secondary-/Textaktionsstyles.
+- Einheitliches vorhandene-Spieler-Auswahlfenster mit direktem Hinzufügen per Tap.
+- SurfaceSecondary als leichte Aktionsfläche; App-Version 0.8.6.0 / ApplicationVersion 15.
+
+
 ## 0.8.5.4
 
 - Neutrale UI-Flächen reduziert: SurfaceSecondary und DisabledSurface verwenden Surface.

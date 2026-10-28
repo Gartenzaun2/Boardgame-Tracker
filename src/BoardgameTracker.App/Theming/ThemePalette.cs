@@ -15,7 +15,7 @@ public static class ThemePalette
     {
         ["AppBackground"] = "#D9E6DF",
         ["Surface"] = "#FFFFFF",
-        ["SurfaceSecondary"] = "#FFFFFF",
+        ["SurfaceSecondary"] = "#EEF5F1",
         ["Primary"] = "#466655",
         ["PrimaryPressed"] = "#385346",
         ["PrimaryForeground"] = "#FFFFFF",
@@ -41,7 +41,7 @@ public static class ThemePalette
     {
         ["AppBackground"] = "#DCE5F4",
         ["Surface"] = "#FFFFFF",
-        ["SurfaceSecondary"] = "#FFFFFF",
+        ["SurfaceSecondary"] = "#EEF3FB",
         ["Primary"] = "#315B9B",
         ["PrimaryPressed"] = "#274A80",
         ["PrimaryForeground"] = "#FFFFFF",
@@ -67,7 +67,7 @@ public static class ThemePalette
     {
         ["AppBackground"] = "#141A17",
         ["Surface"] = "#222A26",
-        ["SurfaceSecondary"] = "#222A26",
+        ["SurfaceSecondary"] = "#29352F",
         ["Primary"] = "#5B8A70",
         ["PrimaryPressed"] = "#6D9B82",
         ["PrimaryForeground"] = "#101713",

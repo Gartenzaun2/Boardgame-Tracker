@@ -155,45 +155,25 @@ Interaktion:
 
 ### Gruppe anlegen
 
-``` text
-←  Gruppe anlegen   ⓘ                Speichern
-─────────────────────────────────────────────
+Header auf AppBackground: Zurück, Titel, Info und Primary-Speichern. Eine feine Outline-Unterkante trennt den Arbeitsbereich.
 
-Gruppenname              [ Freitagabend     ]
+```text
+Gruppenname     [z. B. Freitagabend]
+Temporäre Gruppe                 ○
 
-Temporäre Gruppe          [ ○ ]
+Gruppenmitglieder  [Info]
+Noch keine Spieler in der Gruppe.
+[+ Vorhandenen Spieler hinzufügen]
 
-Spieler
-─────────────────────────────────────────────
-1.  Anna                          ↑  ↓  ×
-2.  Ben                           ↑  ↓  ×
-3.  Chris                         ↑  ↓  ×
-
-Vorhandene Player hinzufügen
-[ Player auswählen              ▼ ]   [ + ]
-
-Neue Player
-[ Name                              ]
-Gast                             [ ○ ]
-                              [ Hinzufügen ]
+Neuen Player anlegen
+Name            [z. B. Alex]
+Gast                             ○
+[Player hinzufügen]
 ```
 
-#### Verhalten
+Keine Karten um Stammdaten oder neue Spieler, keine Divider zwischen Formularsektionen. Label-/Inputmuster, Höhe und Typografie sind für Gruppenname und Name gleich. Bereits hinzugefügte Spieler stehen in eigenen interaktiven Einheiten mit Reihenfolge-/Entfernen-Aktionen. Ihre Reihenfolge bleibt veränderbar.
 
-- Die Kopfzeile bleibt die primäre Aktionszone; `Speichern` befindet
-  sich oben rechts und verwendet die Primary-Rolle.
-- Es gibt keinen redundanten zweiten Titel im Inhaltsbereich.
-- Das Informations-Icon zeigt Hilfetext per Hover, wenn Hover vorhanden
-  ist, ansonsten per Tippen.
-- `Gruppenname` verwendet eine kompakte Label-/Eingabefeld-Zeile.
-- Bereits hinzugefügte Spieler stehen vor den Hinzufügen-Aktionen.
-- Vorhandene Spieler werden gegenüber dem Anlegen einer neuen Spieler
-  priorisiert.
-- Die Auswahl vorhandener Spieler erfolgt über Picker/Dropdown.
-- Bereits hinzugefügte Spieler werden im Picker nicht angeboten.
-- Neue Spieler werden erst beim Speichern der Gruppe persistiert.
-- `Temporäre Gruppe` bleibt bei den grundlegenden Gruppeneigenschaften
-  oberhalb des Spielerbereichs.
+Der Secondary-Button für vorhandene Spieler öffnet dasselbe modale Auswahlmuster wie andere App-Auswahlen: AppBackground außen, Surface-Einträge. Ein Tap fügt den Spieler direkt hinzu und schließt. Bereits enthaltene Spieler fehlen in der Auswahl; bei fehlenden verfügbaren Spielern erscheint der Leerzustand. Neue Spieler werden weiterhin erst gemeinsam mit der Gruppe gespeichert.
 
 ### Gruppe bearbeiten
 
@@ -231,24 +211,7 @@ Für die Gruppen-Screens gelten zusätzlich:
 
 ## Empty/Busy States
 
-`Vorhandene Player hinzufügen` besitzt zwei Zustände:
-
-``` text
-Vorhandene Player hinzufügen
-[ Player auswählen ▼ ] [ + ]
-```
-
-oder, wenn keinen weiteren Spieler verfügbar ist:
-
-``` text
-Vorhandene Player hinzufügen
-Keine weiteren Spieler vorhanden.
-```
-
-Picker und Hinzufügen-Button werden im zweiten Zustand nicht angezeigt.
-
-Navigation und persistierende Aktionen zeigen einen Busy-Zustand und
-verhindern Mehrfachtaps.
+Ohne verfügbare bestehende Spieler ersetzt „Keine weiteren Spieler vorhanden.“ den Auswahlbutton. Eine leere Mitgliedsliste zeigt Text ohne Karte. Navigation und persistierende Aktionen zeigen Busy-Zustände und verhindern Mehrfachtaps.
 
 ------------------------------------------------------------------------
 
@@ -262,8 +225,8 @@ Aktueller Aufbau:
 │    <Gruppenname>                     │
 │    <Fehler nur wenn vorhanden>       │
 ├──────────────────────────────────────┤
-│ Letzte Partie ...                    │
-│ [Zoopläne auslosen] [durchrotieren] │
+│ LETZTE PARTIE (flache Metainformation)│
+│ [Zoopläne auslosen] [durchrotieren]   │
 ├──────────────────────────────────────┤
 │ 1  Anna                         [🎨] │
 │    Blau                              │
@@ -407,4 +370,6 @@ Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placem
 
 Allgemeine Einstellungen enthalten den Picker „Darstellung“ mit Deep Forest, Königsblau und Dunkel. Alle Screens verwenden dieselbe Struktur in allen Themes. Die bestehende Shell-TabBar hat eine obere Kontur und einen aktiven Eintrag mit einer gemeinsamen abgerundeten Auswahlfläche hinter Icon und Text. Der Rand der Auswahlfläche hat keine vom Füllton abweichende Farbe. Historienfilter stehen als kompakte, bei Platzmangel umbrechende Chips oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter; die Auswahl erfolgt weiterhin nativ. Die Liste gruppiert Partiekarten nach lokalem Kalendermonat, z. B. „Oktober 2026“, mit einfacher Überschrift ohne Karte und ohne Sticky-Verhalten.
 
-Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Sekundärbuttons sind transparent mit Kontur; keine separate Sekundärflächenfarbe.
+Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Secondary-Aktionen in den drei Ziel-Screens verwenden SurfaceSecondary und eine Aktionskontur gemäß UI_DESIGN_GUIDE; bestehende kleine Compact-/Textaktionen außerhalb des Scopes bleiben transparent.
+
+In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Surface, Filter bleiben untergeordnete Toggles. In der Vorbereitung sind Auslosen/Rotation Secondary, Starten bleibt Primary. Formular- und Metabereiche werden flach dargestellt.

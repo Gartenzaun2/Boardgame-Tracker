@@ -68,7 +68,7 @@ Es soll ruhig, natürlich und hochwertig wirken, ohne einen beigen oder papierar
 |---|---|
 | AppBackground | `#D9E6DF` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#FFFFFF` (Alias von Surface) |
+| SurfaceSecondary | `#EEF5F1` (Sekundäraktion) |
 | Primary | `#466655` |
 | PrimaryPressed | `#385346` |
 | PrimaryForeground | `#FFFFFF` |
@@ -98,7 +98,7 @@ Es soll etwas klarer, kühler und digitaler wirken als Deep Forest, ohne kräfti
 |---|---|
 | AppBackground | `#DCE5F4` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#FFFFFF` (Alias von Surface) |
+| SurfaceSecondary | `#EEF3FB` (Sekundäraktion) |
 | Primary | `#315B9B` |
 | PrimaryPressed | `#274A80` |
 | PrimaryForeground | `#FFFFFF` |
@@ -126,7 +126,7 @@ Das dunkle Theme ist ein eigenständiges Theme und keine einfache automatische I
 |---|---|
 | AppBackground | `#141A17` |
 | Surface | `#222A26` |
-| SurfaceSecondary | `#222A26` (Alias von Surface) |
+| SurfaceSecondary | `#29352F` (Sekundäraktion) |
 | Primary | `#5B8A70` |
 | PrimaryPressed | `#6D9B82` |
 | PrimaryForeground | `#101713` |
@@ -179,29 +179,19 @@ Farbe soll nicht verwendet werden, nur um möglichst viele Flächen voneinander 
 
 ---
 
-## 7. Karten
+## 7. Karten, Formulare und Metainformation
 
-Karten liegen auf `Surface`.
+**Karten sind Inhalt, Buttons sind Aktionen, Formulare bleiben flach und Metainformation steht ohne Karte.**
 
-Standard:
+Surface-Karten sind eigenständige inhaltliche oder interaktive Einheiten, z. B. Gruppen und historische Partien. Sie verwenden eine moderate Rundung und Outline ohne starken Standardschatten. Eine Karte ist kein universeller Gruppierungsrahmen für Überschrift und Text oder einzelne Formularsektionen.
 
-- moderate Rundung
-- dezente `Outline`
-- kein starker Standardschatten
-- ausreichend Abstand zum App-Hintergrund
+Gruppenstammdaten und „Neuen Player anlegen“ sind flache Inline-Formulare. Gruppenname und Spielername verwenden dasselbe Label-links/Eingabe-rechts-Muster mit gleicher Typografie und Eingabehöhe. „Letzte Partie“ ist ein flacher Metabereich mit kleiner Überschrift, Datum und Ergebnis. Leere Gruppenmitglieder benötigen keine Karte.
 
-Der stärkere Unterschied zwischen `AppBackground` und `Surface` übernimmt den größten Teil der visuellen Trennung.
+Farbige Spielerflächen sind eine bewusste Identitäts-Ausnahme: Ihre gekoppelte Hintergrund-/Textfarbe bleibt erhalten. Eingefügte Gruppenmitglieder können als eigenständige interaktive Einheiten abgegrenzt bleiben.
 
-Karten sollen nur dort eingesetzt werden, wo ein Inhalt tatsächlich eine eigenständige Einheit bildet.
+Sektionen werden zuerst durch Abstand, Überschrift und Ausrichtung getrennt; Divider nur gezielt. Detail-/Bearbeitungsheader bleiben auf AppBackground und erhalten eine feine Outline-Unterkante, keine Header-Karte oder starken Schatten.
 
-Beispiele:
-
-- Gruppe: Karte
-- abgeschlossene Partie: Karte
-- Spieler in Wertungsübersicht: Karte
-- einzelne einfache Einstellungszeilen: gegebenenfalls keine eigene Karte erforderlich
-
-Die bestehenden farblich getönten Arche-Nova-Spielerkarten bleiben erhalten.
+Diese Überarbeitung ist in Partievorbereitung, Gruppenübersicht und Gruppe anlegen umgesetzt. Andere Screens werden separat geprüft; daraus folgt kein pauschaler Umbau aller Formulare.
 
 ---
 
@@ -275,22 +265,13 @@ Ob Monatsüberschriften später beim Scrollen sticky werden, ist keine Vorausset
 
 ---
 
-## 11. Primär- und Sekundäraktionen
+## 11. Primary, Secondary und Text Actions
 
-Bestätigende Hauptaktionen verwenden `Primary` und `PrimaryForeground`.
+- **PrimaryCompactButton:** wichtigste Seitenaktion, gefüllt mit Primary und PrimaryForeground, Pressed über PrimaryPressed. „Neue Gruppe“, „Speichern“ und „Starten“ sind Primary-Aktionen.
+- **SecondaryActionButton:** echte nachgeordnete Aktion mit leichter SurfaceSecondary-Fläche, SelectedBorder-Kontur und kontrastreichem TextPrimary. Dazu gehören „Zoopläne auslosen“, „Reihenfolge rotieren“, „Vorhandenen Spieler hinzufügen“ und „Player hinzufügen“. Die Aktionsfläche unterscheidet sich von weißen Inhaltskarten.
+- **TextActionButton:** kleine kontextuelle Aktion ohne starke Fläche, transparent ohne Kontur, z. B. Schließen oder Abbrechen einer Auswahl.
 
-Beispiele:
-
-- Speichern
-- Starten
-- Änderungen übernehmen
-- Wertung abschließen
-
-Die Komponentenrolle bestimmt die Aktionsfarbe.
-
-Sekundäraktionen sind transparent mit `Outline`-Kontur und `TextPrimary`, alternativ eine zurückhaltende textuelle Aktion. Sie erhalten keine zusätzliche Flächenfarbe. Das gilt insbesondere für „Zoopläne auslosen“, „Reihenfolge durchrotieren“ und „Schließen“.
-
-Destruktive Aktionen verwenden `Danger`, bleiben aber weniger prominent als die Hauptaktion.
+Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Bestehende CompactActionButton-Verwendungen außerhalb der drei Ziel-Screens werden nicht pauschal migriert. Destruktive Aktionen bleiben sekundär und verwenden Danger.
 
 ---
 
@@ -417,8 +398,10 @@ Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für
 
 Verbindliche Designregel: Jede Kombination aus globaler Spieler-Hintergrundfarbe und zugehöriger Spieler-Textfarbe muss für normalen Text mindestens **4,5:1 Kontrast** erreichen, unabhängig vom App-Theme. Die finale Palette wird automatisiert nach der relativen sRGB-Luminanz ohne Rundung der Prüfschwelle getestet. Braun und Lila verwenden bewusst dunklere Flächen, damit ihre weichen Off-White-Texte erhalten bleiben. Die UI-Hexwerte bleiben ausschließlich Darstellung und sind keine Grundlage für Kameraerkennung. Farbsehschwächen werden durch die Palette allein nicht abgedeckt; Namen und Reihenfolge bleiben notwendig.
 
-Karten mit vergleichbarer Rolle (Gruppen, letzte Partie, Historie) verwenden einheitlich `Surface`. `SurfaceSecondary` bleibt als semantischer Alias von `Surface` erhalten, besitzt aber keine eigene Farbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.
+Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surface`. Die letzte Partie ist Metainformation ohne Karte. `SurfaceSecondary` ist die leichte Aktionsfläche für Secondary Buttons, keine zusätzliche Kartenfarbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.
 
 ## Reduzierte UI-Flächen
 
-Die gewöhnliche App-Oberfläche verwendet drei neutrale Flächen: `AppBackground`, `Surface` und `SelectedSurface`. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits diesem Spieler zugeordnete Karten erhalten `SelectedSurface` und `SelectedBorder`. Die Zuordnung bleibt zusätzlich als Text sichtbar. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
+Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits diesem Spieler zugeordnete Karten erhalten `SelectedSurface` und `SelectedBorder`. Die Zuordnung bleibt zusätzlich als Text sichtbar. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
+
+Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: AppBackground außen, Surface-Einträge, Outline, TextPrimary und dieselbe modale Sperrfläche wie bei besonderen Karten. Ein Tap auf den Eintrag fügt unmittelbar hinzu und schließt; kein nativer Picker plus zusätzlichem Bestätigungsschritt. Schließen oder System-Zurück bricht nur die Auswahl ab. Namen und Gaststatus bleiben sichtbar.

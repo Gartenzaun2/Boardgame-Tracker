@@ -468,4 +468,11 @@
 <data name="PlayerColorPink" xml:space="preserve"><value>Pink</value></data>
 <data name="PlayerColorTurquoise" xml:space="preserve"><value>Türkis</value></data>
 <data name="PlayerColorGray" xml:space="preserve"><value>Grau</value></data>
+<data name="PreviousGameSection" xml:space="preserve"><value>LETZTE PARTIE</value></data>
+<data name="GroupNameExample" xml:space="preserve"><value>z. B. Freitagabend</value></data>
+<data name="PlayerNameExample" xml:space="preserve"><value>z. B. Alex</value></data>
+<data name="PlayerNameLabel" xml:space="preserve"><value>Name</value></data>
+<data name="NewPlayerInline" xml:space="preserve"><value>Neuen Player anlegen</value></data>
+<data name="AddExistingPlayerAction" xml:space="preserve"><value>+ Vorhandenen Spieler hinzufügen</value></data>
+<data name="SelectExistingPlayerTitle" xml:space="preserve"><value>Vorhandenen Spieler auswählen</value></data>
 </root>

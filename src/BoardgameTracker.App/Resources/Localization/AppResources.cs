@@ -373,6 +373,15 @@ public static class AppResources
     public static string PlayerColorTurquoise => GetString(nameof(PlayerColorTurquoise));
     public static string PlayerColorGray => GetString(nameof(PlayerColorGray));
 
+    public static string PreviousGameSection => GetString(nameof(PreviousGameSection));
+    public static string GroupNameExample => GetString(nameof(GroupNameExample));
+    public static string PlayerNameExample => GetString(nameof(PlayerNameExample));
+    public static string PlayerNameLabel => GetString(nameof(PlayerNameLabel));
+    public static string NewPlayerInline => GetString(nameof(NewPlayerInline));
+    public static string AddExistingPlayerAction => GetString(nameof(AddExistingPlayerAction));
+
+    public static string SelectExistingPlayerTitle => GetString(nameof(SelectExistingPlayerTitle));
+
     private static string GetString(string key) =>
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(
