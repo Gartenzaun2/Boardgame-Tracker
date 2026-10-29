@@ -305,7 +305,11 @@ Ohne konkreten Bedarf werden nicht eingeführt:
 ## 12. Namespaces, Dateien und Tests
 
 - Namespace-Hierarchien folgen der fachlichen Ordnerstruktur.
-- Dateiname und primärer Typname stimmen überein.
+- Dateiname und primärer Typname stimmen überein; kleine fachlich zugehörige Begleittypen dürfen in derselben Datei stehen. Eine Datei pro Typ ist keine Pflicht.
+- Reine Implementierungsdetails möglichst privat verschachteln. Gemeinsam verwendete Fachbegriffe und Architekturverträge bleiben eigenständig; beim Zusammenlegen Modul- und Schichtgrenzen erhalten. XAML, DI und automatische EF-Erkennung zählen als Verwendung.
+- Einfache und kurze Typen explizit deklarieren, insbesondere `string?`, `bool`, `int`, `Guid` und Enums. `var` nur für komplexe Typen verwenden, wenn die Deklaration dadurch lesbarer wird; anonyme Typen sind eingeschlossen. Kein `var` allein wegen eines offensichtlichen Initialisierers.
+- Bei `if` mit einer einzelnen einfachen Anweisung Klammern weglassen und die Anweisung eingerückt auf eine eigene Zeile setzen. Bei verschachtelten `if`-Anweisungen Klammern zur eindeutigen Block-/`else`-Zuordnung verwenden. Bei mehreren Anweisungen ebenfalls einen mehrzeiligen Klammerblock verwenden. Die öffnende Klammer darf auf der Zeile des zugehörigen Ausdrucks stehen. `finally`-Blöcke immer mehrzeilig mit Klammern schreiben; keine Inline-Blockinhalte.
+- Eine Anweisung pro Zeile; verständliche Absätze und benannte Zwischenschritte vor weiteren Abstraktionen. Vollqualifizierte Projekt-Typnamen nur bei Bedarf, sonst `using`. Keine festen Dateilängen als Aufteilungsregel.
 - Tests spiegeln die fachliche Struktur des getesteten Produktionscodes.
 - Bei Refactorings werden alte Synonyme nicht als Compatibility-Aliase im Domain
   Model weitergeführt.

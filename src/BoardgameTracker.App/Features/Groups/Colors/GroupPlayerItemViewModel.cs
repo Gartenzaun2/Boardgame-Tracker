@@ -12,6 +12,12 @@ public partial class GroupPlayerItemViewModel(Guid? playerId, string name, bool 
     public bool IsGuest { get; } = isGuest;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ColorName))]
+    [NotifyPropertyChangedFor(nameof(HasColor))]
+    [NotifyPropertyChangedFor(nameof(CardBackground))]
+    [NotifyPropertyChangedFor(nameof(CardTextColor))]
     public partial PlayerColor? DefaultColor { get; set; } = defaultColor;
+    public bool HasColor => DefaultColor.HasValue;
+    public Microsoft.Maui.Graphics.Color CardBackground => PlayerColorPresentation.GetBackground(DefaultColor ?? PlayerColor.Gray);
+    public Microsoft.Maui.Graphics.Color CardTextColor => PlayerColorPresentation.GetText(DefaultColor ?? PlayerColor.Gray);
     public string ColorName => DefaultColor is { } color ? PlayerColorPresentation.GetName(color) : AppResources.NoPlayerColor;
 }

@@ -17,14 +17,17 @@ public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog
     public string? GameKey { get; private set; }
     public bool HasColors => catalog.Get(GameKey).AllowedColors.Count > 0;
     public string Title => string.Format(AppResources.SetColorForGameFormat,
-        GameKey is not null && _games.TryGetValue(GameKey, out var game) ? game.Name() : GameKey);
+        GameKey is not null && _games.TryGetValue(GameKey, out GameColorPresentation? game) ? game.Name() : GameKey);
     public string PlayerName => _target?.Name ?? string.Empty;
     public ObservableCollection<GroupColorOption> Options { get; } = [];
     [ObservableProperty] public partial bool IsVisible { get; private set; }
 
     public bool Configure(string? gameKey)
     {
-        if (GameKey == gameKey) return false;
+        if (GameKey == gameKey)
+        {
+            return false;
+        }
         Close();
         GameKey = gameKey;
         OnPropertyChanged(nameof(HasColors));
@@ -34,12 +37,15 @@ public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog
 
     public void Open(GroupPlayerItemViewModel player, IReadOnlyList<GroupPlayerItemViewModel> players)
     {
-        if (!HasColors || !players.Contains(player)) return;
+        if (!HasColors || !players.Contains(player))
+        {
+            return;
+        }
         _target = player;
         _players = players;
         Options.Clear();
         AddOption(null);
-        foreach (var color in catalog.Get(GameKey).AllowedColors) AddOption(color);
+        foreach (PlayerColor color in catalog.Get(GameKey).AllowedColors) AddOption(color);
         OnPropertyChanged(nameof(PlayerName));
         IsVisible = true;
     }
@@ -51,11 +57,17 @@ public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog
 
     private void Select(PlayerColor? color)
     {
-        if (!IsVisible || _target is null || color is { } value && !catalog.Get(GameKey).Allows(value)) return;
-        var owner = color is null ? null : _players.FirstOrDefault(player => !ReferenceEquals(player, _target) && player.DefaultColor == color);
-        var previous = _target.DefaultColor;
+        if (!IsVisible || _target is null || color is { } value && !catalog.Get(GameKey).Allows(value))
+        {
+            return;
+        }
+        GroupPlayerItemViewModel? owner = color is null ? null : _players.FirstOrDefault(player => !ReferenceEquals(player, _target) && player.DefaultColor == color);
+        PlayerColor? previous = _target.DefaultColor;
         _target.DefaultColor = color;
-        if (owner is not null) owner.DefaultColor = previous;
+        if (owner is not null)
+        {
+            owner.DefaultColor = previous;
+        }
         Close();
     }
 
@@ -73,3 +85,6 @@ public sealed record GroupColorOption(PlayerColor? Color, string Name, Microsoft
 {
     public bool HasSwatch => Color is not null;
 }
+
+// The composition root supplies localized game names; group views know no game modules.
+public sealed record GameColorPresentation(string GameKey, Func<string> Name);

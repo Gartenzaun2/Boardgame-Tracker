@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.Application.History;
 using BoardgameTracker.Application.Settings.Navigation;
@@ -5,6 +6,7 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.Core.Games.ArkNova;
+
 namespace BoardgameTracker.App.Features.History;
 
 public partial class HistoryPage : ContentPage
@@ -18,40 +20,71 @@ public partial class HistoryPage : ContentPage
     private bool _loading;
     private bool _navigating;
     private bool _initialized;
+
     public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger)
     {
-        InitializeComponent(); _query = query; _settings = settings; _logger = logger;
+        InitializeComponent();
+        _query = query;
+        _settings = settings;
+        _logger = logger;
     }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (_loading) return;
-        _loading = true; BusyOverlay.IsVisible = true; ErrorLabel.IsVisible = false;
+        if (_loading)
+        {
+            return;
+        }
+        _loading = true;
+        BusyOverlay.IsVisible = true;
+        ErrorLabel.IsVisible = false;
+
         try
         {
-            var game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
-            var group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
+            string? game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
+            Guid? group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
             _all = await _query.ListAsync();
             _games = new string?[] { null }.Concat(_all.Select(s => s.GameKey).Distinct().OrderBy(k => k)).ToArray();
             _groups = new Guid?[] { null }.Concat(_all.Select(s => (Guid?)s.GroupId).Distinct()).ToArray();
-            if (!_initialized) game = _settings.Get().SelectedGameKey;
+            if (!_initialized)
+            {
+                game = _settings.Get().SelectedGameKey;
+            }
+
             GameFilter.ItemsSource = _games.Select(k => k is null ? AppResources.HistoryAllGames : GameName(k)).ToArray();
             GroupFilter.ItemsSource = _groups.Select(id => id is null ? AppResources.HistoryAllGroups : _all.First(s => s.GroupId == id).GroupName).ToArray();
             GameFilter.SelectedIndex = Math.Max(0, Array.IndexOf(_games, game));
             GroupFilter.SelectedIndex = Math.Max(0, Array.IndexOf(_groups, group));
-            _initialized = true; Refresh();
+            _initialized = true;
+            Refresh();
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not load completed game sessions.");
-            ErrorLabel.Text = AppResources.HistoryLoadFailed; ErrorLabel.IsVisible = true;
+            ErrorLabel.Text = AppResources.HistoryLoadFailed;
+            ErrorLabel.IsVisible = true;
         }
-        finally { _loading = false; BusyOverlay.IsVisible = false; }
+        finally
+        {
+            _loading = false;
+            BusyOverlay.IsVisible = false;
+        }
     }
+
     private static string GameName(string key) => key == ArkNovaGame.Key ? AppResources.ArkNova : key;
-    private void OnFilterChanged(object? sender, EventArgs e) { if (!_loading) Refresh(); }
+
+    private void OnFilterChanged(object? sender, EventArgs e)
+    {
+        if (!_loading)
+        {
+            Refresh();
+        }
+    }
+
     private void OnGameFilterClicked(object? sender, EventArgs e) => GameFilter.Focus();
     private void OnGroupFilterClicked(object? sender, EventArgs e) => GroupFilter.Focus();
+
     private static void UpdateChip(Button chip, string name, bool selected)
     {
         chip.Text = string.Format(selected ? AppResources.HistoryFilterSelectedFormat : AppResources.HistoryFilterFormat, name);
@@ -59,34 +92,56 @@ public partial class HistoryPage : ContentPage
         chip.SetDynamicResource(Button.BorderColorProperty, selected ? "SelectedBorder" : "Outline");
         SemanticProperties.SetDescription(chip, chip.Text);
     }
+
     private void Refresh()
     {
-        var game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
-        var group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
+        string? game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
+        Guid? group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
         UpdateChip(GameChip, game is null ? AppResources.HistoryAllGames : GameName(game), game is not null);
         UpdateChip(GroupChip, group is null ? AppResources.HistoryAllGroups : _all.First(s => s.GroupId == group).GroupName, group is not null);
-        Sessions.ItemsSource = _all.Where(s => (game is null || s.GameKey == game) && (group is null || s.GroupId == group))
-            .Select(s => new HistoryCard(s, GameName(s.GameKey)))
-            .GroupBy(s => (s.Data.StartedAt.ToLocalTime().Year, s.Data.StartedAt.ToLocalTime().Month))
-            .Select(g => new HistoryMonth(new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMMM yyyy", System.Globalization.CultureInfo.CurrentCulture), g)).ToArray();
+
+        IEnumerable<HistoryCard> cards = _all
+            .Where(session => (game is null || session.GameKey == game) && (group is null || session.GroupId == group))
+            .Select(session => new HistoryCard(session, GameName(session.GameKey)));
+        var months = cards.GroupBy(card => (card.Data.StartedAt.ToLocalTime().Year, card.Data.StartedAt.ToLocalTime().Month));
+
+        Sessions.ItemsSource = months.Select(month => new HistoryMonth(
+            new DateTime(month.Key.Year, month.Key.Month, 1).ToString("MMMM yyyy", CultureInfo.CurrentCulture),
+            month)).ToArray();
     }
+
     private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e)
     {
-        if (_navigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card) return;
-        _navigating = true; Sessions.SelectedItem = null; BusyOverlay.IsVisible = true;
+        if (_navigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card)
+        {
+            return;
+        }
+        _navigating = true;
+        Sessions.SelectedItem = null;
+        BusyOverlay.IsVisible = true;
+
         try
         {
-            if (card.Data.GameKey != ArkNovaGame.Key) throw new InvalidOperationException();
+            if (card.Data.GameKey != ArkNovaGame.Key)
+            {
+                throw new InvalidOperationException();
+            }
             await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = card.Data.GameSessionId });
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not open historical GameSession {GameSessionId}.", card.Data.GameSessionId);
-            ErrorLabel.Text = AppResources.HistoryOpenFailed; ErrorLabel.IsVisible = true;
+            ErrorLabel.Text = AppResources.HistoryOpenFailed;
+            ErrorLabel.IsVisible = true;
         }
-        finally { _navigating = false; BusyOverlay.IsVisible = false; }
+        finally
+        {
+            _navigating = false;
+            BusyOverlay.IsVisible = false;
+        }
     }
 }
+
 public sealed record HistoryCard(HistoryGameSession Data, string GameName)
 {
     public string GroupName => Data.GroupName;
@@ -96,7 +151,10 @@ public sealed record HistoryCard(HistoryGameSession Data, string GameName)
     {
         get
         {
-            if (Data.EndedAt is null) return "–";
+            if (Data.EndedAt is null)
+            {
+                return "–";
+            }
             int minutes = Math.Max(0, (int)(Data.EndedAt.Value - Data.StartedAt).TotalMinutes);
             return string.Format(AppResources.HistoryDurationFormat, minutes / 60, minutes % 60);
         }

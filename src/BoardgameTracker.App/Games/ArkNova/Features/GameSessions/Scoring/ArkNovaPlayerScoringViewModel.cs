@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -11,7 +13,7 @@ public partial class ArkNovaPlayerScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
     IArkNovaSettingsStore settingsStore) : ObservableObject
 {
-    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; set; }
+    public ArkNovaCorrectionDraft? Draft { get; set; }
     private CancellationTokenSource? _autosaveCts;
     private bool _loading;
 
@@ -34,7 +36,10 @@ public partial class ArkNovaPlayerScoringViewModel(
         {
             ArkNovaScoringGameSessionData? gameSession = Draft?.Data ?? await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
             ArkNovaScoringPlayerData? player = gameSession?.Players.SingleOrDefault(x => x.PlayerId == playerId);
-            if (player is null) throw new InvalidOperationException("The scoring player does not exist.");
+            if (player is null)
+            {
+                throw new InvalidOperationException("The scoring player does not exist.");
+            }
 
             ArkNovaSettings settings = settingsStore.Get();
             _displayMode = settings.ScoringDisplayMode;
@@ -47,7 +52,10 @@ public partial class ArkNovaPlayerScoringViewModel(
             IsReputationVisible = Draft is not null || settings.CaptureReputation;
             RefreshCalculatedScore();
         }
-        finally { _loading = false; }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     partial void OnAttractivenessTextChanged(string value) => ScheduleAutosave();
@@ -60,16 +68,28 @@ public partial class ArkNovaPlayerScoringViewModel(
         _autosaveCts?.Cancel();
         if (TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
         {
-            if (Draft is not null) Draft.SetScore(PlayerId, attractiveness, conservation, reputation);
-            else await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cancellationToken);
+            if (Draft is not null)
+            {
+                Draft.SetScore(PlayerId, attractiveness, conservation, reputation);
+            }
+            else
+            {
+                await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cancellationToken);
+            }
         }
     }
 
     private void ScheduleAutosave()
     {
-        if (_loading || GameSessionId == Guid.Empty) return;
+        if (_loading || GameSessionId == Guid.Empty)
+        {
+            return;
+        }
         RefreshCalculatedScore();
-        if (Draft is not null) return;
+        if (Draft is not null)
+        {
+            return;
+        }
         _autosaveCts?.Cancel();
         CancellationTokenSource cts = new();
         _autosaveCts = cts;
@@ -81,13 +101,19 @@ public partial class ArkNovaPlayerScoringViewModel(
         try
         {
             await Task.Delay(450, cts.Token);
-            if (!TryReadValues(out int? attractiveness, out int? conservation, out int? reputation)) return;
+            if (!TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
+            {
+                return;
+            }
             await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cts.Token);
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested) { }
         finally
         {
-            if (ReferenceEquals(_autosaveCts, cts)) _autosaveCts = null;
+            if (ReferenceEquals(_autosaveCts, cts))
+            {
+                _autosaveCts = null;
+            }
             cts.Dispose();
         }
     }
@@ -102,25 +128,25 @@ public partial class ArkNovaPlayerScoringViewModel(
         if ((!string.IsNullOrWhiteSpace(AttractivenessText) && attractiveness is null)
             || attractiveness is < 0 or > 113)
         {
-            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.AttractivenessValidation;
+            ValidationMessage = AppResources.AttractivenessValidation;
             return false;
         }
         if ((!string.IsNullOrWhiteSpace(ConservationText) && conservation is null)
             || conservation is < 0 or > 41)
         {
-            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.ConservationValidation;
+            ValidationMessage = AppResources.ConservationValidation;
             return false;
         }
         if (IsReputationVisible
             && ((!string.IsNullOrWhiteSpace(ReputationText) && reputation is null)
                 || reputation is < 1 or > 15))
         {
-            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.ReputationValidation;
+            ValidationMessage = AppResources.ReputationValidation;
             return false;
         }
         if (Draft is not null && (attractiveness is null || conservation is null))
         {
-            ValidationMessage = BoardgameTracker.App.Resources.Localization.AppResources.CorrectionInvalid;
+            ValidationMessage = AppResources.CorrectionInvalid;
             return false;
         }
         return true;
