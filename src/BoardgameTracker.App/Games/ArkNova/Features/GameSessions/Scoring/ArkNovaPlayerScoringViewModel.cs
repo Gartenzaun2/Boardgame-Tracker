@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
@@ -13,6 +14,10 @@ public partial class ArkNovaPlayerScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
     IArkNovaSettingsStore settingsStore) : ObservableObject
 {
+    // MAUI Slider bounds require double values, including when supplied through x:Static.
+    public const double ReputationMinimum = ArkNovaScoringRules.MinimumReputation;
+    public const double ReputationMaximum = ArkNovaScoringRules.MaximumReputation;
+
     public ArkNovaCorrectionDraft? Draft { get; set; }
     private CancellationTokenSource? _autosaveCts;
     private bool _loading;
@@ -49,7 +54,7 @@ public partial class ArkNovaPlayerScoringViewModel(
             AttractivenessText = player.Attractiveness?.ToString() ?? string.Empty;
             ConservationText = player.Conservation?.ToString() ?? string.Empty;
             ReputationText = player.Reputation?.ToString() ?? string.Empty;
-            IsReputationVisible = Draft is not null || settings.CaptureReputation;
+            IsReputationVisible = settings.CaptureReputation;
             RefreshCalculatedScore();
         }
         finally
@@ -58,9 +63,73 @@ public partial class ArkNovaPlayerScoringViewModel(
         }
     }
 
-    partial void OnAttractivenessTextChanged(string value) => ScheduleAutosave();
-    partial void OnConservationTextChanged(string value) => ScheduleAutosave();
-    partial void OnReputationTextChanged(string value) => ScheduleAutosave();
+    public int? AttractivenessValue
+    {
+        get => ParseWheelValue(AttractivenessText, AttractivenessRange);
+        set => AttractivenessText = value?.ToString() ?? string.Empty;
+    }
+    public int? ConservationValue
+    {
+        get => ParseWheelValue(ConservationText, ConservationRange);
+        set => ConservationText = value?.ToString() ?? string.Empty;
+    }
+    public int? ReputationValue
+    {
+        get => ParseWheelValue(ReputationText, ReputationRange);
+        set => ReputationText = value?.ToString() ?? string.Empty;
+    }
+    public bool IsAttractivenessSuggested => string.IsNullOrWhiteSpace(AttractivenessText);
+    public bool IsConservationSuggested => string.IsNullOrWhiteSpace(ConservationText);
+    public bool IsReputationSuggested => string.IsNullOrWhiteSpace(ReputationText);
+    public double ReputationSliderValue
+    {
+        get => ReputationRange.DisplayedValue(ReputationValue);
+        set => ReputationValue = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+    }
+    public string ScoreTitle => IsAttractivenessSuggested || IsConservationSuggested
+        ? AppResources.ScorePreview : AppResources.CalculatedPoints;
+
+    private static readonly NumberWheelRange AttractivenessRange = new(ArkNovaScoringRules.MinimumAttractiveness, ArkNovaScoringRules.MaximumAttractiveness);
+    private static readonly NumberWheelRange ConservationRange = new(ArkNovaScoringRules.MinimumConservation, ArkNovaScoringRules.MaximumConservation);
+    private static readonly NumberWheelRange ReputationRange = new(ArkNovaScoringRules.MinimumReputation, ArkNovaScoringRules.MaximumReputation);
+
+    public string AttractivenessRangeText => $"{AttractivenessRange.Minimum}–{AttractivenessRange.Maximum}";
+    public string ConservationRangeText => $"{ConservationRange.Minimum}–{ConservationRange.Maximum}";
+    public string ReputationRangeText => $"{ReputationRange.Minimum}–{ReputationRange.Maximum}";
+
+    public string AttractivenessSuggestion => AttractivenessRange.DisplayedValue(null).ToString();
+    public string ConservationSuggestion => ConservationRange.DisplayedValue(null).ToString();
+    public string ReputationSuggestion => ReputationRange.DisplayedValue(null).ToString();
+
+    public void ConfirmSuggestedValues()
+    {
+        if (IsAttractivenessSuggested)
+            AttractivenessValue = AttractivenessRange.DisplayedValue(null);
+        if (IsConservationSuggested)
+            ConservationValue = ConservationRange.DisplayedValue(null);
+    }
+
+    partial void OnAttractivenessTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(AttractivenessValue));
+        OnPropertyChanged(nameof(IsAttractivenessSuggested));
+        OnPropertyChanged(nameof(ScoreTitle));
+        ScheduleAutosave();
+    }
+    partial void OnConservationTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(ConservationValue));
+        OnPropertyChanged(nameof(IsConservationSuggested));
+        OnPropertyChanged(nameof(ScoreTitle));
+        ScheduleAutosave();
+    }
+    partial void OnReputationTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(ReputationValue));
+        OnPropertyChanged(nameof(ReputationSliderValue));
+        OnPropertyChanged(nameof(IsReputationSuggested));
+        ScheduleAutosave();
+    }
 
     public bool IsValid => TryReadValues(out _, out _, out _);
     public async Task FlushAsync(CancellationToken cancellationToken = default)
@@ -154,8 +223,8 @@ public partial class ArkNovaPlayerScoringViewModel(
 
     private void RefreshCalculatedScore()
     {
-        int? attractiveness = ParseOptional(AttractivenessText);
-        int? conservation = ParseOptional(ConservationText);
+        int? attractiveness = IsAttractivenessSuggested ? AttractivenessRange.DisplayedValue(null) : AttractivenessValue;
+        int? conservation = IsConservationSuggested ? ConservationRange.DisplayedValue(null) : ConservationValue;
         if (attractiveness is >= 0 and <= 113 && conservation is >= 0 and <= 41)
         {
             int score = _displayMode == ArkNovaScoringDisplayMode.Old
@@ -167,6 +236,12 @@ public partial class ArkNovaPlayerScoringViewModel(
         {
             ScoreText = "–";
         }
+    }
+
+    private static int? ParseWheelValue(string text, NumberWheelRange range)
+    {
+        int? value = ParseOptional(text);
+        return value >= range.Minimum && value <= range.Maximum ? value : null;
     }
 
     private static int? ParseOptional(string? text) =>

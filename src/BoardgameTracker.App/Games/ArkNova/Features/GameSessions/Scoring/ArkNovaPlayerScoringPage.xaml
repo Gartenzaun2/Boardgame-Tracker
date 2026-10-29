@@ -4,47 +4,97 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    xmlns:controls="clr-namespace:BoardgameTracker.App.Presentation.Controls"
+    xmlns:rules="clr-namespace:BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;assembly=BoardgameTracker.Core"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
     x:DataType="vm:ArkNovaPlayerScoringViewModel"
     Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <Style TargetType="controls:NumberWheel">
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Style.Triggers>
+                <Trigger TargetType="controls:NumberWheel" Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
     <Grid Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="18">
         <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                <ImageButton Clicked="OnDoneClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
                 <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="23" VerticalOptions="Center" />
+                <ImageButton Grid.Column="2" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                    SemanticProperties.Description="{x:Static res:AppResources.ScoringInputHelpTitle}"
+                    ToolTipProperties.Text="{x:Static res:AppResources.ScoringInputHelpTitle}" />
             </Grid>
             <BoxView Style="{StaticResource HeaderDivider}" />
         </VerticalStackLayout>
-        <VerticalStackLayout Grid.Row="1" Spacing="16">
-            <VerticalStackLayout Spacing="4">
-                <Label Text="{x:Static res:AppResources.Attractiveness}" FontAttributes="Bold" />
-                <Grid ColumnDefinitions="*,Auto">
-                    <Entry Style="{StaticResource InlineFormEntry}" Text="{Binding AttractivenessText}" Keyboard="Numeric" MaxLength="3" Placeholder="0–113" />
-                    <Label Grid.Column="1" Text="0–113" Margin="10,0,0,0" VerticalOptions="Center" TextColor="{DynamicResource TextPrimary}" />
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="16">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="32">
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="{x:Static res:AppResources.Attractiveness}" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" MinimumHeightRequest="40" VerticalTextAlignment="End" />
+                        <Label Text="{Binding AttractivenessRangeText}" HorizontalTextAlignment="Center" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                        <Border Style="{StaticResource CardBorder}" Padding="0">
+                            <controls:NumberWheel Minimum="{x:Static rules:ArkNovaScoringRules.MinimumAttractiveness}" Maximum="{x:Static rules:ArkNovaScoringRules.MaximumAttractiveness}"
+                                Value="{Binding AttractivenessValue}" TextColor="{DynamicResource TextPrimary}" HeightRequest="176"
+                                SemanticProperties.Description="{x:Static res:AppResources.Attractiveness}" />
+                        </Border>
+                        <Border Style="{StaticResource CardBorder}" Padding="8,0" Margin="0,12,0,0">
+                            <Entry Style="{StaticResource InlineFormEntry}" Text="{Binding AttractivenessText}" Placeholder="{Binding AttractivenessSuggestion}" Keyboard="Numeric" MaxLength="3"
+                                HorizontalTextAlignment="Center" FontSize="22" HeightRequest="48"
+                                SemanticProperties.Description="{x:Static res:AppResources.Attractiveness}" />
+                        </Border>
+                        <Label Text="{x:Static res:AppResources.SuggestedValue}" IsVisible="{Binding IsAttractivenessSuggested}" HorizontalTextAlignment="Center" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="{x:Static res:AppResources.Conservation}" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="13" MinimumHeightRequest="40" VerticalTextAlignment="End" />
+                        <Label Text="{Binding ConservationRangeText}" HorizontalTextAlignment="Center" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                        <Border Style="{StaticResource CardBorder}" Padding="0">
+                            <controls:NumberWheel Minimum="{x:Static rules:ArkNovaScoringRules.MinimumConservation}" Maximum="{x:Static rules:ArkNovaScoringRules.MaximumConservation}"
+                                Value="{Binding ConservationValue}" TextColor="{DynamicResource TextPrimary}" HeightRequest="176"
+                                SemanticProperties.Description="{x:Static res:AppResources.Conservation}" />
+                        </Border>
+                        <Border Style="{StaticResource CardBorder}" Padding="8,0" Margin="0,12,0,0">
+                            <Entry Style="{StaticResource InlineFormEntry}" Text="{Binding ConservationText}" Placeholder="{Binding ConservationSuggestion}" Keyboard="Numeric" MaxLength="2"
+                                HorizontalTextAlignment="Center" FontSize="22" HeightRequest="48"
+                                SemanticProperties.Description="{x:Static res:AppResources.Conservation}" />
+                        </Border>
+                        <Label Text="{x:Static res:AppResources.SuggestedValue}" IsVisible="{Binding IsConservationSuggested}" HorizontalTextAlignment="Center" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                    </VerticalStackLayout>
                 </Grid>
+                <Border Padding="14" Margin="0,16,0,0" Style="{StaticResource CardBorder}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{Binding ScoreTitle}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="20" />
+                    </Grid>
+                </Border>
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding IsReputationVisible}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Text="{x:Static res:AppResources.Reputation}" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{Binding ReputationRangeText}" TextColor="{DynamicResource TextSecondary}" VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,72" ColumnSpacing="12">
+                        <Slider Minimum="{x:Static vm:ArkNovaPlayerScoringViewModel.ReputationMinimum}" Maximum="{x:Static vm:ArkNovaPlayerScoringViewModel.ReputationMaximum}"
+                            Value="{Binding ReputationSliderValue, Mode=OneWay}" ValueChanged="OnReputationSliderChanged" DragCompleted="OnReputationDragCompleted"
+                            MinimumTrackColor="{DynamicResource Primary}" MaximumTrackColor="{DynamicResource Outline}" ThumbColor="{DynamicResource Primary}"
+                            MinimumHeightRequest="48" SemanticProperties.Description="{x:Static res:AppResources.Reputation}" />
+                        <Entry Grid.Column="1" Text="{Binding ReputationText}" Placeholder="{Binding ReputationSuggestion}" Keyboard="Numeric" MaxLength="2"
+                            HorizontalTextAlignment="Center" FontSize="22" HeightRequest="48"
+                            SemanticProperties.Description="{x:Static res:AppResources.Reputation}" />
+                    </Grid>
+                    <Label Text="{x:Static res:AppResources.SuggestedValue}" IsVisible="{Binding IsReputationSuggested}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                </VerticalStackLayout>
+                <Label Text="{Binding ValidationMessage}" TextColor="{DynamicResource Danger}" FontSize="12">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding ValidationMessage}" Value="{x:Null}">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
             </VerticalStackLayout>
-            <VerticalStackLayout Spacing="4">
-                <Label Text="{x:Static res:AppResources.Conservation}" FontAttributes="Bold" />
-                <Grid ColumnDefinitions="*,Auto">
-                    <Entry Style="{StaticResource InlineFormEntry}" Text="{Binding ConservationText}" Keyboard="Numeric" MaxLength="2" Placeholder="0–41" />
-                    <Label Grid.Column="1" Text="0–41" Margin="10,0,0,0" VerticalOptions="Center" TextColor="{DynamicResource TextPrimary}" />
-                </Grid>
-            </VerticalStackLayout>
-            <VerticalStackLayout Spacing="4" IsVisible="{Binding IsReputationVisible}">
-                <Label Text="{x:Static res:AppResources.Reputation}" FontAttributes="Bold" />
-                <Grid ColumnDefinitions="*,Auto">
-                    <Entry Style="{StaticResource InlineFormEntry}" Text="{Binding ReputationText}" Keyboard="Numeric" MaxLength="2" Placeholder="{x:Static res:AppResources.OptionalValue}" />
-                    <Label Grid.Column="1" Text="{x:Static res:AppResources.OptionalReputation}" Margin="10,0,0,0" VerticalOptions="Center" TextColor="{DynamicResource TextPrimary}" />
-                </Grid>
-            </VerticalStackLayout>
-            <Border Padding="14" Style="{StaticResource CardBorder}">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Text="{x:Static res:AppResources.CalculatedPoints}" />
-                    <Label Grid.Column="1" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="20" />
-                </Grid>
-            </Border>
-            <Label Text="{Binding ValidationMessage}" TextColor="{DynamicResource Danger}" FontSize="12" />
-        </VerticalStackLayout>
+        </ScrollView>
         <Button Grid.Row="2" Text="{x:Static res:AppResources.Done}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnDoneClicked" />
     </Grid>
 </ContentPage>

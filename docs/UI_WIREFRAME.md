@@ -299,6 +299,29 @@ um eine kompaktere Nutzung des vorhandenen horizontalen Platzes.
 
 ---
 
+## Spielereingabe – Zahlenräder
+
+Unter Spielername und Headerlinie stehen Attraktivität und Artenschutz als zwei
+Zahlenräder nebeneinander. Beide Felder enthalten Bezeichnung, Wertebereich,
+ein natives Rad (176 dp) und ein direkt editierbares Zahlenfeld (48 dp).
+Die Überschriften und Wertebereiche stehen mittig über dem jeweiligen Rad.
+Die Spalten sind durch 32 dp getrennt; ihre Außenkanten fluchten mit der
+Punktefläche und dem Fertig-Button. Es gibt keine zusätzliche seitliche Einrückung.
+Rad und Zahlenfeld haben dieselbe Breite, Surface-/Outline-Gestaltung und
+16-dp-Rundung. Zwischen Rad und Zahlenfeld liegen 16 dp, um versehentliche
+Tastatureingaben beim Drehen zu vermeiden.
+Vor der Punktefläche liegen 32 dp Abstand als sichtbare Leerzeile.
+Darunter folgen Punktevorschau bzw. berechnete Punkte. Wenn „Ruf erfassen“ in
+den Spieleinstellungen aktiviert ist, folgt darunter ein horizontaler Ruf-Slider
+(1–15, ganze Werte) mit Zahlenfeld. Es gibt keinen zusätzlichen Ruf-Schalter.
+Leere Werte zeigen den Mittelwert als Vorschlag; vorhandene Werte sind ausgewählt.
+Bedien- und Übernahmehinweise sind ausschließlich über das Info-Symbol im
+Seitenkopf erreichbar. „Vorschlag“ bleibt als Statuskennzeichnung sichtbar.
+Der Inhalt ist scrollbar; „Fertig“ bleibt im unteren Aktionsbereich.
+Zurück erfasst keine Vorschläge. Historische Korrekturen verwenden dieselbe
+Eingabe und bleiben bis „Korrektur speichern“ im bestehenden Entwurf; bei
+verborgener Rufeingabe bleiben vorhandene Rufwerte im Korrekturentwurf erhalten.
+
 ## Wertungsübersicht und Hauptnavigation
 
 Untere Hauptnavigation:

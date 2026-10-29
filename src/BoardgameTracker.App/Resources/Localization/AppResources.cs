@@ -13,6 +13,12 @@ public static class AppResources
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);
 
+    public static string ScoringInputHelpTitle => GetString(nameof(ScoringInputHelpTitle));
+    public static string NumberWheelHint => GetString(nameof(NumberWheelHint));
+    public static string SuggestedValue => GetString(nameof(SuggestedValue));
+    public static string ScorePreview => GetString(nameof(ScorePreview));
+    public static string NumberWheelConfirmationHint => GetString(nameof(NumberWheelConfirmationHint));
+
     public static string ArkNovaSettingsTitle => GetString(nameof(ArkNovaSettingsTitle));
     public static string CaptureReputation => GetString(nameof(CaptureReputation));
     public static string CaptureReputationHint => GetString(nameof(CaptureReputationHint));

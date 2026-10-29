@@ -51,8 +51,10 @@ public static class MauiProgram
         {
 #if ANDROID
             handlers.AddHandler<Shell, BoardgameTracker.App.Platforms.Android.ThemeShellRenderer>();
+            handlers.AddHandler<BoardgameTracker.App.Presentation.Controls.NumberWheel, BoardgameTracker.App.Platforms.Android.NumberWheelHandler>();
 #elif IOS
             handlers.AddHandler<Shell, BoardgameTracker.App.Platforms.iOS.ThemeShellRenderer>();
+            handlers.AddHandler<BoardgameTracker.App.Presentation.Controls.NumberWheel, BoardgameTracker.App.Platforms.iOS.NumberWheelHandler>();
 #endif
         });
 

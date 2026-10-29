@@ -290,9 +290,22 @@ Pro Spieler werden erfasst:
   globale Arche-Nova-Einstellung,
 - konkrete Spezialkarten.
 
-Die Spielerwerte werden auf einem eigenen kompakten Eingabescreen mit
-numerischer Tastatur erfasst. Gültige Änderungen werden automatisch
-zwischengespeichert. Es gibt keinen zusätzlichen „Spieler fertig“-Status.
+Attraktivität und Artenschutz werden auf einem kompakten Eingabescreen über
+begrenzte Zahlenräder erfasst; eine Zahl bildet jeweils den gesamten Wert ab.
+Vorhandene Werte sind vorausgewählt. Bei leeren Feldern zeigt das Rad einen
+Vorschlag in der Bereichsmitte (Attraktivität 57, Artenschutz 21), ohne ihn bereits
+zu erfassen oder zu speichern. Wischen erfasst den gewählten Wert; die Zahl
+unter dem Rad kann alternativ mit der numerischen Tastatur eingegeben werden.
+„Fertig“ übernimmt auch noch offene Vorschläge für Attraktivität und Artenschutz.
+Zurück übernimmt keine Vorschläge. Ruf erscheint ausschließlich gemäß der
+Arche-Nova-Einstellung „Ruf erfassen“ als horizontaler Regler unter den Punkten;
+einen zusätzlichen Erfassungsschalter gibt es hier nicht. Der Regler zeigt bei
+leerem Ruf zunächst 8, ohne den Wert zu speichern. Verschieben erfasst ganze
+Werte von 1 bis 15; das zugehörige Zahlenfeld erlaubt Eingabe und Leeren.
+Ruf bleibt optional. Bedienhinweise stehen hinter dem Info-Symbol im Seitenkopf.
+Die Punktevorschau bezieht angezeigte Vorschläge ein und ist bis zur Erfassung entsprechend benannt.
+Die Räder enden an ihren Wertebereichsgrenzen, ohne Umlauf.
+Gültige Änderungen werden automatisch zwischengespeichert. Es gibt keinen zusätzlichen „Spieler fertig“-Status.
 `Wertung abschließen` wird möglich, sobald für alle Spieler Attraktivität und
 Artenschutz vorliegen.
 
