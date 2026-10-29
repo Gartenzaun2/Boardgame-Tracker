@@ -5,11 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.ListGroups"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     x:DataType="local:GroupListViewModel"
     Shell.NavBarIsVisible="False">
 
     <Grid Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <VerticalStackLayout Spacing="4">
+        <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <VerticalStackLayout Spacing="0" VerticalOptions="Center">
                     <Label
@@ -29,6 +30,8 @@
                     Text="{x:Static res:AppResources.NewGroup}"
                     VerticalOptions="Center" />
             </Grid>
+
+            <BoxView Style="{StaticResource HeaderDivider}" />
 
             <HorizontalStackLayout Spacing="20">
                 <HorizontalStackLayout Spacing="6">
@@ -52,15 +55,13 @@
             Grid.Row="2"
             ItemsSource="{Binding Groups}">
             <CollectionView.EmptyView>
-                <Border Padding="20" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="8">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="20"
-                            Text="{x:Static res:AppResources.NoGroupsYet}" />
-                        <Label Text="{x:Static res:AppResources.CreateFirstGroupHint}" />
-                    </VerticalStackLayout>
-                </Border>
+                <VerticalStackLayout Padding="0,12" Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="20"
+                        Text="{x:Static res:AppResources.NoGroupsYet}" />
+                    <Label Text="{x:Static res:AppResources.CreateFirstGroupHint}" />
+                </VerticalStackLayout>
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="local:GroupListItemViewModel">
@@ -79,7 +80,8 @@
                                         FontAttributes="Bold"
                                         FontSize="20"
                                         Text="{Binding Name}" />
-                                    <Image BackgroundColor="{DynamicResource IconSurface}"
+                                    <Image BackgroundColor="Transparent"
+                                        presentation:IconTint.Color="{DynamicResource TextPrimary}"
                                         HeightRequest="20"
                                         WidthRequest="20"
                                         IsVisible="{Binding HasOpenGameSession}"

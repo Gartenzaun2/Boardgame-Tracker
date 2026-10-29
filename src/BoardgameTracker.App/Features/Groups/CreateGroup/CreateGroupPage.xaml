@@ -47,7 +47,7 @@
                 VerticalOptions="Center" />
         </Grid>
 
-        <BoxView Grid.Row="1" HeightRequest="1" Color="{DynamicResource Outline}" />
+        <BoxView Grid.Row="1" Style="{StaticResource HeaderDivider}" />
         <ScrollView Grid.Row="2">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
                 <VerticalStackLayout Spacing="16">
@@ -104,8 +104,8 @@
                                                 TextColor="{DynamicResource TextSecondary}" />
                                         </VerticalStackLayout>
                                         <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                        <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
-                                        <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemovePlayerCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
+                                        <Button Style="{StaticResource TextActionButton}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        <Button Style="{StaticResource TextActionButton}" TextColor="{DynamicResource Danger}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemovePlayerCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

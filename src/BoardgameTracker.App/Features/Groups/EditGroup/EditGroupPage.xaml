@@ -11,41 +11,42 @@
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto,*">
-        <Grid Padding="8,8,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
-            <ImageButton Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" Source="icon_back.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+        <VerticalStackLayout Spacing="8">
+            <Grid Padding="8,8,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
+                <ImageButton Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" Source="icon_back.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
 
-            <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                <Label FontAttributes="Bold" FontSize="21" Text="{x:Static res:AppResources.EditGroup}" VerticalOptions="Center" />
-                <ImageButton Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
-            </HorizontalStackLayout>
+                <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                    <Label FontAttributes="Bold" FontSize="21" Text="{x:Static res:AppResources.EditGroup}" VerticalOptions="Center" />
+                    <ImageButton Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
+                </HorizontalStackLayout>
 
-            <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" VerticalOptions="Center" />
-        </Grid>
+                <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" VerticalOptions="Center" />
+            </Grid>
+            <BoxView Style="{StaticResource HeaderDivider}" />
+        </VerticalStackLayout>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <Border Padding="16" BackgroundColor="{DynamicResource Surface}" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="16">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                            <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
-                            <Entry Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNamePlaceholder}" Text="{Binding GroupName}" />
-                        </Grid>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
-                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextSecondary}" />
-                            </VerticalStackLayout>
-                            <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
-                        </Grid>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                                <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{DynamicResource TextSecondary}" />
-                            </VerticalStackLayout>
-                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                        <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
+                        <Entry Style="{StaticResource InlineFormEntry}" Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNameExample}" Text="{Binding GroupName}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
+                            <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextPrimary}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                            <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{DynamicResource TextPrimary}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
+                    </Grid>
+                </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="2">
@@ -81,8 +82,8 @@
                                                     Source="icon_palette.png"
                                                     WidthRequest="18" />
                                             </Border>
-                                            <Button Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                            <Button Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                            <Button Style="{StaticResource TextActionButton}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                            <Button Style="{StaticResource TextActionButton}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
                                         </Grid>
 
                                         <HorizontalStackLayout

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.6.1
+
+- Nativer Splashscreen fest dunkel (#141A17); anschließende App im gespeicherten Theme.
+
+- Deutsche Oberflächentexte verwenden durchgängig Spieler statt Player.
+
+- Statussymbol für offene Partien transparent und dynamisch im Theme-Textton statt fester grüner Fläche.
+
+- Gemeinsame Header-Unterkante und Aktionsrollen auf alle bestehenden Seiten angewendet.
+- Gruppenbearbeitung und Wertungseingaben flach; Leerzustände ohne dekorative Karte.
+- App-Auswahldialoge vereinheitlicht; verbleibende native Dialoge im Wireframe dokumentiert.
+- App-Version 0.8.6.1 / ApplicationVersion 16.
+
 ## 0.8.6.0
 
 - Klarere UI-Hierarchie in Partievorbereitung, Gruppen und Gruppe anlegen: flache Metainformation/Formulare, Primary-Create-Aktion und gemeinsame Secondary-/Textaktionsstyles.

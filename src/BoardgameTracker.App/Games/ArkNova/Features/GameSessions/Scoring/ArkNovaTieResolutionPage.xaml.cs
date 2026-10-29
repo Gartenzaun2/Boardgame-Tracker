@@ -75,7 +75,9 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
 
             if (frame.Players.Count == 0)
             {
-                content.Children.Add(new Label { Text = AppResources.DragHere, FontSize = 11, Opacity = 0.55 });
+                Label hint = new() { Text = AppResources.DragHere, FontSize = 11 };
+                hint.SetDynamicResource(Label.TextColorProperty, "TextSecondary");
+                content.Children.Add(hint);
             }
 
             Border border = new()

@@ -70,6 +70,12 @@
                 <Setter Property="BackgroundColor" Value="Transparent" />
                 <Setter Property="BorderWidth" Value="0" />
             </Style>
+            <Style x:Key="HeaderDivider" TargetType="BoxView">
+                <Setter Property="HeightRequest" Value="1" />
+                <Setter Property="Color" Value="{DynamicResource Outline}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+            </Style>
+
             <Style x:Key="InlineFormEntry" TargetType="Entry">
                 <Setter Property="BackgroundColor" Value="Transparent" />
                 <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
@@ -114,12 +120,7 @@
             </Style>
             <Style TargetType="ActivityIndicator"><Setter Property="Color" Value="{DynamicResource Primary}" /></Style>
             <Style TargetType="Switch"><Setter Property="OnColor" Value="{DynamicResource Primary}" /></Style>
-            <Style TargetType="Button">
-                <Setter Property="BackgroundColor" Value="Transparent" />
-                <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
-                <Setter Property="BorderWidth" Value="1" />
-                <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
-            </Style>
+            <Style TargetType="Button" BasedOn="{StaticResource SecondaryActionButton}" />
             <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource CompactActionButton}">
                 <Setter Property="BackgroundColor" Value="{DynamicResource DangerSurface}" />
                 <Setter Property="TextColor" Value="{DynamicResource Danger}" />
