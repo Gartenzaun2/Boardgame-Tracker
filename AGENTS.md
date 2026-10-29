@@ -70,7 +70,7 @@ dotnet test --project tests/BoardgameTracker.Application.Tests
 
 Build-/Restore-Voraussetzungen und relevante Geräte-Smoke-Tests gemäß `SETUP.md` beachten. `git diff` auf unbeabsichtigte Änderungen prüfen, einschließlich neuer Dateien. Fehlgeschlagene/nicht ausführbare Prüfungen ausdrücklich nennen; nur tatsächlich ausgeführte Verifikation als erfolgreich melden.
 
-Datenbank-, Upgrade-, Versions- und Lieferregeln ausschließlich nach `SETUP.md` anwenden; kein pauschaler DB-Reset und keine Lieferarchive ohne ausdrücklichen Auftrag. Offene UI-Codeabweichungen stehen im Wireframe und sind ohne neuen Auftrag nicht automatisch zur Behebung freigegeben.
+Bis zum ersten Deployment keine Migrationsstrategie planen und keinen Kompatibilitätscode für ältere Entwicklungsstände einführen oder beibehalten. Falls eine inkompatible Änderung eine Neuinstallation erfordert, den Benutzer ausdrücklich darauf und auf den Verlust lokaler Entwicklungsdaten hinweisen. Bestehenden Altkompatibilitätscode bei einem entsprechenden Bereinigungsauftrag entfernen. Datenbank-, Versions- und Lieferregeln ausschließlich nach `SETUP.md` anwenden; kein pauschaler DB-Reset und keine Lieferarchive ohne ausdrücklichen Auftrag. Offene UI-Codeabweichungen stehen im Wireframe und sind ohne neuen Auftrag nicht automatisch zur Behebung freigegeben.
 
 ## Dokumentation und Git
 Vor Änderungen `git status` prüfen. Bereits vorhandene, nicht zum aktuellen Auftrag gehörende Änderungen des Benutzers niemals zurücksetzen, überschreiben oder verwerfen. Nach Abschluss erneut `git status` und `git diff` prüfen. Neue, noch unversionierte Dateien zusätzlich direkt prüfen, da `git diff` sie nicht anzeigt.

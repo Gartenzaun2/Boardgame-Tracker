@@ -246,6 +246,7 @@ bleiben bestehen; diese Liste erteilt keinen automatischen Änderungsauftrag.
 | Lokalisierung der Ergebnisanzeige | [Ergebnis-ViewModel](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaResultViewModel.cs): Zooplan-, Rohwert-, Ruf- und Punktetexte stehen teilweise direkt im Code. | Sichtbare Sprachtexte über die vorhandenen Lokalisierungsressourcen führen. |
 | Android-Zurück im Spezialkarten-Picker | [Wertungsseite](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaScoringPage.xaml.cs): OnBackButtonPressed navigiert zur Gruppen-/Historienübersicht, auch wenn die Auswahl geöffnet ist. | Zunächst nur den geöffneten Picker schließen; erst ohne Auswahl die Seite verlassen. |
 
-Die Sichtprüfung auf dem Zielgerät in allen drei Themes sowie der Upgrade-Smoke-Test
-einer echten Altinstallation sind noch nicht als abgeschlossen bestätigt. Prüfablauf:
+Die Sichtprüfung auf dem Zielgerät in allen drei Themes ist noch nicht als
+abgeschlossen bestätigt. Bei inkompatiblen Änderungen wird der Start nach
+Neuinstallation mit frischer Datenbank geprüft. Prüfablauf:
 `SETUP.md`. Diese Dokumentationsbereinigung verändert keinen App-Code.
