@@ -1,9 +1,3 @@
-using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
-using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
@@ -40,15 +34,6 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
-        Routing.RegisterRoute(nameof(ArkNovaPreparationPage), typeof(ArkNovaPreparationPage));
-        Routing.RegisterRoute(nameof(ArkNovaRunningPage), typeof(ArkNovaRunningPage));
-        Routing.RegisterRoute(nameof(ArkNovaScoringPage), typeof(ArkNovaScoringPage));
-        Routing.RegisterRoute(nameof(ArkNovaPlayerScoringPage), typeof(ArkNovaPlayerScoringPage));
-        Routing.RegisterRoute(nameof(ArkNovaTieResolutionPage), typeof(ArkNovaTieResolutionPage));
-        Routing.RegisterRoute(nameof(ArkNovaResultPage), typeof(ArkNovaResultPage));
-        Routing.RegisterRoute(nameof(ArkNovaSpecialCardsPage), typeof(ArkNovaSpecialCardsPage));
-        Routing.RegisterRoute(nameof(ArkNovaSpecialCardEditorPage), typeof(ArkNovaSpecialCardEditorPage));
-        Routing.RegisterRoute(nameof(ArkNovaSettingsPage), typeof(ArkNovaSettingsPage));
 
         TabBar tabBar = new();
         _gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));

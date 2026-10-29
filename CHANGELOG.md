@@ -4,6 +4,16 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.9.0.5
+
+- App-Start verwendet generische DI-Resume-Handler; Arche Nova stellt Wiederaufnahme und explizite Routen im eigenen Navigationsbereich bereit. AddArkNova registriert Handler und Routen, AppShell enthält ausschließlich allgemeine Routen. Fallback und Navigationsspeicher bleiben erhalten.
+- App-Version 0.9.0.5 / ApplicationVersion 31.
+
+## 0.9.0.4
+
+- Ark-Nova-spezifische DI-Registrierungen in die explizite AddArkNova-Extension ausgelagert. MauiProgram bleibt zentraler Composition Root; allgemeine Registrierungen, Lifetimes und Modul-Registrierungsreihenfolge bleiben erhalten.
+- App-Version 0.9.0.4 / ApplicationVersion 30.
+
 ## 0.9.0.3
 
 - Spezialkartenverwaltung mit Bearbeiten-Icon neben der Karte statt eigener Aktionszeile; Archivstatus wird ausschließlich im Bearbeiten-Editor per Switch und Speichern geändert. Info-Hinweis im Kopf über vorhandenes Info-Icon und lokalisierten App-Dialog ergänzt.

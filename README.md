@@ -60,7 +60,10 @@ Für einen frischen Chat:
 2. AGENTS und die für den Auftrag relevanten Spezifikationen lesen.
 3. UI-Stand und bekannte Codeabweichungen im [Wireframe](docs/UI_WIREFRAME.md)
    berücksichtigen; dokumentierte Abweichungen sind nicht automatisch zur Korrektur freigegeben.
-4. Build, Tests und Geräteprüfungen gemäß [Setup](SETUP.md) ausführen.
+4. Build und automatisierte Tests gemäß [Setup](SETUP.md) ausführen.
+   Geräte-/UI-Smoke-Tests nur auf ausdrücklichen Auftrag oder im Rahmen einer
+   ausdrücklich geplanten Installations-/Releaseprüfung. Maßgeblich für die
+   Arbeits- und Verifikationspolicy bleibt [AGENTS.md](AGENTS.md).
 
 Die Spezifikationen unter `docs/` beschreiben den gültigen Stand einschließlich
 klar gekennzeichneter späterer Slices. Die [Versionshistorie](CHANGELOG.md)

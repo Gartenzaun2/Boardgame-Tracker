@@ -365,6 +365,21 @@ Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie aussch
 - In deutschen sichtbaren Texten konsequent „Spieler“ verwenden; technische Typen und Ressourcenschlüssel behalten `Player`.
 - Alle sichtbaren Sprachtexte einschließlich Einstellungen, Ergebnisüberschriften und Abschlussbuttons führen über die bestehende Lokalisierung. Android und iOS teilen die Informationsarchitektur; native Bedienerwartungen bleiben erhalten. Bekannte Codeabweichungen stehen im Wireframe.
 
+## Sektions- und Gruppeninformationen
+
+Erklärungstexte zu Gruppen, Sektionen und Einstellungsbereichen werden verbindlich
+über das Info-Icon oben im jeweiligen Gruppen-/Sektionsheader angeboten. Tippen
+öffnet den bestehenden App-Informationsdialog; auf Pointer-Geräten kann zusätzlich
+der bestehende Tooltip-/Hover-Mechanismus verwendet werden.
+
+Keine dauerhaft sichtbaren langen Erklärungstexte innerhalb einer Sektion, keine
+zusätzlichen Info-Karten und keine individuellen Info-Button-Muster pro Feature.
+Erklärungen werden nicht pro Listeneintrag oder Karte wiederholt. Vorhandenes
+Info-Icon, gemeinsame Styles und App-Dialog-Muster wiederverwenden. Diese Konvention
+gilt insbesondere auch für Einstellungsgruppen wie die Spezialkartenverwaltung.
+Kurze fachlich notwendige Labels, Statusmeldungen und Validierungstexte bleiben
+von dieser Regel unberührt.
+
 ## Zusätzliche semantische Rollen
 
 `DisabledSurface` und `DisabledText` kennzeichnen nicht bedienbare Aktionen; reduzierte Opazität unterstützt die technische Deaktivierung. `BusyOverlay` ist eine abgedunkelte Sperrfläche, `IconSurface` eine helle Unterlage ausschließlich für eingebettete Grafik-/Farbwahlfelder. Normale Info-, Zurück- und Bearbeiten-Iconbuttons sind transparent und verwenden den Theme-Textton als Icon-Tint; auf Spielerflächen gilt die Spieler-Textfarbe. Das Statussymbol für eine offene Partie auf Gruppenkarten ist ebenfalls transparent und verwendet TextPrimary als dynamischen Icon-Tint; es besitzt keine eigene grüne Fläche. `GameGraphicText` ist ein fester dunkler Textton ausschließlich auf hellen Zooplan-Grafikbadges. Spielerkarten verwenden ihre eigene Textfarbe aus der globalen Spielerfarben-Palette. `BusyIndicator` ist ein heller Indikator auf dem abgedunkelten Busy-Overlay. Disabled-Text verwendet den kontrastreichen Primärtextton; Opazität und die deaktivierte Interaktion kennzeichnen den Zustand.
@@ -403,7 +418,7 @@ Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surfa
 
 ## Reduzierte UI-Flächen
 
-Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits dem Zielspieler zugeordnete Karten erhalten weiterhin `SelectedSurface` als Hintergrund. Nur bereits einem anderen Spieler zugeordnete Karten erhalten einen gestrichelten Rahmen (2 dp, Muster 4/3) in der vorhandenen semantischen Farbe `Danger`. Ausschließlich dem Zielspieler zugeordnete und nicht zugeordnete Karten behalten die normale Outline-Kontur. Ist die Karte dem Zielspieler und einem anderen Spieler zugeordnet, werden Hintergrundmarkierung und gestrichelter Rahmen kombiniert. Eine sichtbare Zuordnungszeile entfällt ohne Ersatzabstände; die Statusbeschreibung bleibt für Screenreader erhalten. Der bestehende Zurück-Pfeil im IconButton-Stil ersetzt für diese Auswahl Text-Schließen. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
+Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits dem Zielspieler zugeordnete Karten erhalten weiterhin `SelectedSurface` als Hintergrund. Nur bereits mindestens einem anderen Spieler zugeordnete Karten erhalten einen gestrichelten Rahmen (2 dp, Muster 4/3) in der vorhandenen semantischen Farbe `Danger`. Ausschließlich dem Zielspieler zugeordnete und nicht zugeordnete Karten behalten die normale Outline-Kontur. Ist die Karte dem Zielspieler und mindestens einem anderen Spieler zugeordnet, werden Hintergrundmarkierung und gestrichelter Rahmen kombiniert. Eine sichtbare Zuordnungszeile entfällt ohne Ersatzabstände; die Statusbeschreibung bleibt für Screenreader erhalten. Der bestehende Zurück-Pfeil im IconButton-Stil ersetzt für diese Auswahl Text-Schließen. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
 
 Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: AppBackground außen, Surface-Einträge, Outline, TextPrimary und dieselbe modale Sperrfläche wie bei besonderen Karten. Ein Tap auf den Eintrag fügt unmittelbar hinzu und schließt; kein nativer Picker plus zusätzlichem Bestätigungsschritt. Schließen oder System-Zurück bricht nur die Auswahl ab. Namen und Gaststatus bleiben sichtbar.
 
@@ -419,7 +434,7 @@ Primäraktion bzw. bei Verwerfen/Löschen DangerButton und eine getrennte Textak
 zum Abbrechen. System-Zurück bricht ausschließlich den Dialog ab, ohne eine Auswahl
 oder destruktive Aktion zu bestätigen. Ein Dialog verändert keine ungespeicherten
 Formular- oder Wertungsentwürfe der darunterliegenden Seite.
-Der aktuelle Dialogbestand und der Stand der Geräteprüfung stehen in `UI_WIREFRAME.md`.
+Der aktuelle Dialogbestand steht in `UI_WIREFRAME.md`; die Anleitung für explizit beauftragte Geräteprüfungen in `SETUP.md`.
 
 ## Splashscreen und App-Start
 
