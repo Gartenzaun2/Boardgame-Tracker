@@ -9,74 +9,45 @@
 - Visual Studio mit .NET-MAUI-Workload
 - Android und/oder iOS Toolchain
 
-## Repository-Struktur
+## Quellen und Architektur
 
-```text
-BoardgameTracker.sln
+Projektüberblick und Einstieg: `README.md`; Zuständigkeiten und Arbeitsregeln:
+`AGENTS.md`; Projektgrenzen und Slice-Organisation: `docs/ARCHITECTURE.md`.
+Hier stehen ausschließlich Umgebungs-, Build-, Datenbank- und Lieferregeln.
 
-src/
-  BoardgameTracker.App/
-  BoardgameTracker.Application/
-  BoardgameTracker.Core/
-  BoardgameTracker.Infrastructure/
+## Lokaler Entwicklungsablauf
 
-tests/
-  BoardgameTracker.Core.Tests/
-  BoardgameTracker.Application.Tests/
+Ab dem Solution-Root:
 
-docs/
-  ARCHITECTURE.md
-  DATA_MODEL.md
-  PRODUCT_SPEC.md
-  UI_DESIGN_GUIDE.md
-  UI_WIREFRAME.md
-
-README.md
-SETUP.md
-CHANGELOG.md
+```powershell
+dotnet restore BoardgameTracker.sln
+dotnet build BoardgameTracker.sln --no-restore
+dotnet test --project tests/BoardgameTracker.Core.Tests --no-restore
+dotnet test --project tests/BoardgameTracker.Application.Tests --no-restore
 ```
 
-`README.md`, `SETUP.md` und `CHANGELOG.md` liegen nur im Repository-Root. Die
-übrigen kanonischen Dokumente liegen nur unter `docs/`.
+Normale Codearbeit kann inkrementell gebaut werden. Für gelieferte Updatearchive
+gilt der vollständige Übernahmeablauf im folgenden Abschnitt.
 
-## Verbindliche Architekturregeln
+Die Tests verwenden xUnit v3/Microsoft Testing Platform; deshalb `--project`.
+Der unterstützte Mindeststand ist Android 11 (API 30) bzw. iOS 15 gemäß App-Projekt.
+Für iOS-Gerätetests ist die passende Apple-Toolchain erforderlich.
 
-- Zentrale Domänennamen: `Game`, `GameSession`, `Group`, `Player`.
-- Keine technischen Synonyme wie `Person`, `GroupPerson`, `SessionId` oder
-  `ArkNovaSessionPlayer`.
-- Spielspezifischer Code liegt in jedem Projekt unter `Games/<GameName>/`.
-- Ein Spiel darf darunter allgemeine fachliche Bereiche spiegeln, wenn es dort
-  tatsächlich eigene Erweiterungen besitzt.
-- Application-/UI-Code wird nach Use Case/Feature organisiert, nicht primär nach
-  `Commands`, `Services`, `Validators` usw.
-- Spielspezifische persistierte Zusatzdaten ergänzen allgemeine Entities über
-  Composition; EF-Entity-Vererbung wird nicht nur zur Property-Wiederverwendung
-  eingesetzt.
-- Keine generischen Repositories, kein MediatR nur als Dispatch-Schicht und keine
-  `Common`-/`Utils`-Sammelordner ohne konkreten Bedarf.
+Bei gesperrter `BoardgameTracker.App.dll` zuerst die laufende App/Debug-Sitzung
+beenden und den Build wiederholen. Visual Studio kann zunächst geöffnet bleiben;
+bei fortbestehender Sperre die Solution schließen. Keinen DB-Reset als Buildfix
+verwenden.
 
-Details stehen in `docs/ARCHITECTURE.md`.
-
-## Standardablauf nach einem Update
+## Übernahme eines Entwicklungs-Updatepakets
 
 1. Update-ZIP in den Repository-Root entpacken/übernehmen.
 2. Wenn `UPDATE_FILES.txt` oder `DELETE_FILES.txt` enthalten ist,
    `APPLY_UPDATE.cmd` im Repository-Root starten.
-3. `bin` und `obj` vollständig löschen.
+3. `bin` und `obj` vollständig bereinigen, ausschließlich unter dieser Solution.
 4. NuGet Restore.
 5. Rebuild Solution.
 6. Tests ausführen.
 7. Relevante Smoke Tests im Emulator/Gerät durchführen.
-
-### Vollständiges Löschen von bin/obj unter Windows CMD
-
-Direkt in einer geöffneten CMD:
-
-```cmd
-for /d /r . %d in (bin,obj) do @if exist "%d" rd /s /q "%d"
-```
-
-In einer `.cmd`-Datei muss `%d` als `%%d` geschrieben werden.
 
 ## Datenbankstrategie in der Pre-Alpha-Phase
 
@@ -96,7 +67,7 @@ Assignment-Tabellentausch und FK-Prüfung erfolgen in einer SQLite-Transaktion.
 Bei unbekannten Altdaten oder FK-Fehlern bricht der Start mit Fehler ab; die
 Transaktion erhält den bisherigen Stand. Erneuter Start ist idempotent.
 
-Für dieses Update **keine App-Daten löschen oder deinstallieren**: Bestehende
+Beim Spezialkarten-Upgrade **keine App-Daten löschen oder deinstallieren**: Bestehende
 Partien und Kartenzuordnungen werden erhalten. Geräte-Smoke-Test: eine alte
 Installation mit zugeordneten Karten aktualisieren, Historie öffnen und alle
 Karten prüfen; danach Standardkarte bearbeiten/archivieren und erneut starten.
@@ -162,11 +133,19 @@ Die kanonischen Spezifikationen beschreiben immer den aktuellen Zustand.
 Überholte Entscheidungen werden ersetzt statt als Versionsanhang stehen zu
 bleiben. Versionshistorie gehört ausschließlich in `CHANGELOG.md`.
 
-## Abschlussprüfung
+## Abschlussprüfung und Geräte-Smoke-Test
 
-In der Erstellungsumgebung steht nicht zwingend ein lokales .NET-/MAUI-SDK zur
-Verfügung. Wenn dort kein Build möglich ist, ist vor Installation lokal zwingend:
+Nur tatsächlich ausgeführte Prüfungen als erfolgreich melden. Ist ein Build
+lokal nicht möglich, bleibt er als offene Prüfung benannt. Ein Build ersetzt
+keinen MAUI-XAML-Laufzeit- oder Gerätetest.
 
-```text
-Restore -> Rebuild Solution -> Tests
-```
+Vor einer Installation bzw. Lieferung relevante Builds und beide Testsuiten
+ausführen. Auf dem Zielgerät zusätzlich prüfen:
+
+- Navigation, neue Screens und Dialoge einschließlich Android-Zurück,
+- alle drei Themes, große Schrift, Tastatur und Zahlenrad-/Slider-Bedienung,
+- aktive Kartenwahl, Archivieren/Entarchivieren und historische Korrekturen,
+- den oben beschriebenen Upgrade-Smoke-Test mit erhaltener Bestandsdatenbank.
+
+Der erfolgreiche Abschluss dieser Geräteprüfungen ist noch nicht bestätigt.
+Offene Codeabweichungen werden im `docs/UI_WIREFRAME.md` geführt.

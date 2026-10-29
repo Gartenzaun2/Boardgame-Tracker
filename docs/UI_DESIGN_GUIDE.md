@@ -163,7 +163,7 @@ Interaktive oder inhaltlich abgeschlossene Bereiche:
 - Partiekarten
 - Gruppenkarten
 - Einstellungskarten
-- Dialoge
+- einzelne Inhalts-/Auswahleinträge innerhalb von Dialogen; äußere SelectionDialog-Flächen verwenden AppBackground
 - Bottom-Navigation
 - Eingabebereiche, wenn eine klare Gruppierung erforderlich ist
 
@@ -283,7 +283,7 @@ Hauptaktionen verwenden `Primary` und `PrimaryForeground`, unabhängig vom konkr
 
 ## 13. Theme-Auswahl
 
-In den allgemeinen Einstellungen wird eine neue Einstellung **Darstellung / Theme** angeboten.
+In den allgemeinen Einstellungen wird **Darstellung / Theme** angeboten.
 
 Optionen:
 
@@ -293,7 +293,7 @@ Optionen:
 
 Deep Forest ist der Standard für neue Installationen bzw. wenn noch keine Auswahl gespeichert ist.
 
-Ein Theme-Wechsel soll ohne Neustart der App sichtbar werden, sofern dies mit vertretbarem Aufwand innerhalb der bestehenden MAUI-Struktur möglich ist.
+Ein Theme-Wechsel aktualisiert die zentralen Ressourcen und wird ohne App-Neustart sichtbar.
 
 Die Auswahl wird dauerhaft gespeichert.
 
@@ -320,9 +320,9 @@ Insbesondere der Dunkelmodus darf nicht lediglich durch Austausch von Hintergrun
 
 ---
 
-## 15. Bestehende Spielgestaltung
+## 15. Fachliche Spielgestaltung
 
-Folgende bereits funktionierende Gestaltung soll durch den Theme-Umbau möglichst nicht verändert werden:
+Theme-Wechsel verändern folgende fachliche Inhalte nicht:
 
 - App-Logo
 - Zooplan-Grafiken
@@ -363,8 +363,7 @@ Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie aussch
 - Wertungskarten reservieren eigene Zeilen für Name/Punkte, Zooplan, Rohwerte und Karten/Ruf. Fehlende Werte als „–“. Karten-Icon ohne Zähler; Kartenanzahl in der Informationszeile.
 - Zooplanauswahl markiert die gesamte Kachel mit `SelectedBorder` und einer sichtbaren Auswahlmarkierung; Skizze und Nummer bleiben fachliche Inhalte.
 - In deutschen sichtbaren Texten konsequent „Spieler“ verwenden; technische Typen und Ressourcenschlüssel behalten `Player`.
-- Auch Einstellungen, Ergebnisüberschriften und Abschlussbuttons führen sichtbare Texte über die bestehenden Lokalisierungsressourcen; keine natürlichen Sprachtexte direkt im XAML.
-- Texte über bestehende Lokalisierung führen. Android und iOS teilen Informationsarchitektur, native Bedienerwartungen bleiben erhalten.
+- Alle sichtbaren Sprachtexte einschließlich Einstellungen, Ergebnisüberschriften und Abschlussbuttons führen über die bestehende Lokalisierung. Android und iOS teilen die Informationsarchitektur; native Bedienerwartungen bleiben erhalten. Bekannte Codeabweichungen stehen im Wireframe.
 
 ## Zusätzliche semantische Rollen
 
@@ -410,7 +409,7 @@ Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: A
 
 ## Dialogabdeckung
 
-Die appinternen Auswahlen für vorhandene Spieler und besondere Karten verwenden zentral `SelectionDialog` und `TextActionButton` zum Schließen. Native `DisplayAlertAsync`-Dialoge und native Picker übernehmen diese XAML-Styles nicht; ihre exakte Farb-/Buttonanpassung ist noch offen. Der aktuelle Dialogbestand und die verbleibenden Anpassungen stehen in `UI_WIREFRAME.md`, Abschnitt „Dialogübersicht“. Sicherheitsabfragen dürfen bei einer späteren visuellen Vereinheitlichung nicht entfallen.
+Die appinternen Auswahlen für vorhandene Spieler, Farben, besondere Karten und Kartensymbole verwenden zentral `SelectionDialog` und `TextActionButton` zum Schließen. Native `DisplayAlertAsync`-Dialoge und native Picker übernehmen diese XAML-Styles nicht; ihre exakte Farb-/Buttonanpassung ist noch offen. Der aktuelle Dialogbestand und die verbleibenden Anpassungen stehen in `UI_WIREFRAME.md`, Abschnitt „Dialogübersicht“. System-Zurück schließt zuerst die offene App-Auswahl und verwirft sie; es soll nicht unbeabsichtigt den darunterliegenden Screen verlassen. Sicherheitsabfragen dürfen bei einer späteren visuellen Vereinheitlichung nicht entfallen. Bekannte Abweichungen und der native Dialogbestand stehen nur im Wireframe.
 
 ## Splashscreen und App-Start
 
@@ -426,22 +425,15 @@ Spielerkacheln in Gruppe anlegen und bearbeiten übernehmen eine zugewiesene Def
 
 ## Begrenzte numerische Wertungseingaben
 
-Die Arche-Nova-Spielereingabe nutzt native Zahlenräder ohne Umlauf und ein
-zugehöriges direkt editierbares Zahlenfeld. Rad und Eingabefeld bilden je eine
-gleich breite Spalte mit 16 dp Abstand zwischen Rad und Zahlenfeld sowie
-derselben 16-dp-Rundung aus `CardBorder`. Überschriften und Wertebereiche
-stehen zentriert. Die beiden Spalten haben 32 dp Zwischenraum; ihre Außenkanten
-fluchten mit Punktefläche und Fertig-Button. Die Eingabe bleibt auf ihrer gerundeten Surface transparent.
-32 dp Abstand trennen die Eingabegruppe von den berechneten Punkten. Räder erhalten `Surface`, `Outline`
-und `TextPrimary` aus dem aktiven Theme; keine Spielerfarbflächen oder eigenen
-Akzentfarben. Noch nicht erfasste Mittelwerte werden ausdrücklich als Vorschlag
-benannt. Unter den Punkten steht abhängig von der Spieleinstellung ein
-horizontaler Ruf-Slider mit Zahlenfeld, ohne zusätzlichen Erfassungsschalter.
-Der Slider verwendet `Primary` für Griff/aktive Spur und `Outline` für die
-inaktive Spur. Werte werden ganzzahlig erfasst; Ruf bleibt optional.
-Bedienhinweise gehören hinter das Info-Symbol im Kopf statt dauerhaft in den
-Screen. Vorschlagskennzeichnung und Validierungsfehler bleiben als Status
-sichtbar. Bei großen Schriften und Tastatur ist der Inhalt scrollbar.
+Zahlenräder und zugehörige direkt editierbare Felder bilden je eine zusammengehörige
+Spalte mit derselben Breite und CardBorder-Rundung. Die Eingabe bleibt auf ihrer
+gerundeten Surface transparent. Konturen und Texte verwenden die Theme-Rollen;
+keine Spielerfarben oder eigenen Akzentfarben für diese Controls.
+Der Ruf-Slider nutzt Primary für Griff/aktive Spur und Outline für die inaktive Spur.
+Vorschläge, Auswahl und Fehler müssen zusätzlich als Status erkennbar bleiben.
+Bedienhinweise gehören hinter Info, der Inhalt bleibt bei Tastatur/großer Schrift
+scrollbar. Verbindliche Screenmaße und Anordnung stehen ausschließlich im
+`UI_WIREFRAME.md`, Abschnitt „Spielereingabe“; fachliche Eingaberegeln in `PRODUCT_SPEC.md`.
 
 ## Verwaltbare Arche-Nova-Spezialkarten
 

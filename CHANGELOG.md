@@ -1,5 +1,15 @@
 # Changelog
 
+Historische Versionsentscheidungen können durch spätere Einträge überholt sein.
+Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
+Spezifikationen unter `docs/`.
+
+## Unveröffentlicht
+
+- Markdown-Dokumentation konsolidiert: doppelte Feature-/Navigationsregeln zusammengeführt, veraltete DB-Reset- und UI-Angaben ersetzt.
+- Zuständigkeiten geschärft und Einstieg für neue Chats ergänzt.
+- Drei bestätigte UI-Codeabweichungen für spätere Behebung im Wireframe festgehalten; keine App-Codeänderung.
+
 ## 0.9.0.0
 
 - Persistierte, benutzerverwaltbare Arche-Nova-Spezialkarten mit stabiler GUID, Name, 0–3 geordneten Symbolen und Archivstatus statt festem Kartenenum.
@@ -137,11 +147,6 @@
 - Android Adaptive App Icon: Foreground füllt die Launcher-Maske stärker aus; der sichtbare Hintergrundring um das Logo wird deutlich reduziert.
 - Arche-Nova-Ergebnis: Attraktivität, Artenschutz und besondere Karten verwenden auf spielerfarbig getönten Karten jetzt die Primärtextfarbe gemäß verbindlicher Kontrastregel.
 
-Versionshistorie des Boardgame Trackers.
-
-Die übrigen Projekt-MD-Dateien beschreiben ausschließlich den aktuellen
-gültigen Stand.
-
 ## 0.8.3.1
 
 - Buildfehler `CS1931` in `SqliteArkNovaRunningGameSessionQuery` behoben: lokale Ergebnisvariable und LINQ-Range-Variable verwenden wieder eindeutige Namen.
@@ -183,7 +188,7 @@ gültigen Stand.
 - AndroidManifest referenziert `@mipmap/appicon` und `@mipmap/appicon_round` explizit.
 - App-Version auf 0.8.2.3 / ApplicationVersion 3 erhöht.
 
-## Unreleased – Dokumentationskonsolidierung
+## Historischer Dokumentationszwischenstand vor 0.8.2.3
 
 - Update-Pakete mit Dateioperationen erhalten künftig einen generischen `APPLY_UPDATE.cmd`; Lösch-, Verschiebe- und Umbenennungsaktionen werden deklarativ aus der Operationsdatei gelesen.
 
