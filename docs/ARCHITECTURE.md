@@ -97,6 +97,8 @@ BoardgameTracker.Application/
         Running/
         Scoring/
         StartGameSession/
+        History/
+      SpecialCards/
       Settings/
 
 BoardgameTracker.Infrastructure/
@@ -122,6 +124,7 @@ BoardgameTracker.App/
     ArkNova/
       Features/
         GameSessions/
+        SpecialCards/
         Settings/
 ```
 
@@ -313,6 +316,14 @@ Gruppen werden im Kontext eines ausgewählten Spiels angezeigt. Nicht-historisch
 Navigationseinstellungen und lokale Ark-Nova-Präferenzen werden über MAUI
 `Preferences` gespeichert, nicht in SQLite.
 
+### Navigationsparameter
+
+Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.
+
+### Zentrales Theme-System
+
+App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Der `AppNavigationSettings`-/Preferences-Port speichert die Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.
+
 ## 11. Nicht gewünschte Muster
 
 Ohne konkreten Bedarf werden nicht eingeführt:
@@ -327,15 +338,13 @@ Ohne konkreten Bedarf werden nicht eingeführt:
 
 ## 12. Namespaces, Dateien und Tests
 
-- Namespace-Hierarchien folgen der fachlichen Ordnerstruktur.
-- Dateiname und primärer Typname stimmen überein; kleine fachlich zugehörige Begleittypen dürfen in derselben Datei stehen. Eine Datei pro Typ ist keine Pflicht.
-- Reine Implementierungsdetails möglichst privat verschachteln. Gemeinsam verwendete Fachbegriffe und Architekturverträge bleiben eigenständig; beim Zusammenlegen Modul- und Schichtgrenzen erhalten. XAML, DI und automatische EF-Erkennung zählen als Verwendung.
-- Einfache und kurze Typen explizit deklarieren, insbesondere `string?`, `bool`, `int`, `Guid` und Enums. `var` nur für komplexe Typen verwenden, wenn die Deklaration dadurch lesbarer wird; anonyme Typen sind eingeschlossen. Kein `var` allein wegen eines offensichtlichen Initialisierers.
-- Bei `if` mit einer einzelnen einfachen Anweisung Klammern weglassen und die Anweisung eingerückt auf eine eigene Zeile setzen. Bei verschachtelten `if`-Anweisungen Klammern zur eindeutigen Block-/`else`-Zuordnung verwenden. Bei mehreren Anweisungen ebenfalls einen mehrzeiligen Klammerblock verwenden. Die öffnende Klammer darf auf der Zeile des zugehörigen Ausdrucks stehen. `finally`-Blöcke immer mehrzeilig mit Klammern schreiben; keine Inline-Blockinhalte.
-- Eine Anweisung pro Zeile; verständliche Absätze und benannte Zwischenschritte vor weiteren Abstraktionen. Vollqualifizierte Projekt-Typnamen nur bei Bedarf, sonst `using`. Keine festen Dateilängen als Aufteilungsregel.
-- Tests spiegeln die fachliche Struktur des getesteten Produktionscodes.
-- Bei Refactorings werden alte Synonyme nicht als Compatibility-Aliase im Domain
-  Model weitergeführt.
+Namespace-Hierarchien folgen der fachlichen Ordnerstruktur; Tests spiegeln den
+getesteten Slice. Gemeinsame Fachbegriffe und Architekturverträge bleiben ihrer
+Schicht zugeordnet. Kleine Begleittypen dürfen beim Haupttyp stehen; XAML, DI
+und EF zählen als Verwendung. Die konkreten C#-Stilregeln zu Typdeklarationen,
+`var`, Klammern und mehrzeiligen Blöcken stehen ausschließlich in `AGENTS.md`.
+Bei Refactorings werden alte Domänensynonyme nicht als Compatibility-Aliase
+weitergeführt.
 
 ## 13. Architekturregel für zukünftige Spiele
 
@@ -352,14 +361,6 @@ vorsorgliche Abstraktion.
 ## Historien-Slice
 
 Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter in Infrastructure, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case und Persistenzport für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
-
-## Navigationsparameter
-
-Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.
-
-## Zentrales Theme-System
-
-App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Das bestehende `AppNavigationSettings`-/Preferences-Port erhält eine Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.
 
 ## Gemeinsame Spielerfarben und Spielregeln
 

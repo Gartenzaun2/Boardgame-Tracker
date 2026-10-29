@@ -1,4 +1,4 @@
-# Boardgame Tracker – Fachliches Datenmodell v0.3
+# Boardgame Tracker – Fachliches Datenmodell
 
 ## 1. Grundprinzip
 
@@ -92,7 +92,10 @@ Game
 ark-nova
 ```
 
-Sichtbare Namen werden lokalisiert.
+`Id` ist die stabile Identität eines Spiels; `Key` erkennt ein eingebautes
+Spielmodul. Der Anzeigename ist nicht die Identität. Namen eingebauter Spiele
+werden lokalisiert. Benutzerdefinierte Spiele und ihre spätere Ergebniskonfiguration
+sind Zielbild gemäß `PRODUCT_SPEC.md`, noch kein implementierter Slice.
 
 ### GameSession
 
@@ -215,6 +218,12 @@ Arche-Nova-Defaultfarben werden beim Anlegen und Bearbeiten über denselben allg
 
 ## 6. Arche-Nova-Gruppendaten
 
+### Gemeinsame Farben und spielabhängige Defaults
+
+`PlayerColor` gehört zum gemeinsamen Kern und definiert zwölf fachliche Farbkategorien ohne UI-Hexwerte. Spiele wählen eine erlaubte Teilmenge; für Arche Nova gilt die unten aufgeführte Auswahl. Spielobjekte validieren die Teilmenge auch dann, wenn ein Wert im globalen Enum definiert ist.
+
+Farbdefaults bleiben pro Spiel, Gruppe und Mitglied gespeichert. Die `ArkNovaGroupPlayer.DefaultColor`-Spalte und die Farbspalte der Partieteilnehmer verwenden diesen gemeinsamen Typ. Die Integerwerte bleiben unverändert: Blau=1, Gelb=2, Rot=3, Schwarz=4. Diese numerischen Werte sind persistierte Identitäten und bleiben stabil. Es wird keine globale Spielerfarbe auf `Player` eingeführt. Zusätzliche Spielmodule besitzen ihre eigenen fachlichen Defaults und Persistenzabbildungen.
+
 ### ArkNovaGroupPlayer
 
 ``` text
@@ -233,8 +242,9 @@ Die Standardfarbe ist abhängig von:
 Die Beziehung `(GroupId, PlayerId)` verweist auf eine bestehende
 `GroupPlayer`-Zuordnung.
 
-Innerhalb einer Arche-Nova-Gruppe dürfen Defaultfarben nicht doppelt
-vergeben werden.
+Innerhalb einer Arche-Nova-Gruppe dürfen gesetzte Defaultfarben nicht doppelt
+vergeben werden. Ohne gespeicherten Default existiert für dieses Mitglied kein
+`ArkNovaGroupPlayer`-Eintrag; `DefaultColor` selbst ist nicht nullable.
 
 Arche Nova verwendet im MVP:
 
@@ -314,7 +324,8 @@ MVP-Pläne:
 14. Lagune
 
 `Number` ist die natürliche, stabile Identität und der Primärschlüssel.
-Eine künstliche ZooPlan-ID wird nicht verwendet.
+Eine künstliche ZooPlan-ID wird nicht verwendet. Der persistierte Katalog
+enthält nur Nummern; lokalisierter Name und Skizze sind Presentation-Metadaten.
 
 Jeder Spieler erhält genau zwei verschiedene Pläne und wählt einen
 davon.
@@ -421,6 +432,12 @@ nativen MAUI-Preferences-Speicher gespeichert, nicht in SQLite.
 
 ------------------------------------------------------------------------
 
+### Historische Korrekturen
+
+Completed-Partien sind über einen expliziten Korrektur-Anwendungsfall bearbeitbar; keine Transition zurück zu Scoring. Rohwerte, besondere Karten und neu validierte Placements werden atomar gespeichert. Spiel-, Gruppen-, Teilnehmer- und Setupdaten sowie Start-/Endzeit bleiben unverändert. Spieler- und Gruppennamen werden über aktuelle Player-/Group-Referenzen aufgelöst. Kartennamen und Symbole werden über die aktuelle Spezialkarten-ID aufgelöst. Löschen einer Completed-Partie entfernt alle abhängigen Partiedaten kaskadierend, niemals Spieler oder Gruppen. Keine Namens-Snapshots; Spezialkarten referenzieren die in Abschnitt 9 beschriebenen aktuellen Karten.
+
+------------------------------------------------------------------------
+
 ## 11. Nicht redundant gespeicherte Daten
 
 Nicht als autoritative Felder speichern:
@@ -470,22 +487,3 @@ Games/
 ```
 
 Der allgemeine Kern bleibt frei von Arche-Nova-Sonderfällen.
-
-## Spielidentität und Zoopläne
-
-- `Game.Id` bleibt eine stabile `Guid`. Spiele sollen später auch vom Benutzer als manuelle Spiele angelegt werden können; Name und Konfiguration sind deshalb keine geeignete Identität.
-- Ein eingebaut unterstütztes Spiel kann zusätzlich über einen stabilen Implementierungsschlüssel wie `ark-nova` erkannt werden. Dieser Schlüssel ersetzt die `Game.Id` nicht.
-- Für manuelle Spiele ist perspektivisch konfigurierbar, ob nur die Tatsache einer Partie, Gewinner, Punkte und/oder Platzierungen erfasst werden. Das konkrete Konfigurationsmodell wird erst mit diesem Feature festgelegt.
-- `ArkNovaZooPlan.Number` (1–14) ist dagegen die stabile fachliche Identität und der Primärschlüssel. Eine zusätzliche künstliche `Id` entfällt.
-- Die `ArkNovaZooPlans`-Tabelle enthält nur die gültigen Nummern und dient der referenziellen Integrität.
-- Lokalisierter Zooplanname und Sketch-Datei sind Presentation-Metadaten und werden nicht persistiert.
-
-## Historische Korrekturen
-
-Completed-Partien sind über einen expliziten Korrektur-Anwendungsfall bearbeitbar; keine Transition zurück zu Scoring. Rohwerte, besondere Karten und neu validierte Placements werden atomar gespeichert. Spiel-, Gruppen-, Teilnehmer- und Setupdaten sowie Start-/Endzeit bleiben unverändert. Namen werden über aktuelle Player-/Group-Referenzen aufgelöst. Löschen einer Completed-Partie entfernt alle abhängigen Partiedaten kaskadierend, niemals Spieler oder Gruppen. Kein neues Schema und keine Namens-Snapshots.
-
-## Gemeinsame semantische Spielerfarben
-
-`PlayerColor` gehört zum gemeinsamen Kern und definiert zwölf fachliche Farbkategorien ohne UI-Hexwerte. Spiele wählen eine erlaubte Teilmenge; Arche Nova erlaubt Blau, Gelb, Rot und Schwarz. Spielobjekte validieren die Teilmenge auch dann, wenn ein Wert im globalen Enum definiert ist.
-
-Farbdefaults bleiben pro Spiel, Gruppe und Mitglied gespeichert. Die bestehende `ArkNovaGroupPlayer.DefaultColor`-Spalte und die Farbspalte der Partieteilnehmer verwenden jetzt den gemeinsamen Typ. Die Integerwerte bleiben unverändert: Blau=1, Gelb=2, Rot=3, Schwarz=4. Tabellen, Schlüssel und Spalten ändern sich nicht; vorhandene Daten bleiben lesbar. Es wird keine globale Spielerfarbe auf `Player` eingeführt. Zusätzliche Spielmodule besitzen ihre eigenen fachlichen Defaults und Persistenzabbildungen.

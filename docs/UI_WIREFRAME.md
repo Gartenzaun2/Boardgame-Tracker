@@ -1,161 +1,42 @@
-# Boardgame Tracker – UI / Wireframe Entscheidungen v0.2
+# Boardgame Tracker – Screens und Navigation
 
-## Referenzgerät
+Dieses Dokument beschreibt Screenaufbau, Interaktionen, Dialogbestand und offene
+UI-Codeabweichungen. Produktregeln stehen in `PRODUCT_SPEC.md`, gemeinsame
+Gestaltung und Farbwerte in `UI_DESIGN_GUIDE.md`. Referenzgerät und Touch-Größen
+werden dort verbindlich festgelegt; der frühere HTML-Prototyp ist keine weitere Quelle.
 
-- 6,1 Zoll Smartphone
-- Hochformat
-- 1170 × 2532 px
+## Hauptnavigation und App-Start
 
-## Navigation
+Die Shell besitzt `Spiele · Gruppen · Historie · Einstellungen`. Unter „Gruppen“
+steht der aktuelle Spielname; es gibt dort keinen spielunabhängigen Kontext.
+Ein Spiel-Tap setzt den Kontext und öffnet die Gruppenübersicht. Der Gruppen-Tab
+führt ebenfalls zur Übersicht im gewählten Kontext.
 
-Hauptbereiche:
-
-- Spiele · Gruppen · Historie · Einstellungen
-
-## Gruppen → Partievorbereitung
-
-Eine Gruppe besitzt keinen separaten Detail-Screen im normalen
-Startflow.
-
-Beim Antippen einer Gruppe öffnet sich direkt die Partievorbereitung.
-
-Oben können kompakt angezeigt werden:
-
-- Gruppenname
-- letzte Partie
-- ggf. Gewinner der letzten Partie
-
-Danach unmittelbar:
-
-- Zoopläne auslosen
-- Startspieler zufällig bestimmen
-- Spielerkacheln
-
-## Spielerkachel
-
-Wiederverwendete Kernkomponente.
-
-### Vorbereitung
-
-- Reihenfolge
-- Name
-- dezente Spielerfarbe
-- Farbe ändern
-- zwei Zooplanoptionen
-
-### Laufende Partie
-
-- Reihenfolge
-- Name
-- Farbe
-- gewählter Zooplan
-
-### Wertung
-
-- Name
-- Farbe
-- Zooplan
-- Attraktivität
-- Artenschutz
-- Ruf
-- Spezialkarten
-
-### Ergebnis
-
-- Platzierung
-- Name
-- Farbe
-- Punkte
-- Zooplan
-- Rohwerte
-- Spezialkarten
-
-## Gruppenverwaltung
-
-Bei Erstellung/Bearbeitung einer Gruppe:
-
-- Spieler auswählen
-- Gäste anlegen
-- für das jeweilige Spiel Default-Farben setzen
-- Default-Reihenfolge mit Hoch-/Runter-Aktionen festlegen
-
-## Startspieler-Auslosung
-
-Der Zufallsbutton verändert nicht beliebig die relative Reihenfolge.
-
-Er führt konzeptionell eine zufällige Anzahl zyklischer Rotationen aus.
-
-Beispiel:
-
-Vorher:
-
-1.  Anna
-2.  Ben
-3.  Chris
-4.  David
-
-Ausgelost wird Chris:
-
-1.  Chris
-2.  David
-3.  Anna
-4.  Ben
-
-Animation:
-
-- kurz
-- dezent
-- z\. B. einmaliges Aufglühen der ausgewählten Kachel
-- keine lange Roulette-Animation
-
-## Zooplanauswahl
-
-- pro Spieler zwei kompakte Zooplan-Kacheln nebeneinander
-- Skizze + Plannummer
-- der Planname wird in der Vorbereitung nicht zusätzlich eingeblendet
-- pro Spieler zwei Optionen
-- ausgewählte Option klar hervorgehoben
-
-## Wertung
-
-Direkte Eingabe der drei Werte zunächst bevorzugt.
-
-Kamera-Button prominent sichtbar.
-
-Besondere Karten: **Karten-Icon beim Spieler antippen → konkrete Karte wählen**
-
-## Wireframe-Basis
-
-Der frühere HTML-Prototyp ist nicht im Repository enthalten. Maßgeblich sind dieses Dokument und `UI_DESIGN_GUIDE.md`.
-
-------------------------------------------------------------------------
+Der gespeicherte Hauptbereich bzw. die konkrete noch offene Partie wird gemäß
+`PRODUCT_SPEC.md` wiederhergestellt. Ohne früheren Kontext führt ein Standardspiel
+zu dessen Gruppen, andernfalls startet die App in „Spiele“. Die Auswahl einer
+konkreten offenen Partie folgt nicht pauschal dem letzten Änderungsdatum.
 
 ## Gruppenverwaltung
 
 ### Gruppenübersicht
 
-Jede Gruppenkarte besitzt rechts eine kleine, eigenständige
-Bearbeiten-Aktion.
+Kopf: „Gruppen“, aktueller Spielname, HeaderDivider. Darunter die beiden Filter
+„Temporär“ und „Archiviert“ nebeneinander sowie die Gruppenliste. Beide Kategorien
+sind anfangs ausgeblendet. „Neue Gruppe“ ist die Primary-Aktion.
 
-``` text
-┌────────────────────────────────────────────┐
-│ Freitagabend                          ✎    │
-│ Anna · Ben · Chris                          │
-│ Zuletzt gespielt: 24.10.2026                │
-└────────────────────────────────────────────┘
-```
+Eine Surface-Karte zeigt Gruppenname, Mitglieder und letzte Nutzung für dieses
+Spiel. Ein transparentes, im Theme-Textton getöntes Aktiv-Icon neben dem Namen
+kennzeichnet eine laufende Partie oder offene Wertung. Rechts steht das
+zurückhaltende Bearbeiten-Icon als eigene Touch-Fläche.
 
-Interaktion:
-
-- Tippen auf die Gruppenkarte → Partievorbereitung.
-- Tippen auf `✎` → Gruppe bearbeiten.
-- Die Touch-Flächen dürfen sich nicht überlagern.
-- Das Bearbeiten-Icon soll sichtbar, aber gegenüber der primären
-  Gruppenaktion zurückhaltend sein.
+- Karten-Tap: offene Partie/Wertung fortsetzen; ohne offene Partie Vorbereitung öffnen.
+- Bearbeiten-Tap: Gruppenformular öffnen; keine Partievorbereitung auslösen.
+- Keine separate Gruppendetailseite im normalen Bedienfluss.
 
 ### Gruppe anlegen
 
-Header auf AppBackground: Zurück, Titel, Info und Primary-Speichern. Eine feine Outline-Unterkante trennt den Arbeitsbereich.
+Kopf auf AppBackground: Zurück, Titel, Info und Primary-Speichern; feine Unterkante.
 
 ```text
 Gruppenname     [z. B. Freitagabend]
@@ -171,233 +52,164 @@ Gast                             ○
 [Spieler hinzufügen]
 ```
 
-Keine Karten um Stammdaten oder neue Spieler, keine Divider zwischen Formularsektionen. Label-/Inputmuster, Höhe und Typografie sind für Gruppenname und Name gleich. Bereits hinzugefügte Spieler stehen in eigenen interaktiven Einheiten mit Reihenfolge-/Entfernen-Aktionen. Bei Spielen mit Farben kommt je Spieler ein Palettenbutton hinzu; zugewiesene Farben tönen die gesamte Spielerkachel einschließlich passender Spieler-Textfarbe. Reihenfolge-/Entfernen-Symbole sind vergrößert und behalten mindestens 48 × 48 dp Touch-Fläche; der gemeinsame Dialog benennt ausdrücklich das Spiel und zeigt nur dessen erlaubte Farben. Ihre Reihenfolge bleibt veränderbar.
+Stammdaten und neue Spieler sind flache Inline-Formulare mit gleichem
+Label-links/Eingabe-rechts-Muster. Keine Karten um Formularsektionen, keine
+zusätzlichen Divider. Bereits hinzugefügte Spieler sind eigene interaktive Kacheln
+mit Hoch-/Runter-/Entfernen-Aktionen; Drag & Drop ist kein aktueller Bestandteil.
 
-Der Secondary-Button für vorhandene Spieler öffnet dasselbe modale Auswahlmuster wie andere App-Auswahlen: AppBackground außen, Surface-Einträge. Ein Tap fügt den Spieler direkt hinzu und schließt. Bereits enthaltene Spieler fehlen in der Auswahl; bei fehlenden verfügbaren Spielern erscheint der Leerzustand. Neue Spieler werden weiterhin erst gemeinsam mit der Gruppe gespeichert.
+Bei Spielen mit Farben ist ein Palettenbutton sichtbar. Zugewiesene Farben tönen
+die ganze Spielerkachel; Texte und Icons verwenden die gekoppelte Spieler-Textfarbe.
+Symbolgrößen und komfortable Touch-Flächen stehen im Design Guide.
+
+„Vorhandenen Spieler hinzufügen“ öffnet einen SelectionDialog. Ein Tap fügt hinzu
+und schließt; bereits enthaltene Spieler fehlen in der Auswahl. Gibt es keine
+verfügbaren Spieler, ersetzt ein Leerzustand den Button. Neue Spieler werden
+erst mit der Gruppe gespeichert. Hinweise zu Gruppe/Reihenfolge stehen hinter Info-Icons.
 
 ### Gruppe bearbeiten
 
-Anlegen und Bearbeiten verwenden allgemeine Gruppenformulare. Der aktuelle Spielkontext bestimmt, ob und welche Farben gewählt werden dürfen. Gruppendaten und Spieldefaults werden gemeinsam atomar gespeichert.
+Gleicher Header und dieselbe Formularsprache wie bei der Anlage. Bearbeitbar sind
+Name, Reihenfolge, Archivstatus und optionale Farbdefaults des aktuellen Spiels;
+temporäre Gruppen dürfen permanent werden. Die Mitgliedermenge bleibt fest:
+keine Spieler hinzufügen oder entfernen. Änderungen bleiben bis Speichern im Entwurf.
 
-Die Bearbeiten-Seite verwendet dieselbe visuelle Grundstruktur wie
-`Gruppe anlegen`:
+### Gruppen-Spielerfarbe auswählen
 
-``` text
-←  Gruppe bearbeiten   ⓘ             Speichern
+Gemeinsamer SelectionDialog mit ausdrücklichem Spielbezug, z. B. „Farbe für
+Arche Nova festlegen“, und Spielername. Die Liste enthält erlaubte Farben und
+„Keine Farbe“. Aktuelle Auswahl: SelectedSurface/SelectedBorder plus Häkchen.
+Ein Tap übernimmt in den Entwurf und schließt; Schließen/System-Zurück bricht ab.
+Tausch belegter Defaultfarben und atomare Speicherung sind Produktregeln.
+
+## Partievorbereitung
+
+```text
+←  Partie vorbereiten             [Würfel]
+   <Gruppenname>
+──────────────────────────────────────────
+LETZTE PARTIE
+<Datum und alle Platzierungen oder Leerzustand>
+[Zoopläne auslosen] [Reihenfolge rotieren]
+
+1  Anna                           [Palette]
+   Blau
+   [Plan 3 / Skizze] [Plan 11 / Skizze]
+...
+                               [Starten]
 ```
 
-Im aktuellen Lifecycle können Gruppenname, Default-Reihenfolge und
-Archivstatus geändert werden. Eine temporäre Gruppe kann permanent gemacht
-werden; die umgekehrte Richtung ist nicht erlaubt. Die bestehende
-Spielerzusammensetzung wird nicht beliebig verändert.
+„Letzte Partie“ ist flache Metainformation ohne Karte. Ausgangsreihenfolge,
+automatische Rotation zum letzten Verlierer und Farbdefaults folgen der Produktspezifikation.
+Ohne gespeicherte Defaults werden eindeutige Farben vorgeschlagen. Der Würfel
+animiert kurz und lost den Startspieler durch zyklische Rotation aus; die
+separate Rotationsaktion verschiebt um eine Position. Relative Reihenfolge bleibt erhalten.
 
-------------------------------------------------------------------------
+Je Spieler stehen zwei quadratische Zooplanskizzen mit Nummer nebeneinander,
+ohne zusätzlichen Plannamen. Aktuelle Skizzen verwenden `Fill`. Initial ist kein
+Plan ausgewählt. Ein Skizzen-Tap markiert die ganze Kachel mit Auswahlkontur und
+zusätzlicher sichtbarer Auswahlmarkierung.
 
-## Visuelle Grundregeln
-
-Der verbindliche visuelle Leitfaden liegt in `UI_DESIGN_GUIDE.md`.
-
-Für die Gruppen-Screens gelten zusätzlich:
-
-- Zurück, Information und Bearbeiten werden als sichtbare Bild-Icons
-  umgesetzt und nicht als fontabhängige Unicode-Zeichen.
-- `Neue Gruppe` und `Speichern` verwenden kompakte Button-Flächen.
-- Die App verwendet eine zentrale semantische Theme-Palette gemäß `UI_DESIGN_GUIDE.md`.
-- Der Erklärungstext zur Spielerreihenfolge wird nicht dauerhaft
-  angezeigt, sondern über ein Info-Icon bei `Gruppenmitglieder`
-  geöffnet.
-- Die sichtbare Icongröße und die Touch-Fläche werden getrennt
-  behandelt: kleine Icons behalten komfortable Touch-Ziele.
-
-------------------------------------------------------------------------
-
-## Empty/Busy States
-
-Ohne verfügbare bestehende Spieler ersetzt „Keine weiteren Spieler vorhanden.“ den Auswahlbutton. Eine leere Mitgliedsliste zeigt Text ohne Karte. Navigation und persistierende Aktionen zeigen Busy-Zustände und verhindern Mehrfachtaps.
-
-------------------------------------------------------------------------
-
-## Vorbereitungsscreen – aktueller Aufbau
-
-Aktueller Aufbau:
-
-``` text
-┌──────────────────────────────────────┐
-│ ←  Partie vorbereiten          [🎲]  │
-│    <Gruppenname>                     │
-│    <Fehler nur wenn vorhanden>       │
-├──────────────────────────────────────┤
-│ LETZTE PARTIE (flache Metainformation)│
-│ [Zoopläne auslosen] [durchrotieren]   │
-├──────────────────────────────────────┤
-│ 1  Anna                         [🎨] │
-│    Blau                              │
-│  ┌────────────┐  ┌────────────┐      │
-│  │   Plan 3   │  │  Plan 11   │      │
-│  │  Skizze    │  │  Skizze    │      │
-│  └────────────┘  └────────────┘      │
-│                                      │
-│ ... weitere Spieler ...              │
-├──────────────────────────────────────┤
-│               [ Starten ]            │
-└──────────────────────────────────────┘
-```
-
-- Die Fehlermeldungszeile existiert layoutseitig nur, wenn tatsächlich ein
-  Fehlertext vorhanden ist.
-- Die Zooplan-Kacheln sind initial ohne Auswahlrahmen.
-- Bei Auswahl liegt der Auswahlrahmen außen um die komplette helle
-  Zooplan-Kachel.
-- Die Kacheln zeigen nur Skizze und Nummer.
-- Die aktuellen Bildressourcen sind quadratische Bleistiftskizzen; im
-  kompakten Kachelformat werden sie bewusst mit `Fill` dargestellt.
-- Die aktuell gewählte Spielerfarbe wird im geöffneten Farbwähler nicht
-  erneut angeboten.
-
-------------------------------------------------------------------------
+Die Partiefarbe wird über die vorhandene Inline-Auswahl gewählt; die aktuelle
+Farbe wird dort nicht nochmals angeboten. Farbänderungen gelten nur für diese
+Partie. Doppelte Farben können im Entwurf vorkommen, verhindern aber den Start.
+„Starten“ bleibt unten; Auslosen und Rotieren sind Secondary-Aktionen.
+Fehlerzeilen reservieren nur bei vorhandenem Text Platz.
 
 ## Laufende Partie
 
-Nach `Starten` wird nicht mehr nur ein Bestätigungsdialog angezeigt,
-sondern direkt die persistierte laufende Partie geöffnet.
+Kopf mit Gruppe und bisheriger Dauer. Spieler erscheinen in Startreihenfolge
+mit Farbe und gewähltem Zooplan. Die Karten verwenden die gemeinsame
+Spielerfarben-Palette. „Partie beenden“ ist Primary und führt in die Wertung;
+„Verwerfen“ ist sekundär destruktiv und verlangt Bestätigung.
 
-``` text
-Laufende Partie
-<Gruppe>
-Dauer: 42 min
+## Wertungsübersicht und Ergebnis
 
-┌──────────────────────────────────────┐
-│ 1  Anna          Blau      [Plan 3] │
-└──────────────────────────────────────┘
-┌──────────────────────────────────────┐
-│ 2  Ben           Rot       [Plan 9] │
-└──────────────────────────────────────┘
+Wertungskarten reservieren eigene Zeilen für Name/Punkte, Farbe/Zooplan,
+Attraktivität/Artenschutz und Kartenanzahl/optionalen Ruf. Das neutrale
+Besondere-Karten-Icon besitzt keinen Zähler; es öffnet die konkrete Kartenwahl.
+Ein Tap auf den übrigen Kartenbereich öffnet die Spielereingabe. Der Kamera-Button
+ist in der laufenden Wertung sichtbar und zeigt derzeit den Hinweis zur noch
+nicht implementierten Fotoerkennung. Einstellungen sind aus der Wertung erreichbar.
 
-[ Partie beenden ]              Verwerfen
-```
+Die Kartenwahl zeigt geordnete Symbolgrafiken vor dem aktuellen Namen und den
+Zuordnungsstatus. Bereits dem Zielspieler zugeordnete Karten sind zusätzlich
+hervorgehoben. Ein Tap ordnet zu oder entfernt und schließt. Bei Mehrfachzuordnung
+an andere Spieler bleibt die ausdrückliche Bestätigung erhalten. Archivierte
+Karten erscheinen nur beim bereits zugeordneten Zielspieler zum Entfernen.
 
-Die Spielerkarten behalten die aus der Vorbereitung bekannte dezente
-Spielerfarbtönung. Der gewählte Zooplan wird als Skizze mit Nummer gezeigt.
+Der Ergebnis-Screen zeigt gespeicherte Platzierungen, Punkte und Rohwerte sowie
+Spezialkarten mit aktuellen Symbolen/Namen. Spielerflächen behalten ihre Farbpaare;
+Kartenbezeichnungen mit Symbolen erhalten eine neutrale Surface-Unterlage.
+Er bleibt bis zum expliziten „Fertig“ geöffnet.
 
-`Partie beenden` ist die primäre Aktion. `Verwerfen` ist klar sekundär und
-öffnet vor dem Löschen eine Bestätigung.
-
-Im Vorbereitungsscreen zeigt der Bereich `Letzte Partie` nun die
-Platzierungen aller vorhandenen Spieler. Bei einem geteilten letzten Platz
-wird der alphabetisch erste Name für die automatische Rotation auf Position
-1 verwendet.
-
-
-------------------------------------------------------------------------
-
-## Gruppenfilter
-
-Die beiden Filter `Temporär` und `Archiviert` stehen in der Gruppenübersicht
-nebeneinander. Die Filterlogik bleibt unverändert; es handelt sich ausschließlich
-um eine kompaktere Nutzung des vorhandenen horizontalen Platzes.
-
-
----
-
-## Spielereingabe – Zahlenräder
+## Spielereingabe
 
 Unter Spielername und Headerlinie stehen Attraktivität und Artenschutz als zwei
-Zahlenräder nebeneinander. Beide Felder enthalten Bezeichnung, Wertebereich,
-ein natives Rad (176 dp) und ein direkt editierbares Zahlenfeld (48 dp).
-Die Überschriften und Wertebereiche stehen mittig über dem jeweiligen Rad.
-Die Spalten sind durch 32 dp getrennt; ihre Außenkanten fluchten mit der
-Punktefläche und dem Fertig-Button. Es gibt keine zusätzliche seitliche Einrückung.
-Rad und Zahlenfeld haben dieselbe Breite, Surface-/Outline-Gestaltung und
-16-dp-Rundung. Zwischen Rad und Zahlenfeld liegen 16 dp, um versehentliche
-Tastatureingaben beim Drehen zu vermeiden.
-Vor der Punktefläche liegen 32 dp Abstand als sichtbare Leerzeile.
-Darunter folgen Punktevorschau bzw. berechnete Punkte. Wenn „Ruf erfassen“ in
-den Spieleinstellungen aktiviert ist, folgt darunter ein horizontaler Ruf-Slider
-(1–15, ganze Werte) mit Zahlenfeld. Es gibt keinen zusätzlichen Ruf-Schalter.
-Leere Werte zeigen den Mittelwert als Vorschlag; vorhandene Werte sind ausgewählt.
-Bedien- und Übernahmehinweise sind ausschließlich über das Info-Symbol im
-Seitenkopf erreichbar. „Vorschlag“ bleibt als Statuskennzeichnung sichtbar.
-Der Inhalt ist scrollbar; „Fertig“ bleibt im unteren Aktionsbereich.
-Zurück erfasst keine Vorschläge. Historische Korrekturen verwenden dieselbe
-Eingabe und bleiben bis „Korrektur speichern“ im bestehenden Entwurf; bei
-verborgener Rufeingabe bleiben vorhandene Rufwerte im Korrekturentwurf erhalten.
+Zahlenräder nebeneinander. Bezeichnungen, Wertebereiche und Vorschlagsstatus
+stehen mittig. Räder: 176 dp hoch; direkt editierbare Zahlenfelder: 48 dp hoch.
 
-## Wertungsübersicht und Hauptnavigation
+Die Spalten sind durch 32 dp getrennt. Ihre Außenkanten fluchten mit Punktefläche
+und Fertig-Button, ohne zusätzliche seitliche Einrückung. Rad und Zahlenfeld haben
+dieselbe Breite und 16-dp-Rundung über CardBorder. Dazwischen liegen 16 dp, damit
+das Drehen nicht versehentlich die Tastatur öffnet. Vor den Punkten folgen 32 dp Abstand.
 
-Untere Hauptnavigation:
+Wenn „Ruf erfassen“ in den Spieleinstellungen aktiv ist, steht unter den Punkten
+ein horizontaler 1–15-Slider mit direkt editierbarem Zahlenfeld; kein zusätzlicher
+Erfassungsschalter. Wertebereiche, Mittelwertvorschläge, „Fertig“ und Zurück
+folgen `PRODUCT_SPEC.md`, Abschnitt „Wertung“.
 
-```text
-Spiele · Gruppen · Historie · Einstellungen
-```
+Bedienhinweise sind ausschließlich hinter dem Info-Symbol im Kopf erreichbar.
+Vorschlagskennzeichnung und Fehler bleiben Statusinformationen. Bei großer Schrift
+und eingeblendeter Tastatur ist der Inhalt scrollbar; „Fertig“ bleibt unten.
+Historische Korrekturen verwenden denselben Screen und den bestehenden Entwurf.
+Bei verborgener Rufeingabe bleiben gespeicherte Rufwerte im Korrekturentwurf erhalten.
 
-Der Startbereich richtet sich nach gespeichertem Kontext und Standardspiel. Ein Tap auf den Gruppen-Tab führt
-zur Gruppenübersicht.
+## Historie
 
-Spielerkachel in der Wertungsübersicht:
+Spiel- und Gruppenfilter stehen als kompakte, bei Platzmangel umbrechende Chips
+oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter. Dahinter öffnen
+native Picker; unsichtbare Picker reservieren keinen zusätzlichen vertikalen Platz.
+
+Die Liste gruppiert Partien nach lokalem Kalendermonat, z. B. „Oktober 2026“.
+Monatsüberschriften sind einfache Texte ohne Karte und ohne Sticky-Verhalten.
+Jede Partiekarte enthält ungefähr drei umbrechende Zeilen:
 
 ```text
-┌──────────────────────────────────────┐
-│ Claudi · 68 Punkte               [▣] │
-│ Blau · Parkrestaurant                │
-│ Attraktivität 72 · Artenschutz 16    │
-└──────────────────────────────────────┘
+Arche Nova · 2 h 14 min · 26.10.26
+Freitagabend
+1. Anna · 1. Ben · 3. Chris
 ```
 
-Der rechte Kartenbutton verwendet das neutrale Besondere-Karten-Icon. Seine
-Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Anzahl zugewiesener besonderer Karten steht in einer eigenen Informationszeile; der Button hat keinen Zähler. Konkrete Karten werden in der Auswahl gezeigt. Nach einer Auswahl schließt sich die Auswahl direkt.
+Filter, Completed-Auswahl, Datumssortierung und aktuelle Namen folgen der
+Produktspezifikation. Leer-/Fehlerzustand und Busy-Schutz gehören zum Screen.
+Tap öffnet die spielabhängige Wertung, keine generische Detailseite.
 
+In der historischen Wertung steht die gespeicherte Platzierung vor dem Namen;
+maßgeblich ist Placement, nicht die Punktzahl. „Korrektur speichern“ übernimmt
+atomar und öffnet eine Gleichstandsauflösung, wenn die Neuberechnung dies
+verlangt. Unveränderte Punkte behalten gültige gespeicherte Placements.
+Zurück verwirft ungespeicherte Entwürfe. „Partie löschen“ ist sekundär destruktiv
+und erfordert Bestätigung. Statistik und deren eigene Filter folgen separat.
 
-------------------------------------------------------------------------
+## Einstellungen und Spezialkartenverwaltung
 
-## Spielkontext und Startnavigation
+Allgemeine Einstellungen enthalten Standardspiel und „Darstellung“ mit Deep
+Forest, Königsblau und Dunkel. Struktur bleibt über alle Themes gleich. Farbe,
+Shell-TabBar und aktive Auswahl richten sich nach dem Design Guide.
 
-- Die Haupttabs bleiben `Spiele · Gruppen · Historie · Einstellungen`.
-- `Gruppen` existiert im normalen Bedienfluss nur mit ausgewähltem Spiel.
-- Unter der Überschrift `Gruppen` steht der aktuelle Spielname; er wird nicht
-  zusätzlich auf jeder Gruppenkarte wiederholt.
-- Tap auf ein Spiel setzt den aktuellen Spielkontext und öffnet `Gruppen`.
-- Ohne Standardspiel und ohne früheren Kontext startet die App auf `Spiele`.
-- Mit Standardspiel startet ein frischer Kontext auf `Gruppen` dieses Spiels.
-- Danach werden zuletzt verwendeter Hauptbereich, Spielkontext und bei Bedarf
-  die konkret zuletzt geöffnete laufende Partie bzw. Wertung wiederhergestellt.
-- Mehrere offene Partien sind damit navigationsseitig möglich; es wird nicht
-  pauschal die zuletzt geänderte Partie geöffnet.
+Arche-Nova-Einstellungen enthalten „Ruf erfassen“, alte/neue Punkteanzeige und
+„Spezialkarten“. Dort: Header mit Zurück, „Archivierte anzeigen“, scrollbare
+Kartenliste und „Neue Spezialkarte“ unten. Zeilen zeigen 0–3 Symbole in gespeicherter
+Reihenfolge vor dem Namen, darunter Archivstatus und Bearbeiten/Archivieren bzw.
+Entarchivieren. Archiviert wird zusätzlich ausgeschrieben; keine Löschaktion.
 
-
-------------------------------------------------------------------------
-
-## Gruppen-Kontext und Ergebnisdarstellung
-
-- `Gruppen` darf nur mit gesetztem Spielkontext geöffnet werden. Der Kontext wird
-  vor der Navigation gesetzt.
-- Defaultspiel, Spielauswahl und Partiewiederaufnahme verwenden dafür denselben
-  Navigationspfad.
-- Ergebnis-Spielerkacheln verwenden wieder dieselbe dezente Spielerfarbtönung wie
-  Vorbereitung, laufende Partie und Wertung; die Farbe bleibt zusätzlich als Text
-  verfügbar.
-
-## Verbindliche Vorbereitungsregeln
-
-- Die letzte abgeschlossene Partie zeigt alle Platzierungen. Ihr Verlierer wird durch zyklische Rotation Startspieler; bei geteiltem letzten Platz entscheidet der alphabetisch erste Name.
-- Ohne Historie erscheint „Keine letzte Partie vorhanden.“
-- Der Würfel neben dem Titel lost den Startspieler aus. Die separate Rotationsaktion verschiebt zyklisch; die relative Reihenfolge bleibt erhalten.
-- Doppelte Farben sind während der Vorbereitung erlaubt, verhindern aber den Start. Starten liegt am unteren Bildschirmrand.
-- Defaultfarben werden beim Anlegen und Bearbeiten einer Gruppe im aktuellen Spielkontext gepflegt; Farbänderungen der Vorbereitung gelten nur für diese Partie.
-- Zooplanauswahl erfolgt durch Tippen auf die Skizze; initial ist kein Plan ausgewählt.
-
-## Historie: Partien
-
-Zwei kompakte Picker (Spiel, Gruppe) oberhalb der scrollbaren Liste. Karten mit drei umbrechenden Informationszeilen: `Arche Nova · 2 h 14 min · 26.10.26`, `Freitagabend`, `1. Anna · 2. Ben · 3. Chris`. Leer- und Fehlerzustand sowie Busy-Schutz vorsehen. Tap öffnet spielabhängige Wertung, keine generische Detailseite.
-
-Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placement sortiert. Bestehende Eingaben und Kartenwahl verwenden; `Korrektur speichern` führt bei Gleichstand in die vorhandene Auflösung. Sekundäre Aktion `Partie löschen` nur nach ausdrücklicher Bestätigung. Zurück verwirft ungespeicherte Korrekturen. Statistik folgt separat mit unabhängigen Filtern.
-
-## Theme und Historiengliederung
-
-Allgemeine Einstellungen enthalten den Picker „Darstellung“ mit Deep Forest, Königsblau und Dunkel. Alle Screens verwenden dieselbe Struktur in allen Themes. Die bestehende Shell-TabBar hat eine obere Kontur und einen aktiven Eintrag mit einer gemeinsamen abgerundeten Auswahlfläche hinter Icon und Text. Der Rand der Auswahlfläche hat keine vom Füllton abweichende Farbe. Historienfilter stehen als kompakte, bei Platzmangel umbrechende Chips oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter; die Auswahl erfolgt weiterhin nativ. Die Liste gruppiert Partiekarten nach lokalem Kalendermonat, z. B. „Oktober 2026“, mit einfacher Überschrift ohne Karte und ohne Sticky-Verhalten.
-
-Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Secondary-Aktionen auf allen Seiten verwenden SurfaceSecondary und eine Aktionskontur gemäß UI_DESIGN_GUIDE; kontextuelle Textaktionen bleiben transparent. Alle Seitenheader besitzen die gemeinsame feine Outline-Unterkante.
-
-In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Surface, Filter bleiben untergeordnete Toggles. In der Vorbereitung sind Auslosen/Rotation Secondary, Starten bleibt Primary. Formular- und Metabereiche werden flach dargestellt.
+Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe, Symbol-/Namensvorschau,
+drei nummerierte Symbolpositionen, Speichern. Folgepositionen werden lückenlos
+angeboten; Leeren rückt nachfolgende Symbole nach links. Der Symbolwähler zeigt
+echte Grafiken, lokalisierte Namen und aktuelle Auswahl mit Kontur/Farbe plus
+Häkchen im SelectionDialog. Schließen/System-Zurück verwirft nur die Auswahl.
+Wiederholungen sind wählbar. Busy-Overlays blockieren Eingaben; Fehler sind nur
+bei vorhandenem Text sichtbar.
 
 ## Dialogübersicht
 
@@ -422,19 +234,18 @@ In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Su
 
 Native Dialoge folgen derzeit dem Plattformdialog und erhalten nicht die zentralen XAML-Buttonstyles. Sie werden hier bewusst als verbleibende Arbeit aufgeführt. Eine spätere Vereinheitlichung muss Informations-, Fehler-, Auswahl- und destruktive Bestätigungsrollen sowie System-Zurück/Abbrechen erhalten. Gerätesichtprüfung in allen drei Themes bleibt erforderlich.
 
-## Arche-Nova-Spezialkarten verwalten
+## Bekannte Codeabweichungen – separat zu beheben
 
-Arche-Nova-Einstellungen → Spezialkarten. Kopf mit Zurück und HeaderDivider,
-Schalter „Archivierte anzeigen“, scrollbare Kartenliste und „Neue Spezialkarte“
-im unteren Aktionsbereich. Zeilen zeigen bis zu drei 26-dp-Symbole in gespeicherter
-Reihenfolge vor dem Namen; darunter Archivstatus und Bearbeiten/Archivieren bzw.
-Entarchivieren. Archiviert ist zusätzlich ausgeschrieben; keine Löschaktion.
+Die folgenden Punkte wurden beim Dokumentationsabgleich bestätigt und mit dem
+Benutzer ausdrücklich zur späteren Behebung festgehalten. Die geltenden Regeln
+bleiben bestehen; diese Liste erteilt keinen automatischen Änderungsauftrag.
 
-Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe, Vorschau aus Symbolen und
-Name, drei nummerierte Symbolpositionen, Speichern. Eine Folgeposition wird erst
-bei gesetztem Vorgänger angeboten. Leeren entfernt die Position und rückt nach.
-Der Symbolwähler verwendet SelectionDialog, echte Grafiken, lokalisierte Namen,
-SelectedSurface/SelectedBorder plus Häkchen und Text-Schließen; System-Zurück
-schließt nur den Wähler. Duplikate bleiben wählbar. Busy-Overlays blockieren
-Eingaben; Fehler erscheinen bei vorhandenem Text. Im Wertungspicker bleiben
-bereits beim Zielspieler zugeordnete archivierte Karten zum Entfernen sichtbar.
+| Punkt | Ist-Stand und betroffene Stelle | Geltende Regel / spätere Korrektur |
+|---|---|---|
+| Kleiner Text auf AppBackground | [Spielereingabe](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaPlayerScoringPage.xaml): Bereiche/Vorschläge verwenden TextSecondary direkt auf AppBackground. Deep Forest ca. 3,67:1, Königsblau ca. 3,68:1. | Kleiner Text auf AppBackground verwendet TextPrimary; Paletten unverändert lassen. Siehe Kontrastregel im Design Guide. |
+| Lokalisierung der Ergebnisanzeige | [Ergebnis-ViewModel](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaResultViewModel.cs): Zooplan-, Rohwert-, Ruf- und Punktetexte stehen teilweise direkt im Code. | Sichtbare Sprachtexte über die vorhandenen Lokalisierungsressourcen führen. |
+| Android-Zurück im Spezialkarten-Picker | [Wertungsseite](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaScoringPage.xaml.cs): OnBackButtonPressed navigiert zur Gruppen-/Historienübersicht, auch wenn die Auswahl geöffnet ist. | Zunächst nur den geöffneten Picker schließen; erst ohne Auswahl die Seite verlassen. |
+
+Die Sichtprüfung auf dem Zielgerät in allen drei Themes sowie der Upgrade-Smoke-Test
+einer echten Altinstallation sind noch nicht als abgeschlossen bestätigt. Prüfablauf:
+`SETUP.md`. Diese Dokumentationsbereinigung verändert keinen App-Code.

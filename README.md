@@ -11,7 +11,8 @@ Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist
 - Gruppen können angelegt, bearbeitet, permanent gemacht und archiviert werden.
 - Spieler können gruppenübergreifend wiederverwendet oder beim Erstellen einer
   Gruppe neu angelegt werden.
-- Arche-Nova-Defaultfarben werden pro `GroupPlayer` ergänzt.
+- Spielabhängige Farbdefaults können bereits bei Gruppenanlage und -bearbeitung
+  festgelegt werden; Arche Nova erlaubt Blau, Gelb, Rot und Schwarz.
 - Partievorbereitung bleibt bis `Starten` nicht persistent.
 - Startspieler und Zoopläne können ausgelost werden; jeder Spieler wählt einen
   der zwei angebotenen Zoopläne.
@@ -21,71 +22,47 @@ Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist
   werden.
 - Arche-Nova-Wertung unterstützt Attraktivität, Artenschutz, optional Ruf,
   besondere Karten, Gleichstände und Ergebnisanzeige.
+- Zahlenräder für Attraktivität/Artenschutz, optionaler horizontaler Ruf-Regler
+  und direkte numerische Eingabe.
+- Benutzerverwaltbare Arche-Nova-Spezialkarten mit GUID, Namen, 0–3 geordneten
+  Symbolen und Archivstatus; 14 feste Symboltypen einschließlich Forschung.
 - Historie abgeschlossener Partien mit Spiel-/Gruppenfiltern, Wertungskorrektur und bestätigtem Löschen. Statistik folgt separat.
 - Drei unmittelbar umschaltbare App-Themes: Deep Forest (Standard), Königsblau und Dunkel; Historie mit kompakten Filtern und Monatsgruppen.
 - Lokale Navigations- und Arche-Nova-Einstellungen werden über MAUI Preferences
   gespeichert.
+- Fotoerkennung und Statistik sind geplante spätere Slices.
 
 ## Architektur
 
-Boardgame Tracker ist ein modularer Monolith mit pragmatischen Vertical Slices:
-
-```text
-App -> Application -> Core
-          ^
-          |
-Infrastructure -> Application + Core
-```
-
-Verbindliches Domänenvokabular:
-
-```text
-Game
-GameSession
-Group
-Player
-```
-
-Spielspezifischer Code liegt in jedem Projekt unter:
-
-```text
-Games/<GameName>/
-```
-
-Arche-Nova-Erweiterungen allgemeiner Entities werden über Composition modelliert,
-z. B. `GameSessionPlayer` + `ArkNovaGameSessionPlayer` und `GroupPlayer` +
-`ArkNovaGroupPlayer`.
-
-Details: `docs/ARCHITECTURE.md` und `docs/DATA_MODEL.md`.
+Modularer Monolith mit pragmatischen Vertical Slices und Composition:
+`App → Application → Core`, `Infrastructure → Application + Core`.
+Allgemeine Domänenbegriffe bleiben `Game`, `GameSession`, `Group` und `Player`;
+Spielcode liegt unter `Games/<GameName>/`. Details stehen in
+[Architektur](docs/ARCHITECTURE.md) und [Datenmodell](docs/DATA_MODEL.md).
 
 ## Datenbank
 
-Aktuell wird in der Pre-Alpha-Phase `Database.EnsureCreatedAsync()` verwendet.
-Nach Schemaänderungen wird die lokale Datenbank gelöscht und aus dem aktuellen
-EF-Core-10-Modell neu erstellt. Ein kanonischer Migrationsverlauf wird erst
-wieder eingeführt, wenn veröffentlichte Nutzerdaten migrationsfähig erhalten
-werden müssen.
+Neue Pre-Alpha-Datenbanken entstehen mit `EnsureCreatedAsync()`. Für bestehende
+Installationen erhält der gezielte, transaktionale Spezialkarten-Upgrade alte
+Zuordnungen und ergänzt die neuen Referenzdaten. Kein pauschales Löschen der
+App-Daten oder Deinstallieren bei diesem Spezialkarten-Upgrade. Voraussetzungen, andere
+Schemaänderungen und Upgrade-Smoke-Test stehen in [SETUP.md](SETUP.md).
 
-## Dokumentation
+## Dokumentation und Einstieg in einen neuen Chat
 
-```text
-README.md
-SETUP.md
-CHANGELOG.md
+[AGENTS.md](AGENTS.md) ist der Einstieg für Mitwirkende und Coding-Agenten und
+ordnet jeder Frage das kanonische Dokument zu. Befehle laufen im Verzeichnis
+mit `BoardgameTracker.sln`; in diesem Workspace ist das der Unterordner
+`BoardgameTracker/`, nicht dessen übergeordneter Ordner mit den Quellgrafiken.
+Für einen frischen Chat:
 
-docs/
-  ARCHITECTURE.md
-  DATA_MODEL.md
-  PRODUCT_SPEC.md
-  UI_DESIGN_GUIDE.md
-  UI_WIREFRAME.md
-```
+1. `git status` prüfen und vorhandene Änderungen bewahren.
+2. AGENTS und die für den Auftrag relevanten Spezifikationen lesen.
+3. Offene UI-Codeabweichungen im [Wireframe](docs/UI_WIREFRAME.md) berücksichtigen;
+   sie sind dokumentiert und nicht automatisch zur Korrektur freigegeben.
+4. Build, Tests und Geräteprüfungen gemäß [Setup](SETUP.md) ausführen.
 
-Die Spezifikationen beschreiben ausschließlich den aktuellen Zustand.
-Versionshistorie steht nur in `CHANGELOG.md`.
-
-## Build-Hinweis
-
-Nach strukturellen Updates oder Änderungen an MAUI-Ressourcen empfiehlt sich ein
-vollständiges Löschen von `bin` und `obj`, anschließend Restore/Rebuild und eine
-Neuinstallation der App im Emulator/Gerät.
+Die Spezifikationen unter `docs/` beschreiben den gültigen Stand einschließlich
+klar gekennzeichneter späterer Slices. Die [Versionshistorie](CHANGELOG.md)
+ist historische Information, keine konkurrierende aktuelle Spezifikation.
+Keine zusätzlichen Übergabe-/Kontextkopien anlegen.

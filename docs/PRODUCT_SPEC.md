@@ -1,4 +1,4 @@
-# Boardgame Tracker – Produktspezifikation v0.2
+# Boardgame Tracker – Produktspezifikation
 
 ## Ziel
 
@@ -14,13 +14,11 @@ Erstes vollständig unterstütztes Spiel: **Arche Nova**.
 
 ### Player
 
-- `PlayerId`
-- `Name`
-- `IstGast`
-- optional `IstAktiv`
+Ein Spieler besitzt einen Namen, einen Gaststatus (`IsGuest`) und einen
+Aktivstatus (`IsActive`). Das technische Modell steht in `DATA_MODEL.md`.
 
-Ein Gast ist ein normaler Spieler mit `IstGast = true`. Wird der Spieler
-später regulär gepflegt, wird lediglich `IstGast = false` gesetzt.
+Ein Gast ist ein normaler Spieler mit `IsGuest = true`. Wird der Spieler
+später regulär gepflegt, wird lediglich `IsGuest = false` gesetzt.
 Historische Partien bleiben dadurch automatisch erhalten.
 
 ### Gruppe
@@ -89,6 +87,22 @@ separater Gruppendetail-Screen ist im MVP nicht notwendig.
 Das Bearbeiten-Icon ist eine getrennte Touch-Fläche. Es öffnet **Gruppe
 bearbeiten** und darf nicht die Partievorbereitung auslösen.
 
+### Archivierung
+
+Gruppen besitzen `IsArchived`. Archivierung löscht keine Gruppe und
+keine Historie.
+
+Die normale Gruppenübersicht zeigt standardmäßig weder temporäre noch
+archivierte Gruppen. Beide Kategorien können unabhängig per Schalter
+eingeblendet werden.
+
+Eine temporäre Gruppe kann im Bearbeitungsmodus permanent gemacht
+werden. Eine permanente Gruppe kann nicht nachträglich temporär gemacht
+werden.
+
+Archivierte Gruppen können nach dem Einblenden erneut bearbeitet und
+wieder aktiviert werden.
+
 ## Gruppe anlegen
 
 Die Maske priorisiert die Wiederverwendung vorhandener Spieler vor dem
@@ -149,7 +163,7 @@ verwaisten Spieler.
 Jede regulär angezeigte Gruppe kann über das Bearbeiten-Icon der
 Gruppenübersicht geöffnet werden.
 
-Bearbeitbar sind Gruppenname, Default-Reihenfolge, Archivstatus und Arche-Nova-Defaultfarben. Temporäre Gruppen können permanent gemacht werden; die umgekehrte Richtung ist ausgeschlossen.
+Bearbeitbar sind Gruppenname, Default-Reihenfolge, Archivstatus und die Farbdefaults des aktuellen Spiels, sofern dieses Farben unterstützt. Temporäre Gruppen können permanent gemacht werden; die umgekehrte Richtung ist ausgeschlossen.
 
 Die Spielerzusammensetzung einer bestehenden Gruppe wird nicht beliebig
 verändert. Eine andere Zusammensetzung repräsentiert fachlich eine
@@ -178,47 +192,28 @@ Einheitliches Designkonzept:
 
 ### Default-Farben
 
-Die Standardfarbe ist abhängig von:
+Farben sind gemeinsame semantische Kategorien wie Rot oder Blau. Ein Spiel legt fest, ob Spielerfarben existieren und welche Kategorien erlaubt sind. Arche Nova erlaubt Blau, Gelb, Rot und Schwarz. Andere definierte Farben werden dadurch nicht automatisch für dieses Spiel zugelassen.
 
-- Gruppe
-- Spiel
-- Spieler
-
-Änderungen auf dem Start-/Partievorbereitungsbildschirm gelten nur für
-die konkrete Partie.
-
-Nur Änderungen im Gruppenmenü ändern den Default.
+In Gruppe anlegen und Gruppe bearbeiten kann je Mitglied eine optionale Defaultfarbe für das aktuelle Spiel festgelegt werden. Ohne Farbunterstützung erscheint keine Farbauswahl. Der Palettenbutton öffnet einen gemeinsamen Dialog mit explizitem Spielbezug („Farbe für Arche Nova festlegen“), Spielername und erlaubten Farben. Eine belegte Farbe tauscht die bisherigen Zuweisungen; „Keine Farbe“ entfernt den Default. Die Auswahl bleibt bis Speichern im Entwurf. Gruppe, neue Spieler und Spieldefaults werden atomar gespeichert. Die Defaults eines anderen Spiels bleiben unberührt. Partievorbereitung übernimmt die gespeicherten Defaults und ergänzt fehlende Farben mit eindeutigen Vorschlägen. Änderungen dort gelten nur für diese Partie.
 
 ## Arche Nova – Zoopläne
 
-1.  Aussichtsplattform
-2.  Freilaufflächen
-3.  Silbersee
-4.  Handelshafen
-5.  Parkrestaurant
-6.  Forschungsinstitut
-7.  Eisdielen
-8.  Hollywood Hills
-9.  Geozoo
-10. Auffangstation
-11. Höhlen
-12. Künstliche Intelligenz
-13. Reißbrett
-14. Lagune
-
-Jeder Spieler erhält zwei Pläne. Jeder Zooplan darf innerhalb einer
-Partie insgesamt nur einmal angeboten werden.
-
-Darstellung bevorzugt als große quadratische Buttons mit Nummer und
-Ikonografie.
+Arche Nova unterstützt 14 nummerierte Zoopläne; der verbindliche Katalog steht
+in `DATA_MODEL.md`, Abschnitt „Arche-Nova-Zoopläne“. Jeder Spieler erhält zwei
+verschiedene Optionen und wählt genau eine. Ein Plan darf innerhalb einer
+Vorbereitung insgesamt nur einmal angeboten werden. Die Auswahl bleibt bis
+zum Start ungespeichert. Der sichtbare Aufbau steht in `UI_WIREFRAME.md`.
 
 ## Startreihenfolge
 
 Die Spieler werden in Sitz-/Spielreihenfolge als Kacheln angezeigt.
 
-Die Default-Reihenfolge stammt aus der Gruppenverwaltung.
-
-Sie kann für die Partie geändert werden.
+Ausgangspunkt ist die Default-Reihenfolge aus der Gruppenverwaltung. Gibt es
+für diese Gruppe und dieses Spiel eine abgeschlossene letzte Partie, wird deren
+letztplatzierter Spieler durch zyklische Rotation Startspieler. Bei geteiltem
+letzten Platz entscheidet der alphabetisch erste Name. Ohne Historie bleibt
+die Gruppenreihenfolge erhalten. Manuelle Rotation und Auslosung ändern nur
+diese Vorbereitung; die relative Reihenfolge bleibt erhalten.
 
 ### Reihenfolge ändern
 
@@ -231,10 +226,10 @@ Ein kleiner Icon-Button bestimmt zufällig den Startspieler.
 
 Verhalten:
 
-1.  kurze dezente Animation / Aufglühen
-2.  zufällige Anzahl Rotationen der bestehenden Reihenfolge
-3.  der ausgeloste Spieler landet auf Position 1
-4.  relative Reihenfolge der übrigen Spieler bleibt erhalten
+1. kurze dezente Animation des Würfelbuttons,
+2. zufälliger Startindex der bestehenden Reihenfolge,
+3. zyklische Rotation, sodass der ausgeloste Spieler auf Position 1 landet,
+4. unveränderte relative Reihenfolge der übrigen Spieler.
 
 Damit verhält sich die Auslosung so, als wäre eine zufällige Anzahl Male
 „Reihenfolge ändern“ gedrückt worden.
@@ -269,8 +264,8 @@ Verwerfen nur nach Sicherheitsabfrage.
 Beim Drücken wird die Endzeit gespeichert und die Partie wechselt in den
 Zustand **Wertung**.
 
-Wird die App geschlossen, wird die offene Wertung beim nächsten Start
-automatisch wieder geöffnet.
+War diese offene Wertung der zuletzt gespeicherte Navigationskontext, wird
+sie beim nächsten Start gemäß „App-Start und Navigationskontext“ wieder geöffnet.
 
 ## Wertung
 
@@ -429,6 +424,8 @@ Ein Tap öffnet die spielabhängige Wertungsübersicht, für Arche Nova die vorh
 
 Bearbeitbar sind ausschließlich Attraktivität, Artenschutz, Ruf und besondere Karten. Spiel, Gruppe, Teilnehmer, Farben, Zoopläne, Startreihenfolge und Start-/Endzeit bleiben unverändert.
 
+Bleiben die berechneten Punkte aller Spieler unverändert, werden gültige gespeicherte Placements beibehalten. Andernfalls werden Platzierungen neu bestimmt und nötige Gleichstände aufgelöst.
+
 Korrekturen erfolgen als expliziter Completed-Anwendungsfall in einem nicht persistenten Entwurf. Erst `Korrektur speichern` übernimmt Rohwerte, Karten und finale Platzierungen atomar. Punkte werden neu berechnet, Platzierungen neu bestimmt und Gleichstände mit der bestehenden Gleichstandsauflösung bearbeitet. Die Partie bleibt durchgehend `Completed`; nach Speichern wird nach aktualisiertem Placement sortiert. Ungespeicherte Entwürfe werden beim Verlassen verworfen. Der normale Scoring-Use-Case bleibt auf `Scoring` beschränkt.
 
 `Partie löschen` ist eine sekundäre destruktive Aktion. Zwingende Sicherheitsabfrage: „Partie löschen?“ / „Möchtest du diese Partie wirklich löschen? Die gespeicherte Wertung und alle zugehörigen Daten werden dauerhaft entfernt.“ / „Abbrechen · Partie löschen“. Bestätigung löscht GameSession und alle zugehörigen spielspezifischen Daten vollständig; Spieler und Gruppe bleiben erhalten.
@@ -442,73 +439,21 @@ Je regulärer Gruppe:
 - Gewinnquote
 - durchschnittliche Platzierung
 
-Spätere Auswertungen können nach Spiel, Gruppe und Spieler gefiltert
-werden.
+Die Filter sind unabhängig von der Partienliste und dürfen Spiel, Gruppe,
+Spieler, Zooplan, Spezialkarte oder Zeitraum berücksichtigen. Als
+Spezialkarten-Filteroptionen werden ausschließlich aktive Karten angeboten.
 
 ## UI-Zielgerät
 
-Primärer Prototyp:
-
-- Smartphone
-- 6,1 Zoll
-- Hochformat
-- Referenzauflösung: **1170 × 2532 px**
-
-Große Touch-Flächen und einhändige Bedienung haben Vorrang vor
-Informationsdichte.
+Zielgerät, Touch-Flächen und visuelle Regeln stehen verbindlich in
+`UI_DESIGN_GUIDE.md`; Screenaufbau und Navigation in `UI_WIREFRAME.md`.
 
 ------------------------------------------------------------------------
-
-## Gruppenarchivierung
-
-Gruppen besitzen `IsArchived`. Archivierung löscht keine Gruppe und
-keine Historie.
-
-Die normale Gruppenübersicht zeigt standardmäßig weder temporäre noch
-archivierte Gruppen. Beide Kategorien können unabhängig per Schalter
-eingeblendet werden.
-
-Eine temporäre Gruppe kann im Bearbeitungsmodus permanent gemacht
-werden. Eine permanente Gruppe kann nicht nachträglich temporär gemacht
-werden.
-
-Archivierte Gruppen können nach dem Einblenden erneut bearbeitet und
-wieder aktiviert werden.
-
----
-
-## Partievorbereitung Arche Nova
-
-Der erste Vorbereitungsscreen ist implementiert. Eine Gruppe öffnet direkt die Arche-Nova-Vorbereitung.
-
-Die Vorbereitung übernimmt Spieler und Default-Reihenfolge der Gruppe sowie, falls vorhanden, spielspezifische Defaultfarben. Ohne gespeicherte Farben werden eindeutige Farben vorgeschlagen.
-
-Vor dem Start können Reihenfolge und Farben geändert werden. `Startspieler auslosen` wählt zufällig einen Spieler und rotiert die bestehende Reihenfolge zyklisch auf diesen Spieler als Position 1.
-
-`Zoopläne auslosen` verteilt pro Spieler zwei Pläne aus dem Katalog der 14 Pläne. Kein Plan wird innerhalb derselben Vorbereitung zweimal angeboten. Pro Spieler muss genau einer der beiden Pläne gewählt werden.
-
-Die Vorbereitung ist bis zum eigentlichen Start UI-Zustand. Beim Start werden `GameSession`, tatsächliche Farben, Reihenfolge sowie angebotene/gewählte Zoopläne atomar persistiert.
 
 ## Manuell erfasste Spiele – Zielbild
 
 Neben speziell unterstützten Spielen wie Arche Nova sollen Benutzer später eigene Spiele anlegen können. Für solche manuellen Spiele soll konfigurierbar sein, welche Ergebnisdaten erfasst werden: nur dass eine Partie gespielt wurde, Gewinner, Punkte und/oder Platzierungen. `Game` ist deshalb eine eigenständig identifizierte, benutzererweiterbare Entität; der Anzeigename ist nicht ihre Identität. Die genaue Konfiguration und der Eingabeflow werden erst bei Umsetzung dieses Features spezifiziert.
 
-
-
-## Navigationseinstellungen
-
-Das `Standardspiel` ist eine lokale App-Einstellung und keine historische
-Spieldatei. Es wird zusammen mit dem zuletzt verwendeten Spiel-/Navigationskontext
-über den nativen MAUI-Preferences-Speicher gehalten, nicht in SQLite. Gruppen
-bleiben fachlich spielunabhängig; nur ihre Darstellung und Partiemetadaten werden
-im aktuell ausgewählten Spielkontext betrachtet.
-
 ## App-Darstellung
 
 Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. Die Auswahl wird lokal in Preferences gespeichert und sofort angewendet. Sie ist spielunabhängig, verändert keine historischen Daten und folgt der verbindlichen Palette in `UI_DESIGN_GUIDE.md`. Historie zeigt Monatsgruppen ohne notwendige Sticky-Überschriften und kompakte Spiel-/Gruppenfilter.
-
-## Spielerfarben und Gruppenanlage
-
-Farben sind gemeinsame semantische Kategorien wie Rot oder Blau. Ein Spiel legt fest, ob Spielerfarben existieren und welche Kategorien erlaubt sind. Arche Nova erlaubt Blau, Gelb, Rot und Schwarz. Andere definierte Farben werden dadurch nicht automatisch für dieses Spiel zugelassen.
-
-In Gruppe anlegen und Gruppe bearbeiten kann je Mitglied eine optionale Defaultfarbe für das aktuelle Spiel festgelegt werden. Ohne Farbunterstützung erscheint keine Farbauswahl. Der Palettenbutton öffnet einen gemeinsamen Dialog mit explizitem Spielbezug („Farbe für Arche Nova festlegen“), Spielername und erlaubten Farben. Eine belegte Farbe tauscht die bisherigen Zuweisungen; „Keine Farbe“ entfernt den Default. Die Auswahl bleibt bis Speichern im Entwurf. Gruppe, neue Spieler und Spieldefaults werden atomar gespeichert. Die Defaults eines anderen Spiels bleiben unberührt. Partievorbereitung übernimmt weiterhin die gespeicherten Defaults; Änderungen dort gelten nur für diese Partie.
