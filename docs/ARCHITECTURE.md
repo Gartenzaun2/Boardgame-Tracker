@@ -257,9 +257,21 @@ Namespace wie der gemeinsame Context. Die Modellkonfiguration bleibt unveränder
 
 `DatabaseInitializer` erstellt den Context, führt `EnsureCreatedAsync` aus und
 führt anschließend die registrierten `IDatabaseInitializationStep`-Implementierungen
-in Registrierungsreihenfolge auf demselben Context aus. `MauiProgram` registriert
-`ArkNovaReferenceDataSeeder` als spielspezifischen Schritt. Der generische
+in Registrierungsreihenfolge auf demselben Context aus. `MauiProgram` ruft explizit `AddArkNova()` auf. Diese Extension unter
+`App/Games/ArkNova` registriert die Ark-Nova-Application-, Infrastructure- und UI-Komponenten
+einschließlich `ArkNovaReferenceDataSeeder` als spielspezifischem Schritt. Allgemeine
+Dienste bleiben in `MauiProgram`. Die Registrierungen bleiben explizit, ihre Lifetimes
+und die Reihenfolge innerhalb mehrfach registrierter Verträge bleiben erhalten. Der generische
 Initialisierer kennt keine Spielmodule; Fehler und Abbruch werden weitergegeben.
+
+Die App erhält `IEnumerable<IGameSessionResumeHandler>` aus `App/Navigation` per DI
+und wählt für eine gemerkte offene Partie den ersten Handler anhand des GameKey.
+Ohne passenden Handler wird LastGameSessionId gelöscht und die bestehende
+Hauptnavigation verwendet. `ArkNovaGameSessionResumeHandler` unter
+`App/Games/ArkNova/Navigation` übernimmt Spiel-/Gruppenkontext und Navigation
+zu Running oder Scoring. `ArkNovaRoutes.Register()` registriert dort explizit
+die bisherigen Spielrouten und wird von `AddArkNova()` aufgerufen; App und Shell
+kennen keine konkreten Arche-Nova-Seiten. Navigation Memory bleibt unverändert.
 
 ### Aktuelle Pre-Alpha-Datenbankstrategie
 

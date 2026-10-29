@@ -132,10 +132,18 @@ ist in der laufenden Wertung sichtbar und zeigt derzeit den Hinweis zur noch
 nicht implementierten Fotoerkennung. Einstellungen sind aus der Wertung erreichbar.
 
 Die Kartenwahl zeigt geordnete Symbolgrafiken vor dem aktuellen Namen ohne
-zusätzliche sichtbare Zuordnungszeile. Bereits einem anderen Spieler zugeordnete
-Karten erhalten einen gestrichelten Rahmen in der Theme-Farbe Danger.
-Nur dem Zielspieler zugeordnete Karten behalten zusätzlich SelectedSurface als
-Hintergrund. Der Zuordnungsstatus bleibt für Screenreader beschrieben.
+sichtbare Zuordnungszeile. Für die Darstellung gilt:
+
+| Zuordnung | Hintergrund | Rahmen |
+|---|---|---|
+| Nicht zugeordnet | Surface, keine SelectedSurface-Markierung | normale Outline, kein gestrichelter Danger-Rahmen |
+| Nur dem aktuell ausgewählten Spieler zugeordnet | SelectedSurface | normale Outline, kein gestrichelter Danger-Rahmen |
+| Einem anderen Spieler zugeordnet | Surface, keine SelectedSurface-Markierung | gestrichelter Danger-Rahmen |
+| Dem aktuellen und mindestens einem anderen Spieler zugeordnet | SelectedSurface | gestrichelter Danger-Rahmen |
+
+SelectedSurface bedeutet „gehört dem aktuell ausgewählten Spieler“; der gestrichelte
+Danger-Rahmen bedeutet „mindestens einem anderen Spieler zugeordnet“.
+Der Zuordnungsstatus bleibt für Screenreader beschrieben.
 Der Zurück-Pfeil im bestehenden IconButton-Stil verlässt nur die Kartenwahl.
 Ein Tap ordnet zu oder entfernt und schließt. Bei Mehrfachzuordnung
 an andere Spieler bleibt die ausdrückliche Bestätigung erhalten. Archivierte
@@ -224,7 +232,7 @@ bei vorhandenem Text sichtbar.
 | Dialog / Auswahl | Ort | Stand / verbleibende Anpassung |
 |---|---|---|
 | Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
-| Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | SelectionDialog mit Zurück-Pfeil; kompakte Karten ohne sichtbare Statuszeile. Gestrichelter Danger-Rahmen nur bei Zuordnung zu einem anderen Spieler, SelectedSurface bei Zuordnung zum Zielspieler. Beide Markierungen können gleichzeitig gelten. |
+| Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | SelectionDialog mit Zurück-Pfeil; kompakte Karten ohne sichtbare Statuszeile. Gestrichelter Danger-Rahmen nur bei Zuordnung zu mindestens einem anderen Spieler, SelectedSurface bei Zuordnung zum aktuell ausgewählten Spieler. Bei Zuordnung zu beiden gelten beide Markierungen; ausschließlich eigene Zuordnung erhält keinen gestrichelten Rahmen. |
 | Spezialkarten-Symbol wählen | Spezialkarten-Editor | App-SelectionDialog mit Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
 | Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
 | Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |
@@ -261,5 +269,4 @@ Einstellungen statt Historie. Die Wiederherstellung nach Besuch der eigentlichen
 Historien-Hauptseite funktioniert. Der Fehler wurde im Emulator bestätigt und
 ist nicht Teil der Dialog- oder Altkompatibilitätsbereinigung.
 
-Der Stand der Emulatorprüfung und die ausstehenden Prüfungen auf echter Hardware
-und unter iOS stehen in `SETUP.md`.
+Die Anleitung für ausdrücklich beauftragte Geräteprüfungen steht in `SETUP.md`.

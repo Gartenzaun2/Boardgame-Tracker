@@ -17,6 +17,10 @@ Hier stehen ausschließlich Umgebungs-, Build-, Datenbank- und Lieferregeln.
 
 ## Lokaler Entwicklungsablauf
 
+Standard gemäß `AGENTS.md`: Code ändern → Build → automatisierte Tests → fertig.
+Restore bei Bedarf; automatisierte Tests dürfen sinnvoll ergänzt oder erweitert
+werden. Eine manuelle Geräte-/UI-Prüfung gehört nicht zum Standardabschluss.
+
 Ab dem Solution-Root:
 
 ```powershell
@@ -47,7 +51,8 @@ verwenden.
 4. NuGet Restore.
 5. Rebuild Solution.
 6. Tests ausführen.
-7. Relevante Smoke Tests im Emulator/Gerät durchführen.
+7. Nur bei ausdrücklich beauftragter Geräte-/Installations-/Releaseprüfung:
+   zusätzlich relevante Smoke-Tests im Emulator/Gerät durchführen.
 
 ## Datenbankstrategie in der Pre-Alpha-Phase
 
@@ -130,33 +135,35 @@ Die kanonischen Spezifikationen beschreiben immer den aktuellen Zustand.
 Überholte Entscheidungen werden ersetzt statt als Versionsanhang stehen zu
 bleiben. Versionshistorie gehört ausschließlich in `CHANGELOG.md`.
 
-## Abschlussprüfung und Geräte-Smoke-Test
+## Codebasierte Abschlussprüfung
 
-Nur tatsächlich ausgeführte Prüfungen als erfolgreich melden. Ist ein Build
-lokal nicht möglich, bleibt er als offene Prüfung benannt. Ein Build ersetzt
-keinen MAUI-XAML-Laufzeit- oder Gerätetest.
+Für normale Implementierungsaufgaben gelten Build und relevante automatisierte
+Tests als Standardverifikation gemäß `AGENTS.md`. Nur tatsächlich ausgeführte
+Prüfungen als erfolgreich melden; nicht ausführbare Builds/Tests ausdrücklich
+benennen. Nach erfolgreicher codebasierter Prüfung keine zusätzliche manuelle
+Prüfphase automatisch starten.
 
-Vor einer Installation bzw. Lieferung relevante Builds und beide Testsuiten
-ausführen. Auf dem Zielgerät zusätzlich prüfen:
+## Explizit beauftragte Geräte-/UI-Smoke-Tests
+
+Ein Build ersetzt technisch keinen MAUI-XAML-Laufzeit- oder Gerätetest. Daraus
+folgt keine automatische Geräteprüfung für normale Implementierungsaufgaben.
+Manuelle und visuelle Prüfungen sind Opt-in: nur auf ausdrücklichen Auftrag,
+bei konkret verlangtem Geräte-/UI-Smoke-Test oder im Rahmen einer ausdrücklich
+angeforderten Installations-/Releaseprüfung durchführen.
+
+Ohne solchen Auftrag weder die App zur Sichtprüfung starten noch Oberflächen
+manuell durchklicken, Screenshots erstellen/analysieren, Bildanalyse durchführen
+oder alle Themes manuell prüfen. Eine nicht ausgeführte visuelle Prüfung ist
+kein Fehler; sie kann bei Bedarf als nicht ausgeführte optionale Prüfung benannt
+werden. Maßgeblich für die Verifikationspolicy bleibt `AGENTS.md`.
+
+Bei ausdrücklich beauftragter Geräteprüfung zunächst relevante Builds und beide
+Testsuiten ausführen. Anschließend passend zum Prüfauftrag auf dem Zielgerät prüfen:
 
 - Navigation, neue Screens und Dialoge einschließlich Android-Zurück,
 - alle drei Themes, große Schrift, Tastatur und Zahlenrad-/Slider-Bedienung,
 - aktive Kartenwahl, Archivieren/Entarchivieren und historische Korrekturen,
 - bei inkompatiblen Änderungen den Start nach Neuinstallation mit frischer Datenbank.
 
-Im Android-15-Emulator (API 35, Pixel 7) wurden mit einer getrennten Testinstallation
-und frischer Datenbank geprüft:
-
-- Dialogauswahl in Deep Forest, Königsblau und Dunkel; lange Hinweise bei 130 % Schriftgröße.
-- Android-Zurück und Abbrechen bei Hinweisen, Auswahlen, Verwerfen, Löschen und verschachtelter Mehrfachkarten-Bestätigung.
-- Erhalt eines Gruppenformular- und historischen Korrekturentwurfs beim Dialogschließen.
-- Gruppenanlage, Partievorbereitung, Start, Wertung, Abschluss und Historienfilter.
-- Tastatur, direkte Zahleneingabe, Zahlenrad und Ruf-Regler.
-- Aktive Kartenauswahl, Archivieren/Entarchivieren und Erhalt archivierter Zuordnungen.
-- Speichern historischer Korrekturen einschließlich Ruf und erneutes Laden nach App-Neustart.
-- Bestätigtes Löschen ausschließlich einer Testpartie und Rückkehr zur leeren Historie.
-
-Beim Tabwechsel auf eine bereits geöffnete Unterseite wurde ein bestehender
-Navigationsspeicherfehler gefunden; Details stehen in `docs/UI_WIREFRAME.md`.
-Eine vollständige Prüfung auf dem physischen Zielgerät und unter iOS steht aus.
-Die Emulatorprüfung ersetzt diese Geräteprüfung nicht.
+Für iOS-Gerätetests ist die passende Apple-Toolchain erforderlich. Nur tatsächlich
+ausgeführte Geräteprüfungen als erfolgreich melden.

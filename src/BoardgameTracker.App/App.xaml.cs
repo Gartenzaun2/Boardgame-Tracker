@@ -1,11 +1,7 @@
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions.Resume;
 using BoardgameTracker.Application.Settings.Navigation;
-using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,19 +17,22 @@ public partial class App : Microsoft.Maui.Controls.Application
     private readonly IServiceProvider _services;
     private readonly DatabaseInitializer _databaseInitializer;
     private readonly ILogger<App> _logger;
+    private readonly IEnumerable<IGameSessionResumeHandler> _resumeHandlers;
 
     public App(
         IServiceProvider services,
         DatabaseInitializer databaseInitializer,
         ILogger<App> logger,
         BoardgameTracker.App.Theming.ThemeManager themes,
-        IAppNavigationSettingsStore settings)
+        IAppNavigationSettingsStore settings,
+        IEnumerable<IGameSessionResumeHandler> resumeHandlers)
     {
         InitializeComponent();
         themes.Apply(settings.Get().Theme, persist: false);
         _services = services;
         _databaseInitializer = databaseInitializer;
         _logger = logger;
+        _resumeHandlers = resumeHandlers;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
@@ -65,9 +64,12 @@ public partial class App : Microsoft.Maui.Controls.Application
                 OpenGameSession? rememberedGameSession =
                     await openGameSessionQuery.GetAsync(rememberedGameSessionId);
 
-                if (rememberedGameSession is not null && rememberedGameSession.GameKey == ArkNovaGame.Key)
+                IGameSessionResumeHandler? handler = rememberedGameSession is null
+                    ? null
+                    : _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));
+                if (rememberedGameSession is not null && handler is not null)
                 {
-                    await RestoreGameSessionAsync(shell, rememberedGameSession);
+                    await handler.ResumeAsync(shell, rememberedGameSession);
                     shell.EnableNavigationMemory();
                     return;
                 }
@@ -103,15 +105,6 @@ public partial class App : Microsoft.Maui.Controls.Application
         }
     }
 
-    private static async Task RestoreGameSessionAsync(
-        AppShell shell,
-        OpenGameSession gameSession)
-    {
-        await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false);
-        shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
-        await NavigateToGameSessionAsync(shell, gameSession);
-    }
-
     private static AppMainSection ResolveInitialSection(AppNavigationSettings state)
     {
         if (state.LastMainSection is AppMainSection rememberedSection)
@@ -127,28 +120,6 @@ public partial class App : Microsoft.Maui.Controls.Application
         return !string.IsNullOrWhiteSpace(state.DefaultGameKey)
             ? AppMainSection.Groups
             : AppMainSection.Games;
-    }
-
-    private static async Task NavigateToGameSessionAsync(AppShell shell, OpenGameSession openGameSession)
-    {
-        string route = openGameSession.Status switch
-        {
-            GameSessionStatus.Running => nameof(ArkNovaRunningPage),
-            GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
-            _ => string.Empty
-        };
-
-        if (string.IsNullOrEmpty(route))
-        {
-            return;
-        }
-
-        await shell.GoToAsync(
-            route,
-            new ShellNavigationQueryParameters
-            {
-                [NavigationParameters.GameSessionId] = openGameSession.GameSessionId
-            });
     }
 
     private static ContentPage CreateStartupPage() =>
