@@ -9,6 +9,10 @@
 - Visual Studio mit .NET-MAUI-Workload
 - Android und/oder iOS Toolchain
 
+macOS/iOS-spezifische Toolchain-Konfiguration kann lokal unter `.local/` liegen.
+Dieser Entwicklerbereich wird nicht versioniert und nicht von Codex verwaltet.
+Persönliche Signing- und Device-Daten gehören niemals ins Repository.
+
 ## Quellen und Architektur
 
 Projektüberblick und Einstieg: `README.md`; Zuständigkeiten und Arbeitsregeln:
