@@ -1,4 +1,3 @@
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
@@ -8,7 +7,8 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 /// application reference data exists before database-backed screens are shown.
 /// </summary>
 public sealed class DatabaseInitializer(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory,
+    IEnumerable<IDatabaseInitializationStep> initializationSteps)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
@@ -16,6 +16,7 @@ public sealed class DatabaseInitializer(
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
         await dbContext.Database.EnsureCreatedAsync(cancellationToken);
-        await ArkNovaReferenceDataSeeder.SeedAsync(dbContext, cancellationToken);
+        foreach (IDatabaseInitializationStep step in initializationSteps)
+            await step.ExecuteAsync(dbContext, cancellationToken);
     }
 }

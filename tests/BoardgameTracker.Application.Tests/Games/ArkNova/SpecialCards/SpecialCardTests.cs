@@ -193,8 +193,8 @@ public sealed class SpecialCardTests
         await fixture.Cards.SetArchivedAsync(cardId, true, Token);
         Guid customId = await fixture.Cards.CreateAsync("Eigene Karte", null, null, null, Token);
 
-        await new DatabaseInitializer(fixture).InitializeAsync(Token);
-        await new DatabaseInitializer(fixture).InitializeAsync(Token);
+        await new DatabaseInitializer(fixture, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
+        await new DatabaseInitializer(fixture, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
 
         IReadOnlyList<ArkNovaSpecialCardData> cards = await fixture.Cards.ListAsync(true, Token);
         Assert.Equal(6, cards.Count);
@@ -225,7 +225,7 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
     {
         SpecialCardDatabase f = new();
         await f._connection.OpenAsync(Token);
-        await new DatabaseInitializer(f).InitializeAsync(Token);
+        await new DatabaseInitializer(f, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
         await using BoardgameTrackerDbContext db = f.CreateDbContext();
         f._gameId = await db.Games.Select(g => g.Id).SingleAsync(Token);
         f.Group = new("Freitag", false, [f.A.Id, f.B.Id]);

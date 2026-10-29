@@ -27,6 +27,7 @@ using BoardgameTracker.Application.GameSessions.Running;
 using BoardgameTracker.Application.GameSessions.Resume;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
@@ -69,6 +70,7 @@ public static class MauiProgram
                 options,
                 $"Data Source={databasePath}"));
 
+        builder.Services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         builder.Services.AddSingleton<DatabaseInitializer>();
 
         builder.Services.AddSingleton<IListGroupsQuery, SqliteListGroupsQuery>();

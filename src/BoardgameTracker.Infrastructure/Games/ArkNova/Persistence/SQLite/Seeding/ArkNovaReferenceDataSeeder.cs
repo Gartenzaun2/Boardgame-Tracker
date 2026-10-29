@@ -10,9 +10,9 @@ namespace BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seedi
 /// Ensures the stable Ark Nova game and zoo-plan reference rows required by
 /// persisted gameSessions exist in the local development database.
 /// </summary>
-internal static class ArkNovaReferenceDataSeeder
+public sealed class ArkNovaReferenceDataSeeder : IDatabaseInitializationStep
 {
-    public static async Task SeedAsync(
+    public async Task ExecuteAsync(
         BoardgameTrackerDbContext dbContext,
         CancellationToken cancellationToken = default)
     {

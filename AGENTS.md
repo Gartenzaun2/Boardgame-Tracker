@@ -5,6 +5,55 @@ Boardgame Tracker ist eine bestehende mobile .NET-MAUI-App zur Erfassung und Aus
 
 `BoardgameTracker.sln` bündelt vier Projekte unter `src/`; `tests/` enthält Core- und Application-Tests (xUnit v3/Microsoft Testing Platform). Ressourcen und Lokalisierung liegen unter `src/BoardgameTracker.App/Resources/`.
 
+## Repository access boundary
+
+Work only inside the current Boardgame-Tracker repository.
+
+Do not inspect, read, search, modify, execute, or enumerate files or directories outside the repository root unless the user explicitly requests access to a specific external path.
+
+This includes, by default, no access to:
+
+- parent directories of the repository;
+- sibling repositories;
+- the user's home directory;
+- Desktop, Documents, Downloads, Pictures, or other personal folders;
+- unrelated source-code directories;
+- system directories;
+- temporary directories outside the repository;
+- other mounted drives or volumes;
+- global configuration files;
+- files belonging to other projects.
+
+Do not use broad filesystem searches that escape the repository root.
+
+Examples of prohibited default behavior include:
+
+- `find ..`
+- searching from the user's home directory;
+- recursively enumerating parent directories;
+- scanning other repositories for similar code;
+- reading unrelated configuration files outside the repository;
+- looking for assets, screenshots, databases, logs, or source files elsewhere on the machine.
+
+If a required dependency or file appears to exist outside the repository, stop and report the missing external dependency instead of searching the system for it.
+
+Access outside the repository is allowed only when the user explicitly identifies or authorizes the external file, directory, or resource.
+
+Normal external tooling required to build and test the repository is still allowed, for example:
+
+- installed .NET SDK/tooling;
+- NuGet package restore;
+- compiler and test runner executables;
+- Git itself.
+
+Using those tools does not authorize browsing or inspecting their installation directories.
+
+Default rule:
+
+`repository contents + required build/test tools only`
+
+Everything else is opt-in.
+
 ## Quellen der Wahrheit
 Vor relevanten Änderungen die zuständigen Dokumente lesen:
 
