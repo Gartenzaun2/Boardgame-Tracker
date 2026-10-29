@@ -13,6 +13,7 @@ public static class AppResources
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);
 
+    public static string SpecialCardUsageHint => GetString(nameof(SpecialCardUsageHint));
     public static string SpecialCardManagementTitle => GetString(nameof(SpecialCardManagementTitle));
     public static string SelectedSymbol => GetString(nameof(SelectedSymbol));
     public static string NewSpecialCard => GetString(nameof(NewSpecialCard));

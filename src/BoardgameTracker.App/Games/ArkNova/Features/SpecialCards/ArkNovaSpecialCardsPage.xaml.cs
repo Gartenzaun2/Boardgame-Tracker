@@ -1,4 +1,6 @@
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
@@ -15,6 +17,8 @@ public partial class ArkNovaSpecialCardsPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         await _viewModel.LoadAsync();
     }
     private async void OnBackClicked(object? sender, EventArgs e) => await NavigateAsync(null, true);
@@ -42,9 +46,7 @@ public partial class ArkNovaSpecialCardsPage : ContentPage
             _navigating = false;
         }
     }
-    private async void OnArchiveClicked(object? sender, EventArgs e)
-    {
-        if (sender is Button { CommandParameter: ArkNovaSpecialCardData card })
-            await _viewModel.ToggleArchiveAsync(card);
-    }
+    private async void OnInfoClicked(object? sender, EventArgs e) =>
+        await AppDialogPage.ShowAsync(this, AppResources.SpecialCardManagementTitle,
+            AppResources.SpecialCardUsageHint, AppResources.Ok);
 }

@@ -43,32 +43,9 @@ public partial class ArkNovaSpecialCardsViewModel(ArkNovaSpecialCardUseCase useC
             IsBusy = false;
         }
     }
-    public async Task ToggleArchiveAsync(ArkNovaSpecialCardData card)
-    {
-        if (IsBusy)
-            return;
-        try
-        {
-            IsBusy = true;
-            ErrorMessage = null;
-            await useCase.SetArchivedAsync(card.Id, !card.IsArchived);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not archive/unarchive special card {SpecialCardId}.", card.Id);
-            ErrorMessage = AppResources.SpecialCardOperationFailed;
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-        if (!HasError)
-            await LoadAsync();
-    }
 }
 
 public sealed record ArkNovaSpecialCardListItem(ArkNovaSpecialCardData Card)
 {
     public bool IsArchived => Card.IsArchived;
-    public string ArchiveAction => IsArchived ? AppResources.UnarchiveCard : AppResources.ArchiveCard;
 }

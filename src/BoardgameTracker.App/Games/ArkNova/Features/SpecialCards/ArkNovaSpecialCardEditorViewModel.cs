@@ -10,6 +10,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase useCase, ILogger<ArkNovaSpecialCardEditorViewModel> logger) : ObservableObject
 {
     private Guid? _id;
+    private bool _originalIsArchived;
     private readonly List<ArkNovaCardSymbol> _symbols = [];
     private int _position;
     public ObservableCollection<ArkNovaSymbolOption> SymbolOptions { get; } = [];
@@ -26,6 +27,8 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     public partial string? ErrorMessage { get; private set; }
     [ObservableProperty] public partial bool IsSymbolPickerVisible { get; private set; }
     public bool IsIdle => !IsBusy;
+    public bool IsEditing => _id.HasValue;
+    [ObservableProperty] public partial bool IsArchived { get; set; }
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
     public bool CanSave => IsIdle && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaSpecialCard.MaximumNameLength;
     public string Title => _id.HasValue ? AppResources.EditSpecialCard : AppResources.NewSpecialCard;
@@ -53,10 +56,12 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
             _symbols.Clear();
             ArkNovaSpecialCardData? card = id.HasValue ? (await useCase.ListAsync(true)).Single(c => c.Id == id.Value) : null;
             NameText = card?.Name ?? string.Empty;
+            IsArchived = _originalIsArchived = card?.IsArchived ?? false;
             if (card is not null)
                 _symbols.AddRange(card.Symbols);
             RefreshSymbols();
             OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(IsEditing));
         }
         catch (Exception exception)
         {
@@ -110,7 +115,14 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
             ErrorMessage = null;
             ArkNovaSpecialCardData values = Preview;
             if (_id is Guid id)
+            {
                 await useCase.UpdateAsync(id, NameText, values.Symbol1, values.Symbol2, values.Symbol3);
+                if (IsArchived != _originalIsArchived)
+                {
+                    await useCase.SetArchivedAsync(id, IsArchived);
+                    _originalIsArchived = IsArchived;
+                }
+            }
             else
                 await useCase.CreateAsync(NameText, values.Symbol1, values.Symbol2, values.Symbol3);
             return true;

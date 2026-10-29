@@ -131,9 +131,13 @@ Ein Tap auf den übrigen Kartenbereich öffnet die Spielereingabe. Der Kamera-Bu
 ist in der laufenden Wertung sichtbar und zeigt derzeit den Hinweis zur noch
 nicht implementierten Fotoerkennung. Einstellungen sind aus der Wertung erreichbar.
 
-Die Kartenwahl zeigt geordnete Symbolgrafiken vor dem aktuellen Namen und den
-Zuordnungsstatus. Bereits dem Zielspieler zugeordnete Karten sind zusätzlich
-hervorgehoben. Ein Tap ordnet zu oder entfernt und schließt. Bei Mehrfachzuordnung
+Die Kartenwahl zeigt geordnete Symbolgrafiken vor dem aktuellen Namen ohne
+zusätzliche sichtbare Zuordnungszeile. Bereits einem anderen Spieler zugeordnete
+Karten erhalten einen gestrichelten Rahmen in der Theme-Farbe Danger.
+Nur dem Zielspieler zugeordnete Karten behalten zusätzlich SelectedSurface als
+Hintergrund. Der Zuordnungsstatus bleibt für Screenreader beschrieben.
+Der Zurück-Pfeil im bestehenden IconButton-Stil verlässt nur die Kartenwahl.
+Ein Tap ordnet zu oder entfernt und schließt. Bei Mehrfachzuordnung
 an andere Spieler bleibt die ausdrückliche Bestätigung erhalten. Archivierte
 Karten erscheinen nur beim bereits zugeordneten Zielspieler zum Entfernen.
 
@@ -198,13 +202,17 @@ Forest, Königsblau und Dunkel. Struktur bleibt über alle Themes gleich. Farbe,
 Shell-TabBar und aktive Auswahl richten sich nach dem Design Guide.
 
 Arche-Nova-Einstellungen enthalten „Ruf erfassen“, alte/neue Punkteanzeige und
-„Spezialkarten“. Dort: Header mit Zurück, „Archivierte anzeigen“, scrollbare
+„Spezialkarten“. Dort: Header mit Zurück und Info-Icon, „Archivierte anzeigen“, scrollbare
 Kartenliste und „Neue Spezialkarte“ unten. Zeilen zeigen 0–3 Symbole in gespeicherter
-Reihenfolge vor dem Namen, darunter Archivstatus und Bearbeiten/Archivieren bzw.
-Entarchivieren. Archiviert wird zusätzlich ausgeschrieben; keine Löschaktion.
+Reihenfolge vor dem Namen und das Bearbeiten-Icon direkt daneben ohne eigene
+Aktionszeile. Archiviert wird zusätzlich ausgeschrieben; keine Löschaktion oder
+Archivierungssteuerung in der Liste. Das Info-Icon öffnet den lokalisierten
+App-Hinweis zur Zuordnung von Karten zu Spielern/Partien und späteren Auswertung.
 
 Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe, Symbol-/Namensvorschau,
-drei nummerierte Symbolpositionen, Speichern. Folgepositionen werden lückenlos
+drei nummerierte Symbolpositionen, Speichern. Nur beim Bearbeiten einer bestehenden
+Karte erscheint zusätzlich „Archiviert“ mit Switch; Speichern übernimmt den Status,
+Zurück verwirft ungespeicherte Änderungen. Folgepositionen werden lückenlos
 angeboten; Leeren rückt nachfolgende Symbole nach links. Der Symbolwähler zeigt
 echte Grafiken, lokalisierte Namen und aktuelle Auswahl mit Kontur/Farbe plus
 Häkchen im SelectionDialog. Schließen/System-Zurück verwirft nur die Auswahl.
@@ -216,7 +224,7 @@ bei vorhandenem Text sichtbar.
 | Dialog / Auswahl | Ort | Stand / verbleibende Anpassung |
 |---|---|---|
 | Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
-| Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | Derselbe SelectionDialog und Text-Schließen; umgesetzt. Auswahl zusätzlich durch Zuordnungstext sichtbar. |
+| Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | SelectionDialog mit Zurück-Pfeil; kompakte Karten ohne sichtbare Statuszeile. Gestrichelter Danger-Rahmen nur bei Zuordnung zu einem anderen Spieler, SelectedSurface bei Zuordnung zum Zielspieler. Beide Markierungen können gleichzeitig gelten. |
 | Spezialkarten-Symbol wählen | Spezialkarten-Editor | App-SelectionDialog mit Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
 | Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
 | Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |

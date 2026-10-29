@@ -403,7 +403,7 @@ Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surfa
 
 ## Reduzierte UI-Flächen
 
-Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits diesem Spieler zugeordnete Karten erhalten `SelectedSurface` und `SelectedBorder`. Die Zuordnung bleibt zusätzlich als Text sichtbar. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
+Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits dem Zielspieler zugeordnete Karten erhalten weiterhin `SelectedSurface` als Hintergrund. Nur bereits einem anderen Spieler zugeordnete Karten erhalten einen gestrichelten Rahmen (2 dp, Muster 4/3) in der vorhandenen semantischen Farbe `Danger`. Ausschließlich dem Zielspieler zugeordnete und nicht zugeordnete Karten behalten die normale Outline-Kontur. Ist die Karte dem Zielspieler und einem anderen Spieler zugeordnet, werden Hintergrundmarkierung und gestrichelter Rahmen kombiniert. Eine sichtbare Zuordnungszeile entfällt ohne Ersatzabstände; die Statusbeschreibung bleibt für Screenreader erhalten. Der bestehende Zurück-Pfeil im IconButton-Stil ersetzt für diese Auswahl Text-Schließen. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
 
 Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: AppBackground außen, Surface-Einträge, Outline, TextPrimary und dieselbe modale Sperrfläche wie bei besonderen Karten. Ein Tap auf den Eintrag fügt unmittelbar hinzu und schließt; kein nativer Picker plus zusätzlichem Bestätigungsschritt. Schließen oder System-Zurück bricht nur die Auswahl ab. Namen und Gaststatus bleiben sichtbar.
 
@@ -456,7 +456,7 @@ Theme-Tints ersetzt. Kontur, Hintergrund und Text verwenden semantische Theme-Ro
 Karten auf farbigen Ergebnisflächen erhalten eine neutrale Surface-Unterlage.
 
 Verwaltung und Editor verwenden HeaderDivider, CardBorder, Primary für Neu/Speichern
-sowie transparente Bearbeiten-Icons und Textaktionen für Archivieren/Entarchivieren.
+sowie transparente Bearbeiten-Icons direkt neben der Kartenansicht ohne eigene Aktionszeile. Archivieren/Entarchivieren erfolgt ausschließlich über den Switch „Archiviert“ im Bearbeiten-Editor und dessen Speichern-Aktion; bei Neuanlage ist der Switch verborgen. Das Info-Icon im Listenkopf öffnet den lokalisierten Hinweis zur Verwendung von Spezialkarten über den bestehenden App-Dialog.
 Archivieren ist reversibel; keine Danger-Löschaktion. Archivzustand zusätzlich als
 Text anzeigen. Der Symbolwähler folgt SelectionDialog mit grafischen, mindestens
 48 dp hohen Einträgen und einer Auswahlmarkierung zusätzlich zur Farbe. Namen
