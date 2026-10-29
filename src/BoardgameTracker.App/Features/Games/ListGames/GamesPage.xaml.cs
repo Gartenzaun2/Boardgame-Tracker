@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Core.Games.ArkNova;
 
@@ -13,7 +14,7 @@ public partial class GamesPage : ContentPage
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e) =>
-        await DisplayAlertAsync(AppResources.Games, AppResources.GameCatalogHint, AppResources.Ok);
+        await AppDialogPage.ShowAsync(this, AppResources.Games, AppResources.GameCatalogHint, AppResources.Ok);
 
     private async void OnArkNovaTapped(object? sender, TappedEventArgs e)
     {

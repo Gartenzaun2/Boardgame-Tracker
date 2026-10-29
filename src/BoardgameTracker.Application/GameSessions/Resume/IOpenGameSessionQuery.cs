@@ -12,9 +12,6 @@ public interface IOpenGameSessionQuery
         Guid gameSessionId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<OpenGameSession>> GetAllAsync(
-        CancellationToken cancellationToken = default);
-
 }
 
 /// <summary>

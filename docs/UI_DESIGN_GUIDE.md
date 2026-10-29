@@ -399,7 +399,7 @@ Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für
 
 Verbindliche Designregel: Jede Kombination aus globaler Spieler-Hintergrundfarbe und zugehöriger Spieler-Textfarbe muss für normalen Text mindestens **4,5:1 Kontrast** erreichen, unabhängig vom App-Theme. Die finale Palette wird automatisiert nach der relativen sRGB-Luminanz ohne Rundung der Prüfschwelle getestet. Braun und Lila verwenden bewusst dunklere Flächen, damit ihre weichen Off-White-Texte erhalten bleiben. Die UI-Hexwerte bleiben ausschließlich Darstellung und sind keine Grundlage für Kameraerkennung. Farbsehschwächen werden durch die Palette allein nicht abgedeckt; Namen und Reihenfolge bleiben notwendig.
 
-Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surface`. Die letzte Partie ist Metainformation ohne Karte. `SurfaceSecondary` ist die leichte Aktionsfläche für Secondary Buttons, keine zusätzliche Kartenfarbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Unsichtbare native Auswahlfelder hinter Filterchips dürfen keinen vertikalen Platz durch globale Mindesthöhen reservieren.
+Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surface`. Die letzte Partie ist Metainformation ohne Karte. `SurfaceSecondary` ist die leichte Aktionsfläche für Secondary Buttons, keine zusätzliche Kartenfarbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Filterchips öffnen die App-Auswahl direkt und benötigen keine unsichtbaren nativen Picker.
 
 ## Reduzierte UI-Flächen
 
@@ -409,7 +409,17 @@ Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: A
 
 ## Dialogabdeckung
 
-Die appinternen Auswahlen für vorhandene Spieler, Farben, besondere Karten und Kartensymbole verwenden zentral `SelectionDialog` und `TextActionButton` zum Schließen. Native `DisplayAlertAsync`-Dialoge und native Picker übernehmen diese XAML-Styles nicht; ihre exakte Farb-/Buttonanpassung ist noch offen. Der aktuelle Dialogbestand und die verbleibenden Anpassungen stehen in `UI_WIREFRAME.md`, Abschnitt „Dialogübersicht“. System-Zurück schließt zuerst die offene App-Auswahl und verwirft sie; es soll nicht unbeabsichtigt den darunterliegenden Screen verlassen. Sicherheitsabfragen dürfen bei einer späteren visuellen Vereinheitlichung nicht entfallen. Bekannte Abweichungen und der native Dialogbestand stehen nur im Wireframe.
+Die appinternen Auswahlen verwenden zentral `SelectionDialog` und `TextActionButton`
+zum Schließen. Informationen, Fehler und Sicherheitsabfragen sowie die Auswahl von
+Historienfiltern, Theme und Standardspiel werden über `AppDialogPage` dargestellt.
+Die modale Fläche verwendet AppBackground, Outline und TextPrimary; Einträge liegen
+auf Surface, die aktuelle Auswahl erhält SelectedSurface, SelectedBorder und ein
+sichtbares Häkchen. Längere Inhalte sind scrollbar. Bestätigungen verwenden eine
+Primäraktion bzw. bei Verwerfen/Löschen DangerButton und eine getrennte Textaktion
+zum Abbrechen. System-Zurück bricht ausschließlich den Dialog ab, ohne eine Auswahl
+oder destruktive Aktion zu bestätigen. Ein Dialog verändert keine ungespeicherten
+Formular- oder Wertungsentwürfe der darunterliegenden Seite.
+Der aktuelle Dialogbestand und der Stand der Geräteprüfung stehen in `UI_WIREFRAME.md`.
 
 ## Splashscreen und App-Start
 

@@ -76,20 +76,6 @@ public partial class App : Microsoft.Maui.Controls.Application
                 navigationStore.Save(state);
             }
 
-            // Compatibility for an existing development database created before
-            // explicit navigation context existed: restore only when there is
-            // exactly one unfinished GameSession. Never choose arbitrarily among several.
-            if (state.LastMainSection is null)
-            {
-                IReadOnlyList<OpenGameSession> openGameSessions = await openGameSessionQuery.GetAllAsync();
-                if (openGameSessions.Count == 1 && openGameSessions[0].GameKey == ArkNovaGame.Key)
-                {
-                    await RestoreGameSessionAsync(shell, openGameSessions[0]);
-                    shell.EnableNavigationMemory();
-                    return;
-                }
-            }
-
             AppMainSection initialSection = ResolveInitialSection(state);
             if (initialSection == AppMainSection.Groups)
             {

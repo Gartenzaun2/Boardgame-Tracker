@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
@@ -38,6 +39,8 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
 
         if (_groupId != Guid.Empty && _viewModel.GroupId != _groupId)
         {
@@ -133,7 +136,7 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
                 ? AppResources.UniqueColorsRequired
                 : AppResources.ZooPlanSelectionRequired;
 
-            await DisplayAlertAsync(
+            await AppDialogPage.ShowAsync(this,
                 AppResources.StartValidationTitle,
                 message,
                 AppResources.Ok);

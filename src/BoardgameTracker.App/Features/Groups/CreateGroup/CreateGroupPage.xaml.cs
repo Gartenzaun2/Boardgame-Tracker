@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.CreateGroup;
 
@@ -23,6 +24,8 @@ public partial class CreateGroupPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         await _viewModel.LoadAsync();
     }
 
@@ -33,7 +36,7 @@ public partial class CreateGroupPage : ContentPage
 
     private async void OnInfoClicked(object? sender, EventArgs e)
     {
-        await DisplayAlertAsync(
+        await AppDialogPage.ShowAsync(this,
             AppResources.CreateGroup,
             AppResources.CreateGroupHint,
             AppResources.Ok);
@@ -41,7 +44,7 @@ public partial class CreateGroupPage : ContentPage
 
     private async void OnPlayersInfoClicked(object? sender, EventArgs e)
     {
-        await DisplayAlertAsync(
+        await AppDialogPage.ShowAsync(this,
             AppResources.GroupPlayers,
             AppResources.DefaultOrderHint,
             AppResources.Ok);

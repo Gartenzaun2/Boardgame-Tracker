@@ -64,9 +64,11 @@ public sealed class ArkNovaResultPlayerViewModel
         ColorText = PlayerColorPresentation.GetName(player.Color);
         Tint = PlayerColorPresentation.GetBackground(player.Color);
         PlayerTextColor = PlayerColorPresentation.GetText(player.Color);
-        ZooPlanText = $"Zooplan {player.ZooPlanNumber}";
-        RawValuesText = $"Attraktivität {player.Attractiveness} · Artenschutz {player.Conservation}"
-            + (player.Reputation is int reputation ? $" · Ruf {reputation}" : " · Ruf nicht erfasst");
+        ZooPlanText = string.Format(AppResources.ZooPlanFormat, player.ZooPlanNumber);
+        RawValuesText = string.Format(AppResources.RawScoreFormat, player.Attractiveness, player.Conservation)
+            + " · " + (player.Reputation is int reputation
+                ? string.Format(AppResources.ResultReputationFormat, reputation)
+                : AppResources.ResultReputationNotCaptured);
         Score = player.Attractiveness is int attractiveness && player.Conservation is int conservation
             ? mode == ArkNovaScoringDisplayMode.Old
                 ? ArkNovaScoringRules.CalculateOldScore(attractiveness, conservation)
@@ -84,6 +86,6 @@ public sealed class ArkNovaResultPlayerViewModel
     public string ZooPlanText { get; }
     public string RawValuesText { get; }
     public int Score { get; }
-    public string ScoreText => $"{Score} Punkte";
+    public string ScoreText => string.Format(AppResources.PointsFormat, Score);
     public IReadOnlyList<ArkNovaSpecialCardData> Cards { get; }
 }

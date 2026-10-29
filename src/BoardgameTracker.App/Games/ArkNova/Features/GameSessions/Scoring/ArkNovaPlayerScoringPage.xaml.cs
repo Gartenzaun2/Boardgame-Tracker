@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using Microsoft.Extensions.Logging;
@@ -38,12 +39,14 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         await _viewModel.LoadAsync(_gameSessionId, _playerId);
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e)
     {
-        await DisplayAlertAsync(AppResources.ScoringInputHelpTitle,
+        await AppDialogPage.ShowAsync(this, AppResources.ScoringInputHelpTitle,
             $"{AppResources.NumberWheelHint}\n\n{AppResources.NumberWheelConfirmationHint}", AppResources.Ok);
     }
 
@@ -89,7 +92,7 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not save scoring for GameSession {GameSessionId}, Player {PlayerId}.", _gameSessionId, _playerId);
-            await DisplayAlertAsync(AppResources.Scoring,
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring,
             AppResources.CorrectionFailed, AppResources.Ok);
         }
         finally

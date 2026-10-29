@@ -68,10 +68,11 @@ ist eine Neuinstallation bzw. ein Neuaufbau der Entwicklungsdatenbank zulässig.
 Den Benutzer ausdrücklich informieren, wenn dies erforderlich ist und dabei
 lokale Entwicklungsdaten verloren gehen. App-Daten nicht ungefragt löschen.
 
-Der derzeit vorhandene Spezialkarten-Upgradepfad ist bestehender
-Altkompatibilitätscode und soll bei einem entsprechenden Bereinigungsauftrag
-entfernt werden; er ist keine Vorgabe für weitere Änderungen. Vor dem ersten
-Deployment wird die Datenbankstrategie neu festgelegt.
+Installationen mit dem alten Integer-Spezialkartenschema (vor Version 0.9)
+benötigen eine Neuinstallation; ihre lokalen Daten werden nicht übernommen.
+Datenbanken mit dem aktuellen GUID-Schema können weiterverwendet werden.
+Es gibt keine EF-Migrationswerkzeuge oder versionsgebundenen Upgrade-Skripte.
+Vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
 
 ## Versionsregel
 
@@ -143,5 +144,19 @@ ausführen. Auf dem Zielgerät zusätzlich prüfen:
 - aktive Kartenwahl, Archivieren/Entarchivieren und historische Korrekturen,
 - bei inkompatiblen Änderungen den Start nach Neuinstallation mit frischer Datenbank.
 
-Der erfolgreiche Abschluss dieser Geräteprüfungen ist noch nicht bestätigt.
-Offene Codeabweichungen werden im `docs/UI_WIREFRAME.md` geführt.
+Im Android-15-Emulator (API 35, Pixel 7) wurden mit einer getrennten Testinstallation
+und frischer Datenbank geprüft:
+
+- Dialogauswahl in Deep Forest, Königsblau und Dunkel; lange Hinweise bei 130 % Schriftgröße.
+- Android-Zurück und Abbrechen bei Hinweisen, Auswahlen, Verwerfen, Löschen und verschachtelter Mehrfachkarten-Bestätigung.
+- Erhalt eines Gruppenformular- und historischen Korrekturentwurfs beim Dialogschließen.
+- Gruppenanlage, Partievorbereitung, Start, Wertung, Abschluss und Historienfilter.
+- Tastatur, direkte Zahleneingabe, Zahlenrad und Ruf-Regler.
+- Aktive Kartenauswahl, Archivieren/Entarchivieren und Erhalt archivierter Zuordnungen.
+- Speichern historischer Korrekturen einschließlich Ruf und erneutes Laden nach App-Neustart.
+- Bestätigtes Löschen ausschließlich einer Testpartie und Rückkehr zur leeren Historie.
+
+Beim Tabwechsel auf eine bereits geöffnete Unterseite wurde ein bestehender
+Navigationsspeicherfehler gefunden; Details stehen in `docs/UI_WIREFRAME.md`.
+Eine vollständige Prüfung auf dem physischen Zielgerät und unter iOS steht aus.
+Die Emulatorprüfung ersetzt diese Geräteprüfung nicht.

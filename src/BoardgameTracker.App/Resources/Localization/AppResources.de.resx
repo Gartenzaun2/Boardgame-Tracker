@@ -487,4 +487,10 @@
   <data name="SelectedSymbol" xml:space="preserve"><value>Ausgewählt</value></data>
   <data name="CardSymbolScience" xml:space="preserve"><value>Forschung</value></data>
   <data name="SpecialCardManagementTitle" xml:space="preserve"><value>Spezialkarten</value></data>
+  <data name="ResultReputationFormat" xml:space="preserve">
+    <value>Ruf {0}</value>
+  </data>
+  <data name="ResultReputationNotCaptured" xml:space="preserve">
+    <value>Ruf nicht erfasst</value>
+  </data>
 </root>

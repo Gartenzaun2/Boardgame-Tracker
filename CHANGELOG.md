@@ -6,6 +6,13 @@ Spezifikationen unter `docs/`.
 
 ## Unveröffentlicht
 
+- Android-Emulatorprüfung (API 35) für Dialoge, drei Themes, große Schrift, Partie-/Wertungsablauf, Korrekturen und Kartenverwaltung ausgeführt. Bestehenden Navigationsspeicherfehler beim Tabwechsel auf Unterseiten im Wireframe dokumentiert; Hardware-/iOS-Prüfung bleibt offen.
+
+- Native Hinweise, Fehler- und Sicherheitsabfragen durch gemeinsame App-Dialoge ersetzt; Historienfilter, Theme und Standardspiel verwenden App-Auswahl mit sichtbarer aktueller Auswahl. Zurück/Abbrechen bestätigt keine Aktion; ungespeicherte Entwürfe bleiben beim Dialogschließen erhalten.
+- Altkompatibilität entfernt: Spezialkarten-Schema-Upgrade, alte Navigationswiederherstellung, EF-Migrationswerkzeuge und versionsgebundenes Upgrade-Skript. Initialisierung des aktuellen Schemas und Erhalt bearbeiteter Karten/Zuordnungen bei wiederholten Starts getestet. Installationen vor dem GUID-Kartenschema benötigen eine Neuinstallation mit Verlust lokaler Daten.
+
+- UI-Bereinigung: kontrastreicher Text in der Spielereingabe, lokalisierte Ergebnisanzeige und Android-Zurück schließt zuerst den Spezialkarten-Picker.
+
 - Regel bis zum ersten Deployment ergänzt: keine Migrationsstrategie oder Altkompatibilität; notwendige Neuinstallation und Verlust lokaler Entwicklungsdaten ausdrücklich ankündigen. Upgrade-Prüfvorgaben angepasst; App-Code unverändert.
 
 - Markdown-Dokumentation konsolidiert: doppelte Feature-/Navigationsregeln zusammengeführt, veraltete DB-Reset- und UI-Angaben ersetzt.

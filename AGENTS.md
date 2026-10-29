@@ -59,8 +59,35 @@ Keine Architektur-, Persistenz- oder Paketänderungen außerhalb des Auftrags; n
 
 Neue/geänderte Fachlogik geeignet testen. Tests niemals für einen grünen Lauf entfernen, abschwächen oder umgehen. Sichtbare Texte über bestehende Lokalisierung führen; UI-Änderungen anhand beider UI-Dokumente prüfen.
 
+## Arbeitsmodus und Token-Effizienz
+Standardmäßig auf kurze Durchlaufzeit, geringe Tool-Nutzung und möglichst wenig unnötigen Kontextverbrauch optimieren. Nur die Analyse und Werkzeuge einsetzen, die zur korrekten Umsetzung des aktuellen Auftrags und zu seiner codebasierten Verifikation nötig sind.
+
+Bei kleinen und klar abgegrenzten Aufgaben keine umfangreiche Voranalyse oder Implementierungsplanung erstellen. Zuerst die direkt betroffenen Dateien und die dafür maßgebliche Dokumentation prüfen und dann umsetzen. Die Repository-Erkundung nur erweitern, wenn Abhängigkeiten, Buildfehler oder Testfehler dies konkret erfordern.
+
+Ohne ausdrücklichen Auftrag nicht:
+- das gesamte Repository nach zusätzlichen Problemen, Verbesserungen oder Aufräumarbeiten durchsuchen;
+- nicht betroffenen Code modernisieren, umbenennen, verschieben oder refactoren;
+- externe Web-Recherche oder Dokumentationsrecherche durchführen, wenn Repository-Code und Projektdokumentation zur Lösung ausreichen;
+- Git-Historie, `git blame`, alte Commits, Issues oder Pull Requests untersuchen, sofern dies nicht für den konkreten Auftrag nötig ist;
+- Dependency-, Security-, Performance- oder Architektur-Audits durchführen;
+- Benchmarks oder Profiling starten;
+- generierte Binärdateien oder Build-Artefakte analysieren;
+- zusätzliche Diagramme, Bilder oder sonstige visuelle Artefakte erzeugen;
+- Dokumentation, README, Kommentare oder XML-Dokumentation außerhalb der tatsächlich geänderten Anforderungen überarbeiten;
+- nach erfolgreicher codebasierter Verifikation weitere alternative Prüfmethoden nur zur zusätzlichen Absicherung durchführen.
+
+Auftragsfremde Auffälligkeiten kurz im Abschlussbericht nennen statt sie automatisch zu bearbeiten.
+
 ## Verifikation und Lieferung
-Relevante Tests, bei Bedarf die breitere Suite und soweit lokal möglich den Build ausführen. Beispiele ab Solution-Root:
+Die Standardverifikation ist codebasiert:
+
+```text
+Code ändern -> Build -> automatisierte Tests -> fertig
+```
+
+Build und relevante automatisierte Tests ausführen; bei sinnvoller Abdeckung darf auch die breitere oder vollständige Testsuite laufen. Neue oder geänderte Unit-, Integrations- und Regressionstests dürfen selbstständig ergänzt werden, wenn sie die angeforderte Änderung sinnvoll absichern. Automatisierte Code-Tests gelten ausdrücklich als normale Standardverifikation.
+
+Beispiele ab Solution-Root:
 
 ```powershell
 dotnet build BoardgameTracker.sln
@@ -68,7 +95,25 @@ dotnet test --project tests/BoardgameTracker.Core.Tests
 dotnet test --project tests/BoardgameTracker.Application.Tests
 ```
 
-Build-/Restore-Voraussetzungen und relevante Geräte-Smoke-Tests gemäß `SETUP.md` beachten. `git diff` auf unbeabsichtigte Änderungen prüfen, einschließlich neuer Dateien. Fehlgeschlagene/nicht ausführbare Prüfungen ausdrücklich nennen; nur tatsächlich ausgeführte Verifikation als erfolgreich melden.
+### Manuelle und visuelle Verifikation ist Opt-in
+Ohne ausdrücklichen Auftrag keine manuelle oder visuelle Smoke-Test-Phase durchführen. Insbesondere nicht:
+- die App nur zur manuellen Funktionsprüfung starten;
+- Oberflächen manuell durchklicken;
+- Screenshots aufnehmen oder erzeugen;
+- Screenshots oder andere UI-Bilder analysieren;
+- Vorher-/Nachher-Screenshots vergleichen;
+- visuelle Regressionstests durchführen;
+- Bilder zur Verifikation generieren;
+- Layout, Farben, Abstände oder Rendering per Bildanalyse beurteilen;
+- manuelle End-to-End-Abläufe durchführen, wenn die Änderung durch Build und automatisierte Tests ausreichend verifiziert werden kann.
+
+Auch bei UI-Code gilt: Quellcode, XAML, Binding-/Navigationslogik, Build und automatisierte Tests sind die Standardprüfung. Eine visuelle oder manuelle Prüfung nur durchführen, wenn der Benutzer sie ausdrücklich verlangt. Wenn eine rein visuelle Anforderung ohne Sichtprüfung nicht zuverlässig beurteilt werden kann, dies im Abschlussbericht benennen, statt automatisch Screenshots oder Bildanalyse zu starten.
+
+Geräte-Smoke-Tests aus `SETUP.md` sind damit keine Standardverifikation für normale Implementierungsaufträge. Sie nur ausführen, wenn der Benutzer ausdrücklich einen Geräte-/UI-/Smoke-Test verlangt oder der konkrete Auftrag selbst die manuelle Geräteprüfung zum Gegenstand hat.
+
+Nach erfolgreichem Build und erfolgreichen automatisierten Tests nicht automatisch weitere Prüfverfahren starten. Fehlgeschlagene/nicht ausführbare Prüfungen ausdrücklich nennen; nur tatsächlich ausgeführte Verifikation als erfolgreich melden.
+
+`git diff` auf unbeabsichtigte Änderungen prüfen, einschließlich neuer Dateien. Dieser abschließende Diff-/Status-Check gehört zur normalen Lieferung und ersetzt keine zusätzliche manuelle UI-Prüfung.
 
 Bis zum ersten Deployment keine Migrationsstrategie planen und keinen Kompatibilitätscode für ältere Entwicklungsstände einführen oder beibehalten. Falls eine inkompatible Änderung eine Neuinstallation erfordert, den Benutzer ausdrücklich darauf und auf den Verlust lokaler Entwicklungsdaten hinweisen. Bestehenden Altkompatibilitätscode bei einem entsprechenden Bereinigungsauftrag entfernen. Datenbank-, Versions- und Lieferregeln ausschließlich nach `SETUP.md` anwenden; kein pauschaler DB-Reset und keine Lieferarchive ohne ausdrücklichen Auftrag. Offene UI-Codeabweichungen stehen im Wireframe und sind ohne neuen Auftrag nicht automatisch zur Behebung freigegeben.
 
@@ -81,3 +126,5 @@ Commit und Push ausschließlich auf ausdrückliche Anweisung, vorher Änderungen
 
 ## Abschlussbericht
 Kurz nennen: Änderungen und wichtige Dateien, tatsächlich ausgeführte Tests/Builds samt Ergebnis, offene Probleme/Entscheidungen, Dokumentationsanpassungen und Bereitschaft für Commit/Push. Bereitschaft ist keine Erlaubnis zur Ausführung.
+
+Keine ausführliche Tätigkeitschronik liefern und nicht jede Dateiprüfung oder jeden ausgeführten Befehl nacherzählen, sofern der Benutzer dies nicht ausdrücklich verlangt.

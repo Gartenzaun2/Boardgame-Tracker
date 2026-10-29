@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
@@ -46,6 +47,8 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         await _viewModel.LoadAsync(_gameSessionId);
         RenderFrames();
     }
@@ -138,7 +141,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
-            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
         }
         finally
         {

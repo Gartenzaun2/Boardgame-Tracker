@@ -167,8 +167,8 @@ Bei verborgener Rufeingabe bleiben gespeicherte Rufwerte im Korrekturentwurf erh
 ## Historie
 
 Spiel- und Gruppenfilter stehen als kompakte, bei Platzmangel umbrechende Chips
-oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter. Dahinter öffnen
-native Picker; unsichtbare Picker reservieren keinen zusätzlichen vertikalen Platz.
+oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter. Die Chips öffnen
+die App-Auswahl direkt; aktuelle Einträge sind markiert.
 
 Die Liste gruppiert Partien nach lokalem Kalendermonat, z. B. „Oktober 2026“.
 Monatsüberschriften sind einfache Texte ohne Karte und ohne Sticky-Verhalten.
@@ -220,33 +220,38 @@ bei vorhandenem Text sichtbar.
 | Spezialkarten-Symbol wählen | Spezialkarten-Editor | App-SelectionDialog mit Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
 | Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
 | Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |
-| Spiel-/Gruppenfilter | Historie | Chips umgesetzt; dahinter native Picker, deren Auswahlliste noch separat zu gestalten wäre. |
-| Darstellung / Standardspiel | Allgemeine Einstellungen | Inhaltskarten umgesetzt; native Picker-Auswahl noch ohne appidentische Dialoggestaltung. |
-| Informationen zu Spielen | Spiele | Native Info-Abfrage; AppBackground, Kontur und Textaktion noch nicht zentral kontrolliert. |
-| Informationen zur Gruppe und Reihenfolge | Gruppe anlegen / bearbeiten | Native Info-Abfragen; gleiche offene Gestaltung. |
-| Informationen zu Einstellungen / Standardspiel | Allgemeine Einstellungen | Native Info-Abfragen; gleiche offene Gestaltung. |
-| Doppelte Spielerfarben / Start nicht möglich | Vorbereitung | Nativer Hinweis; gleiche offene Gestaltung. |
-| Laufende Partie verwerfen | Laufende Partie | Native Sicherheitsabfrage; explizite Bestätigung vorhanden, appidentische Danger-/Abbrechen-Gestaltung noch offen. |
-| Wertung verwerfen / abgeschlossene Partie löschen | Wertungsübersicht / Historie | Native Sicherheitsabfrage; explizite Bestätigung vorhanden, gleiche offene Danger-Gestaltung. |
-| Mehrfache Spezialkarte bestätigen | Besondere-Karten-Auswahl | Native Ja-/Abbrechen-Abfrage; gleiche offene Button-/Flächengestaltung. |
-| Speichern / Korrektur fehlgeschlagen | Spielereingabe, Wertungsübersicht, Gleichstandsauflösung | Native Fehlermeldung; gleiche offene Gestaltung. |
-| Fotoerkennung noch nicht verfügbar | Wertungsübersicht | Nativer Hinweis; gleiche offene Gestaltung. |
+| Spiel-/Gruppenfilter | Historie | Chips öffnen AppDialogPage mit aktueller Auswahl und Text-Schließen. |
+| Darstellung / Standardspiel | Allgemeine Einstellungen | AppDialogPage mit aktuellem Wert, Auswahlmarkierung und Text-Schließen. |
+| Informationen zu Spielen | Spiele | AppDialogPage mit AppBackground, Outline und Textaktion. |
+| Informationen zur Gruppe und Reihenfolge | Gruppe anlegen / bearbeiten | Derselbe App-Informationsdialog; Formulareingaben bleiben erhalten. |
+| Informationen zu Einstellungen / Standardspiel | Allgemeine Einstellungen | Derselbe App-Informationsdialog. |
+| Doppelte Spielerfarben / Start nicht möglich | Vorbereitung | App-Hinweis; Entwurf bleibt erhalten. |
+| Laufende Partie verwerfen | Laufende Partie | App-Sicherheitsabfrage mit DangerButton und Text-Abbrechen. |
+| Wertung verwerfen / abgeschlossene Partie löschen | Wertungsübersicht / Historie | App-Sicherheitsabfrage mit expliziter destruktiver Bestätigung und Text-Abbrechen. |
+| Mehrfache Spezialkarte bestätigen | Besondere-Karten-Auswahl | App-Bestätigung mit Ja-/Abbrechen; Kartenpicker und Entwurf bleiben erhalten. |
+| Speichern / Korrektur fehlgeschlagen | Spielereingabe, Wertungsübersicht, Gleichstandsauflösung | App-Fehlermeldung; Entwurf bleibt erhalten. |
+| Fotoerkennung noch nicht verfügbar | Wertungsübersicht | App-Hinweis mit Textaktion. |
 
-Native Dialoge folgen derzeit dem Plattformdialog und erhalten nicht die zentralen XAML-Buttonstyles. Sie werden hier bewusst als verbleibende Arbeit aufgeführt. Eine spätere Vereinheitlichung muss Informations-, Fehler-, Auswahl- und destruktive Bestätigungsrollen sowie System-Zurück/Abbrechen erhalten. Gerätesichtprüfung in allen drei Themes bleibt erforderlich.
+System-Zurück schließt zunächst den modalen Dialog und bestätigt keine Aktion.
+Bei darunter geöffnetem Spezialkarten-Picker schließt erst das nächste Zurück
+auch diesen; die Wertungsseite bleibt bis dahin sichtbar.
 
-## Bekannte Codeabweichungen – separat zu beheben
+## Aktuelles UI-Verhalten
 
-Die folgenden Punkte wurden beim Dokumentationsabgleich bestätigt und mit dem
-Benutzer ausdrücklich zur späteren Behebung festgehalten. Die geltenden Regeln
-bleiben bestehen; diese Liste erteilt keinen automatischen Änderungsauftrag.
+- Spielereingabe: Bereiche und Vorschläge verwenden TextPrimary auf AppBackground.
+- Ergebnisanzeige: Zooplan, Rohwerte, Ruf und Punkte verwenden Lokalisierungsressourcen.
+- Android-Zurück schließt zuerst den geöffneten Spezialkarten-Picker; erst ohne Auswahl wird die Wertungsseite verlassen.
 
-| Punkt | Ist-Stand und betroffene Stelle | Geltende Regel / spätere Korrektur |
-|---|---|---|
-| Kleiner Text auf AppBackground | [Spielereingabe](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaPlayerScoringPage.xaml): Bereiche/Vorschläge verwenden TextSecondary direkt auf AppBackground. Deep Forest ca. 3,67:1, Königsblau ca. 3,68:1. | Kleiner Text auf AppBackground verwendet TextPrimary; Paletten unverändert lassen. Siehe Kontrastregel im Design Guide. |
-| Lokalisierung der Ergebnisanzeige | [Ergebnis-ViewModel](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaResultViewModel.cs): Zooplan-, Rohwert-, Ruf- und Punktetexte stehen teilweise direkt im Code. | Sichtbare Sprachtexte über die vorhandenen Lokalisierungsressourcen führen. |
-| Android-Zurück im Spezialkarten-Picker | [Wertungsseite](../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaScoringPage.xaml.cs): OnBackButtonPressed navigiert zur Gruppen-/Historienübersicht, auch wenn die Auswahl geöffnet ist. | Zunächst nur den geöffneten Picker schließen; erst ohne Auswahl die Seite verlassen. |
+## Bekannte Codeabweichung – separat zu beheben
 
-Die Sichtprüfung auf dem Zielgerät in allen drei Themes ist noch nicht als
-abgeschlossen bestätigt. Bei inkompatiblen Änderungen wird der Start nach
-Neuinstallation mit frischer Datenbank geprüft. Prüfablauf:
-`SETUP.md`. Diese Dokumentationsbereinigung verändert keinen App-Code.
+Beim Tabwechsel auf eine bereits geöffnete Unterseite speichert
+`AppShell.OnShellNavigated` den neuen Hauptbereich nicht zuverlässig, weil es nur
+auf Routen prüft, die mit einer Hauptseite enden. Reproduktion: Historische
+Wertungsübersicht geöffnet lassen, zu Einstellungen wechseln, zurück zur
+historischen Wertungsübersicht wechseln und App neu starten. Die App öffnet dann
+Einstellungen statt Historie. Die Wiederherstellung nach Besuch der eigentlichen
+Historien-Hauptseite funktioniert. Der Fehler wurde im Emulator bestätigt und
+ist nicht Teil der Dialog- oder Altkompatibilitätsbereinigung.
+
+Der Stand der Emulatorprüfung und die ausstehenden Prüfungen auf echter Hardware
+und unter iOS stehen in `SETUP.md`.
