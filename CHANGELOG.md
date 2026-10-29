@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.0.0
+
+- Persistierte, benutzerverwaltbare Arche-Nova-Spezialkarten mit stabiler GUID, Name, 0–3 geordneten Symbolen und Archivstatus statt festem Kartenenum.
+- Verlustfreier, atomarer SQLite-Upgrade der bisherigen Integer-Zuordnungen 1–5 auf deterministische Startkarten-IDs; Seeding erhält Benutzeränderungen und Archivzustände.
+- Verwaltung aus den Arche-Nova-Einstellungen mit gemeinsamem Create-/Edit-Editor und grafischem Symbolwähler.
+- Dynamische Wertungs-/Historienauswahl mit aktuellen Namen/Symbolen; archivierte Karten bleiben referenzierbar, sind aber nicht neu zuordenbar.
+- 14 Einzelgrafiken aus Icons/Symbole eingebunden; alte vollständige Kartenbilder und statische Karten-Präsentation entfernt.
+- App-Version 0.9.0.0 / ApplicationVersion 26.
+
 ## 0.8.9.4
 
 - Überschriften der Zahlenräder zentriert; größere Abstände zwischen Rädern und zu den Zahlenfeldern.

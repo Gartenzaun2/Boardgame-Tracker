@@ -187,7 +187,7 @@ public sealed class NumberWheelTests
         public Task<GameSession?> FindGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task SaveCompletedGameSessionAsync(GameSession gameSession, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task AddSpecialCardAsync(ArkNovaGameSessionSpecialCardAssignment assignment, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, ArkNovaSpecialCard specialCard, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, Guid specialCardId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task DeleteGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
 

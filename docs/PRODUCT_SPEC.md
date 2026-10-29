@@ -356,30 +356,39 @@ sind sowohl aus der Wertung als auch über den allgemeinen Bereich
 
 ## Spezialkarten
 
-### Elefanten
+Spezialkarten sind global für Arche Nova benutzerverwaltbare Referenzdaten.
+Unter den Arche-Nova-Einstellungen öffnet „Spezialkarten“ eine eigene Liste:
+standardmäßig aktive Karten, optional „Archivierte anzeigen“. Nutzer können
+Karten anlegen, bearbeiten, archivieren und wieder entarchivieren; keine normale
+Löschaktion. Create und Edit verwenden denselben Editor.
 
-- Afrikanischer Elefant
-- Asiatischer Elefant
+Eine Karte hat einen Namen (1–120 Zeichen nach Trim) und null bis drei geordnete
+Symbole aus dem festen Katalog. Die Anzeige lautet immer Symbol1 → Symbol2 →
+Symbol3 → Name. Wiederholungen sind ausdrücklich erlaubt, z. B. Africa · Africa
+· Herbivore. Das Leeren einer Position rückt nachfolgende Symbole nach links;
+neue Positionen werden lückenlos angeboten. Die Auswahl zeigt echte Symbolgrafiken.
 
-### Adler-Kategorie
+Feste Symboltypen: Africa, America, Asia, Australia, Europe, Bear, Bird,
+Herbivore, PettingAnimal, Predator, Primate, Reptile, SeaAnimal und Science. Nutzer legen
+keine neuen Symboltypen an. Fünf aktive Startkarten sind Afrikanischer Elefant,
+Asiatischer Elefant, Weißkopfseeadler, Steinadler und Malaienbär; die anfänglichen
+Symbolkombinationen und stabilen IDs stehen in `DATA_MODEL.md`. Auch diese Karten
+sind danach frei editierbar und archivierbar; Initialisierung setzt sie nicht zurück.
 
-- Weißkopfseeadler
-- Steinadler
-- Malaienbär
+Die Wertungsauswahl lädt persistierte Karten und zeigt ihre Symbole vor dem
+aktuellen Namen. Zuordnungstexte bleiben „hier zugeordnet“, „anderem Spieler
+zugeordnet“ oder „verfügbar“. Neue Zuordnungen sind ausschließlich für aktive
+Karten erlaubt. Dieselbe Karte kann mehreren Spielern derselben Partie gehören;
+die bestehende Sicherheitsabfrage für Mehrfachzuordnungen bleibt erhalten.
+Doppelte Zuordnung an denselben Spieler ist ausgeschlossen.
 
-Der Malaienbär gehört für die Statistik zur Adler-Kategorie.
-
-Bedienung: Jede Spielerkachel bietet **Spezialkarte hinzufügen**. Die Auswahl
-öffnet eine kompakte Kachelansicht mit Kontinent-/Tiersymbol und lokalisiertem
-Kartennamen; noch nicht zugewiesene Karten werden hervorgehoben. Durch Antippen
-einer bereits beim Spieler angezeigten Spezialkarte wird die Zuordnung wieder
-entfernt.
-
-Es wird die konkrete Karte gespeichert, nicht nur eine Anzahl. Dieselbe
-konkrete Karte darf in seltenen Fällen mehreren Spielern derselben Partie
-zugeordnet sein. Beim Versuch einer solchen Mehrfachzuordnung fragt die App
-explizit nach, ob wirklich beide Spieler diese Karte hatten. Dieselbe Karte
-kann demselben Spieler nicht zweimal zugeordnet werden.
+Historische Partien lösen Kartenname und Symbole immer aktuell über die Karten-ID
+auf. Archivieren verändert keine Partiedaten. Bereits zugeordnete archivierte
+Karten bleiben sichtbar und dürfen entfernt werden; auch bei historischen
+Korrekturen dürfen sie nicht neu hinzugefügt werden. Beim Speichern wird dies
+gegen den aktuellen Datenbankzustand geprüft. Es gibt keine Namens-/Symbol-Snapshots.
+Zukünftige Statistikfilter bieten ausschließlich aktive Karten an; Statistik
+selbst bleibt ein späterer Slice.
 
 ## Gleichstand
 

@@ -405,6 +405,7 @@ In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Su
 |---|---|---|
 | Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
 | Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | Derselbe SelectionDialog und Text-Schließen; umgesetzt. Auswahl zusätzlich durch Zuordnungstext sichtbar. |
+| Spezialkarten-Symbol wählen | Spezialkarten-Editor | App-SelectionDialog mit Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
 | Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
 | Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |
 | Spiel-/Gruppenfilter | Historie | Chips umgesetzt; dahinter native Picker, deren Auswahlliste noch separat zu gestalten wäre. |
@@ -420,3 +421,20 @@ In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Su
 | Fotoerkennung noch nicht verfügbar | Wertungsübersicht | Nativer Hinweis; gleiche offene Gestaltung. |
 
 Native Dialoge folgen derzeit dem Plattformdialog und erhalten nicht die zentralen XAML-Buttonstyles. Sie werden hier bewusst als verbleibende Arbeit aufgeführt. Eine spätere Vereinheitlichung muss Informations-, Fehler-, Auswahl- und destruktive Bestätigungsrollen sowie System-Zurück/Abbrechen erhalten. Gerätesichtprüfung in allen drei Themes bleibt erforderlich.
+
+## Arche-Nova-Spezialkarten verwalten
+
+Arche-Nova-Einstellungen → Spezialkarten. Kopf mit Zurück und HeaderDivider,
+Schalter „Archivierte anzeigen“, scrollbare Kartenliste und „Neue Spezialkarte“
+im unteren Aktionsbereich. Zeilen zeigen bis zu drei 26-dp-Symbole in gespeicherter
+Reihenfolge vor dem Namen; darunter Archivstatus und Bearbeiten/Archivieren bzw.
+Entarchivieren. Archiviert ist zusätzlich ausgeschrieben; keine Löschaktion.
+
+Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe, Vorschau aus Symbolen und
+Name, drei nummerierte Symbolpositionen, Speichern. Eine Folgeposition wird erst
+bei gesetztem Vorgänger angeboten. Leeren entfernt die Position und rückt nach.
+Der Symbolwähler verwendet SelectionDialog, echte Grafiken, lokalisierte Namen,
+SelectedSurface/SelectedBorder plus Häkchen und Text-Schließen; System-Zurück
+schließt nur den Wähler. Duplikate bleiben wählbar. Busy-Overlays blockieren
+Eingaben; Fehler erscheinen bei vorhandenem Text. Im Wertungspicker bleiben
+bereits beim Zielspieler zugeordnete archivierte Karten zum Entfernen sichtbar.

@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Games.ArkNova;
@@ -32,9 +33,9 @@ public partial class ArkNovaResultViewModel(
                      .OrderBy(x => x.Placement ?? int.MaxValue)
                      .ThenBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase))
         {
-            ArkNovaSpecialCard[] cards = gameSession.SpecialCards
+            ArkNovaSpecialCardData[] cards = gameSession.SpecialCards
                 .Where(x => x.PlayerId == player.PlayerId)
-                .Select(x => x.SpecialCard)
+                .Select(x => gameSession.CardCatalog.Single(c => c.Id == x.SpecialCardId))
                 .ToArray();
             Players.Add(new ArkNovaResultPlayerViewModel(player, cards, mode));
         }
@@ -55,7 +56,7 @@ public sealed class ArkNovaResultPlayerViewModel
 {
     public ArkNovaResultPlayerViewModel(
         ArkNovaScoringPlayerData player,
-        IReadOnlyList<ArkNovaSpecialCard> cards,
+        IReadOnlyList<ArkNovaSpecialCardData> cards,
         ArkNovaScoringDisplayMode mode)
     {
         Placement = player.Placement ?? 0;
@@ -71,7 +72,7 @@ public sealed class ArkNovaResultPlayerViewModel
                 ? ArkNovaScoringRules.CalculateOldScore(attractiveness, conservation)
                 : ArkNovaScoringRules.CalculateNewScore(attractiveness, conservation)
             : 0;
-        SpecialCardsText = cards.Count == 0 ? AppResources.NoSpecialCards : string.Join(" · ", cards.Select(ArkNovaSpecialCardPresentation.GetName));
+        Cards = cards;
     }
 
     public int Placement { get; }
@@ -84,5 +85,5 @@ public sealed class ArkNovaResultPlayerViewModel
     public string RawValuesText { get; }
     public int Score { get; }
     public string ScoreText => $"{Score} Punkte";
-    public string SpecialCardsText { get; }
+    public IReadOnlyList<ArkNovaSpecialCardData> Cards { get; }
 }

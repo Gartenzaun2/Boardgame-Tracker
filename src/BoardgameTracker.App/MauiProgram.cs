@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Features.Groups.EditGroup;
@@ -115,6 +117,12 @@ public static class MauiProgram
         builder.Services.AddTransient<ArkNovaTieResolutionPage>();
         builder.Services.AddTransient<ArkNovaResultViewModel>();
         builder.Services.AddTransient<ArkNovaResultPage>();
+        builder.Services.AddTransient<IArkNovaSpecialCardDataAccess, SqliteArkNovaSpecialCardDataAccess>();
+        builder.Services.AddTransient<ArkNovaSpecialCardUseCase>();
+        builder.Services.AddTransient<ArkNovaSpecialCardsViewModel>();
+        builder.Services.AddTransient<ArkNovaSpecialCardsPage>();
+        builder.Services.AddTransient<ArkNovaSpecialCardEditorViewModel>();
+        builder.Services.AddTransient<ArkNovaSpecialCardEditorPage>();
         builder.Services.AddTransient<ArkNovaSettingsViewModel>();
         builder.Services.AddTransient<ArkNovaSettingsPage>();
 

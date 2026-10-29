@@ -34,6 +34,7 @@
                     <Switch Grid.Column="1" IsToggled="{Binding UseOldScoring}" />
                 </Grid>
             </Border>
+            <Button Text="{x:Static res:AppResources.SpecialCardManagementTitle}" Style="{StaticResource SecondaryActionButton}" Clicked="OnSpecialCardsClicked" />
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

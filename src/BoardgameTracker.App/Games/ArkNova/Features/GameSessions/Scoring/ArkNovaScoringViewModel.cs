@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.App.Presentation.PlayerColors;
@@ -22,6 +23,7 @@ public partial class ArkNovaScoringViewModel(
     IArkNovaSettingsStore settingsStore,
     ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
 {
+    private IReadOnlyList<ArkNovaSpecialCardData> _cardCatalog = [];
     public ObservableCollection<ArkNovaScoringPlayerViewModel> Players { get; } = [];
     public ObservableCollection<ArkNovaSpecialCardOptionViewModel> SpecialCardOptions { get; } = [];
 
@@ -81,6 +83,7 @@ public partial class ArkNovaScoringViewModel(
                     Draft = null;
                 }
                 Draft ??= await correction.BeginAsync(gameSessionId, cancellationToken);
+                Draft.RefreshCardCatalog(data.CardCatalog);
                 data = Draft.Data with { Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() };
             }
             OnPropertyChanged(nameof(IsHistorical));
@@ -91,12 +94,13 @@ public partial class ArkNovaScoringViewModel(
             GameSessionId = data.GameSessionId;
             GroupName = data.GroupName;
             DateText = data.StartedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
+            _cardCatalog = data.CardCatalog;
             Players.Clear();
             foreach (ArkNovaScoringPlayerData player in data.Players)
             {
-                ArkNovaSpecialCard[] cards = data.SpecialCards
+                Guid[] cards = data.SpecialCards
                     .Where(x => x.PlayerId == player.PlayerId)
-                    .Select(x => x.SpecialCard)
+                    .Select(x => x.SpecialCardId)
                     .ToArray();
                 Players.Add(new ArkNovaScoringPlayerViewModel(
                     player,
@@ -142,7 +146,7 @@ public partial class ArkNovaScoringViewModel(
 
     public async Task AssignSpecialCardAsync(
         Guid playerId,
-        ArkNovaSpecialCard card,
+        Guid card,
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
@@ -159,7 +163,7 @@ public partial class ArkNovaScoringViewModel(
 
     public async Task RemoveSpecialCardAsync(
         Guid playerId,
-        ArkNovaSpecialCard card,
+        Guid card,
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
@@ -187,7 +191,7 @@ public partial class ArkNovaScoringViewModel(
 
     public void EndNavigation() => IsBusy = false;
 
-    public bool IsSpecialCardAssignedToOtherPlayer(Guid playerId, ArkNovaSpecialCard card) =>
+    public bool IsSpecialCardAssignedToOtherPlayer(Guid playerId, Guid card) =>
         Players.Any(x => x.PlayerId != playerId && x.SpecialCards.Contains(card));
 
     public async Task<ArkNovaCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
@@ -260,10 +264,12 @@ public partial class ArkNovaScoringViewModel(
         }
 
         SpecialCardOptions.Clear();
-        foreach (ArkNovaSpecialCard card in Enum.GetValues<ArkNovaSpecialCard>())
+        foreach (ArkNovaSpecialCardData card in _cardCatalog)
         {
-            bool assignedToTarget = Players.Single(x => x.PlayerId == targetPlayerId).SpecialCards.Contains(card);
-            bool assignedToOtherPlayer = Players.Any(x => x.PlayerId != targetPlayerId && x.SpecialCards.Contains(card));
+            bool assignedToTarget = Players.Single(x => x.PlayerId == targetPlayerId).SpecialCards.Contains(card.Id);
+            bool assignedToOtherPlayer = Players.Any(x => x.PlayerId != targetPlayerId && x.SpecialCards.Contains(card.Id));
+            if (card.IsArchived && !assignedToTarget)
+                continue;
             SpecialCardOptions.Add(new ArkNovaSpecialCardOptionViewModel(card, assignedToTarget, assignedToOtherPlayer));
         }
     }
@@ -275,7 +281,7 @@ public sealed class ArkNovaScoringPlayerViewModel
 
     public ArkNovaScoringPlayerViewModel(
         ArkNovaScoringPlayerData data,
-        IReadOnlyList<ArkNovaSpecialCard> specialCards,
+        IReadOnlyList<Guid> specialCards,
         ArkNovaScoringDisplayMode displayMode,
         bool showReputation)
     {
@@ -298,7 +304,7 @@ public sealed class ArkNovaScoringPlayerViewModel
     public int? Attractiveness { get; }
     public int? Conservation { get; }
     public int? Reputation { get; }
-    public IReadOnlyList<ArkNovaSpecialCard> SpecialCards { get; }
+    public IReadOnlyList<Guid> SpecialCards { get; }
     public bool ShowReputation { get; }
     public bool HasRequiredValues => Attractiveness is not null && Conservation is not null;
     public bool HasSpecialCards => SpecialCards.Count > 0;
@@ -325,19 +331,16 @@ public sealed class ArkNovaScoringPlayerViewModel
 }
 
 public sealed class ArkNovaSpecialCardOptionViewModel(
-    ArkNovaSpecialCard card,
+    ArkNovaSpecialCardData card,
     bool isAssignedToTarget,
     bool isAssignedToOtherPlayer)
 {
-    public ArkNovaSpecialCard Card { get; } = card;
-    public string Name => ArkNovaSpecialCardPresentation.GetName(Card);
-    public string Symbols => ArkNovaSpecialCardPresentation.GetSymbols(Card);
+    public ArkNovaSpecialCardData Card { get; } = card;
+    public string Name => Card.Name;
     public bool IsAssignedToTarget { get; } = isAssignedToTarget;
     public bool IsAssignedToOtherPlayer { get; } = isAssignedToOtherPlayer;
-    public bool IsUnassigned => !IsAssignedToTarget && !IsAssignedToOtherPlayer;
-    public string StatusText => IsAssignedToTarget
-        ? AppResources.SpecialCardAssignedHere
-        : IsAssignedToOtherPlayer
-            ? AppResources.SpecialCardAlreadyAssigned
-            : AppResources.SpecialCardAvailable;
+    public string StatusText => Card.IsArchived ? $"{AppResources.SpecialCardAssignedHere} · {AppResources.Archived}"
+        : IsAssignedToTarget ? AppResources.SpecialCardAssignedHere
+        : IsAssignedToOtherPlayer ? AppResources.SpecialCardAlreadyAssigned
+        : AppResources.SpecialCardAvailable;
 }

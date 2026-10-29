@@ -13,8 +13,9 @@ internal sealed class ArkNovaGameSessionSpecialCardAssignmentConfiguration
     public void Configure(EntityTypeBuilder<ArkNovaGameSessionSpecialCardAssignment> builder)
     {
         builder.ToTable("ArkNovaGameSessionSpecialCardAssignments");
-        builder.HasKey(x => new { x.GameSessionId, x.PlayerId, x.SpecialCard });
-        builder.Property(x => x.SpecialCard).HasConversion<int>().IsRequired();
+        builder.HasKey(x => new { x.GameSessionId, x.PlayerId, x.SpecialCardId });
+        builder.HasOne<ArkNovaSpecialCard>().WithMany().HasForeignKey(x => x.SpecialCardId)
+            .IsRequired().OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<GameSessionPlayer>()
             .WithMany()

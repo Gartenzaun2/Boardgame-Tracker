@@ -4,6 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
+    xmlns:data="clr-namespace:BoardgameTracker.Application.Games.ArkNova.SpecialCards;assembly=BoardgameTracker.Application"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result"
     x:DataType="vm:ArkNovaResultViewModel"
     Shell.NavBarIsVisible="False">
@@ -25,7 +27,13 @@
                             <Label TextColor="{Binding PlayerTextColor}" Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
                             <Label TextColor="{Binding PlayerTextColor}" Grid.Column="2" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="16" />
                             <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RawValuesText}" FontSize="11" TextColor="{Binding PlayerTextColor}" />
-                            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SpecialCardsText}" FontSize="10" TextColor="{Binding PlayerTextColor}" />
+                            <VerticalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BindableLayout.ItemsSource="{Binding Cards}" Spacing="4">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="data:ArkNovaSpecialCardData">
+                                        <Border Style="{StaticResource CardBorder}" Padding="6"><ark:ArkNovaSpecialCardView Card="{Binding .}" /></Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>

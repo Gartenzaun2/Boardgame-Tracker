@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
@@ -45,6 +46,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ArkNovaPlayerScoringPage), typeof(ArkNovaPlayerScoringPage));
         Routing.RegisterRoute(nameof(ArkNovaTieResolutionPage), typeof(ArkNovaTieResolutionPage));
         Routing.RegisterRoute(nameof(ArkNovaResultPage), typeof(ArkNovaResultPage));
+        Routing.RegisterRoute(nameof(ArkNovaSpecialCardsPage), typeof(ArkNovaSpecialCardsPage));
+        Routing.RegisterRoute(nameof(ArkNovaSpecialCardEditorPage), typeof(ArkNovaSpecialCardEditorPage));
         Routing.RegisterRoute(nameof(ArkNovaSettingsPage), typeof(ArkNovaSettingsPage));
 
         TabBar tabBar = new();

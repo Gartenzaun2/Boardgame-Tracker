@@ -323,32 +323,53 @@ davon.
 
 ## 9. Arche-Nova-Spezialkarten
 
-Die fünf konkreten, fachlich festen Karten werden als `ArkNovaSpecialCard`
-identifiziert. Dafür ist keine zusätzliche Referenztabelle mit künstlicher ID
-notwendig.
+`ArkNovaSpecialCard` ist eine persistierte Entity mit stabiler GUID, kein Enum:
 
-``` text
+```text
+ArkNovaSpecialCard
+- Id (Guid, nicht leer)
+- Name (Trim, 1–120 Zeichen; nicht global eindeutig)
+- Symbol1? / Symbol2? / Symbol3? (geordnet, ohne Lücken)
+- IsArchived
+
 ArkNovaGameSessionSpecialCardAssignment
 - GameSessionId
 - PlayerId
-- SpecialCard
-
-PK: (GameSessionId, PlayerId, SpecialCard)
+- SpecialCardId
+PK: (GameSessionId, PlayerId, SpecialCardId)
 ```
 
-Karten:
+`ArkNovaCardSymbol` enthält die festen Referenzwerte Africa, America, Asia,
+Australia, Europe, Bear, Bird, Herbivore, PettingAnimal, Predator, Primate,
+Reptile, SeaAnimal und Science. Null bis drei Symbole sind erlaubt; Wiederholungen sind
+zulässig. Namen und Symbole einer Karte sind global für Arche Nova editierbar.
+Die UI zeigt Symbol1 → Symbol2 → Symbol3 → aktuellen Namen; keine historischen
+Name-/Symbol-Snapshots und keine Hexwerte/Bilddateien im Domainmodell.
 
-- Afrikanischer Elefant
-- Asiatischer Elefant
-- Weißkopfseeadler
-- Steinadler
-- Malaienbär
+Der Karten-FK verwendet Restrict; Karten werden in der normalen UI ausschließlich
+archiviert/entarchiviert. Session-Löschung entfernt Assignments über den
+bestehenden GameSessionPlayer-FK, niemals globale Karten. Dieselbe Karte darf
+mehreren Spielern zugeordnet werden; nur derselbe Spieler darf sie nicht doppelt haben.
 
-Der Malaienbär zählt für die gewünschte Statistik zur Adler-Kategorie.
+Aktive Karten dürfen neu zugeordnet werden. Archivierte Karten bleiben in alten
+Partien referenzierbar und können dort entfernt, aber nicht neu hinzugefügt werden.
+Der Korrekturentwurf und der atomare Speicherpfad prüfen dies; beim Speichern
+wird der aktuelle Archivzustand erneut berücksichtigt.
 
-Dieselbe konkrete Karte darf in seltenen Fällen mehreren Spielern derselben
-Partie zugeordnet sein. Der Composite Key verhindert lediglich eine doppelte
-Zuordnung derselben Karte an denselben Spieler.
+Die Initialisierung legt fehlende Standardkarten idempotent an. Deterministische
+IDs werden auch für den verlustfreien Upgrade alter Integer-Assignments verwendet:
+
+| Alter Wert | GUID | Startname / geordnete Symbole |
+|---|---|---|
+| 1 | `a11c0001-0000-4000-8000-000000000001` | Afrikanischer Elefant / Africa, Africa, Herbivore |
+| 2 | `a11c0001-0000-4000-8000-000000000002` | Asiatischer Elefant / Asia, Asia, Herbivore |
+| 3 | `a11c0001-0000-4000-8000-000000000003` | Weißkopfseeadler / America, Bird |
+| 4 | `a11c0001-0000-4000-8000-000000000004` | Steinadler / Europe, Bird |
+| 5 | `a11c0001-0000-4000-8000-000000000005` | Malaienbär / Asia, Bear, Predator |
+
+Bearbeitete oder archivierte Standardkarten werden beim Seeding nicht zurückgesetzt.
+Das alte Kartenenum existiert nicht parallel; die Integerzuordnung gehört nur
+zum einmaligen Schema-Upgrade. Spezialkarten sind SQLite-Referenzdaten, keine Preferences.
 
 ------------------------------------------------------------------------
 
@@ -411,8 +432,7 @@ Nicht als autoritative Felder speichern:
 - durchschnittliche Platzierung,
 - alte Punkte,
 - neue Punkte,
-- Elefantenanzahl,
-- Adleranzahl.
+- Häufigkeiten je Spezialkarte.
 
 Diese Werte werden aus den gespeicherten Rohdaten berechnet.
 
@@ -431,7 +451,7 @@ Beispiele:
 - Check Constraint für verschiedene Zooplanoptionen,
 - Check Constraint, dass der gewählte Zooplan angeboten wurde,
 - Check Constraints für Attraktivität, Artenschutz und Ruf,
-- Composite Key für Spezialkarten `(GameSessionId, PlayerId, SpecialCard)`.
+- Composite Key für Spezialkarten `(GameSessionId, PlayerId, SpecialCardId)`.
 
 Die Datenbank ist eine zusätzliche Schutzlinie. Die fachlichen Regeln
 bleiben im Core bzw. in GameSession-weiten Application-/Domainregeln.

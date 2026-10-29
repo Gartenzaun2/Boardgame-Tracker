@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\Features\SpecialCards\ArkNovaSpecialCardEditorViewModel.cs" Link="Presentation\ArkNovaSpecialCardEditorViewModel.cs" />
+    <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\ArkNovaCardSymbolPresentation.cs" Link="Presentation\ArkNovaCardSymbolPresentation.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Presentation\Controls\NumberWheelRange.cs" Link="Presentation\NumberWheelRange.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\Features\GameSessions\Scoring\ArkNovaPlayerScoringViewModel.cs" Link="Presentation\ArkNovaPlayerScoringViewModel.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Resources\Localization\AppResources.cs" Link="Presentation\AppResources.cs" />

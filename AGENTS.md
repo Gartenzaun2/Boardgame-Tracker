@@ -70,7 +70,7 @@ dotnet test --project tests/BoardgameTracker.Application.Tests
 
 Build-/Restore-Voraussetzungen und relevante Geräte-Smoke-Tests gemäß `SETUP.md` beachten. `git diff` auf unbeabsichtigte Änderungen prüfen, einschließlich neuer Dateien. Fehlgeschlagene/nicht ausführbare Prüfungen ausdrücklich nennen; nur tatsächlich ausgeführte Verifikation als erfolgreich melden.
 
-Pre-Alpha verwendet `EnsureCreatedAsync`, keine automatische Schemamigration. Versions- und Lieferregeln aus `SETUP.md` einhalten; keine Lieferarchive ohne ausdrücklichen Auftrag erzeugen.
+Pre-Alpha verwendet `EnsureCreatedAsync`; die dokumentierte Ausnahme ist der atomare, verlustfreie SQLite-Upgrade der Arche-Nova-Spezialkarten. Keine pauschalen DB-Resets für dieses Update. Versions- und Lieferregeln aus `SETUP.md` einhalten; keine Lieferarchive ohne ausdrücklichen Auftrag erzeugen.
 
 ## Dokumentation und Git
 Vor Änderungen `git status` prüfen. Bereits vorhandene, nicht zum aktuellen Auftrag gehörende Änderungen des Benutzers niemals zurücksetzen, überschreiben oder verwerfen. Nach Abschluss erneut `git status` und `git diff` prüfen. Neue, noch unversionierte Dateien zusätzlich direkt prüfen, da `git diff` sie nicht anzeigt.

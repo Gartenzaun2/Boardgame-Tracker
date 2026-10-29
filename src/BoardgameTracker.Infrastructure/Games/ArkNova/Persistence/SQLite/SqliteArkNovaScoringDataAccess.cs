@@ -1,7 +1,9 @@
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
@@ -63,7 +65,7 @@ public sealed class SqliteArkNovaScoringDataAccess(
         List<ArkNovaSpecialCardAssignmentData> specialCards = await dbContext.ArkNovaGameSessionSpecialCardAssignments
             .AsNoTracking()
             .Where(x => x.GameSessionId == gameSessionId)
-            .Select(x => new ArkNovaSpecialCardAssignmentData(x.PlayerId, x.SpecialCard))
+            .Select(x => new ArkNovaSpecialCardAssignmentData(x.PlayerId, x.SpecialCardId))
             .ToListAsync(cancellationToken);
 
         return new ArkNovaScoringGameSessionData(
@@ -73,7 +75,13 @@ public sealed class SqliteArkNovaScoringDataAccess(
             gameSession.StartedAt,
             gameSession.EndedAt,
             players,
-            specialCards);
+            specialCards)
+        {
+            CardCatalog = await dbContext.ArkNovaSpecialCards.AsNoTracking()
+                .OrderBy(c => c.Name)
+                .Select(c => new ArkNovaSpecialCardData(c.Id, c.Name, c.Symbol1, c.Symbol2, c.Symbol3, c.IsArchived))
+                .ToArrayAsync(cancellationToken)
+        };
     }
 
     public async Task<ArkNovaGameSessionPlayer?> FindPlayerAsync(
@@ -140,10 +148,13 @@ public sealed class SqliteArkNovaScoringDataAccess(
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
+        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        if (!await dbContext.ArkNovaSpecialCards.AnyAsync(c => c.Id == assignment.SpecialCardId && !c.IsArchived, cancellationToken))
+            throw new InvalidOperationException("Only active special cards may be assigned.");
         bool exists = await dbContext.ArkNovaGameSessionSpecialCardAssignments.AnyAsync(
             x => x.GameSessionId == assignment.GameSessionId
                  && x.PlayerId == assignment.PlayerId
-                 && x.SpecialCard == assignment.SpecialCard,
+                 && x.SpecialCardId == assignment.SpecialCardId,
             cancellationToken);
 
         if (!exists)
@@ -151,12 +162,13 @@ public sealed class SqliteArkNovaScoringDataAccess(
             dbContext.ArkNovaGameSessionSpecialCardAssignments.Add(assignment);
             await dbContext.SaveChangesAsync(cancellationToken);
         }
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task RemoveSpecialCardAsync(
         Guid gameSessionId,
         Guid playerId,
-        ArkNovaSpecialCard specialCard,
+        Guid specialCardId,
         CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext dbContext =
@@ -164,7 +176,7 @@ public sealed class SqliteArkNovaScoringDataAccess(
 
         ArkNovaGameSessionSpecialCardAssignment? assignment = await dbContext.ArkNovaGameSessionSpecialCardAssignments
             .SingleOrDefaultAsync(
-                x => x.GameSessionId == gameSessionId && x.PlayerId == playerId && x.SpecialCard == specialCard,
+                x => x.GameSessionId == gameSessionId && x.PlayerId == playerId && x.SpecialCardId == specialCardId,
                 cancellationToken);
 
         if (assignment is not null)

@@ -12,22 +12,19 @@ public sealed class ArkNovaGameSessionSpecialCardAssignment
     {
     }
 
-    public ArkNovaGameSessionSpecialCardAssignment(Guid gameSessionId, Guid playerId, ArkNovaSpecialCard specialCard)
+    public ArkNovaGameSessionSpecialCardAssignment(Guid gameSessionId, Guid playerId, Guid specialCardId)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
 
-        if (!Enum.IsDefined(specialCard))
-        {
-            throw new ArgumentOutOfRangeException(nameof(specialCard));
-        }
+        ArgumentOutOfRangeException.ThrowIfEqual(specialCardId, Guid.Empty);
 
         GameSessionId = gameSessionId;
         PlayerId = playerId;
-        SpecialCard = specialCard;
+        SpecialCardId = specialCardId;
     }
 
     public Guid GameSessionId { get; private set; }
     public Guid PlayerId { get; private set; }
-    public ArkNovaSpecialCard SpecialCard { get; private set; }
+    public Guid SpecialCardId { get; private set; }
 }
