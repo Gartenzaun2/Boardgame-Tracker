@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Resources.Localization;
@@ -87,11 +88,11 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {
-        bool confirmed = await DisplayAlertAsync(
+        bool confirmed = await AppDialogPage.ShowAsync(this,
             AppResources.DiscardGameTitle,
             AppResources.DiscardGameMessage,
             AppResources.Discard,
-            AppResources.Cancel);
+            AppResources.Cancel, destructive: true);
 
         if (!confirmed || !await _viewModel.DiscardAsync())
         {

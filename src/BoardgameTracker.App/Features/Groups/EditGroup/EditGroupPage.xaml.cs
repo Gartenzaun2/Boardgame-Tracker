@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
 
@@ -37,6 +38,8 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
 
         if (_groupId != Guid.Empty)
         {
@@ -51,7 +54,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     private async void OnInfoClicked(object? sender, EventArgs e)
     {
-        await DisplayAlertAsync(
+        await AppDialogPage.ShowAsync(this,
             AppResources.EditGroup,
             AppResources.EditGroupHint,
             AppResources.Ok);
@@ -59,7 +62,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     private async void OnPlayersInfoClicked(object? sender, EventArgs e)
     {
-        await DisplayAlertAsync(
+        await AppDialogPage.ShowAsync(this,
             AppResources.GroupPlayers,
             AppResources.EditGroupPlayersHint,
             AppResources.Ok);

@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.Application.History;
@@ -20,6 +21,9 @@ public partial class HistoryPage : ContentPage
     private bool _loading;
     private bool _navigating;
     private bool _initialized;
+    private bool _choosing;
+    private int _gameIndex;
+    private int _groupIndex;
 
     public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger)
     {
@@ -32,6 +36,8 @@ public partial class HistoryPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         if (_loading)
         {
             return;
@@ -42,8 +48,8 @@ public partial class HistoryPage : ContentPage
 
         try
         {
-            string? game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
-            Guid? group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
+            string? game = _games.Length > 0 ? _games[_gameIndex] : null;
+            Guid? group = _groups.Length > 0 ? _groups[_groupIndex] : null;
             _all = await _query.ListAsync();
             _games = new string?[] { null }.Concat(_all.Select(s => s.GameKey).Distinct().OrderBy(k => k)).ToArray();
             _groups = new Guid?[] { null }.Concat(_all.Select(s => (Guid?)s.GroupId).Distinct()).ToArray();
@@ -52,10 +58,8 @@ public partial class HistoryPage : ContentPage
                 game = _settings.Get().SelectedGameKey;
             }
 
-            GameFilter.ItemsSource = _games.Select(k => k is null ? AppResources.HistoryAllGames : GameName(k)).ToArray();
-            GroupFilter.ItemsSource = _groups.Select(id => id is null ? AppResources.HistoryAllGroups : _all.First(s => s.GroupId == id).GroupName).ToArray();
-            GameFilter.SelectedIndex = Math.Max(0, Array.IndexOf(_games, game));
-            GroupFilter.SelectedIndex = Math.Max(0, Array.IndexOf(_groups, group));
+            _gameIndex = Math.Max(0, Array.IndexOf(_games, game));
+            _groupIndex = Math.Max(0, Array.IndexOf(_groups, group));
             _initialized = true;
             Refresh();
         }
@@ -74,17 +78,37 @@ public partial class HistoryPage : ContentPage
 
     private static string GameName(string key) => key == ArkNovaGame.Key ? AppResources.ArkNova : key;
 
-    private void OnFilterChanged(object? sender, EventArgs e)
+    private async void OnGameFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(true);
+    private async void OnGroupFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(false);
+
+    private async Task ChooseFilterAsync(bool gameFilter)
     {
-        if (!_loading)
+        if (_loading || _choosing || _games.Length == 0 || _groups.Length == 0)
+            return;
+
+        _choosing = true;
+        try
         {
+            string[] names = gameFilter
+                ? _games.Select(key => key is null ? AppResources.HistoryAllGames : GameName(key)).ToArray()
+                : _groups.Select(id => id is null ? AppResources.HistoryAllGroups : _all.First(session => session.GroupId == id).GroupName).ToArray();
+            int choice = await AppDialogPage.ChooseAsync(this,
+                gameFilter ? AppResources.HistoryGameFilter : AppResources.HistoryGroupFilter,
+                names, gameFilter ? _gameIndex : _groupIndex);
+            if (choice < 0)
+                return;
+
+            if (gameFilter)
+                _gameIndex = choice;
+            else
+                _groupIndex = choice;
             Refresh();
         }
+        finally
+        {
+            _choosing = false;
+        }
     }
-
-    private void OnGameFilterClicked(object? sender, EventArgs e) => GameFilter.Focus();
-    private void OnGroupFilterClicked(object? sender, EventArgs e) => GroupFilter.Focus();
-
     private static void UpdateChip(Button chip, string name, bool selected)
     {
         chip.Text = string.Format(selected ? AppResources.HistoryFilterSelectedFormat : AppResources.HistoryFilterFormat, name);
@@ -95,8 +119,8 @@ public partial class HistoryPage : ContentPage
 
     private void Refresh()
     {
-        string? game = GameFilter.SelectedIndex >= 0 ? _games[GameFilter.SelectedIndex] : null;
-        Guid? group = GroupFilter.SelectedIndex >= 0 ? _groups[GroupFilter.SelectedIndex] : null;
+        string? game = _games.Length > 0 ? _games[_gameIndex] : null;
+        Guid? group = _groups.Length > 0 ? _groups[_groupIndex] : null;
         UpdateChip(GameChip, game is null ? AppResources.HistoryAllGames : GameName(game), game is not null);
         UpdateChip(GroupChip, group is null ? AppResources.HistoryAllGroups : _all.First(s => s.GroupId == group).GroupName, group is not null);
 

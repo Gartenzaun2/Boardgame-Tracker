@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Games.ArkNova;
@@ -38,6 +39,8 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         if (_gameSessionId != Guid.Empty)
         {
             await _viewModel.LoadAsync(_gameSessionId);
@@ -96,7 +99,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
             if (option.IsAssignedToOtherPlayer)
             {
-                bool confirmed = await DisplayAlertAsync(
+                bool confirmed = await AppDialogPage.ShowAsync(this,
                     AppResources.SpecialCardMultipleTitle,
                     string.Format(
                         AppResources.SpecialCardMultipleMessageFormat,
@@ -115,7 +118,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
-            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
         }
         finally { _saving = false; }
     }
@@ -152,7 +155,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
-            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
         }
         finally { _saving = false; }
     }
@@ -163,11 +166,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         _saving = true;
         try
         {
-            bool confirmed = await DisplayAlertAsync(
+            bool confirmed = await AppDialogPage.ShowAsync(this,
             _viewModel.IsHistorical ? AppResources.DeleteGameSessionTitle : AppResources.DiscardScoringTitle,
             _viewModel.IsHistorical ? AppResources.DeleteGameSessionMessage : AppResources.DiscardScoringMessage,
             _viewModel.IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard,
-            AppResources.Cancel);
+            AppResources.Cancel, destructive: true);
 
             if (confirmed && await _viewModel.DiscardAsync())
             {
@@ -179,7 +182,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     }
 
     private async void OnCameraClicked(object? sender, EventArgs e) =>
-        await DisplayAlertAsync(AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
+        await AppDialogPage.ShowAsync(this, AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
 
     private async void OnSettingsClicked(object? sender, EventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
@@ -189,6 +192,12 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     protected override bool OnBackButtonPressed()
     {
+        if (_viewModel.IsSpecialCardPickerVisible)
+        {
+            _viewModel.CloseSpecialCardPicker();
+            return true;
+        }
+
         Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}"));
         return true;
     }

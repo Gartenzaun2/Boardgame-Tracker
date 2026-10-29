@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.Application.Settings.Navigation;
@@ -10,62 +11,97 @@ public partial class AppSettingsPage : ContentPage
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly IReadOnlyList<DefaultGameOption> _defaultGameOptions;
     private readonly BoardgameTracker.App.Theming.ThemeManager _themes;
-    private bool _isLoading;
+    private bool _choosing;
 
     public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
     {
         InitializeComponent();
         _navigationSettingsStore = navigationSettingsStore;
         _themes = themes;
-        ThemePicker.ItemsSource = new[] { AppResources.ThemeDeepForest, AppResources.ThemeRoyalBlue, AppResources.ThemeDark };
+
         _defaultGameOptions =
         [
             new(null, AppResources.NoDefaultGame),
             new(ArkNovaGame.Key, AppResources.ArkNova)
         ];
-        DefaultGamePicker.ItemsSource = _defaultGameOptions.ToList();
-        DefaultGamePicker.ItemDisplayBinding = new Binding(nameof(DefaultGameOption.Name));
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _isLoading = true;
-        AppNavigationSettings settings = _navigationSettingsStore.Get();
-        ThemePicker.SelectedIndex = (int)settings.Theme;
-        DefaultGamePicker.SelectedItem = _defaultGameOptions.FirstOrDefault(option => option.GameKey == settings.DefaultGameKey)
-            ?? _defaultGameOptions[0];
-        _isLoading = false;
+        if (AppDialogPage.IsOpen(this))
+            return;
+        RefreshSelections();
     }
 
+    private string[] ThemeNames => [AppResources.ThemeDeepForest, AppResources.ThemeRoyalBlue, AppResources.ThemeDark];
+
+    private void RefreshSelections()
+    {
+        AppNavigationSettings settings = _navigationSettingsStore.Get();
+        ThemeChoice.Text = ThemeNames[(int)settings.Theme];
+        DefaultGameChoice.Text = (_defaultGameOptions.FirstOrDefault(option => option.GameKey == settings.DefaultGameKey)
+            ?? _defaultGameOptions[0]).Name;
+    }
     private async void OnInfoClicked(object? sender, EventArgs e) =>
-        await DisplayAlertAsync(AppResources.AppSettingsTitle, AppResources.GameSettingsHint, AppResources.Ok);
+        await AppDialogPage.ShowAsync(this, AppResources.AppSettingsTitle, AppResources.GameSettingsHint, AppResources.Ok);
 
     private async void OnDefaultGameInfoClicked(object? sender, EventArgs e) =>
-        await DisplayAlertAsync(AppResources.DefaultGame, AppResources.DefaultGameHint, AppResources.Ok);
+        await AppDialogPage.ShowAsync(this, AppResources.DefaultGame, AppResources.DefaultGameHint, AppResources.Ok);
 
     private async void OnArkNovaSettingsTapped(object? sender, TappedEventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
 
-    private void OnDefaultGameChanged(object? sender, EventArgs e)
+    private async void OnDefaultGameClicked(object? sender, EventArgs e)
     {
-        if (_isLoading || DefaultGamePicker.SelectedItem is not DefaultGameOption option)
-        {
+        if (_choosing)
             return;
-        }
 
-        AppNavigationSettings current = _navigationSettingsStore.Get();
-        _navigationSettingsStore.Save(current with
+        _choosing = true;
+        try
         {
-            DefaultGameKey = option.GameKey,
-            SelectedGameKey = current.SelectedGameKey ?? option.GameKey
-        });
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            int selected = Math.Max(0, _defaultGameOptions.ToList().FindIndex(option => option.GameKey == current.DefaultGameKey));
+            int choice = await AppDialogPage.ChooseAsync(this, AppResources.DefaultGame,
+                _defaultGameOptions.Select(option => option.Name).ToArray(), selected);
+            if (choice < 0)
+                return;
+
+            DefaultGameOption option = _defaultGameOptions[choice];
+            current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with
+            {
+                DefaultGameKey = option.GameKey,
+                SelectedGameKey = current.SelectedGameKey ?? option.GameKey
+            });
+            RefreshSelections();
+        }
+        finally
+        {
+            _choosing = false;
+        }
     }
 
-    private void OnThemeChanged(object? sender, EventArgs e)
+    private async void OnThemeClicked(object? sender, EventArgs e)
     {
-        if (!_isLoading && ThemePicker.SelectedIndex >= 0)
-            _themes.Apply(AppThemeSelection.FromStoredValue(ThemePicker.SelectedIndex));
+        if (_choosing)
+            return;
+
+        _choosing = true;
+        try
+        {
+            int choice = await AppDialogPage.ChooseAsync(this, AppResources.AppearanceTheme,
+                ThemeNames, (int)_navigationSettingsStore.Get().Theme);
+            if (choice < 0)
+                return;
+
+            _themes.Apply(AppThemeSelection.FromStoredValue(choice));
+            RefreshSelections();
+        }
+        finally
+        {
+            _choosing = false;
+        }
     }
 
     private sealed record DefaultGameOption(string? GameKey, string Name);

@@ -20,7 +20,7 @@
             <Border Padding="16" Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{x:Static res:AppResources.AppearanceTheme}" FontAttributes="Bold" />
-                    <Picker x:Name="ThemePicker" Title="{x:Static res:AppResources.AppearanceTheme}" SelectedIndexChanged="OnThemeChanged" />
+                    <Button x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
                 </VerticalStackLayout>
             </Border>
             <Border Padding="16" Style="{StaticResource CardBorder}">
@@ -31,10 +31,7 @@
                                      SemanticProperties.Description="{x:Static res:AppResources.DefaultGameHint}"
                                      ToolTipProperties.Text="{x:Static res:AppResources.DefaultGameHint}" />
                     </Grid>
-                    <Picker x:Name="DefaultGamePicker"
-                            Grid.Row="1"
-                            Title="{x:Static res:AppResources.NoDefaultGame}"
-                            SelectedIndexChanged="OnDefaultGameChanged" />
+                    <Button x:Name="DefaultGameChoice" Grid.Row="1" Clicked="OnDefaultGameClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.DefaultGame}" />
                 </Grid>
             </Border>
 

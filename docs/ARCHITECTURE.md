@@ -251,19 +251,16 @@ modelliert sind.
 
 ### Aktuelle Pre-Alpha-Datenbankstrategie
 
-Der Runtime-Start verwendet `Database.EnsureCreatedAsync()`, den gezielten
-Arche-Nova-Spezialkarten-Schema-Upgrade und danach idempotentes Referenzdaten-Seeding.
-Neue Datenbanken erhalten direkt das aktuelle Modell. Bestehende Installationen
-mit Integer-Kartenwerten werden atomar auf die GUID-Referenztabelle umgestellt.
-Der Upgrade erkennt die alte Spalte, validiert alle Werte und ersetzt nur die
-Karten-Assignment-Tabelle; bei Fehlern erfolgt Rollback, niemals ein DB-Reset.
-Es bleibt kein paralleles Legacy-Kartenmodell bestehen. Die Startkarten besitzen
-deterministische IDs; Seeding ergänzt fehlende Karten, überschreibt aber keine
-Benutzeränderungen oder Archivzustände.
+Der Runtime-Start verwendet `Database.EnsureCreatedAsync()` und danach idempotentes
+Referenzdaten-Seeding. Neue Datenbanken erhalten direkt das aktuelle Modell.
+Die Startkarten besitzen deterministische IDs; Seeding ergänzt fehlende Karten,
+überschreibt aber keine Benutzeränderungen oder Archivzustände.
 
-Andere Pre-Alpha-Schemaänderungen werden weiterhin ausdrücklich behandelt;
-dies ist kein allgemeines Migrationsframework und kein EF-Migrationsverlauf.
-Details und Upgrade-Smoke-Test stehen in `SETUP.md`.
+Bis zum ersten Deployment gibt es keine Migrationen, Schema-Upgrades oder
+Kompatibilitätspfade für ältere Entwicklungsstände. Auch die Startnavigation
+verwendet ausschließlich den explizit gespeicherten Kontext gemäß PRODUCT_SPEC;
+sie sucht keinen Ersatzkontext aus alten Entwicklungsdaten. Hinweise zu nötiger
+Neuinstallation und Datenverlust stehen in `SETUP.md`.
 
 ### Spezialkarten-Slice
 

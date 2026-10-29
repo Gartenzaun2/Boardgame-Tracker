@@ -167,62 +167,46 @@ public sealed class SpecialCardTests
     }
 
     [Fact]
-    public async Task Upgrade_MapsAllFiveLegacyIntegers_PreservesAssignmentsAndEditedSeedRows()
+    public async Task Initialization_CreatesCurrentSchemaAndReferenceData()
     {
-        await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
-        GameSession session = await f.AddSessionAsync(true);
-        await f.MakeLegacyAsync(session.Id, false);
-        await new DatabaseInitializer(f).InitializeAsync(Token);
-        IReadOnlyList<ArkNovaSpecialCard> defaults = ArkNovaSpecialCardDefaults.Create();
-        await using (BoardgameTrackerDbContext db = f.CreateDbContext())
+        await using SpecialCardDatabase fixture = await SpecialCardDatabase.CreateAsync();
+        await using BoardgameTrackerDbContext db = fixture.CreateDbContext();
+        Assert.Single(await db.Games.ToListAsync(Token));
+        Assert.NotEmpty(await db.ArkNovaZooPlans.ToListAsync(Token));
+        Assert.Equal(ArkNovaSpecialCardDefaults.Create().Select(card => card.Id).Order(),
+            (await db.ArkNovaSpecialCards.Select(card => card.Id).ToArrayAsync(Token)).Order());
+        Assert.Empty(await db.ArkNovaGameSessionSpecialCardAssignments.ToListAsync(Token));
+    }
+
+    [Fact]
+    public async Task Initialization_RepeatedStartPreservesEditedCardsAndSessionAssignments()
+    {
+        await using SpecialCardDatabase fixture = await SpecialCardDatabase.CreateAsync();
+        GameSession session = await fixture.AddSessionAsync(true);
+        Guid cardId = ArkNovaSpecialCardDefaults.SunBear;
+        await using (BoardgameTrackerDbContext db = fixture.CreateDbContext())
         {
-            var assignments = await db.ArkNovaGameSessionSpecialCardAssignments.Where(c => c.GameSessionId == session.Id).ToArrayAsync(Token);
-            Assert.Equal(6, assignments.Length);
-            Assert.Equal(defaults.Select(c => c.Id).Order(), assignments.Where(c => c.PlayerId == f.A.Id).Select(c => c.SpecialCardId).Order());
-            Assert.Contains(assignments, c => c.PlayerId == f.B.Id && c.SpecialCardId == defaults[0].Id);
-            Assert.Equal(GameSessionStatus.Completed, (await db.GameSessions.SingleAsync(Token)).Status);
-            Assert.Equal(2, await db.ArkNovaGameSessionPlayers.CountAsync(Token));
+            db.Add(new ArkNovaGameSessionSpecialCardAssignment(session.Id, fixture.A.Id, cardId));
+            await db.SaveChangesAsync(Token);
         }
-        await f.Cards.UpdateAsync(defaults[0].Id, "Mein Elefant", null, null, null, Token);
-        await f.Cards.SetArchivedAsync(defaults[0].Id, true, Token);
-        await new DatabaseInitializer(f).InitializeAsync(Token);
-        ArkNovaSpecialCardData edited = (await f.Cards.ListAsync(true, Token)).Single(c => c.Id == defaults[0].Id);
-        Assert.Equal("Mein Elefant", edited.Name);
-        Assert.Empty(edited.Symbols);
+        await fixture.Cards.UpdateAsync(cardId, "Mein Bär", ArkNovaCardSymbol.Science, null, null, Token);
+        await fixture.Cards.SetArchivedAsync(cardId, true, Token);
+        Guid customId = await fixture.Cards.CreateAsync("Eigene Karte", null, null, null, Token);
+
+        await new DatabaseInitializer(fixture).InitializeAsync(Token);
+        await new DatabaseInitializer(fixture).InitializeAsync(Token);
+
+        IReadOnlyList<ArkNovaSpecialCardData> cards = await fixture.Cards.ListAsync(true, Token);
+        Assert.Equal(6, cards.Count);
+        Assert.Contains(cards, card => card.Id == customId);
+        ArkNovaSpecialCardData edited = cards.Single(card => card.Id == cardId);
+        Assert.Equal("Mein Bär", edited.Name);
+        Assert.Equal(ArkNovaCardSymbol.Science, edited.Symbol1);
         Assert.True(edited.IsArchived);
-        Guid scienceId = await f.Cards.CreateAsync("Forschung nach Upgrade", ArkNovaCardSymbol.Science, null, null, Token);
-        Assert.Equal(ArkNovaCardSymbol.Science, (await f.Cards.ListAsync(cancellationToken: Token)).Single(c => c.Id == scienceId).Symbol1);
-        await using BoardgameTrackerDbContext verify = f.CreateDbContext();
-        Assert.Equal(6, await verify.ArkNovaGameSessionSpecialCardAssignments.CountAsync(Token));
-        verify.Remove(await verify.ArkNovaSpecialCards.SingleAsync(c => c.Id == defaults[0].Id, Token));
-        await Assert.ThrowsAsync<DbUpdateException>(() => verify.SaveChangesAsync(Token));
-    }
-
-    [Fact]
-    public async Task Upgrade_ForeignKeyFailureRollsBackDdlAndKeepsLegacyRows()
-    {
-        await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
-        GameSession session = await f.AddSessionAsync(true);
-        await f.MakeLegacyAsync(session.Id, false);
-        await using BoardgameTrackerDbContext db = f.CreateDbContext();
-        await db.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys=OFF", Token);
-        await db.Database.ExecuteSqlInterpolatedAsync($"INSERT INTO ArkNovaGameSessionSpecialCardAssignments VALUES ({Guid.NewGuid()}, {f.A.Id}, {1})", Token);
-        await db.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys=ON", Token);
-        await Assert.ThrowsAsync<SqliteException>(() => new DatabaseInitializer(f).InitializeAsync(Token));
-        Assert.Equal(7, await db.Database.SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM ArkNovaGameSessionSpecialCardAssignments WHERE SpecialCard BETWEEN 1 AND 5").SingleAsync(Token));
-        Assert.Equal(0, await db.Database.SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE name='ArkNovaSpecialCards'").SingleAsync(Token));
-    }
-
-    [Fact]
-    public async Task Upgrade_UnknownLegacyValueFailsWithoutDeletingOldData()
-    {
-        await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
-        GameSession session = await f.AddSessionAsync(true);
-        await f.MakeLegacyAsync(session.Id, true);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new DatabaseInitializer(f).InitializeAsync(Token));
-        await using BoardgameTrackerDbContext db = f.CreateDbContext();
-        int count = await db.Database.SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM ArkNovaGameSessionSpecialCardAssignments WHERE SpecialCard = 6").SingleAsync(Token);
-        Assert.Equal(1, count);
+        ArkNovaScoringGameSessionData data = (await fixture.Scoring.LoadAsync(session.Id, Token))!;
+        Assert.Equal(GameSessionStatus.Completed, data.Status);
+        Assert.Equal(2, data.Players.Count);
+        Assert.Equal(cardId, Assert.Single(data.SpecialCards).SpecialCardId);
     }
 }
 
@@ -268,21 +252,6 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
         db.AddRange(session, a, b);
         await db.SaveChangesAsync(Token);
         return session;
-    }
-    public async Task MakeLegacyAsync(Guid gameSessionId, bool unknown)
-    {
-        await using BoardgameTrackerDbContext db = CreateDbContext();
-        await db.Database.ExecuteSqlRawAsync("""
-            DROP TABLE ArkNovaGameSessionSpecialCardAssignments;
-            DROP TABLE ArkNovaSpecialCards;
-            CREATE TABLE ArkNovaGameSessionSpecialCardAssignments (
-                GameSessionId TEXT NOT NULL, PlayerId TEXT NOT NULL, SpecialCard INTEGER NOT NULL,
-                PRIMARY KEY (GameSessionId, PlayerId, SpecialCard),
-                FOREIGN KEY (GameSessionId, PlayerId) REFERENCES GameSessionPlayers (GameSessionId, PlayerId) ON DELETE CASCADE);
-            """, Token);
-        for (int value = 1; value <= (unknown ? 6 : 5); value++)
-            await db.Database.ExecuteSqlInterpolatedAsync($"INSERT INTO ArkNovaGameSessionSpecialCardAssignments VALUES ({gameSessionId}, {A.Id}, {value})", Token);
-        await db.Database.ExecuteSqlInterpolatedAsync($"INSERT INTO ArkNovaGameSessionSpecialCardAssignments VALUES ({gameSessionId}, {B.Id}, {1})", Token);
     }
     public ValueTask DisposeAsync() => _connection.DisposeAsync();
 }

@@ -367,10 +367,9 @@ Partien referenzierbar und können dort entfernt, aber nicht neu hinzugefügt we
 Der Korrekturentwurf und der atomare Speicherpfad prüfen dies; beim Speichern
 wird der aktuelle Archivzustand erneut berücksichtigt.
 
-Die Initialisierung legt fehlende Standardkarten idempotent an. Deterministische
-IDs werden auch für den verlustfreien Upgrade alter Integer-Assignments verwendet:
+Die Initialisierung legt fehlende Standardkarten mit stabilen IDs idempotent an:
 
-| Alter Wert | GUID | Startname / geordnete Symbole |
+| Nr. | GUID | Startname / geordnete Symbole |
 |---|---|---|
 | 1 | `a11c0001-0000-4000-8000-000000000001` | Afrikanischer Elefant / Africa, Africa, Herbivore |
 | 2 | `a11c0001-0000-4000-8000-000000000002` | Asiatischer Elefant / Asia, Asia, Herbivore |
@@ -379,8 +378,7 @@ IDs werden auch für den verlustfreien Upgrade alter Integer-Assignments verwend
 | 5 | `a11c0001-0000-4000-8000-000000000005` | Malaienbär / Asia, Bear, Predator |
 
 Bearbeitete oder archivierte Standardkarten werden beim Seeding nicht zurückgesetzt.
-Das alte Kartenenum existiert nicht parallel; die Integerzuordnung gehört nur
-zum einmaligen Schema-Upgrade. Spezialkarten sind SQLite-Referenzdaten, keine Preferences.
+Es gibt kein altes Kartenenum und keinen Upgradepfad für Integer-Assignments. Spezialkarten sind SQLite-Referenzdaten, keine Preferences.
 
 ------------------------------------------------------------------------
 

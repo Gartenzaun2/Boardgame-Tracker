@@ -58,8 +58,8 @@ Für einen frischen Chat:
 
 1. `git status` prüfen und vorhandene Änderungen bewahren.
 2. AGENTS und die für den Auftrag relevanten Spezifikationen lesen.
-3. Offene UI-Codeabweichungen im [Wireframe](docs/UI_WIREFRAME.md) berücksichtigen;
-   sie sind dokumentiert und nicht automatisch zur Korrektur freigegeben.
+3. UI-Stand und bekannte Codeabweichungen im [Wireframe](docs/UI_WIREFRAME.md)
+   berücksichtigen; dokumentierte Abweichungen sind nicht automatisch zur Korrektur freigegeben.
 4. Build, Tests und Geräteprüfungen gemäß [Setup](SETUP.md) ausführen.
 
 Die Spezifikationen unter `docs/` beschreiben den gültigen Stand einschließlich

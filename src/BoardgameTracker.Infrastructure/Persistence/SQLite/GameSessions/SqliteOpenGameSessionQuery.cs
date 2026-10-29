@@ -32,26 +32,4 @@ public sealed class SqliteOpenGameSessionQuery(
                 gameSession.ModifiedAt))
             .SingleOrDefaultAsync(cancellationToken);
     }
-
-
-
-    public async Task<IReadOnlyList<OpenGameSession>> GetAllAsync(
-        CancellationToken cancellationToken = default)
-    {
-        await using BoardgameTrackerDbContext dbContext =
-            await contextFactory.CreateDbContextAsync(cancellationToken);
-
-        return await (
-            from gameSession in dbContext.GameSessions.AsNoTracking()
-            join game in dbContext.Games.AsNoTracking()
-                on gameSession.GameId equals game.Id
-            where gameSession.Status == GameSessionStatus.Running
-                  || gameSession.Status == GameSessionStatus.Scoring
-            select new OpenGameSession(
-                gameSession.Id,
-                game.Key,
-                gameSession.Status,
-                gameSession.ModifiedAt))
-            .ToListAsync(cancellationToken);
-    }
 }
