@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.8.8.0
+
+- Gemeinsame semantische Spielerfarben statt separatem Arche-Nova-Enum; jedes Spiel definiert seine erlaubte Teilmenge.
+- Einheitliche spielabhängige Farbwahl bei Gruppenanlage und -bearbeitung mit explizitem Spielbezug im Dialog.
+- Gruppenformulare bleiben allgemein; Spieldefaults werden über Moduladapter atomar mitgespeichert.
+- Bestehende Arche-Nova-Farbnummern und Tabellenstruktur bleiben kompatibel.
+- App-Version 0.8.8.0 / ApplicationVersion 18.
+
+## 0.8.7.0
+
+- Allgemeine Gruppenbearbeitung von Arche-Nova-Defaults getrennt; spielspezifische Bearbeitungsseite und atomarer Kompositions-Slice liegen im Spielmodul.
+- Architektur- und SQLite-Tests sichern neutrale Verträge, Farb-/Reihenfolgetausch und Rollback.
+- Fehlende Lokalisierung und Fehlerprotokollierung ergänzt; Debug-Logausgabe aktiviert.
+- Gruppenaktionen vereinheitlicht; typisierte XAML-Bindings mit strenger Compilerprüfung abgesichert.
+- App-Version 0.8.7.0 / ApplicationVersion 17.
+
 ## 0.8.6.1
 
 - Nativer Splashscreen fest dunkel (#141A17); anschließende App im gespeicherten Theme.

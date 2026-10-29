@@ -1,23 +1,25 @@
+using BoardgameTracker.App.Features.Groups.Colors;
+using BoardgameTracker.Application.Groups.Colors;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Diagnostics;
-using BoardgameTracker.App.Games.ArkNova;
+using BoardgameTracker.App.Presentation.PlayerColors;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.EditGroup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
 /// <summary>
-/// Owns group-edit screen state and delegates loading/saving to the edit-group Application use case.
+/// Owns game-neutral group editing; registered game rules determine optional color choices.
 /// </summary>
-public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<EditGroupViewModel> logger) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSelectionViewModel colorSelection, IAppNavigationSettingsStore context, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
-    public ObservableCollection<EditGroupPlayerItemViewModel> Players { get; } = [];
+    public GroupColorSelectionViewModel ColorSelection { get; } = colorSelection;
+    public ObservableCollection<GroupPlayerItemViewModel> Players { get; } = [];
 
     [ObservableProperty]
     public partial Guid GroupId { get; private set; }
@@ -61,8 +63,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             IsBusy = true;
             ErrorMessage = null;
 
+            ColorSelection.Configure(context.Get().SelectedGameKey);
             EditGroupDetails? details =
-                await editGroup.GetAsync(groupId, cancellationToken);
+                await editGroup.GetAsync(groupId, ColorSelection.GameKey, cancellationToken);
 
             if (details is null)
             {
@@ -79,11 +82,11 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             Players.Clear();
             foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
             {
-                Players.Add(new EditGroupPlayerItemViewModel(
+                Players.Add(new GroupPlayerItemViewModel(
                     player.PlayerId,
                     player.Name,
                     player.IsGuest,
-                    player.ArkNovaDefaultColor));
+                    player.DefaultColor));
             }
 
             SaveCommand.NotifyCanExecuteChanged();
@@ -100,7 +103,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void MovePlayerUp(EditGroupPlayerItemViewModel? player)
+    private void MovePlayerUp(GroupPlayerItemViewModel? player)
     {
         if (player is null)
         {
@@ -115,7 +118,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void MovePlayerDown(EditGroupPlayerItemViewModel? player)
+    private void MovePlayerDown(GroupPlayerItemViewModel? player)
     {
         if (player is null)
         {
@@ -130,59 +133,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
     }
 
     [RelayCommand]
-    private void ToggleColorPicker(EditGroupPlayerItemViewModel? player)
+    private void OpenColorPicker(GroupPlayerItemViewModel? player)
     {
-        if (player is null)
-        {
-            return;
-        }
-
-        foreach (EditGroupPlayerItemViewModel candidate in Players)
-        {
-            candidate.IsColorPickerOpen =
-                ReferenceEquals(candidate, player) && !candidate.IsColorPickerOpen;
-        }
-    }
-
-    [RelayCommand]
-    private void SetBlue(EditGroupPlayerItemViewModel? player) =>
-        SetDefaultColor(player, ArkNovaPlayerColor.Blue);
-
-    [RelayCommand]
-    private void SetYellow(EditGroupPlayerItemViewModel? player) =>
-        SetDefaultColor(player, ArkNovaPlayerColor.Yellow);
-
-    [RelayCommand]
-    private void SetRed(EditGroupPlayerItemViewModel? player) =>
-        SetDefaultColor(player, ArkNovaPlayerColor.Red);
-
-    [RelayCommand]
-    private void SetBlack(EditGroupPlayerItemViewModel? player) =>
-        SetDefaultColor(player, ArkNovaPlayerColor.Black);
-
-    private void SetDefaultColor(
-        EditGroupPlayerItemViewModel? player,
-        ArkNovaPlayerColor color)
-    {
-        if (player is null)
-        {
-            return;
-        }
-
-        EditGroupPlayerItemViewModel? currentOwner = Players
-            .FirstOrDefault(candidate =>
-                !ReferenceEquals(candidate, player)
-                && candidate.DefaultColor == color);
-
-        ArkNovaPlayerColor? previousColor = player.DefaultColor;
-        player.DefaultColor = color;
-
-        if (currentOwner is not null)
-        {
-            currentOwner.DefaultColor = previousColor;
-        }
-
-        player.IsColorPickerOpen = false;
+        if (!IsBusy && player is not null) ColorSelection.Open(player, [.. Players]);
     }
 
     private bool CanSave() =>
@@ -205,10 +158,10 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             ErrorMessage = null;
 
             IReadOnlyList<Guid> orderedPlayerIds =
-                [.. Players.Select(player => player.PlayerId)];
+                [.. Players.Select(player => player.PlayerId!.Value)];
 
-            Dictionary<Guid, ArkNovaPlayerColor?> defaultColors = Players
-                .ToDictionary(player => player.PlayerId, player => player.DefaultColor);
+            Dictionary<Guid, PlayerColor?> defaultColors = Players
+                .ToDictionary(player => player.PlayerId!.Value, player => player.DefaultColor);
 
             await editGroup.ExecuteAsync(new EditGroupCommand(
                 GroupId,
@@ -216,7 +169,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
                 MakePermanent,
                 IsArchived,
                 orderedPlayerIds,
-                defaultColors));
+                ColorSelection.GameKey is null ? null : new GroupColorDefaults(ColorSelection.GameKey, defaultColors)));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
@@ -230,30 +183,4 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, ILogger<Edit
             IsBusy = false;
         }
     }
-}
-
-
-/// <summary>
-/// Presentation model for one fixed group player while editing order and Ark Nova default color.
-/// </summary>
-public partial class EditGroupPlayerItemViewModel(
-    Guid playerId,
-    string name,
-    bool isGuest,
-    ArkNovaPlayerColor? defaultColor) : ObservableObject
-{
-    public Guid PlayerId { get; } = playerId;
-    public string Name { get; } = name;
-    public bool IsGuest { get; } = isGuest;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ColorBrush))]
-    public partial ArkNovaPlayerColor? DefaultColor { get; set; } = defaultColor;
-
-    [ObservableProperty]
-    public partial bool IsColorPickerOpen { get; set; }
-
-    public Microsoft.Maui.Graphics.Color ColorBrush => DefaultColor is ArkNovaPlayerColor color
-        ? ArkNovaPlayerColorPresentation.GetTint(color)
-        : Microsoft.Maui.Graphics.Color.FromArgb("#E7E7E7");
 }

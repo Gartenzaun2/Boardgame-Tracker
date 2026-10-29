@@ -1,5 +1,4 @@
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.Games.ArkNova.GameSessions;
 
@@ -16,7 +15,7 @@ public sealed class ArkNovaGameSessionPlayer
     public ArkNovaGameSessionPlayer(
         Guid gameSessionId,
         Guid playerId,
-        ArkNovaPlayerColor color,
+        PlayerColor color,
         int zooPlanOption1Number,
         int zooPlanOption2Number,
         int selectedZooPlanNumber)
@@ -52,7 +51,7 @@ public sealed class ArkNovaGameSessionPlayer
 
     public Guid GameSessionId { get; private set; }
     public Guid PlayerId { get; private set; }
-    public ArkNovaPlayerColor Color { get; private set; }
+    public PlayerColor Color { get; private set; }
     public int ZooPlanOption1Number { get; private set; }
     public int ZooPlanOption2Number { get; private set; }
     public int SelectedZooPlanNumber { get; private set; }
@@ -60,7 +59,7 @@ public sealed class ArkNovaGameSessionPlayer
     public int? Conservation { get; private set; }
     public int? Reputation { get; private set; }
 
-    public void SetColor(ArkNovaPlayerColor color)
+    public void SetColor(PlayerColor color)
     {
         ValidateColor(color);
         Color = color;
@@ -75,9 +74,9 @@ public sealed class ArkNovaGameSessionPlayer
         Reputation = reputation;
     }
 
-    private static void ValidateColor(ArkNovaPlayerColor color)
+    private static void ValidateColor(PlayerColor color)
     {
-        if (!Enum.IsDefined(color))
+        if (!BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColors.Rules.Allows(color))
         {
             throw new ArgumentOutOfRangeException(nameof(color), color, "Unknown Ark Nova player color.");
         }

@@ -4,7 +4,6 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Core.Games.ArkNova.Groups;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 
@@ -56,7 +55,7 @@ public sealed class SqliteArkNovaPreparationQuery(
                 player.Name,
                 membership.DefaultOrder,
                 arkNovaPlayer == null
-                    ? (ArkNovaPlayerColor?)null
+                    ? (PlayerColor?)null
                     : arkNovaPlayer.DefaultColor))
             .ToArrayAsync(cancellationToken);
 

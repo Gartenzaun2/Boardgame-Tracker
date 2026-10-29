@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 
@@ -6,7 +7,7 @@ namespace BoardgameTracker.Application.Groups.CreateGroup;
 /// <summary>
 /// Creates a valid fixed-membership group and coordinates player reuse/creation through the slice-specific persistence port.
 /// </summary>
-public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
+public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess, GamePlayerColorCatalog colorCatalog)
 {
     public Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
         CancellationToken cancellationToken = default) =>
@@ -52,6 +53,8 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
                 "At least one selected player does not exist or is inactive.");
         }
 
+        colorCatalog.Get(command.GameKey).Validate(command.Players.Select(player => player.DefaultColor));
+
         List<Player> newPlayers = [];
         List<Guid> playerIds = [];
 
@@ -70,7 +73,9 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess)
 
         Group group = new(command.Name, command.IsTemporary, playerIds);
 
-        await dataAccess.SaveAsync(group, newPlayers, cancellationToken);
+        GroupColorDefaults? colors = command.GameKey is null ? null : new(command.GameKey,
+            playerIds.Select((id, index) => (id, command.Players[index].DefaultColor)).ToDictionary(p => p.id, p => p.DefaultColor));
+        await dataAccess.SaveAsync(group, newPlayers, colors, cancellationToken);
         return group.Id;
     }
 }

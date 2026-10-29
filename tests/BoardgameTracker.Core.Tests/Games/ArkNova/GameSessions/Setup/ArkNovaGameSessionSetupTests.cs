@@ -1,6 +1,6 @@
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
-using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Core.Tests.Games.ArkNova.GameSessions.Setup;
 
@@ -11,8 +11,8 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Red, 3, 4, 4)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
+            new(Guid.NewGuid(), PlayerColor.Red, 3, 4, 4)
         ]);
     }
 
@@ -21,8 +21,8 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 3, 4, 3)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
+            new(Guid.NewGuid(), PlayerColor.Blue, 3, 4, 3)
         ]));
     }
 
@@ -31,8 +31,8 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Red, 2, 3, 3)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
+            new(Guid.NewGuid(), PlayerColor.Red, 2, 3, 3)
         ]));
     }
 
@@ -41,7 +41,7 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), ArkNovaPlayerColor.Blue, 1, 2, null)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, null)
         ]));
     }
 
@@ -50,7 +50,7 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), (ArkNovaPlayerColor)999, 1, 2, 1)
+            new(Guid.NewGuid(), (PlayerColor)999, 1, 2, 1)
         ]));
     }
 }

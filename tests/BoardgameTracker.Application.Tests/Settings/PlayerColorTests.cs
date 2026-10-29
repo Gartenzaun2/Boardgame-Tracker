@@ -1,24 +1,23 @@
 using BoardgameTracker.App.Presentation.PlayerColors;
-using BoardgameTracker.App.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Application.Tests.Settings;
 
 public sealed class PlayerColorTests
 {
     [Theory]
-    [InlineData(UiPlayerColor.Red, "#D96B63", "#312220")]
-    [InlineData(UiPlayerColor.Yellow, "#E7C84A", "#403716")]
-    [InlineData(UiPlayerColor.Green, "#73A66F", "#243723")]
-    [InlineData(UiPlayerColor.Blue, "#6FA9D2", "#253B4B")]
-    [InlineData(UiPlayerColor.Black, "#555B58", "#E4E9E6")]
-    [InlineData(UiPlayerColor.White, "#F4F4F1", "#39413D")]
-    [InlineData(UiPlayerColor.Orange, "#E59A45", "#493117")]
-    [InlineData(UiPlayerColor.Brown, "#805B42", "#F0E8E2")]
-    [InlineData(UiPlayerColor.Purple, "#70599E", "#EEEAF4")]
-    [InlineData(UiPlayerColor.Pink, "#D985AD", "#472838")]
-    [InlineData(UiPlayerColor.Turquoise, "#6EB7B4", "#264543")]
-    [InlineData(UiPlayerColor.Gray, "#9AA2A0", "#323936")]
-    public void Palette_UsesSpecifiedBackgroundAndTextPair(UiPlayerColor color, string background, string foreground)
+    [InlineData(PlayerColor.Red, "#D96B63", "#312220")]
+    [InlineData(PlayerColor.Yellow, "#E7C84A", "#403716")]
+    [InlineData(PlayerColor.Green, "#73A66F", "#243723")]
+    [InlineData(PlayerColor.Blue, "#6FA9D2", "#253B4B")]
+    [InlineData(PlayerColor.Black, "#555B58", "#E4E9E6")]
+    [InlineData(PlayerColor.White, "#F4F4F1", "#39413D")]
+    [InlineData(PlayerColor.Orange, "#E59A45", "#493117")]
+    [InlineData(PlayerColor.Brown, "#805B42", "#F0E8E2")]
+    [InlineData(PlayerColor.Purple, "#70599E", "#EEEAF4")]
+    [InlineData(PlayerColor.Pink, "#D985AD", "#472838")]
+    [InlineData(PlayerColor.Turquoise, "#6EB7B4", "#264543")]
+    [InlineData(PlayerColor.Gray, "#9AA2A0", "#323936")]
+    public void Palette_UsesSpecifiedBackgroundAndTextPair(PlayerColor color, string background, string foreground)
     {
         var style = PlayerColorPalette.Get(color);
         Assert.Equal(background, style.BackgroundHex);
@@ -37,7 +36,7 @@ public sealed class PlayerColorTests
             }
             return .2126 * Channel(1) + .7152 * Channel(3) + .0722 * Channel(5);
         }
-        foreach (var color in Enum.GetValues<UiPlayerColor>())
+        foreach (var color in Enum.GetValues<PlayerColor>())
         {
             var pair = PlayerColorPalette.Get(color);
             double background = Luminance(pair.BackgroundHex), text = Luminance(pair.TextHex);
@@ -47,22 +46,13 @@ public sealed class PlayerColorTests
     }
 
     [Fact]
-    public void Palette_ContainsTwelveUiColors_ArkNovaStillHasFourDomainColors()
+    public void Palette_ContainsTwelveSemanticColors_ArkNovaAllowsFour()
     {
-        Assert.Equal(12, Enum.GetValues<UiPlayerColor>().Length);
-        Assert.Equal(4, Enum.GetValues<ArkNovaPlayerColor>().Length);
+        Assert.Equal(12, Enum.GetValues<PlayerColor>().Length);
+        Assert.Equal(new[] { PlayerColor.Blue, PlayerColor.Yellow, PlayerColor.Red, PlayerColor.Black },
+            BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColors.Rules.AllowedColors);
     }
-    [Theory]
-    [InlineData(ArkNovaPlayerColor.Blue, UiPlayerColor.Blue)]
-    [InlineData(ArkNovaPlayerColor.Yellow, UiPlayerColor.Yellow)]
-    [InlineData(ArkNovaPlayerColor.Red, UiPlayerColor.Red)]
-    [InlineData(ArkNovaPlayerColor.Black, UiPlayerColor.Black)]
-    public void ArkNovaMapping_UsesGlobalCategory(ArkNovaPlayerColor domain, UiPlayerColor ui)
-        => Assert.Equal(ui, ArkNovaPlayerColorMapping.ToUiColor(domain));
     [Fact]
     public void UnknownValues_UseGrayDisplayFallback()
-    {
-        Assert.Equal(UiPlayerColor.Gray, ArkNovaPlayerColorMapping.ToUiColor((ArkNovaPlayerColor)999));
-        Assert.Equal(PlayerColorPalette.Get(UiPlayerColor.Gray), PlayerColorPalette.Get((UiPlayerColor)999));
-    }
+        => Assert.Equal(PlayerColorPalette.Get(PlayerColor.Gray), PlayerColorPalette.Get((PlayerColor)999));
 }

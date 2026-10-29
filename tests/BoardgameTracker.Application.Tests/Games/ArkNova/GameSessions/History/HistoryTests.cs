@@ -3,10 +3,9 @@ using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.Players;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
@@ -63,7 +62,7 @@ public sealed class HistoryTests
         Assert.Equal(f.Completed.EndedAt, saved.Data.EndedAt);
         Assert.Contains(saved.Data.SpecialCards, c => c.PlayerId == f.B.Id && c.SpecialCard == ArkNovaSpecialCard.SunBear);
         Assert.DoesNotContain(saved.Data.SpecialCards, c => c.SpecialCard == ArkNovaSpecialCard.AfricanElephant);
-        Assert.Equal(ArkNovaPlayerColor.Blue, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).Color);
+        Assert.Equal(PlayerColor.Blue, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).Color);
         Assert.Equal(1, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).ZooPlanNumber);
         Assert.False(useCase.Prepare(saved).HasTies); // Existing resolved tie preserved.
         saved.SetScore(f.A.Id, 90, 7, null);
@@ -112,8 +111,8 @@ public sealed class HistoryTests
             if (status != GameSessionStatus.Running) session.BeginScoring(start.AddHours(1));
             if (status == GameSessionStatus.Completed) { session.Players.Single(p => p.PlayerId == A.Id).SetPlacement(2); session.Players.Single(p => p.PlayerId == B.Id).SetPlacement(1); session.Complete(start.AddHours(2)); }
             await using var db = CreateDbContext(); db.Add(session);
-            var a = new ArkNovaGameSessionPlayer(session.Id, A.Id, ArkNovaPlayerColor.Blue, 1, 2, 1); a.SetScoreValues(70, 7, null);
-            var b = new ArkNovaGameSessionPlayer(session.Id, B.Id, ArkNovaPlayerColor.Red, 3, 4, 3); b.SetScoreValues(80, 7, null);
+            var a = new ArkNovaGameSessionPlayer(session.Id, A.Id, PlayerColor.Blue, 1, 2, 1); a.SetScoreValues(70, 7, null);
+            var b = new ArkNovaGameSessionPlayer(session.Id, B.Id, PlayerColor.Red, 3, 4, 3); b.SetScoreValues(80, 7, null);
             db.AddRange(a, b, new ArkNovaGameSessionSpecialCardAssignment(session.Id, A.Id, ArkNovaSpecialCard.AfricanElephant));
             await db.SaveChangesAsync(); return session;
         }

@@ -34,7 +34,7 @@ Infrastructure -> Application + Core
 - Infrastructure: EF Core, SQLite, DbContext, technische Implementierungen.
 - App: MAUI, XAML, ViewModels, Navigation, Presentation, Lokalisierung, Composition Root.
 
-Autoritative Fachregeln gehören nicht in ViewModels; Feature-ViewModels kennen keine konkreten EF-/SQLite-Implementierungen. Infrastructure nur im technischen Startup/Composition Root der App anbinden. Vertical Slices und Composition erhalten; Arche-Nova-Logik bleibt unter `Games/ArkNova/`. Domänenbegriffe `Game`, `GameSession`, `Group`, `Player` beibehalten.
+Autoritative Fachregeln gehören nicht in ViewModels; Feature-ViewModels kennen keine konkreten EF-/SQLite-Implementierungen. Infrastructure nur im technischen Startup/Composition Root der App anbinden. Vertical Slices und Composition erhalten; Arche-Nova-Logik bleibt unter `Games/ArkNova/`. Allgemeine Gruppen-Commands, Read Models und Persistenzports dürfen keine spielspezifischen Typen oder festverdrahteten Farbregeln enthalten. Gemeinsame semantische `PlayerColor`-Werte sind erlaubt; jedes Spiel registriert seine erlaubte Teilmenge und einen eigenen Farb-Persistenzadapter. Gruppenformulare bleiben allgemein. Der Architekturtest für allgemeine Gruppenverträge muss erhalten bleiben. Domänenbegriffe `Game`, `GameSession`, `Group`, `Player` beibehalten.
 
 Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-/Helper-/Utils-Abstraktionen und keine Interfaces ausschließlich für Mockbarkeit oder Symmetrie einführen.
 

@@ -1,6 +1,5 @@
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
@@ -34,7 +33,7 @@ public static class ArkNovaGameSessionSetup
                 nameof(players));
         }
 
-        if (players.Any(player => !Enum.IsDefined(player.Color)))
+        if (players.Any(player => !ArkNovaPlayerColors.Rules.Allows(player.Color)))
         {
             throw new ArgumentOutOfRangeException(
                 nameof(players),
@@ -101,7 +100,7 @@ public static class ArkNovaGameSessionSetup
 /// </summary>
 public sealed record ArkNovaGameSessionSetupPlayer(
     Guid PlayerId,
-    ArkNovaPlayerColor Color,
+    PlayerColor Color,
     int ZooPlanOption1Number,
     int ZooPlanOption2Number,
     int? SelectedZooPlanNumber);

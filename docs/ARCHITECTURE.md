@@ -334,6 +334,22 @@ Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in
 
 App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Das bestehende `AppNavigationSettings`-/Preferences-Port erhält eine Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.
 
-## Spielerfarben-Präsentation
+## Gemeinsame Spielerfarben und Spielregeln
 
-`App/Presentation/PlayerColors` definiert die kleine gemeinsame UI-Palette mit gekoppelten Hintergrund-/Textwerten und separater Lokalisierung. `Games/ArkNova/ArkNovaPlayerColorMapping` ordnet die vier Domainfarben diesen UI-Kategorien zu; `ArkNovaPlayerColorPresentation` stellt MAUI-Farben und Namen bereit. Die Palette ist themeunabhängig und kein Erkennungskatalog. Das Domain-/Persistenzmodell und die erlaubten Arche-Nova-Farben bleiben unverändert.
+`Core/Players/PlayerColor` definiert zwölf gemeinsame semantische Farben ohne UI-Hexwerte. Es gibt kein separates Arche-Nova-Farbenum. `GamePlayerColorRules` beschreibt eine erlaubte Teilmenge; `Games/ArkNova/ArkNovaPlayerColors` erlaubt Blau, Gelb, Rot und Schwarz. Gruppen- und Partiedomänenobjekte des Spielmoduls prüfen diese Regeln. `Application/Groups/Colors/GamePlayerColorCatalog` verwendet die im Composition Root registrierten Regeln. Eine leere oder fehlende Teilmenge bedeutet: keine Spielerfarben.
+
+`App/Presentation/PlayerColors` ordnet dem gemeinsamen Farbwert Hintergrund, Textfarbe und lokalisierten Namen zu. Diese Palette ist themeunabhängig und kein Kamera-Erkennungskatalog. Physische Farbe → gemeinsame semantische Farbe → UI-Farbpaar; Hexwerte sind keine Erkennungsgrenzen.
+
+## Gruppenbearbeitung und Modulgrenze
+
+`Application/Groups/CreateGroup` und `EditGroup` enthalten gemeinsame Gruppendaten und optionale semantische Farbauswahlen für den aktuellen Spielschlüssel. Sie kennen keine konkreten Spieltypen oder Listen erlaubter Farben. Der registrierte Regelkatalog validiert die Auswahl; Gruppenfarben bleiben pro Spiel und Gruppenmitglied, keine globale Eigenschaft von `Player` oder `GroupPlayer`.
+
+Die allgemeinen SQLite-Adapter speichern Gruppe, neue Spieler, Reihenfolge und Farben in einer Transaktion. `Infrastructure/Persistence/SQLite/Groups/IGroupColorPersistence` ist die kleine technische Erweiterungsgrenze für Lesen und Ersetzen der Spieldefaults auf demselben DbContext. Der registrierte `Games/ArkNova/.../ArkNovaGroupColorPersistence` besitzt die Arche-Nova-Tabelle. Allgemeine Adapter greifen nicht direkt auf diese Tabelle zu; ohne Farbmodul werden keine fremden Defaults gelesen oder verändert.
+
+Beide Gruppenformulare bleiben unter `App/Features/Groups`. `GroupColorSelectionViewModel` und `GroupColorPickerView` werden für Anlage und Bearbeitung gemeinsam verwendet. Der aktuelle Spielkontext entscheidet über die Palette. Der Composition Root registriert zusätzlich den lokalisierten Anzeigenamen des Spiels für den Dialogtitel. Ein weiteres Spiel ergänzt seine Regeln und bei Farbunterstützung seinen Persistenzadapter; gemeinsame Formulare und Verträge erhalten keine Spiel-Fallunterscheidungen. Der Architekturtest schützt die öffentlichen Gruppenverträge vor spielspezifischen Typen.
+
+## UI-Bindings und Fehlerdiagnose
+
+Die App aktiviert `MauiStrictXamlCompilation` und `MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 sind Buildfehler. Bei geändertem BindingContext wird `x:DataType` angegeben. Command-Bindings über `x:Reference` verwenden eine typisierte ViewModel-Property der Page statt des untypisierten BindingContext. Keine Unterdrückung durch `x:Object`.
+
+Abgefangene technische Fehler in Historie und Wertungsansichten werden über injiziertes `ILogger<T>` mit Exception und relevantem ID-Kontext protokolliert; sichtbare Meldungen bleiben lokalisiert. Im Debug-Build gibt der Microsoft-Debug-Provider die Meldungen bei angeschlossenem Debugger aus. Es werden keine dauerhaften Protokolldateien oder Telemetriedienste eingeführt.

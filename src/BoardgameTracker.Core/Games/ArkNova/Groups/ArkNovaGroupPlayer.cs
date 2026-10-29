@@ -1,4 +1,3 @@
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.Games.ArkNova.Groups;
 
@@ -12,7 +11,7 @@ public sealed class ArkNovaGroupPlayer
     {
     }
 
-    public ArkNovaGroupPlayer(Guid groupId, Guid playerId, ArkNovaPlayerColor defaultColor)
+    public ArkNovaGroupPlayer(Guid groupId, Guid playerId, PlayerColor defaultColor)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
@@ -25,17 +24,17 @@ public sealed class ArkNovaGroupPlayer
 
     public Guid GroupId { get; private set; }
     public Guid PlayerId { get; private set; }
-    public ArkNovaPlayerColor DefaultColor { get; private set; }
+    public PlayerColor DefaultColor { get; private set; }
 
-    public void SetDefaultColor(ArkNovaPlayerColor color)
+    public void SetDefaultColor(PlayerColor color)
     {
         ValidateColor(color);
         DefaultColor = color;
     }
 
-    private static void ValidateColor(ArkNovaPlayerColor color)
+    private static void ValidateColor(PlayerColor color)
     {
-        if (!Enum.IsDefined(color))
+        if (!BoardgameTracker.Core.Games.ArkNova.ArkNovaPlayerColors.Rules.Allows(color))
         {
             throw new ArgumentOutOfRangeException(nameof(color), color, "Unknown Ark Nova player color.");
         }

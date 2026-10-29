@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
@@ -9,7 +10,8 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 /// SQLite implementation of the create-group slice persistence boundary.
 /// </summary>
 public sealed class SqliteCreateGroupDataAccess(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory,
+    IEnumerable<IGroupColorPersistence> colorStores)
     : ICreateGroupDataAccess
 {
     public async Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
@@ -55,6 +57,7 @@ public sealed class SqliteCreateGroupDataAccess(
     public async Task SaveAsync(
         Group group,
         IReadOnlyCollection<Player> newPlayers,
+        GroupColorDefaults? colors,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(group);
@@ -62,6 +65,8 @@ public sealed class SqliteCreateGroupDataAccess(
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         if (newPlayers.Count > 0)
         {
@@ -72,6 +77,14 @@ public sealed class SqliteCreateGroupDataAccess(
         // the memberships together with the aggregate.
         dbContext.Groups.Add(group);
 
+        if (colors is not null)
+        {
+            var store = colorStores.SingleOrDefault(store => store.GameKey == colors.GameKey);
+            if (store is not null) await store.ReplaceAsync(dbContext, group.Id, colors.Colors, cancellationToken);
+            else if (colors.Colors.Values.Any(color => color.HasValue))
+                throw new InvalidOperationException("No color storage registered for this game.");
+        }
         await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 }

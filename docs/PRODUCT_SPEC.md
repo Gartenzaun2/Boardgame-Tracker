@@ -484,3 +484,9 @@ im aktuell ausgewählten Spielkontext betrachtet.
 ## App-Darstellung
 
 Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. Die Auswahl wird lokal in Preferences gespeichert und sofort angewendet. Sie ist spielunabhängig, verändert keine historischen Daten und folgt der verbindlichen Palette in `UI_DESIGN_GUIDE.md`. Historie zeigt Monatsgruppen ohne notwendige Sticky-Überschriften und kompakte Spiel-/Gruppenfilter.
+
+## Spielerfarben und Gruppenanlage
+
+Farben sind gemeinsame semantische Kategorien wie Rot oder Blau. Ein Spiel legt fest, ob Spielerfarben existieren und welche Kategorien erlaubt sind. Arche Nova erlaubt Blau, Gelb, Rot und Schwarz. Andere definierte Farben werden dadurch nicht automatisch für dieses Spiel zugelassen.
+
+In Gruppe anlegen und Gruppe bearbeiten kann je Mitglied eine optionale Defaultfarbe für das aktuelle Spiel festgelegt werden. Ohne Farbunterstützung erscheint keine Farbauswahl. Der Palettenbutton öffnet einen gemeinsamen Dialog mit explizitem Spielbezug („Farbe für Arche Nova festlegen“), Spielername und erlaubten Farben. Eine belegte Farbe tauscht die bisherigen Zuweisungen; „Keine Farbe“ entfernt den Default. Die Auswahl bleibt bis Speichern im Entwurf. Gruppe, neue Spieler und Spieldefaults werden atomar gespeichert. Die Defaults eines anderen Spiels bleiben unberührt. Partievorbereitung übernimmt weiterhin die gespeicherten Defaults; Änderungen dort gelten nur für diese Partie.

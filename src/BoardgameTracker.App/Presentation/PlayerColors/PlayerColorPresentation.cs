@@ -1,25 +1,30 @@
+using BoardgameTracker.Core.Players;
 using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Maui.Graphics;
 namespace BoardgameTracker.App.Presentation.PlayerColors;
 
 public static class PlayerColorPresentation
 {
-    public static Color GetBackground(UiPlayerColor color) => Color.FromArgb(PlayerColorPalette.Get(color).BackgroundHex);
-    public static Color GetText(UiPlayerColor color) => Color.FromArgb(PlayerColorPalette.Get(color).TextHex);
-    public static string GetName(UiPlayerColor color) => color switch
+    public static Color BlueBackground => GetBackground(PlayerColor.Blue);
+    public static Color YellowBackground => GetBackground(PlayerColor.Yellow);
+    public static Color RedBackground => GetBackground(PlayerColor.Red);
+    public static Color BlackBackground => GetBackground(PlayerColor.Black);
+    public static Color GetBackground(PlayerColor color) => Color.FromArgb(PlayerColorPalette.Get(color).BackgroundHex);
+    public static Color GetText(PlayerColor color) => Color.FromArgb(PlayerColorPalette.Get(color).TextHex);
+    public static string GetName(PlayerColor color) => color switch
     {
-        UiPlayerColor.Red => AppResources.Red,
-        UiPlayerColor.Yellow => AppResources.Yellow,
-        UiPlayerColor.Green => AppResources.PlayerColorGreen,
-        UiPlayerColor.Blue => AppResources.Blue,
-        UiPlayerColor.Black => AppResources.Black,
-        UiPlayerColor.White => AppResources.PlayerColorWhite,
-        UiPlayerColor.Orange => AppResources.PlayerColorOrange,
-        UiPlayerColor.Brown => AppResources.PlayerColorBrown,
-        UiPlayerColor.Purple => AppResources.PlayerColorPurple,
-        UiPlayerColor.Pink => AppResources.PlayerColorPink,
-        UiPlayerColor.Turquoise => AppResources.PlayerColorTurquoise,
-        UiPlayerColor.Gray => AppResources.PlayerColorGray,
+        PlayerColor.Red => AppResources.Red,
+        PlayerColor.Yellow => AppResources.Yellow,
+        PlayerColor.Green => AppResources.PlayerColorGreen,
+        PlayerColor.Blue => AppResources.Blue,
+        PlayerColor.Black => AppResources.Black,
+        PlayerColor.White => AppResources.PlayerColorWhite,
+        PlayerColor.Orange => AppResources.PlayerColorOrange,
+        PlayerColor.Brown => AppResources.PlayerColorBrown,
+        PlayerColor.Purple => AppResources.PlayerColorPurple,
+        PlayerColor.Pink => AppResources.PlayerColorPink,
+        PlayerColor.Turquoise => AppResources.PlayerColorTurquoise,
+        PlayerColor.Gray => AppResources.PlayerColorGray,
         _ => AppResources.PlayerColorGray
     };
 }

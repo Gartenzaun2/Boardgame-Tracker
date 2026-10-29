@@ -5,6 +5,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:application="clr-namespace:BoardgameTracker.Application.Groups.CreateGroup;assembly=BoardgameTracker.Application"
+    xmlns:groupColors="clr-namespace:BoardgameTracker.App.Features.Groups.Colors"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.CreateGroup"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:DataType="local:CreateGroupViewModel"
@@ -92,20 +93,26 @@
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="application:CreateGroupPlayerInput">
+                            <DataTemplate x:DataType="groupColors:GroupPlayerItemViewModel">
                                 <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
-                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
                                         <VerticalStackLayout Spacing="2">
                                             <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                            <Label Text="{Binding ColorName}" FontSize="12" TextColor="{DynamicResource TextSecondary}"
+                                                IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}" />
                                             <Label
                                                 FontSize="12"
                                                 IsVisible="{Binding IsGuest}"
                                                 Text="{x:Static res:AppResources.Guest}"
                                                 TextColor="{DynamicResource TextSecondary}" />
                                         </VerticalStackLayout>
-                                        <Button Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerUpCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                        <Button Style="{StaticResource TextActionButton}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=BindingContext.MovePlayerDownCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
-                                        <Button Style="{StaticResource TextActionButton}" TextColor="{DynamicResource Danger}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=BindingContext.RemovePlayerCommand}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
+                                        <ImageButton Grid.Column="1" Source="icon_palette.png" Style="{StaticResource IconButton}"
+                                            IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}"
+                                            Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenColorPickerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}"
+                                            SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" />
+                                        <Button Style="{StaticResource TextActionButton}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                        <Button Style="{StaticResource TextActionButton}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                        <Button Style="{StaticResource TextActionButton}" TextColor="{DynamicResource Danger}" Grid.Column="4" Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemovePlayerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" MinimumHeightRequest="44" MinimumWidthRequest="44" Padding="10,4" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -162,6 +169,10 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <groupColors:GroupColorPickerView Grid.RowSpan="3"
+            BindingContext="{Binding ColorSelection, x:DataType=local:CreateGroupViewModel}"
+            IsVisible="{Binding IsVisible, x:DataType=groupColors:GroupColorSelectionViewModel}" />
 
         <Grid
             Grid.RowSpan="3"

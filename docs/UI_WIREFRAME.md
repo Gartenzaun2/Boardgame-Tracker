@@ -171,11 +171,13 @@ Gast                             ○
 [Spieler hinzufügen]
 ```
 
-Keine Karten um Stammdaten oder neue Spieler, keine Divider zwischen Formularsektionen. Label-/Inputmuster, Höhe und Typografie sind für Gruppenname und Name gleich. Bereits hinzugefügte Spieler stehen in eigenen interaktiven Einheiten mit Reihenfolge-/Entfernen-Aktionen. Ihre Reihenfolge bleibt veränderbar.
+Keine Karten um Stammdaten oder neue Spieler, keine Divider zwischen Formularsektionen. Label-/Inputmuster, Höhe und Typografie sind für Gruppenname und Name gleich. Bereits hinzugefügte Spieler stehen in eigenen interaktiven Einheiten mit Reihenfolge-/Entfernen-Aktionen. Bei Spielen mit Farben kommt je Spieler ein Palettenbutton hinzu; der gemeinsame Dialog benennt ausdrücklich das Spiel und zeigt nur dessen erlaubte Farben. Ihre Reihenfolge bleibt veränderbar.
 
 Der Secondary-Button für vorhandene Spieler öffnet dasselbe modale Auswahlmuster wie andere App-Auswahlen: AppBackground außen, Surface-Einträge. Ein Tap fügt den Spieler direkt hinzu und schließt. Bereits enthaltene Spieler fehlen in der Auswahl; bei fehlenden verfügbaren Spielern erscheint der Leerzustand. Neue Spieler werden weiterhin erst gemeinsam mit der Gruppe gespeichert.
 
 ### Gruppe bearbeiten
+
+Anlegen und Bearbeiten verwenden allgemeine Gruppenformulare. Der aktuelle Spielkontext bestimmt, ob und welche Farben gewählt werden dürfen. Gruppendaten und Spieldefaults werden gemeinsam atomar gespeichert.
 
 Die Bearbeiten-Seite verwendet dieselbe visuelle Grundstruktur wie
 `Gruppe anlegen`:
@@ -357,7 +359,7 @@ Touch-Fläche bleibt groß genug, obwohl die Darstellung kompakt ist. Die Anzahl
 - Ohne Historie erscheint „Keine letzte Partie vorhanden.“
 - Der Würfel neben dem Titel lost den Startspieler aus. Die separate Rotationsaktion verschiebt zyklisch; die relative Reihenfolge bleibt erhalten.
 - Doppelte Farben sind während der Vorbereitung erlaubt, verhindern aber den Start. Starten liegt am unteren Bildschirmrand.
-- Defaultfarben werden in der Gruppenbearbeitung gepflegt; Farbänderungen der Vorbereitung gelten nur für diese Partie.
+- Defaultfarben werden beim Anlegen und Bearbeiten einer Gruppe im aktuellen Spielkontext gepflegt; Farbänderungen der Vorbereitung gelten nur für diese Partie.
 - Zooplanauswahl erfolgt durch Tippen auf die Skizze; initial ist kein Plan ausgewählt.
 
 ## Historie: Partien
@@ -380,7 +382,8 @@ In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Su
 |---|---|---|
 | Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
 | Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | Derselbe SelectionDialog und Text-Schließen; umgesetzt. Auswahl zusätzlich durch Zuordnungstext sichtbar. |
-| Spielerfarbe wählen | Vorbereitung / Gruppe bearbeiten | Inline-Farbauswahl, kein modaler Dialog; fachliche Farben bleiben bewusst erhalten. |
+| Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
+| Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |
 | Spiel-/Gruppenfilter | Historie | Chips umgesetzt; dahinter native Picker, deren Auswahlliste noch separat zu gestalten wäre. |
 | Darstellung / Standardspiel | Allgemeine Einstellungen | Inhaltskarten umgesetzt; native Picker-Auswahl noch ohne appidentische Dialoggestaltung. |
 | Informationen zu Spielen | Spiele | Native Info-Abfrage; AppBackground, Kontur und Textaktion noch nicht zentral kontrolliert. |

@@ -3,7 +3,7 @@ using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova.Players;
+using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Tests.Games.ArkNova.GameSessions.StartGameSession;
 
@@ -29,8 +29,8 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             groupId,
             startedAt,
             [
-                new(anna, ArkNovaPlayerColor.Blue, 1, 2, 1),
-                new(ben, ArkNovaPlayerColor.Red, 3, 4, 4)
+                new(anna, PlayerColor.Blue, 1, 2, 1),
+                new(ben, PlayerColor.Red, 3, 4, 4)
             ]));
 
         Assert.NotEqual(Guid.Empty, gameSessionId);
@@ -63,8 +63,8 @@ public sealed class StartArkNovaGameSessionUseCaseTests
                 groupId,
                 DateTimeOffset.UtcNow,
                 [
-                    new(anna, ArkNovaPlayerColor.Blue, 1, 2, 1),
-                    new(chris, ArkNovaPlayerColor.Red, 3, 4, 3)
+                    new(anna, PlayerColor.Blue, 1, 2, 1),
+                    new(chris, PlayerColor.Red, 3, 4, 3)
                 ])));
     }
 
@@ -85,7 +85,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, ArkNovaPlayerColor.Blue, 1, 2, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 2, 1)])));
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, ArkNovaPlayerColor.Blue, 1, 99, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 99, 1)])));
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, ArkNovaPlayerColor.Blue, 1, 2, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 2, 1)])));
     }
 
     private sealed class FakeDataAccess(StartArkNovaGameSessionContext context)

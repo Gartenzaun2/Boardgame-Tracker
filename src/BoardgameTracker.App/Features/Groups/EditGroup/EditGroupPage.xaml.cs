@@ -9,6 +9,7 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 public partial class EditGroupPage : ContentPage, IQueryAttributable
 {
     private readonly EditGroupViewModel _viewModel;
+    public EditGroupViewModel ViewModel => _viewModel;
     private Guid _groupId;
 
     public EditGroupPage(EditGroupViewModel viewModel)
@@ -62,6 +63,13 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
             AppResources.GroupPlayers,
             AppResources.EditGroupPlayersHint,
             AppResources.Ok);
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        if (!_viewModel.ColorSelection.IsVisible) return base.OnBackButtonPressed();
+        _viewModel.ColorSelection.Close();
+        return true;
     }
 
     private async void OnSaved(object? sender, EventArgs e)

@@ -179,7 +179,8 @@ Der Use Case `CreateGroup` darf:
 - vorhandene aktive Spieler auswählen,
 - neue Spieler innerhalb des Workflows erfassen,
 - einen neuen Spieler als Gast markieren,
-- die Default-Reihenfolge festlegen.
+- die Default-Reihenfolge festlegen,
+- optionale Farbdefaults für das aktuelle Spiel nach dessen erlaubter Teilmenge wählen.
 
 Neue Spieler werden erst gemeinsam mit der Gruppe gespeichert.
 
@@ -208,7 +209,7 @@ Die Spielermenge bleibt unverändert. `IsTemporary` ist kein frei
 editierbarer Schalter: erlaubt ist nur `temporary -> permanent`.
 
 Spielspezifische Gruppeneinstellungen werden separat modelliert. Die
-Arche-Nova-Defaultfarben werden bereits über denselben UI-Bereich gepflegt.
+Arche-Nova-Defaultfarben werden beim Anlegen und Bearbeiten über denselben allgemeinen UI-Bereich gepflegt.
 
 ------------------------------------------------------------------------
 
@@ -462,3 +463,9 @@ Der allgemeine Kern bleibt frei von Arche-Nova-Sonderfällen.
 ## Historische Korrekturen
 
 Completed-Partien sind über einen expliziten Korrektur-Anwendungsfall bearbeitbar; keine Transition zurück zu Scoring. Rohwerte, besondere Karten und neu validierte Placements werden atomar gespeichert. Spiel-, Gruppen-, Teilnehmer- und Setupdaten sowie Start-/Endzeit bleiben unverändert. Namen werden über aktuelle Player-/Group-Referenzen aufgelöst. Löschen einer Completed-Partie entfernt alle abhängigen Partiedaten kaskadierend, niemals Spieler oder Gruppen. Kein neues Schema und keine Namens-Snapshots.
+
+## Gemeinsame semantische Spielerfarben
+
+`PlayerColor` gehört zum gemeinsamen Kern und definiert zwölf fachliche Farbkategorien ohne UI-Hexwerte. Spiele wählen eine erlaubte Teilmenge; Arche Nova erlaubt Blau, Gelb, Rot und Schwarz. Spielobjekte validieren die Teilmenge auch dann, wenn ein Wert im globalen Enum definiert ist.
+
+Farbdefaults bleiben pro Spiel, Gruppe und Mitglied gespeichert. Die bestehende `ArkNovaGroupPlayer.DefaultColor`-Spalte und die Farbspalte der Partieteilnehmer verwenden jetzt den gemeinsamen Typ. Die Integerwerte bleiben unverändert: Blau=1, Gelb=2, Rot=3, Schwarz=4. Tabellen, Schlüssel und Spalten ändern sich nicht; vorhandene Daten bleiben lesbar. Es wird keine globale Spielerfarbe auf `Player` eingeführt. Zusätzliche Spielmodule besitzen ihre eigenen fachlichen Defaults und Persistenzabbildungen.

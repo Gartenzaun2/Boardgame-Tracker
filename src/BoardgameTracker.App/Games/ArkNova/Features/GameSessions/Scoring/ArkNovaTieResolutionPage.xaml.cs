@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
@@ -11,13 +12,15 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaTieResolutionViewModel _viewModel;
+    private readonly ILogger<ArkNovaTieResolutionPage> _logger;
     private Guid _gameSessionId;
     private Guid _draggedPlayerId;
 
-    public ArkNovaTieResolutionPage(ArkNovaTieResolutionViewModel viewModel)
+    public ArkNovaTieResolutionPage(ArkNovaTieResolutionViewModel viewModel, ILogger<ArkNovaTieResolutionPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _logger = logger;
         BindingContext = viewModel;
         _viewModel.PropertyChanged += (_, e) =>
         {
@@ -122,7 +125,11 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
                 new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
         }
 
-        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
+            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+        }
         finally { _saving = false; }
     }
 
