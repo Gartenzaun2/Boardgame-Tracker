@@ -47,6 +47,33 @@ public sealed class SpecialCardTests
     }
 
     [Fact]
+    public async Task Editor_ArchiveChangeIsDraftUntilSaved_AndCanBeReversed()
+    {
+        await using SpecialCardDatabase database = await SpecialCardDatabase.CreateAsync();
+        Guid id = ArkNovaSpecialCardDefaults.SunBear;
+        ArkNovaSpecialCardEditorViewModel editor = new(database.Cards, NullLogger<ArkNovaSpecialCardEditorViewModel>.Instance);
+        await editor.LoadAsync(null);
+        Assert.False(editor.IsEditing);
+        await editor.LoadAsync(id);
+        Assert.True(editor.IsEditing);
+        Assert.False(editor.IsArchived);
+
+        editor.IsArchived = true;
+        Assert.Contains(await database.Cards.ListAsync(cancellationToken: Token), card => card.Id == id);
+        await editor.LoadAsync(id);
+        Assert.False(editor.IsArchived);
+
+        editor.IsArchived = true;
+        Assert.True(await editor.SaveAsync());
+        Assert.DoesNotContain(await database.Cards.ListAsync(cancellationToken: Token), card => card.Id == id);
+        await editor.LoadAsync(id);
+        Assert.True(editor.IsArchived);
+        editor.IsArchived = false;
+        Assert.True(await editor.SaveAsync());
+        Assert.Contains(await database.Cards.ListAsync(cancellationToken: Token), card => card.Id == id);
+    }
+
+    [Fact]
     public async Task Editor_EditReusesIdentityAndPreservesArchivedState()
     {
         await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();

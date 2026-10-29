@@ -84,9 +84,11 @@
         <Grid Grid.RowSpan="3" IsVisible="{Binding IsSpecialCardPickerVisible}" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="{Binding SpecialCardPickerTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
-                        <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Clicked="OnCloseSpecialCardPickerClicked" Style="{StaticResource TextActionButton}" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ImageButton Source="icon_back.png" Clicked="OnSpecialCardPickerBackClicked" Style="{StaticResource IconButton}"
+                                     SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                                     ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" Text="{Binding SpecialCardPickerTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding SpecialCardOptions}" BackgroundColor="{DynamicResource AppBackground}" SelectionMode="None" HeightRequest="330">
                         <CollectionView.ItemsLayout>
@@ -94,20 +96,22 @@
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ArkNovaSpecialCardOptionViewModel">
-                                <Border Padding="12,9" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10" BackgroundColor="{DynamicResource Surface}">
+                                <Border Padding="12,9" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10" BackgroundColor="{DynamicResource Surface}"
+                                        SemanticProperties.Description="{Binding StatusText}">
                                     <Border.Triggers>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsAssignedToTarget}" Value="True">
                                             <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
-                                            <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsAssignedToOtherPlayer}" Value="True">
+                                            <Setter Property="Stroke" Value="{DynamicResource Danger}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                            <Setter Property="StrokeDashArray" Value="4,3" />
                                         </DataTrigger>
                                     </Border.Triggers>
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSpecialCardOptionTapped" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="4">
-                                        <ark:ArkNovaSpecialCardView Card="{Binding Card}" />
-                                        <Label Text="{Binding StatusText}" FontSize="11" TextColor="{DynamicResource TextSecondary}" />
-                                    </VerticalStackLayout>
+                                    <ark:ArkNovaSpecialCardView Card="{Binding Card}" />
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

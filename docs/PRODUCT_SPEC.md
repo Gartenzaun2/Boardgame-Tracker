@@ -355,7 +355,7 @@ Spezialkarten sind global für Arche Nova benutzerverwaltbare Referenzdaten.
 Unter den Arche-Nova-Einstellungen öffnet „Spezialkarten“ eine eigene Liste:
 standardmäßig aktive Karten, optional „Archivierte anzeigen“. Nutzer können
 Karten anlegen, bearbeiten, archivieren und wieder entarchivieren; keine normale
-Löschaktion. Create und Edit verwenden denselben Editor.
+Löschaktion. Create und Edit verwenden denselben Editor. Die Liste zeigt das Bearbeiten-Icon direkt neben der Kartenansicht und keine Archivierungsaktion. Der Switch „Archiviert“ ist nur beim Bearbeiten vorhanden; Speichern übernimmt den gewählten Status über den bestehenden Archivierungsanwendungsfall, Verlassen ohne Speichern verwirft die Statusänderung. Das Info-Icon im Listenkopf erklärt die Zuordnung zu Spielern und Partien sowie die spätere Auswertung.
 
 Eine Karte hat einen Namen (1–120 Zeichen nach Trim) und null bis drei geordnete
 Symbole aus dem festen Katalog. Die Anzeige lautet immer Symbol1 → Symbol2 →
@@ -371,8 +371,12 @@ Symbolkombinationen und stabilen IDs stehen in `DATA_MODEL.md`. Auch diese Karte
 sind danach frei editierbar und archivierbar; Initialisierung setzt sie nicht zurück.
 
 Die Wertungsauswahl lädt persistierte Karten und zeigt ihre Symbole vor dem
-aktuellen Namen. Zuordnungstexte bleiben „hier zugeordnet“, „anderem Spieler
-zugeordnet“ oder „verfügbar“. Neue Zuordnungen sind ausschließlich für aktive
+aktuellen Namen. Der Zuordnungsstatus wird ohne sichtbare Statuszeile dargestellt:
+SelectedSurface kennzeichnet die Zuordnung zum Zielspieler, ein gestrichelter
+Theme-Rahmen in Danger die Zuordnung zu einem anderen Spieler. Ist die Karte
+beiden zugeordnet, gelten beide Markierungen. Für Screenreader
+bleibt der Status beschrieben. Der Zurück-Pfeil verlässt nur die Auswahl.
+Neue Zuordnungen sind ausschließlich für aktive
 Karten erlaubt. Dieselbe Karte kann mehreren Spielern derselben Partie gehören;
 die bestehende Sicherheitsabfrage für Mehrfachzuordnungen bleibt erhalten.
 Doppelte Zuordnung an denselben Spieler ist ausgeschlossen.

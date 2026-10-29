@@ -123,7 +123,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         finally { _saving = false; }
     }
 
-    private void OnCloseSpecialCardPickerClicked(object? sender, EventArgs e) =>
+    private void OnSpecialCardPickerBackClicked(object? sender, EventArgs e) =>
         _viewModel.CloseSpecialCardPicker();
 
     private bool _saving;

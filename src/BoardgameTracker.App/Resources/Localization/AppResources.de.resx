@@ -493,4 +493,5 @@
   <data name="ResultReputationNotCaptured" xml:space="preserve">
     <value>Ruf nicht erfasst</value>
   </data>
+  <data name="SpecialCardUsageHint" xml:space="preserve"><value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value></data>
 </root>

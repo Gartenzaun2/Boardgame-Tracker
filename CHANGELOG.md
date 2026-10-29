@@ -4,7 +4,20 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
-## Unveröffentlicht
+## 0.9.0.3
+
+- Spezialkartenverwaltung mit Bearbeiten-Icon neben der Karte statt eigener Aktionszeile; Archivstatus wird ausschließlich im Bearbeiten-Editor per Switch und Speichern geändert. Info-Hinweis im Kopf über vorhandenes Info-Icon und lokalisierten App-Dialog ergänzt.
+- App-Version 0.9.0.3 / ApplicationVersion 29.
+
+## 0.9.0.2
+
+- Gestrichelter Rahmen in der Spezialkarten-Auswahl kennzeichnet ausschließlich Zuordnungen zu anderen Spielern. Eine ausschließlich dem Zielspieler zugeordnete Karte behält nur ihre Hintergrundmarkierung; bei Zuordnung an beide gelten beide Markierungen.
+- App-Version 0.9.0.2 / ApplicationVersion 28.
+
+## 0.9.0.1
+
+- Spezialkarten-Auswahl in der Wertung kompakter: Zurück-Pfeil statt Schließen, keine sichtbare Zuordnungszeile, gestrichelter Theme-Rahmen für bereits zugeordnete Karten. Hintergrundmarkierung des Zielspielers und sämtliche Zuordnungsregeln bleiben erhalten.
+- App-Version 0.9.0.1 / ApplicationVersion 27.
 
 - Gemeinsamen DbContext per partial nach allgemeinen und Arche-Nova-DbSets aufgeteilt. Datenbankinitialisierung führt generisch registrierte Schritte aus; Arche-Nova-Seeding wird im Composition Root registriert. Schema und Fachverhalten bleiben unverändert.
 

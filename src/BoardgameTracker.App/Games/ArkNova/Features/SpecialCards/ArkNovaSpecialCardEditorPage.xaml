@@ -32,6 +32,10 @@
                     <Image Source="{Binding Symbol3Image}" IsVisible="{Binding HasSymbol3}" WidthRequest="32" HeightRequest="32" />
                     <Button Grid.Column="1" Text="{Binding Symbol3Name}" CommandParameter="2" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" IsEnabled="{Binding CanChooseSymbol3}" />
                 </Grid>
+                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsEditing}">
+                    <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding IsIdle}" />
+                </Grid>
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </VerticalStackLayout>
         </ScrollView>
