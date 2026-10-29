@@ -6,12 +6,15 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
     <Grid Padding="20,22" RowDefinitions="Auto,*" RowSpacing="14">
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-            <Label Text="{x:Static res:AppResources.Games}" FontAttributes="Bold" FontSize="28" VerticalOptions="Center" />
-            <ImageButton Grid.Column="1" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
-                         SemanticProperties.Description="{x:Static res:AppResources.GameCatalogHint}"
-                         ToolTipProperties.Text="{x:Static res:AppResources.GameCatalogHint}" />
-        </Grid>
+        <VerticalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Label Text="{x:Static res:AppResources.Games}" FontAttributes="Bold" FontSize="28" VerticalOptions="Center" />
+                <ImageButton Grid.Column="1" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                             SemanticProperties.Description="{x:Static res:AppResources.GameCatalogHint}"
+                             ToolTipProperties.Text="{x:Static res:AppResources.GameCatalogHint}" />
+            </Grid>
+            <BoxView Style="{StaticResource HeaderDivider}" />
+        </VerticalStackLayout>
         <Border Grid.Row="1" Padding="18" Style="{StaticResource CardBorder}" VerticalOptions="Start">
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnArkNovaTapped" />

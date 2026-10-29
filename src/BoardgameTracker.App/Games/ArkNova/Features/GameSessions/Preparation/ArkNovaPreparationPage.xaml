@@ -39,7 +39,7 @@
             </VerticalStackLayout>
         </Grid>
 
-        <BoxView HeightRequest="1" Color="{DynamicResource Outline}" />
+        <BoxView Style="{StaticResource HeaderDivider}" />
         </VerticalStackLayout>
 
         <Label

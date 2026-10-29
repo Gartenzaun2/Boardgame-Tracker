@@ -165,10 +165,10 @@ Gruppenmitglieder  [Info]
 Noch keine Spieler in der Gruppe.
 [+ Vorhandenen Spieler hinzufügen]
 
-Neuen Player anlegen
+Neuen Spieler anlegen
 Name            [z. B. Alex]
 Gast                             ○
-[Player hinzufügen]
+[Spieler hinzufügen]
 ```
 
 Keine Karten um Stammdaten oder neue Spieler, keine Divider zwischen Formularsektionen. Label-/Inputmuster, Höhe und Typografie sind für Gruppenname und Name gleich. Bereits hinzugefügte Spieler stehen in eigenen interaktiven Einheiten mit Reihenfolge-/Entfernen-Aktionen. Ihre Reihenfolge bleibt veränderbar.
@@ -370,6 +370,27 @@ Historische Arche-Nova-Wertung: gespeicherter Platz vor Spielername, nach Placem
 
 Allgemeine Einstellungen enthalten den Picker „Darstellung“ mit Deep Forest, Königsblau und Dunkel. Alle Screens verwenden dieselbe Struktur in allen Themes. Die bestehende Shell-TabBar hat eine obere Kontur und einen aktiven Eintrag mit einer gemeinsamen abgerundeten Auswahlfläche hinter Icon und Text. Der Rand der Auswahlfläche hat keine vom Füllton abweichende Farbe. Historienfilter stehen als kompakte, bei Platzmangel umbrechende Chips oberhalb der Liste. Ein Häkchen kennzeichnet gesetzte Filter; die Auswahl erfolgt weiterhin nativ. Die Liste gruppiert Partiekarten nach lokalem Kalendermonat, z. B. „Oktober 2026“, mit einfacher Überschrift ohne Karte und ohne Sticky-Verhalten.
 
-Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Secondary-Aktionen in den drei Ziel-Screens verwenden SurfaceSecondary und eine Aktionskontur gemäß UI_DESIGN_GUIDE; bestehende kleine Compact-/Textaktionen außerhalb des Scopes bleiben transparent.
+Die äußere besondere-Karten-Auswahl und die Listenzwischenräume verwenden AppBackground; einzelne Karten liegen auf Surface. Bereits diesem Spieler zugeordnete Karten verwenden die gemeinsame Auswahlfläche, andere Einträge bleiben auf Surface. Secondary-Aktionen auf allen Seiten verwenden SurfaceSecondary und eine Aktionskontur gemäß UI_DESIGN_GUIDE; kontextuelle Textaktionen bleiben transparent. Alle Seitenheader besitzen die gemeinsame feine Outline-Unterkante.
 
 In der Gruppenübersicht ist „Neue Gruppe“ Primary; Gruppenkarten bleiben Surface, Filter bleiben untergeordnete Toggles. In der Vorbereitung sind Auslosen/Rotation Secondary, Starten bleibt Primary. Formular- und Metabereiche werden flach dargestellt.
+
+## Dialogübersicht
+
+| Dialog / Auswahl | Ort | Stand / verbleibende Anpassung |
+|---|---|---|
+| Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
+| Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | Derselbe SelectionDialog und Text-Schließen; umgesetzt. Auswahl zusätzlich durch Zuordnungstext sichtbar. |
+| Spielerfarbe wählen | Vorbereitung / Gruppe bearbeiten | Inline-Farbauswahl, kein modaler Dialog; fachliche Farben bleiben bewusst erhalten. |
+| Spiel-/Gruppenfilter | Historie | Chips umgesetzt; dahinter native Picker, deren Auswahlliste noch separat zu gestalten wäre. |
+| Darstellung / Standardspiel | Allgemeine Einstellungen | Inhaltskarten umgesetzt; native Picker-Auswahl noch ohne appidentische Dialoggestaltung. |
+| Informationen zu Spielen | Spiele | Native Info-Abfrage; AppBackground, Kontur und Textaktion noch nicht zentral kontrolliert. |
+| Informationen zur Gruppe und Reihenfolge | Gruppe anlegen / bearbeiten | Native Info-Abfragen; gleiche offene Gestaltung. |
+| Informationen zu Einstellungen / Standardspiel | Allgemeine Einstellungen | Native Info-Abfragen; gleiche offene Gestaltung. |
+| Doppelte Spielerfarben / Start nicht möglich | Vorbereitung | Nativer Hinweis; gleiche offene Gestaltung. |
+| Laufende Partie verwerfen | Laufende Partie | Native Sicherheitsabfrage; explizite Bestätigung vorhanden, appidentische Danger-/Abbrechen-Gestaltung noch offen. |
+| Wertung verwerfen / abgeschlossene Partie löschen | Wertungsübersicht / Historie | Native Sicherheitsabfrage; explizite Bestätigung vorhanden, gleiche offene Danger-Gestaltung. |
+| Mehrfache Spezialkarte bestätigen | Besondere-Karten-Auswahl | Native Ja-/Abbrechen-Abfrage; gleiche offene Button-/Flächengestaltung. |
+| Speichern / Korrektur fehlgeschlagen | Spielereingabe, Wertungsübersicht, Gleichstandsauflösung | Native Fehlermeldung; gleiche offene Gestaltung. |
+| Fotoerkennung noch nicht verfügbar | Wertungsübersicht | Nativer Hinweis; gleiche offene Gestaltung. |
+
+Native Dialoge folgen derzeit dem Plattformdialog und erhalten nicht die zentralen XAML-Buttonstyles. Sie werden hier bewusst als verbleibende Arbeit aufgeführt. Eine spätere Vereinheitlichung muss Informations-, Fehler-, Auswahl- und destruktive Bestätigungsrollen sowie System-Zurück/Abbrechen erhalten. Gerätesichtprüfung in allen drei Themes bleibt erforderlich.

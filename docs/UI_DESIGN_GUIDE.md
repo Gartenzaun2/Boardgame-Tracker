@@ -185,13 +185,13 @@ Farbe soll nicht verwendet werden, nur um möglichst viele Flächen voneinander 
 
 Surface-Karten sind eigenständige inhaltliche oder interaktive Einheiten, z. B. Gruppen und historische Partien. Sie verwenden eine moderate Rundung und Outline ohne starken Standardschatten. Eine Karte ist kein universeller Gruppierungsrahmen für Überschrift und Text oder einzelne Formularsektionen.
 
-Gruppenstammdaten und „Neuen Player anlegen“ sind flache Inline-Formulare. Gruppenname und Spielername verwenden dasselbe Label-links/Eingabe-rechts-Muster mit gleicher Typografie und Eingabehöhe. „Letzte Partie“ ist ein flacher Metabereich mit kleiner Überschrift, Datum und Ergebnis. Leere Gruppenmitglieder benötigen keine Karte.
+Gruppenstammdaten und „Neuen Spieler anlegen“ sind flache Inline-Formulare. Gruppenname und Spielername verwenden dasselbe Label-links/Eingabe-rechts-Muster mit gleicher Typografie und Eingabehöhe. „Letzte Partie“ ist ein flacher Metabereich mit kleiner Überschrift, Datum und Ergebnis. Leere Gruppenmitglieder benötigen keine Karte.
 
 Farbige Spielerflächen sind eine bewusste Identitäts-Ausnahme: Ihre gekoppelte Hintergrund-/Textfarbe bleibt erhalten. Eingefügte Gruppenmitglieder können als eigenständige interaktive Einheiten abgegrenzt bleiben.
 
 Sektionen werden zuerst durch Abstand, Überschrift und Ausrichtung getrennt; Divider nur gezielt. Detail-/Bearbeitungsheader bleiben auf AppBackground und erhalten eine feine Outline-Unterkante, keine Header-Karte oder starken Schatten.
 
-Diese Überarbeitung ist in Partievorbereitung, Gruppenübersicht und Gruppe anlegen umgesetzt. Andere Screens werden separat geprüft; daraus folgt kein pauschaler Umbau aller Formulare.
+Die Regeln gelten für alle aktuellen Seiten: Jeder Seitenheader erhält eine feine Unterkante über den gemeinsamen Style `HeaderDivider`. Gruppen anlegen/bearbeiten und Wertungseingaben verwenden flache Formulare; Einstellungs-, Ergebnis- und interaktive Spielerkarten bleiben eigenständige Inhaltseinheiten. Leerzustände stehen ohne dekorative Karte.
 
 ---
 
@@ -268,10 +268,10 @@ Ob Monatsüberschriften später beim Scrollen sticky werden, ist keine Vorausset
 ## 11. Primary, Secondary und Text Actions
 
 - **PrimaryCompactButton:** wichtigste Seitenaktion, gefüllt mit Primary und PrimaryForeground, Pressed über PrimaryPressed. „Neue Gruppe“, „Speichern“ und „Starten“ sind Primary-Aktionen.
-- **SecondaryActionButton:** echte nachgeordnete Aktion mit leichter SurfaceSecondary-Fläche, SelectedBorder-Kontur und kontrastreichem TextPrimary. Dazu gehören „Zoopläne auslosen“, „Reihenfolge rotieren“, „Vorhandenen Spieler hinzufügen“ und „Player hinzufügen“. Die Aktionsfläche unterscheidet sich von weißen Inhaltskarten.
+- **SecondaryActionButton:** echte nachgeordnete Aktion mit leichter SurfaceSecondary-Fläche, SelectedBorder-Kontur und kontrastreichem TextPrimary. Dazu gehören „Zoopläne auslosen“, „Reihenfolge rotieren“, „Vorhandenen Spieler hinzufügen“ und „Spieler hinzufügen“. Die Aktionsfläche unterscheidet sich von weißen Inhaltskarten.
 - **TextActionButton:** kleine kontextuelle Aktion ohne starke Fläche, transparent ohne Kontur, z. B. Schließen oder Abbrechen einer Auswahl.
 
-Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Bestehende CompactActionButton-Verwendungen außerhalb der drei Ziel-Screens werden nicht pauschal migriert. Destruktive Aktionen bleiben sekundär und verwenden Danger.
+Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Normale Buttons verwenden standardmäßig SecondaryActionButton; kontextuelle Reihenfolgeaktionen und Schließen verwenden TextActionButton. CompactActionButton dient nur als gemeinsame Stilbasis, nicht als zusätzliche Aktionsrolle. Destruktive Aktionen bleiben sekundär und verwenden Danger.
 
 ---
 
@@ -362,11 +362,12 @@ Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie aussch
 - Destruktive Aktionen sekundär gestalten und bei weitreichenden Folgen ausdrücklich bestätigen.
 - Wertungskarten reservieren eigene Zeilen für Name/Punkte, Zooplan, Rohwerte und Karten/Ruf. Fehlende Werte als „–“. Karten-Icon ohne Zähler; Kartenanzahl in der Informationszeile.
 - Zooplanauswahl markiert die gesamte Kachel mit `SelectedBorder` und einer sichtbaren Auswahlmarkierung; Skizze und Nummer bleiben fachliche Inhalte.
+- In deutschen sichtbaren Texten konsequent „Spieler“ verwenden; technische Typen und Ressourcenschlüssel behalten `Player`.
 - Texte über bestehende Lokalisierung führen. Android und iOS teilen Informationsarchitektur, native Bedienerwartungen bleiben erhalten.
 
 ## Zusätzliche semantische Rollen
 
-`DisabledSurface` und `DisabledText` kennzeichnen nicht bedienbare Aktionen; reduzierte Opazität unterstützt die technische Deaktivierung. `BusyOverlay` ist eine abgedunkelte Sperrfläche, `IconSurface` eine helle Unterlage ausschließlich für eingebettete Grafik-/Farbwahlfelder. Normale Info-, Zurück- und Bearbeiten-Iconbuttons sind transparent und verwenden den Theme-Textton als Icon-Tint; auf Spielerflächen gilt die Spieler-Textfarbe. `GameGraphicText` ist ein fester dunkler Textton ausschließlich auf hellen Zooplan-Grafikbadges. Spielerkarten verwenden ihre eigene Textfarbe aus der globalen Spielerfarben-Palette. `BusyIndicator` ist ein heller Indikator auf dem abgedunkelten Busy-Overlay. Disabled-Text verwendet den kontrastreichen Primärtextton; Opazität und die deaktivierte Interaktion kennzeichnen den Zustand.
+`DisabledSurface` und `DisabledText` kennzeichnen nicht bedienbare Aktionen; reduzierte Opazität unterstützt die technische Deaktivierung. `BusyOverlay` ist eine abgedunkelte Sperrfläche, `IconSurface` eine helle Unterlage ausschließlich für eingebettete Grafik-/Farbwahlfelder. Normale Info-, Zurück- und Bearbeiten-Iconbuttons sind transparent und verwenden den Theme-Textton als Icon-Tint; auf Spielerflächen gilt die Spieler-Textfarbe. Das Statussymbol für eine offene Partie auf Gruppenkarten ist ebenfalls transparent und verwendet TextPrimary als dynamischen Icon-Tint; es besitzt keine eigene grüne Fläche. `GameGraphicText` ist ein fester dunkler Textton ausschließlich auf hellen Zooplan-Grafikbadges. Spielerkarten verwenden ihre eigene Textfarbe aus der globalen Spielerfarben-Palette. `BusyIndicator` ist ein heller Indikator auf dem abgedunkelten Busy-Overlay. Disabled-Text verwendet den kontrastreichen Primärtextton; Opazität und die deaktivierte Interaktion kennzeichnen den Zustand.
 
 Sekundärtext ist für Surface-Flächen bestimmt. Kleine Texte direkt auf `AppBackground` verwenden `TextPrimary`, da die verbindlichen hellen Paletten dort für `TextSecondary` unter 4,5:1 liegen. Spielerkarten verwenden unabhängig vom App-Theme ihre gekoppelte Spieler-Textfarbe.
 
@@ -405,3 +406,11 @@ Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surfa
 Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits diesem Spieler zugeordnete Karten erhalten `SelectedSurface` und `SelectedBorder`. Die Zuordnung bleibt zusätzlich als Text sichtbar. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
 
 Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: AppBackground außen, Surface-Einträge, Outline, TextPrimary und dieselbe modale Sperrfläche wie bei besonderen Karten. Ein Tap auf den Eintrag fügt unmittelbar hinzu und schließt; kein nativer Picker plus zusätzlichem Bestätigungsschritt. Schließen oder System-Zurück bricht nur die Auswahl ab. Namen und Gaststatus bleiben sichtbar.
+
+## Dialogabdeckung
+
+Die appinternen Auswahlen für vorhandene Spieler und besondere Karten verwenden zentral `SelectionDialog` und `TextActionButton` zum Schließen. Native `DisplayAlertAsync`-Dialoge und native Picker übernehmen diese XAML-Styles nicht; ihre exakte Farb-/Buttonanpassung ist noch offen. Der aktuelle Dialogbestand und die verbleibenden Anpassungen stehen in `UI_WIREFRAME.md`, Abschnitt „Dialogübersicht“. Sicherheitsabfragen dürfen bei einer späteren visuellen Vereinheitlichung nicht entfallen.
+
+## Splashscreen und App-Start
+
+Die native Startfläche verwendet unabhängig von der gespeicherten Darstellung fest den dunklen AppBackground `#141A17`, damit beim Öffnen keine unerwartet helle Startfläche erscheint. Das vorhandene Splash-Logo bleibt erhalten. Der Betriebssystem-Splash wird vor dem Auslesen der App-Einstellungen erzeugt und verwendet keine MAUI-DynamicResources. Die anschließende Ladeansicht und App verwenden sofort die gespeicherte Darstellung; bei fehlender Auswahl bleibt Deep Forest das Standard-Theme.

@@ -40,7 +40,7 @@
     <value>Temporäre Gruppe</value>
   </data>
   <data name="NewPlayer" xml:space="preserve">
-    <value>Neue Player</value>
+    <value>Neue Spieler</value>
   </data>
   <data name="PlayerNamePlaceholder" xml:space="preserve">
     <value>Name</value>
@@ -49,7 +49,7 @@
     <value>Gast</value>
   </data>
   <data name="AddPlayer" xml:space="preserve">
-    <value>Player hinzufügen</value>
+    <value>Spieler hinzufügen</value>
   </data>
   <data name="NoAvailablePlayers" xml:space="preserve">
     <value>Keine weiteren Spieler vorhanden.</value>
@@ -91,10 +91,10 @@
     <value>OK</value>
   </data>
   <data name="AddExistingPlayer" xml:space="preserve">
-    <value>Vorhandene Player hinzufügen</value>
+    <value>Vorhandene Spieler hinzufügen</value>
   </data>
   <data name="SelectPlayer" xml:space="preserve">
-    <value>Player auswählen</value>
+    <value>Spieler auswählen</value>
   </data>
   <data name="EditGroup" xml:space="preserve">
     <value>Gruppe bearbeiten</value>
@@ -472,7 +472,7 @@
 <data name="GroupNameExample" xml:space="preserve"><value>z. B. Freitagabend</value></data>
 <data name="PlayerNameExample" xml:space="preserve"><value>z. B. Alex</value></data>
 <data name="PlayerNameLabel" xml:space="preserve"><value>Name</value></data>
-<data name="NewPlayerInline" xml:space="preserve"><value>Neuen Player anlegen</value></data>
+<data name="NewPlayerInline" xml:space="preserve"><value>Neuen Spieler anlegen</value></data>
 <data name="AddExistingPlayerAction" xml:space="preserve"><value>+ Vorhandenen Spieler hinzufügen</value></data>
 <data name="SelectExistingPlayerTitle" xml:space="preserve"><value>Vorhandenen Spieler auswählen</value></data>
 </root>
