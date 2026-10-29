@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Core.Players;
 
@@ -6,13 +7,15 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaPlayerScoringViewModel _viewModel;
+    private readonly ILogger<ArkNovaPlayerScoringPage> _logger;
     private Guid _gameSessionId;
     private Guid _playerId;
 
-    public ArkNovaPlayerScoringPage(ArkNovaPlayerScoringViewModel viewModel)
+    public ArkNovaPlayerScoringPage(ArkNovaPlayerScoringViewModel viewModel, ILogger<ArkNovaPlayerScoringPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _logger = logger;
         BindingContext = viewModel;
     }
 
@@ -47,8 +50,9 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
             await _viewModel.FlushAsync();
             await Shell.Current.GoToAsync("..");
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            _logger.LogError(exception, "Could not save scoring for GameSession {GameSessionId}, Player {PlayerId}.", _gameSessionId, _playerId);
             await DisplayAlertAsync(BoardgameTracker.App.Resources.Localization.AppResources.Scoring,
             BoardgameTracker.App.Resources.Localization.AppResources.CorrectionFailed, BoardgameTracker.App.Resources.Localization.AppResources.Ok);
         }

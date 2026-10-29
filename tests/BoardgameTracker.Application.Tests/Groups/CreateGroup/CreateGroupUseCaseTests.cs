@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
@@ -11,7 +12,7 @@ public sealed class CreateGroupUseCaseTests
     {
         Guid existingPlayerId = Guid.NewGuid();
         FakeCreateGroupDataAccess dataAccess = new(new HashSet<Guid> { existingPlayerId });
-        CreateGroupUseCase useCase = new(dataAccess);
+        CreateGroupUseCase useCase = new(dataAccess, new([]));
 
         Guid groupId = await useCase.ExecuteAsync(new CreateGroupCommand(
             "Freitagabend",
@@ -38,7 +39,7 @@ public sealed class CreateGroupUseCaseTests
     {
         Guid playerId = Guid.NewGuid();
         FakeCreateGroupDataAccess dataAccess = new(new HashSet<Guid>());
-        CreateGroupUseCase useCase = new(dataAccess);
+        CreateGroupUseCase useCase = new(dataAccess, new([]));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.ExecuteAsync(new CreateGroupCommand(
@@ -65,6 +66,7 @@ public sealed class CreateGroupUseCaseTests
         public Task SaveAsync(
             Group group,
             IReadOnlyCollection<Player> newPlayers,
+            GroupColorDefaults? colors,
             CancellationToken cancellationToken = default)
         {
             SavedGroup = group;

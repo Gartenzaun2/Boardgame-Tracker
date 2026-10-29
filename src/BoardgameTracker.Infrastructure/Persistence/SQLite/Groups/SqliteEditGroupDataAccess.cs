@@ -1,9 +1,7 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.Games.ArkNova;
 using Microsoft.EntityFrameworkCore;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
@@ -12,11 +10,13 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 /// SQLite implementation of the group-edit slice persistence boundary.
 /// </summary>
 public sealed class SqliteEditGroupDataAccess(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory,
+    IEnumerable<IGroupColorPersistence> colorStores)
     : IEditGroupDataAccess
 {
     public async Task<EditGroupDetails?> GetDetailsAsync(
         Guid groupId,
+        string? gameKey,
         CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext dbContext =
@@ -43,22 +43,20 @@ public sealed class SqliteEditGroupDataAccess(
             from membership in dbContext.GroupPlayers.AsNoTracking()
             join player in dbContext.Players.AsNoTracking()
                 on membership.PlayerId equals player.Id
-            join arkNovaPlayer in dbContext.ArkNovaGroupPlayers.AsNoTracking()
-                on new { membership.GroupId, membership.PlayerId }
-                equals new { arkNovaPlayer.GroupId, arkNovaPlayer.PlayerId }
-                into arkNovaPlayers
-            from arkNovaPlayer in arkNovaPlayers.DefaultIfEmpty()
             where membership.GroupId == groupId
             orderby membership.DefaultOrder
             select new EditGroupPlayer(
                 player.Id,
                 player.Name,
                 player.IsGuest,
-                membership.DefaultOrder,
-                arkNovaPlayer == null
-                    ? (ArkNovaPlayerColor?)null
-                    : arkNovaPlayer.DefaultColor))
+                membership.DefaultOrder))
             .ToArrayAsync(cancellationToken);
+
+        var store = colorStores.SingleOrDefault(store => store.GameKey == gameKey);
+        IReadOnlyDictionary<Guid, PlayerColor?> colors = store is null
+            ? new Dictionary<Guid, PlayerColor?>()
+            : await store.ReadAsync(dbContext, groupId, cancellationToken);
+        players = [.. players.Select(player => player with { DefaultColor = colors.GetValueOrDefault(player.PlayerId) })];
 
         return new EditGroupDetails(
             group.Id,
@@ -82,17 +80,31 @@ public sealed class SqliteEditGroupDataAccess(
 
     public async Task SaveAsync(
         Group group,
-        IReadOnlyDictionary<Guid, ArkNovaPlayerColor?> arkNovaDefaultColors,
+        GroupColorDefaults? colors,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(group);
-        ArgumentNullException.ThrowIfNull(arkNovaDefaultColors);
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
         await using var transaction =
             await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
+        await SaveGroupChangesAsync(dbContext, group, cancellationToken);
+        if (colors is not null)
+        {
+            var store = colorStores.SingleOrDefault(store => store.GameKey == colors.GameKey);
+            if (store is not null) await store.ReplaceAsync(dbContext, group.Id, colors.Colors, cancellationToken);
+            else if (colors.Colors.Values.Any(color => color.HasValue))
+                throw new InvalidOperationException("No color storage registered for this game.");
+        }
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    private static async Task SaveGroupChangesAsync(
+        BoardgameTrackerDbContext dbContext, Group group, CancellationToken cancellationToken)
+    {
         int updatedGroups = await dbContext.Groups
             .Where(candidate => candidate.Id == group.Id)
             .ExecuteUpdateAsync(
@@ -139,25 +151,5 @@ public sealed class SqliteEditGroupDataAccess(
             }
         }
 
-        // Default colors form a tiny replaceable group-level snapshot. Replacing
-        // the validated snapshot avoids transient unique-index collisions when two
-        // players swap colors in one edit operation. The surrounding transaction
-        // keeps the delete-and-reinsert sequence atomic.
-        await dbContext.ArkNovaGroupPlayers
-            .Where(player => player.GroupId == group.Id)
-            .ExecuteDeleteAsync(cancellationToken);
-
-        foreach ((Guid playerId, ArkNovaPlayerColor? color) in arkNovaDefaultColors)
-        {
-            if (color is ArkNovaPlayerColor selectedColor)
-            {
-                dbContext.ArkNovaGroupPlayers.Add(
-                    new ArkNovaGroupPlayer(group.Id, playerId, selectedColor));
-            }
-        }
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        await transaction.CommitAsync(cancellationToken);
     }
 }

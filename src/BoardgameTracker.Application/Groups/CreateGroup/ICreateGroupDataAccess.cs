@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 
@@ -18,5 +19,6 @@ public interface ICreateGroupDataAccess
     Task SaveAsync(
         Group group,
         IReadOnlyCollection<Player> newPlayers,
+        GroupColorDefaults? colors,
         CancellationToken cancellationToken = default);
 }

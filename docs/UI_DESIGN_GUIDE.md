@@ -363,6 +363,7 @@ Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie aussch
 - Wertungskarten reservieren eigene Zeilen für Name/Punkte, Zooplan, Rohwerte und Karten/Ruf. Fehlende Werte als „–“. Karten-Icon ohne Zähler; Kartenanzahl in der Informationszeile.
 - Zooplanauswahl markiert die gesamte Kachel mit `SelectedBorder` und einer sichtbaren Auswahlmarkierung; Skizze und Nummer bleiben fachliche Inhalte.
 - In deutschen sichtbaren Texten konsequent „Spieler“ verwenden; technische Typen und Ressourcenschlüssel behalten `Player`.
+- Auch Einstellungen, Ergebnisüberschriften und Abschlussbuttons führen sichtbare Texte über die bestehenden Lokalisierungsressourcen; keine natürlichen Sprachtexte direkt im XAML.
 - Texte über bestehende Lokalisierung führen. Android und iOS teilen Informationsarchitektur, native Bedienerwartungen bleiben erhalten.
 
 ## Zusätzliche semantische Rollen
@@ -374,7 +375,7 @@ Sekundärtext ist für Surface-Flächen bestimmt. Kleine Texte direkt auf `AppBa
 
 ## Spielerfarben: fachliche Kategorie und UI-Darstellung
 
-Physische/fachliche Farben bleiben semantische Kategorien im jeweiligen Spielmodul. Die globale UI-Palette ist ausschließlich Presentation in der App-Schicht und ordnet einer UI-Farbe Hintergrund und Textfarbe gemeinsam zu. Core kennt weder MAUI-Farben noch Theme-Ressourcen. Ein späterer Erkennungspfad lautet `physische Farbe → semantische Spielfarbe → UI-Spielerfarbe`; UI-Hexwerte sind keine Kamera-Messwerte, Trainingsdaten oder RGB-/HSV-Schwellen.
+Physische/fachliche Farben werden durch gemeinsame semantische `PlayerColor`-Werte wie Rot oder Blau beschrieben. Jedes Spiel definiert die erlaubte Teilmenge. Die globale UI-Palette ist ausschließlich Presentation in der App-Schicht und ordnet dem gemeinsamen Farbwert Hintergrund und Textfarbe gemeinsam zu. Core kennt weder MAUI-Farben noch Theme-Ressourcen. Ein späterer Erkennungspfad lautet `physische Farbe → gemeinsame semantische Spielerfarbe → UI-Farbpaar`; UI-Hexwerte sind keine Kamera-Messwerte, Trainingsdaten oder RGB-/HSV-Schwellen.
 
 | Spielerfarbe | UI-Hintergrund | UI-Text |
 |---|---|---|
@@ -393,7 +394,7 @@ Physische/fachliche Farben bleiben semantische Kategorien im jeweiligen Spielmod
 
 Diese Werte bleiben in Deep Forest, Königsblau und Dunkel identisch. Keine Neonfarben und keine reinen Schwarz-/Weiß-Extremwerte für Spielerflächen oder Spielertext. Weitere Varianten wie Lime, Navy oder Beige gehören nicht zum Basiskatalog.
 
-Arche Nova behält fachlich genau Blau, Gelb, Rot und Schwarz und mappt diese auf die entsprechenden globalen UI-Paare. Weitere acht Farben werden dadurch nicht in Arche Nova freigeschaltet. Unbekannte Präsentationswerte fallen definiert auf Grau zurück. Namen werden separat lokalisiert, niemals aus Hexwerten abgeleitet.
+Arche Nova erlaubt genau die gemeinsamen Farben Blau, Gelb, Rot und Schwarz. Es gibt keine separate Variante wie „Arche-Nova-Rot“. Weitere acht Farben werden dadurch nicht in Arche Nova freigeschaltet. Unbekannte Präsentationswerte fallen definiert auf Grau zurück. Namen werden separat lokalisiert, niemals aus Hexwerten abgeleitet.
 
 Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für Sekundärtext. Eingebettete Controls bleiben App-Chrome mit Theme-Surface, Outline und passenden Text-/Iconrollen. Helle Zooplan-Badges behalten dunklen Grafiktext, auch auf schwarzen Spielerkarten. Spielername, Position und/oder ausgeschriebener Farbname bleiben sichtbar; Farbe ist nie die einzige Identifikation.
 
@@ -414,3 +415,9 @@ Die appinternen Auswahlen für vorhandene Spieler und besondere Karten verwenden
 ## Splashscreen und App-Start
 
 Die native Startfläche verwendet unabhängig von der gespeicherten Darstellung fest den dunklen AppBackground `#141A17`, damit beim Öffnen keine unerwartet helle Startfläche erscheint. Das vorhandene Splash-Logo bleibt erhalten. Der Betriebssystem-Splash wird vor dem Auslesen der App-Einstellungen erzeugt und verwendet keine MAUI-DynamicResources. Die anschließende Ladeansicht und App verwenden sofort die gespeicherte Darstellung; bei fehlender Auswahl bleibt Deep Forest das Standard-Theme.
+
+## Farbauswahl in Gruppenformularen
+
+Gruppe anlegen und Gruppe bearbeiten bieten je Gruppenmitglied denselben transparenten Palettenbutton und den ausgeschriebenen Farbstatus, sofern das aktuelle Spiel Farben erlaubt. Ohne erlaubte Farben entfallen Button und Farbstatus vollständig.
+
+Der gemeinsame modale Dialog verwendet `SelectionDialog`: AppBackground außen, Surface-Einträge, SelectedSurface/SelectedBorder und ein sichtbares Häkchen für die Auswahl. Er nennt ausdrücklich das Spiel, z. B. „Farbe für Arche Nova festlegen“, sowie den betroffenen Spieler. Die Einträge zeigen Farbfeld und lokalisierten Namen; nur die erlaubten Farben und „Keine Farbe“ stehen zur Auswahl. Ein Tap übernimmt die Farbe in den Formularentwurf und schließt. Bei einer bereits vergebenen Farbe werden die bisherigen Farben getauscht; kein doppelter Gruppendefault entsteht. Schließen/System-Zurück ändert keine Auswahl. Erst Speichern persistiert die Gruppe samt Defaults atomar.

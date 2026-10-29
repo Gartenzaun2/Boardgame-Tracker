@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Games.ArkNova;
@@ -7,7 +8,6 @@ using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
 using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
@@ -182,12 +182,12 @@ public partial class ArkNovaRunningViewModel(
 /// </summary>
 public sealed class ArkNovaRunningPlayerViewModel
 {
-    private readonly ArkNovaPlayerColor _color;
+    private readonly PlayerColor _color;
 
     public ArkNovaRunningPlayerViewModel(
         string name,
         int position,
-        ArkNovaPlayerColor color,
+        PlayerColor color,
         int zooPlanNumber)
     {
         Name = name;
@@ -204,10 +204,10 @@ public sealed class ArkNovaRunningPlayerViewModel
     public string ZooPlanText { get; }
     public string ZooPlanIconSource { get; }
 
-    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(_color);
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => PlayerColorPresentation.GetText(_color);
 
-    public string ColorName => ArkNovaPlayerColorPresentation.GetName(_color);
+    public string ColorName => PlayerColorPresentation.GetName(_color);
 
     public Microsoft.Maui.Graphics.Color ColorBrush =>
-        ArkNovaPlayerColorPresentation.GetTint(_color);
+        PlayerColorPresentation.GetBackground(_color);
 }

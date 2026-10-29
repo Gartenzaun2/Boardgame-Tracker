@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Games.ArkNova;
 using BoardgameTracker.App.Resources.Localization;
@@ -6,7 +7,6 @@ using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
@@ -60,9 +60,9 @@ public sealed class ArkNovaResultPlayerViewModel
     {
         Placement = player.Placement ?? 0;
         Name = player.Name;
-        ColorText = ArkNovaPlayerColorPresentation.GetName(player.Color);
-        Tint = ArkNovaPlayerColorPresentation.GetTint(player.Color);
-        PlayerTextColor = ArkNovaPlayerColorPresentation.GetText(player.Color);
+        ColorText = PlayerColorPresentation.GetName(player.Color);
+        Tint = PlayerColorPresentation.GetBackground(player.Color);
+        PlayerTextColor = PlayerColorPresentation.GetText(player.Color);
         ZooPlanText = $"Zooplan {player.ZooPlanNumber}";
         RawValuesText = $"Attraktivität {player.Attractiveness} · Artenschutz {player.Conservation}"
             + (player.Reputation is int reputation ? $" · Ruf {reputation}" : " · Ruf nicht erfasst");

@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
@@ -9,7 +10,6 @@ using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
@@ -258,7 +258,7 @@ public sealed class ArkNovaScoringPlayerViewModel
 
     public Guid PlayerId { get; }
     public string Name { get; }
-    public ArkNovaPlayerColor Color { get; }
+    public PlayerColor Color { get; }
     public int ZooPlanNumber { get; }
     public int? Attractiveness { get; }
     public int? Conservation { get; }
@@ -268,9 +268,9 @@ public sealed class ArkNovaScoringPlayerViewModel
     public bool HasRequiredValues => Attractiveness is not null && Conservation is not null;
     public bool HasSpecialCards => SpecialCards.Count > 0;
     public string SpecialCardCountText => SpecialCards.Count.ToString();
-    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(Color);
-    public string ColorText => ArkNovaPlayerColorPresentation.GetName(Color);
-    public Microsoft.Maui.Graphics.Color Tint => ArkNovaPlayerColorPresentation.GetTint(Color);
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => PlayerColorPresentation.GetText(Color);
+    public string ColorText => PlayerColorPresentation.GetName(Color);
+    public Microsoft.Maui.Graphics.Color Tint => PlayerColorPresentation.GetBackground(Color);
     public string ZooPlanText => ArkNovaZooPlanPresentation.GetName(ZooPlanNumber);
     public string Subtitle => $"{ColorText} · {ZooPlanText}";
     public string RawValuesText =>

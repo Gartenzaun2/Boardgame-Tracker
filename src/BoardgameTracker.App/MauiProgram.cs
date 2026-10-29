@@ -13,6 +13,9 @@ using BoardgameTracker.App.Services;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Application.Groups.ListGroups;
 using BoardgameTracker.Application.Groups.EditGroup;
+using BoardgameTracker.Application.Groups.Colors;
+using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.App.Features.Groups.Colors;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
@@ -26,6 +29,7 @@ using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App;
 
@@ -39,6 +43,9 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
         builder.UseMauiApp<App>();
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
         builder.Services.AddSingleton<BoardgameTracker.App.Theming.ThemeManager>();
         builder.ConfigureMauiHandlers(handlers =>
         {
@@ -63,6 +70,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<IListGroupsQuery, SqliteListGroupsQuery>();
         builder.Services.AddTransient<ICreateGroupDataAccess, SqliteCreateGroupDataAccess>();
         builder.Services.AddTransient<CreateGroupUseCase>();
+        builder.Services.AddSingleton(ArkNovaPlayerColors.Rules);
+        builder.Services.AddSingleton<GamePlayerColorCatalog>();
+        builder.Services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();
+        builder.Services.AddSingleton(new GameColorPresentation(ArkNovaGame.Key, () => BoardgameTracker.App.Resources.Localization.AppResources.ArkNova));
+        builder.Services.AddTransient<GroupColorSelectionViewModel>();
         builder.Services.AddTransient<IEditGroupDataAccess, SqliteEditGroupDataAccess>();
         builder.Services.AddTransient<EditGroupUseCase>();
         builder.Services.AddTransient<IArkNovaPreparationQuery, SqliteArkNovaPreparationQuery>();

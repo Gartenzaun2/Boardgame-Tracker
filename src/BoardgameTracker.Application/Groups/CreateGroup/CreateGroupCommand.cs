@@ -1,3 +1,5 @@
+using BoardgameTracker.Core.Players;
+
 namespace BoardgameTracker.Application.Groups.CreateGroup;
 
 /// <summary>
@@ -6,7 +8,8 @@ namespace BoardgameTracker.Application.Groups.CreateGroup;
 public sealed record CreateGroupCommand(
     string Name,
     bool IsTemporary,
-    IReadOnlyList<CreateGroupPlayerInput> Players);
+    IReadOnlyList<CreateGroupPlayerInput> Players,
+    string? GameKey = null);
 
 /// <summary>
 /// Describes one existing or newly entered player in a create-group request.
@@ -14,4 +17,5 @@ public sealed record CreateGroupCommand(
 public sealed record CreateGroupPlayerInput(
     Guid? ExistingPlayerId,
     string Name,
-    bool IsGuest);
+    bool IsGuest,
+    PlayerColor? DefaultColor = null);

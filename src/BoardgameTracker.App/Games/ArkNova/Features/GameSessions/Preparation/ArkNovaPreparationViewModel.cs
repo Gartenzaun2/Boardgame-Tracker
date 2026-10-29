@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Games.ArkNova;
@@ -9,7 +10,6 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
@@ -23,7 +23,7 @@ public partial class ArkNovaPreparationViewModel(
     StartArkNovaGameSessionUseCase startGameSessionUseCase,
     ILogger<ArkNovaPreparationViewModel> logger) : ObservableObject
 {
-    private static readonly ArkNovaPlayerColor[] AllColors = Enum.GetValues<ArkNovaPlayerColor>();
+    private static readonly PlayerColor[] AllColors = [.. ArkNovaPlayerColors.Rules.AllowedColors];
 
     public ObservableCollection<ArkNovaPreparationPlayerViewModel> Players { get; } = [];
 
@@ -97,7 +97,7 @@ public partial class ArkNovaPreparationViewModel(
                 return;
             }
 
-            ArkNovaPlayerColor[] assignedColors = AssignColors(data.Players);
+            PlayerColor[] assignedColors = AssignColors(data.Players);
 
             for (int index = 0; index < data.Players.Count; index++)
             {
@@ -218,7 +218,7 @@ public partial class ArkNovaPreparationViewModel(
 
     public void SetColor(
         ArkNovaPreparationPlayerViewModel player,
-        ArkNovaPlayerColor color)
+        PlayerColor color)
     {
         ArgumentNullException.ThrowIfNull(player);
         player.Color = color;
@@ -294,15 +294,15 @@ public partial class ArkNovaPreparationViewModel(
         return $"{header}\n{placements}";
     }
 
-    private static ArkNovaPlayerColor[] AssignColors(
+    private static PlayerColor[] AssignColors(
         IReadOnlyList<ArkNovaPreparationPlayer> players)
     {
-        ArkNovaPlayerColor[] result = new ArkNovaPlayerColor[players.Count];
-        HashSet<ArkNovaPlayerColor> used = [];
+        PlayerColor[] result = new PlayerColor[players.Count];
+        HashSet<PlayerColor> used = [];
 
         for (int index = 0; index < players.Count; index++)
         {
-            ArkNovaPlayerColor? defaultColor = players[index].DefaultColor;
+            PlayerColor? defaultColor = players[index].DefaultColor;
 
             if (defaultColor is not null && used.Add(defaultColor.Value))
             {
@@ -310,7 +310,7 @@ public partial class ArkNovaPreparationViewModel(
                 continue;
             }
 
-            ArkNovaPlayerColor fallback = AllColors.First(color => !used.Contains(color));
+            PlayerColor fallback = AllColors.First(color => !used.Contains(color));
             used.Add(fallback);
             result[index] = fallback;
         }
@@ -347,7 +347,7 @@ public partial class ArkNovaPreparationPlayerViewModel(
     Guid playerId,
     string name,
     int position,
-    ArkNovaPlayerColor color) : ObservableObject
+    PlayerColor color) : ObservableObject
 {
     public Guid PlayerId { get; } = playerId;
     public string Name { get; } = name;
@@ -363,7 +363,7 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [NotifyPropertyChangedFor(nameof(CanChooseYellow))]
     [NotifyPropertyChangedFor(nameof(CanChooseRed))]
     [NotifyPropertyChangedFor(nameof(CanChooseBlack))]
-    public partial ArkNovaPlayerColor Color { get; set; } = color;
+    public partial PlayerColor Color { get; set; } = color;
 
     [ObservableProperty]
     public partial bool IsColorPickerOpen { get; set; }
@@ -385,17 +385,17 @@ public partial class ArkNovaPreparationPlayerViewModel(
     [NotifyPropertyChangedFor(nameof(Option2StrokeThickness))]
     public partial int? SelectedZooPlanNumber { get; private set; }
 
-    public Microsoft.Maui.Graphics.Color PlayerTextColor => ArkNovaPlayerColorPresentation.GetText(Color);
+    public Microsoft.Maui.Graphics.Color PlayerTextColor => PlayerColorPresentation.GetText(Color);
 
-    public string ColorName => ArkNovaPlayerColorPresentation.GetName(Color);
+    public string ColorName => PlayerColorPresentation.GetName(Color);
 
     public Microsoft.Maui.Graphics.Color ColorBrush =>
-        ArkNovaPlayerColorPresentation.GetTint(Color);
+        PlayerColorPresentation.GetBackground(Color);
 
-    public bool CanChooseBlue => Color != ArkNovaPlayerColor.Blue;
-    public bool CanChooseYellow => Color != ArkNovaPlayerColor.Yellow;
-    public bool CanChooseRed => Color != ArkNovaPlayerColor.Red;
-    public bool CanChooseBlack => Color != ArkNovaPlayerColor.Black;
+    public bool CanChooseBlue => Color != PlayerColor.Blue;
+    public bool CanChooseYellow => Color != PlayerColor.Yellow;
+    public bool CanChooseRed => Color != PlayerColor.Red;
+    public bool CanChooseBlack => Color != PlayerColor.Black;
 
     public bool HasZooPlans => ZooPlanOption1 is not null && ZooPlanOption2 is not null;
     public string? ZooPlanOption1IconSource =>

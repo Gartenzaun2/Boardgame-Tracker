@@ -1,6 +1,5 @@
+using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 
 namespace BoardgameTracker.Application.Groups.EditGroup;
 
@@ -11,6 +10,7 @@ public interface IEditGroupDataAccess
 {
     Task<EditGroupDetails?> GetDetailsAsync(
         Guid groupId,
+        string? gameKey,
         CancellationToken cancellationToken = default);
 
     Task<Group?> GetAggregateAsync(
@@ -19,6 +19,6 @@ public interface IEditGroupDataAccess
 
     Task SaveAsync(
         Group group,
-        IReadOnlyDictionary<Guid, ArkNovaPlayerColor?> arkNovaDefaultColors,
+        GroupColorDefaults? colors,
         CancellationToken cancellationToken = default);
 }

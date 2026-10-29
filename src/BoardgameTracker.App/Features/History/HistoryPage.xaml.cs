@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.Application.History;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Resources.Localization;
@@ -9,6 +10,7 @@ namespace BoardgameTracker.App.Features.History;
 public partial class HistoryPage : ContentPage
 {
     private readonly IHistoryQuery _query;
+    private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
     private IReadOnlyList<HistoryGameSession> _all = [];
     private string?[] _games = [];
@@ -16,9 +18,9 @@ public partial class HistoryPage : ContentPage
     private bool _loading;
     private bool _navigating;
     private bool _initialized;
-    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings)
+    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger)
     {
-        InitializeComponent(); _query = query; _settings = settings;
+        InitializeComponent(); _query = query; _settings = settings; _logger = logger;
     }
     protected override async void OnAppearing()
     {
@@ -39,7 +41,11 @@ public partial class HistoryPage : ContentPage
             GroupFilter.SelectedIndex = Math.Max(0, Array.IndexOf(_groups, group));
             _initialized = true; Refresh();
         }
-        catch (Exception) { ErrorLabel.Text = AppResources.HistoryLoadFailed; ErrorLabel.IsVisible = true; }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not load completed game sessions.");
+            ErrorLabel.Text = AppResources.HistoryLoadFailed; ErrorLabel.IsVisible = true;
+        }
         finally { _loading = false; BusyOverlay.IsVisible = false; }
     }
     private static string GameName(string key) => key == ArkNovaGame.Key ? AppResources.ArkNova : key;
@@ -73,7 +79,11 @@ public partial class HistoryPage : ContentPage
             if (card.Data.GameKey != ArkNovaGame.Key) throw new InvalidOperationException();
             await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = card.Data.GameSessionId });
         }
-        catch (Exception) { ErrorLabel.Text = AppResources.HistoryOpenFailed; ErrorLabel.IsVisible = true; }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not open historical GameSession {GameSessionId}.", card.Data.GameSessionId);
+            ErrorLabel.Text = AppResources.HistoryOpenFailed; ErrorLabel.IsVisible = true;
+        }
         finally { _navigating = false; BusyOverlay.IsVisible = false; }
     }
 }

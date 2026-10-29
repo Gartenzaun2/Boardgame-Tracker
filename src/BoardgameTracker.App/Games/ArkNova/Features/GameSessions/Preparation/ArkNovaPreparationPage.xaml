@@ -2,7 +2,7 @@
 <ContentPage
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation.ArkNovaPreparationPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:colors="clr-namespace:BoardgameTracker.App.Games.ArkNova"
+    xmlns:colors="clr-namespace:BoardgameTracker.App.Presentation.PlayerColors"
     xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation"
@@ -107,7 +107,7 @@
                                         IsVisible="{Binding IsColorPickerOpen}"
                                         Spacing="8">
                                         <Button
-                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlueBackground}"
+                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.BlueBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Blue}"
                                             Clicked="OnBlueColorClicked"
                                             IsVisible="{Binding CanChooseBlue}"
@@ -116,7 +116,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.YellowBackground}"
+                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.YellowBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Yellow}"
                                             Clicked="OnYellowColorClicked"
                                             IsVisible="{Binding CanChooseYellow}"
@@ -125,7 +125,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.RedBackground}"
+                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.RedBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Red}"
                                             Clicked="OnRedColorClicked"
                                             IsVisible="{Binding CanChooseRed}"
@@ -134,7 +134,7 @@
                                             Text=""
                                             WidthRequest="44" />
                                         <Button
-                                            BackgroundColor="{x:Static colors:ArkNovaPlayerColorPresentation.BlackBackground}"
+                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.BlackBackground}"
                                             SemanticProperties.Description="{x:Static res:AppResources.Black}"
                                             Clicked="OnBlackColorClicked"
                                             IsVisible="{Binding CanChooseBlack}"

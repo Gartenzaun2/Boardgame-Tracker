@@ -1,6 +1,5 @@
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
@@ -41,4 +40,4 @@ public sealed record ArkNovaPreparationPlayer(
     Guid PlayerId,
     string Name,
     int DefaultOrder,
-    ArkNovaPlayerColor? DefaultColor);
+    PlayerColor? DefaultColor);

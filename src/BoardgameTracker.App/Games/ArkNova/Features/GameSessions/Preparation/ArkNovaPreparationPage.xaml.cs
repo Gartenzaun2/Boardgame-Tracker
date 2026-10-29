@@ -2,7 +2,6 @@ using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
@@ -88,18 +87,18 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
     }
 
     private void OnBlueColorClicked(object? sender, EventArgs e) =>
-        SetColorFromButton(sender, ArkNovaPlayerColor.Blue);
+        SetColorFromButton(sender, PlayerColor.Blue);
 
     private void OnYellowColorClicked(object? sender, EventArgs e) =>
-        SetColorFromButton(sender, ArkNovaPlayerColor.Yellow);
+        SetColorFromButton(sender, PlayerColor.Yellow);
 
     private void OnRedColorClicked(object? sender, EventArgs e) =>
-        SetColorFromButton(sender, ArkNovaPlayerColor.Red);
+        SetColorFromButton(sender, PlayerColor.Red);
 
     private void OnBlackColorClicked(object? sender, EventArgs e) =>
-        SetColorFromButton(sender, ArkNovaPlayerColor.Black);
+        SetColorFromButton(sender, PlayerColor.Black);
 
-    private void SetColorFromButton(object? sender, ArkNovaPlayerColor color)
+    private void SetColorFromButton(object? sender, PlayerColor color)
     {
         if (sender is Button { BindingContext: ArkNovaPreparationPlayerViewModel player })
         {

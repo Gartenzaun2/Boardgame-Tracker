@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Features.Groups.Colors;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -11,10 +13,11 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// <summary>
 /// Owns create-group screen state and translates UI input into the create-group Application command.
 /// </summary>
-public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogger<CreateGroupViewModel> logger) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupColorSelectionViewModel colorSelection, IAppNavigationSettingsStore context, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
+    public GroupColorSelectionViewModel ColorSelection { get; } = colorSelection;
     public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
-    public ObservableCollection<CreateGroupPlayerInput> Players { get; } = [];
+    public ObservableCollection<GroupPlayerItemViewModel> Players { get; } = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -65,6 +68,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
         {
             IsBusy = true;
             ErrorMessage = null;
+            if (ColorSelection.Configure(context.Get().SelectedGameKey))
+                foreach (var member in Players) member.DefaultColor = null;
             IReadOnlyList<SelectablePlayer> players =
                 await createGroup.GetSelectablePlayersAsync(cancellationToken);
 
@@ -72,7 +77,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
 
             foreach (SelectablePlayer player in players)
             {
-                if (Players.All(candidate => candidate.ExistingPlayerId != player.Id))
+                if (Players.All(candidate => candidate.PlayerId != player.Id))
                 {
                     AvailablePlayers.Add(player);
                 }
@@ -100,12 +105,12 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     {
         SelectablePlayer? player = SelectedExistingPlayer;
 
-        if (player is null || Players.Any(candidate => candidate.ExistingPlayerId == player.Id))
+        if (player is null || Players.Any(candidate => candidate.PlayerId == player.Id))
         {
             return;
         }
 
-        Players.Add(new CreateGroupPlayerInput(player.Id, player.Name, player.IsGuest));
+        Players.Add(new GroupPlayerItemViewModel(player.Id, player.Name, player.IsGuest));
         AvailablePlayers.Remove(player);
         SelectedExistingPlayer = null;
         ErrorMessage = null;
@@ -128,7 +133,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
             return;
         }
 
-        Players.Add(new CreateGroupPlayerInput(null, name, NewPlayerIsGuest));
+        Players.Add(new GroupPlayerItemViewModel(null, name, NewPlayerIsGuest));
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
         ErrorMessage = null;
@@ -136,14 +141,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void RemovePlayer(CreateGroupPlayerInput? player)
+    private void RemovePlayer(GroupPlayerItemViewModel? player)
     {
         if (player is null || !Players.Remove(player))
         {
             return;
         }
 
-        if (player.ExistingPlayerId is Guid playerId)
+        if (player.PlayerId is Guid playerId)
         {
             AvailablePlayers.Add(new SelectablePlayer(
                 playerId,
@@ -157,7 +162,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void MovePlayerUp(CreateGroupPlayerInput? player)
+    private void MovePlayerUp(GroupPlayerItemViewModel? player)
     {
         if (player is null)
         {
@@ -172,7 +177,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
     }
 
     [RelayCommand]
-    private void MovePlayerDown(CreateGroupPlayerInput? player)
+    private void MovePlayerDown(GroupPlayerItemViewModel? player)
     {
         if (player is null)
         {
@@ -184,6 +189,12 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
         {
             Players.Move(index, index + 1);
         }
+    }
+
+    [RelayCommand]
+    private void OpenColorPicker(GroupPlayerItemViewModel? player)
+    {
+        if (!IsBusy && player is not null) ColorSelection.Open(player, [.. Players]);
     }
 
     private bool CanSave() =>
@@ -205,7 +216,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, ILogge
             ErrorMessage = null;
 
             await createGroup.ExecuteAsync(
-                new CreateGroupCommand(GroupName, IsTemporary, [.. Players]));
+                new CreateGroupCommand(GroupName, IsTemporary, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest, player.DefaultColor))], ColorSelection.GameKey));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }

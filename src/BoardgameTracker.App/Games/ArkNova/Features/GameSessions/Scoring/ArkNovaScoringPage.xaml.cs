@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Games.ArkNova;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
@@ -12,12 +13,14 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaScoringViewModel _viewModel;
+    private readonly ILogger<ArkNovaScoringPage> _logger;
     private Guid _gameSessionId;
 
-    public ArkNovaScoringPage(ArkNovaScoringViewModel viewModel)
+    public ArkNovaScoringPage(ArkNovaScoringViewModel viewModel, ILogger<ArkNovaScoringPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _logger = logger;
         BindingContext = viewModel;
     }
 
@@ -109,7 +112,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
             await _viewModel.AssignSpecialCardAsync(playerId, option.Card);
         }
-        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
+            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+        }
         finally { _saving = false; }
     }
 
@@ -142,7 +149,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
                 new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId, [NavigationParameters.CorrectionDraft] = _viewModel.Draft! });
         }
 
-        catch (Exception) { await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok); }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
+            await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+        }
         finally { _saving = false; }
     }
 

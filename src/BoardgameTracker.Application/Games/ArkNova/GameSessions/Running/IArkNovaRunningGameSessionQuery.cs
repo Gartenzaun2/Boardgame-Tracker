@@ -1,6 +1,5 @@
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova.Players;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
@@ -36,5 +35,5 @@ public sealed record ArkNovaRunningGameSessionPlayer(
     Guid PlayerId,
     string Name,
     int Order,
-    ArkNovaPlayerColor Color,
+    PlayerColor Color,
     int ZooPlanNumber);

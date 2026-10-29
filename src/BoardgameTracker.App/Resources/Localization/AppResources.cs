@@ -13,6 +13,16 @@ public static class AppResources
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);
 
+    public static string ArkNovaSettingsTitle => GetString(nameof(ArkNovaSettingsTitle));
+    public static string CaptureReputation => GetString(nameof(CaptureReputation));
+    public static string CaptureReputationHint => GetString(nameof(CaptureReputationHint));
+    public static string OldScoringDisplay => GetString(nameof(OldScoringDisplay));
+    public static string OldScoringDisplayHint => GetString(nameof(OldScoringDisplayHint));
+    public static string Result => GetString(nameof(Result));
+
+    public static string SetColorForGameFormat => GetString(nameof(SetColorForGameFormat));
+    public static string NoPlayerColor => GetString(nameof(NoPlayerColor));
+
     public static string Back =>
         GetString(nameof(Back));
 

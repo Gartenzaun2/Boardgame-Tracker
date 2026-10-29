@@ -475,4 +475,12 @@
 <data name="NewPlayerInline" xml:space="preserve"><value>Neuen Spieler anlegen</value></data>
 <data name="AddExistingPlayerAction" xml:space="preserve"><value>+ Vorhandenen Spieler hinzufügen</value></data>
 <data name="SelectExistingPlayerTitle" xml:space="preserve"><value>Vorhandenen Spieler auswählen</value></data>
+  <data name="ArkNovaSettingsTitle" xml:space="preserve"><value>Arche-Nova-Einstellungen</value></data>
+  <data name="CaptureReputation" xml:space="preserve"><value>Ruf erfassen</value></data>
+  <data name="CaptureReputationHint" xml:space="preserve"><value>Blendet die optionale Rufeingabe in der Wertung ein.</value></data>
+  <data name="OldScoringDisplay" xml:space="preserve"><value>Alte Punkteanzeige</value></data>
+  <data name="OldScoringDisplayHint" xml:space="preserve"><value>Zeigt die berechneten Punkte um 100 Punkte verschoben an.</value></data>
+  <data name="Result" xml:space="preserve"><value>Ergebnis</value></data>
+  <data name="SetColorForGameFormat" xml:space="preserve"><value>Farbe für {0} festlegen</value></data>
+  <data name="NoPlayerColor" xml:space="preserve"><value>Keine Farbe</value></data>
 </root>

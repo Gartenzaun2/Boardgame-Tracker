@@ -9,6 +9,7 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 public partial class CreateGroupPage : ContentPage
 {
     private readonly CreateGroupViewModel _viewModel;
+    public CreateGroupViewModel ViewModel => _viewModel;
 
     public CreateGroupPage(CreateGroupViewModel viewModel)
     {
@@ -62,6 +63,7 @@ public partial class CreateGroupPage : ContentPage
     }
     protected override bool OnBackButtonPressed()
     {
+        if (_viewModel.ColorSelection.IsVisible) { _viewModel.ColorSelection.Close(); return true; }
         if (!ExistingPlayerOverlay.IsVisible) return base.OnBackButtonPressed();
         ExistingPlayerOverlay.IsVisible = false;
         return true;

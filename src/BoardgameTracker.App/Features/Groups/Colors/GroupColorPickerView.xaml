@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView x:Class="BoardgameTracker.App.Features.Groups.Colors.GroupColorPickerView"
+ xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+ xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.Colors"
+ xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" x:DataType="local:GroupColorSelectionViewModel">
+ <Grid BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+  <Border Style="{StaticResource SelectionDialog}">
+   <VerticalStackLayout Spacing="12">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+     <VerticalStackLayout Spacing="4">
+      <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="18" LineBreakMode="WordWrap" />
+      <Label Text="{Binding PlayerName}" FontSize="14" />
+     </VerticalStackLayout>
+     <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Style="{StaticResource TextActionButton}" Command="{Binding CloseCommand}" />
+    </Grid>
+    <BoxView Style="{StaticResource HeaderDivider}" />
+    <CollectionView ItemsSource="{Binding Options}" SelectionMode="None" HeightRequest="280" BackgroundColor="{DynamicResource AppBackground}">
+     <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="7" /></CollectionView.ItemsLayout>
+     <CollectionView.ItemTemplate><DataTemplate x:DataType="local:GroupColorOption">
+      <Border Style="{StaticResource CardBorder}" Padding="12,8" MinimumHeightRequest="48" SemanticProperties.Description="{Binding Name}">
+       <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+        <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
+       </DataTrigger></Border.Triggers>
+       <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ChooseCommand}" /></Border.GestureRecognizers>
+       <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+        <Border WidthRequest="24" HeightRequest="24" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 6" BackgroundColor="{Binding Swatch}" IsVisible="{Binding HasSwatch}" />
+        <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" />
+        <Label Grid.Column="2" Text="✓" IsVisible="{Binding IsSelected}" VerticalOptions="Center" />
+       </Grid>
+      </Border>
+     </DataTemplate></CollectionView.ItemTemplate>
+    </CollectionView>
+   </VerticalStackLayout>
+  </Border>
+ </Grid>
+</ContentView>
