@@ -442,3 +442,20 @@ inaktive Spur. Werte werden ganzzahlig erfasst; Ruf bleibt optional.
 Bedienhinweise gehören hinter das Info-Symbol im Kopf statt dauerhaft in den
 Screen. Vorschlagskennzeichnung und Validierungsfehler bleiben als Status
 sichtbar. Bei großen Schriften und Tastatur ist der Inhalt scrollbar.
+
+## Verwaltbare Arche-Nova-Spezialkarten
+
+Kartenansichten bestehen aus den vom Benutzer gelieferten Einzelgrafiken unter
+`Resources/Images/ark_symbol_*.png` und dem aktuellen gespeicherten Namen.
+Quellgrafiken: `Icons/Symbole` im übergeordneten Projektordner. Reihenfolge und
+Wiederholungen werden unverändert gezeigt: Symbol1 → Symbol2 → Symbol3 → Name.
+Die 14 Symbole und ihre Grafiken sind fachliche Identität und werden nicht durch
+Theme-Tints ersetzt. Kontur, Hintergrund und Text verwenden semantische Theme-Rollen.
+Karten auf farbigen Ergebnisflächen erhalten eine neutrale Surface-Unterlage.
+
+Verwaltung und Editor verwenden HeaderDivider, CardBorder, Primary für Neu/Speichern
+sowie transparente Bearbeiten-Icons und Textaktionen für Archivieren/Entarchivieren.
+Archivieren ist reversibel; keine Danger-Löschaktion. Archivzustand zusätzlich als
+Text anzeigen. Der Symbolwähler folgt SelectionDialog mit grafischen, mindestens
+48 dp hohen Einträgen und einer Auswahlmarkierung zusätzlich zur Farbe. Namen
+können umbrechen; die Anordnung bleibt auf dem 6,1-Zoll-Zielgerät kompakt und scrollbar.

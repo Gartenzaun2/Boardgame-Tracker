@@ -25,8 +25,17 @@ public sealed class SqliteArkNovaCorrectionDataAccess(IDbContextFactory<Boardgam
             player.SetScoreValues(values.Attractiveness, values.Conservation, values.Reputation);
             session.Players.Single(p => p.PlayerId == player.PlayerId).SetPlacement(placements[player.PlayerId]);
         }
+        ArkNovaGameSessionSpecialCardAssignment[] existingCards = await db.ArkNovaGameSessionSpecialCardAssignments.AsNoTracking()
+            .Where(c => c.GameSessionId == session.Id).ToArrayAsync(cancellationToken);
+        foreach (ArkNovaSpecialCardAssignmentData assignment in data.SpecialCards)
+        {
+            bool active = await db.ArkNovaSpecialCards.AnyAsync(c => c.Id == assignment.SpecialCardId && !c.IsArchived, cancellationToken);
+            bool retained = existingCards.Any(c => c.PlayerId == assignment.PlayerId && c.SpecialCardId == assignment.SpecialCardId);
+            if (!active && !retained)
+                throw new InvalidOperationException("Archived cards cannot be newly assigned.");
+        }
         await db.ArkNovaGameSessionSpecialCardAssignments.Where(c => c.GameSessionId == session.Id).ExecuteDeleteAsync(cancellationToken);
-        db.ArkNovaGameSessionSpecialCardAssignments.AddRange(data.SpecialCards.Select(c => new ArkNovaGameSessionSpecialCardAssignment(session.Id, c.PlayerId, c.SpecialCard)));
+        db.ArkNovaGameSessionSpecialCardAssignments.AddRange(data.SpecialCards.Select(c => new ArkNovaGameSessionSpecialCardAssignment(session.Id, c.PlayerId, c.SpecialCardId)));
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }

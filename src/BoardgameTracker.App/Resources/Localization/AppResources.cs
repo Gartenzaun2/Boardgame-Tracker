@@ -13,6 +13,36 @@ public static class AppResources
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);
 
+    public static string SpecialCardManagementTitle => GetString(nameof(SpecialCardManagementTitle));
+    public static string SelectedSymbol => GetString(nameof(SelectedSymbol));
+    public static string NewSpecialCard => GetString(nameof(NewSpecialCard));
+    public static string EditSpecialCard => GetString(nameof(EditSpecialCard));
+    public static string SpecialCardName => GetString(nameof(SpecialCardName));
+    public static string ShowArchivedCards => GetString(nameof(ShowArchivedCards));
+    public static string ArchiveCard => GetString(nameof(ArchiveCard));
+    public static string UnarchiveCard => GetString(nameof(UnarchiveCard));
+    public static string SpecialCardNameValidation => GetString(nameof(SpecialCardNameValidation));
+    public static string SpecialCardOperationFailed => GetString(nameof(SpecialCardOperationFailed));
+    public static string NoSpecialCards => GetString(nameof(NoSpecialCards));
+    public static string SelectCardSymbol => GetString(nameof(SelectCardSymbol));
+    public static string NoCardSymbol => GetString(nameof(NoCardSymbol));
+    public static string SymbolPositionFormat => GetString(nameof(SymbolPositionFormat));
+    public static string EditSpecialCardAction => GetString(nameof(EditSpecialCardAction));
+    public static string CardSymbolAfrica => GetString(nameof(CardSymbolAfrica));
+    public static string CardSymbolAmerica => GetString(nameof(CardSymbolAmerica));
+    public static string CardSymbolAsia => GetString(nameof(CardSymbolAsia));
+    public static string CardSymbolAustralia => GetString(nameof(CardSymbolAustralia));
+    public static string CardSymbolEurope => GetString(nameof(CardSymbolEurope));
+    public static string CardSymbolBear => GetString(nameof(CardSymbolBear));
+    public static string CardSymbolBird => GetString(nameof(CardSymbolBird));
+    public static string CardSymbolHerbivore => GetString(nameof(CardSymbolHerbivore));
+    public static string CardSymbolPettingAnimal => GetString(nameof(CardSymbolPettingAnimal));
+    public static string CardSymbolPredator => GetString(nameof(CardSymbolPredator));
+    public static string CardSymbolPrimate => GetString(nameof(CardSymbolPrimate));
+    public static string CardSymbolReptile => GetString(nameof(CardSymbolReptile));
+    public static string CardSymbolSeaAnimal => GetString(nameof(CardSymbolSeaAnimal));
+    public static string CardSymbolScience => GetString(nameof(CardSymbolScience));
+
     public static string ScoringInputHelpTitle => GetString(nameof(ScoringInputHelpTitle));
     public static string NumberWheelHint => GetString(nameof(NumberWheelHint));
     public static string SuggestedValue => GetString(nameof(SuggestedValue));
@@ -304,8 +334,7 @@ public static class AppResources
     public static string ActiveGame => GetString(nameof(ActiveGame));
     public static string AddSpecialCard => GetString(nameof(AddSpecialCard));
     public static string SpecialCards => GetString(nameof(SpecialCards));
-    public static string NoSpecialCards => GetString(nameof(NoSpecialCards));
-    public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSecondaryValuesFormat));
+public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSecondaryValuesFormat));
     public static string ScoringSecondaryValuesWithReputationFormat => GetString(nameof(ScoringSecondaryValuesWithReputationFormat));
     public static string SpecialCardAvailable => GetString(nameof(SpecialCardAvailable));
     public static string SpecialCardAlreadyAssigned => GetString(nameof(SpecialCardAlreadyAssigned));
@@ -318,16 +347,6 @@ public static class AppResources
     public static string DiscardScoringTitle => GetString(nameof(DiscardScoringTitle));
     public static string DiscardScoringMessage => GetString(nameof(DiscardScoringMessage));
     public static string DiscardScoringFailed => GetString(nameof(DiscardScoringFailed));
-    public static string ArkNovaSpecialCardAfricanElephantName => GetString(nameof(ArkNovaSpecialCardAfricanElephantName));
-    public static string ArkNovaSpecialCardAsianElephantName => GetString(nameof(ArkNovaSpecialCardAsianElephantName));
-    public static string ArkNovaSpecialCardBaldEagleName => GetString(nameof(ArkNovaSpecialCardBaldEagleName));
-    public static string ArkNovaSpecialCardGoldenEagleName => GetString(nameof(ArkNovaSpecialCardGoldenEagleName));
-    public static string ArkNovaSpecialCardSunBearName => GetString(nameof(ArkNovaSpecialCardSunBearName));
-    public static string ArkNovaSpecialCardAfricanElephantSymbols => GetString(nameof(ArkNovaSpecialCardAfricanElephantSymbols));
-    public static string ArkNovaSpecialCardAsianElephantSymbols => GetString(nameof(ArkNovaSpecialCardAsianElephantSymbols));
-    public static string ArkNovaSpecialCardBaldEagleSymbols => GetString(nameof(ArkNovaSpecialCardBaldEagleSymbols));
-    public static string ArkNovaSpecialCardGoldenEagleSymbols => GetString(nameof(ArkNovaSpecialCardGoldenEagleSymbols));
-    public static string ArkNovaSpecialCardSunBearSymbols => GetString(nameof(ArkNovaSpecialCardSunBearSymbols));
 
     public static string SaveCorrection => GetString(nameof(SaveCorrection));
     public static string CompleteScoring => GetString(nameof(CompleteScoring));

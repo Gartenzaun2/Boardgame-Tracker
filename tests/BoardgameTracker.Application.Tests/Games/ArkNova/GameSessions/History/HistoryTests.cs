@@ -1,3 +1,4 @@
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Games;
@@ -46,11 +47,11 @@ public sealed class HistoryTests
         var draft = await useCase.BeginAsync(f.Completed.Id);
         Assert.Equal(f.B.Id, draft.Data.Players[0].PlayerId);
         draft.SetScore(f.A.Id, 80, 7, 10);
-        draft.SetCard(f.B.Id, ArkNovaSpecialCard.SunBear, true);
-        draft.SetCard(f.A.Id, ArkNovaSpecialCard.AfricanElephant, false);
+        draft.SetCard(f.B.Id, ArkNovaSpecialCardDefaults.SunBear, true);
+        draft.SetCard(f.A.Id, ArkNovaSpecialCardDefaults.AfricanElephant, false);
         var before = await useCase.BeginAsync(f.Completed.Id);
         Assert.Equal(70, before.Data.Players.Single(p => p.PlayerId == f.A.Id).Attractiveness);
-        Assert.Contains(before.Data.SpecialCards, c => c.SpecialCard == ArkNovaSpecialCard.AfricanElephant);
+        Assert.Contains(before.Data.SpecialCards, c => c.SpecialCardId == ArkNovaSpecialCardDefaults.AfricanElephant);
         var plan = useCase.Prepare(draft);
         Assert.True(plan.HasTies);
         await Assert.ThrowsAsync<ArgumentException>(() => useCase.SaveAsync(draft, new Dictionary<Guid, int> { [f.A.Id] = 4, [f.B.Id] = 1 }));
@@ -60,8 +61,8 @@ public sealed class HistoryTests
         Assert.Equal(GameSessionStatus.Completed, saved.Data.Status);
         Assert.Equal(f.Completed.StartedAt, saved.Data.StartedAt);
         Assert.Equal(f.Completed.EndedAt, saved.Data.EndedAt);
-        Assert.Contains(saved.Data.SpecialCards, c => c.PlayerId == f.B.Id && c.SpecialCard == ArkNovaSpecialCard.SunBear);
-        Assert.DoesNotContain(saved.Data.SpecialCards, c => c.SpecialCard == ArkNovaSpecialCard.AfricanElephant);
+        Assert.Contains(saved.Data.SpecialCards, c => c.PlayerId == f.B.Id && c.SpecialCardId == ArkNovaSpecialCardDefaults.SunBear);
+        Assert.DoesNotContain(saved.Data.SpecialCards, c => c.SpecialCardId == ArkNovaSpecialCardDefaults.AfricanElephant);
         Assert.Equal(PlayerColor.Blue, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).Color);
         Assert.Equal(1, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).ZooPlanNumber);
         Assert.False(useCase.Prepare(saved).HasTies); // Existing resolved tie preserved.
@@ -100,6 +101,7 @@ public sealed class HistoryTests
         {
             var f = new Fixture(); await f.connection.OpenAsync();
             await using var db = f.CreateDbContext(); await db.Database.EnsureCreatedAsync();
+            db.AddRange(ArkNovaSpecialCardDefaults.Create());
             f.Group = new("Group", false, [f.A.Id, f.B.Id]);
             db.AddRange(f.A, f.B, f.Group, f.game, new ArkNovaZooPlan(1), new ArkNovaZooPlan(2), new ArkNovaZooPlan(3), new ArkNovaZooPlan(4));
             await db.SaveChangesAsync(); f.Completed = await f.AddAsync(GameSessionStatus.Completed, 1); return f;
@@ -113,7 +115,7 @@ public sealed class HistoryTests
             await using var db = CreateDbContext(); db.Add(session);
             var a = new ArkNovaGameSessionPlayer(session.Id, A.Id, PlayerColor.Blue, 1, 2, 1); a.SetScoreValues(70, 7, null);
             var b = new ArkNovaGameSessionPlayer(session.Id, B.Id, PlayerColor.Red, 3, 4, 3); b.SetScoreValues(80, 7, null);
-            db.AddRange(a, b, new ArkNovaGameSessionSpecialCardAssignment(session.Id, A.Id, ArkNovaSpecialCard.AfricanElephant));
+            db.AddRange(a, b, new ArkNovaGameSessionSpecialCardAssignment(session.Id, A.Id, ArkNovaSpecialCardDefaults.AfricanElephant));
             await db.SaveChangesAsync(); return session;
         }
         public ValueTask DisposeAsync() => connection.DisposeAsync();

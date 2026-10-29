@@ -1,5 +1,110 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -7,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Groups" xml:space="preserve">
     <value>Gruppen</value>
@@ -366,36 +471,6 @@
   <data name="DiscardScoringFailed" xml:space="preserve">
     <value>Die Wertung konnte nicht verworfen werden.</value>
   </data>
-  <data name="ArkNovaSpecialCardAfricanElephantName" xml:space="preserve">
-    <value>Afrikanischer Elefant</value>
-  </data>
-  <data name="ArkNovaSpecialCardAsianElephantName" xml:space="preserve">
-    <value>Asiatischer Elefant</value>
-  </data>
-  <data name="ArkNovaSpecialCardBaldEagleName" xml:space="preserve">
-    <value>Weißkopfseeadler</value>
-  </data>
-  <data name="ArkNovaSpecialCardGoldenEagleName" xml:space="preserve">
-    <value>Steinadler</value>
-  </data>
-  <data name="ArkNovaSpecialCardSunBearName" xml:space="preserve">
-    <value>Malaienbär</value>
-  </data>
-  <data name="ArkNovaSpecialCardAfricanElephantSymbols" xml:space="preserve">
-    <value>Afrika · 🐘</value>
-  </data>
-  <data name="ArkNovaSpecialCardAsianElephantSymbols" xml:space="preserve">
-    <value>Asien · 🐘</value>
-  </data>
-  <data name="ArkNovaSpecialCardBaldEagleSymbols" xml:space="preserve">
-    <value>Nordamerika · 🦅</value>
-  </data>
-  <data name="ArkNovaSpecialCardGoldenEagleSymbols" xml:space="preserve">
-    <value>Europa · 🦅</value>
-  </data>
-  <data name="ArkNovaSpecialCardSunBearSymbols" xml:space="preserve">
-    <value>🐻</value>
-  </data>
   <data name="ScoringSecondaryValuesFormat" xml:space="preserve">
     <value>Besondere Karten: {0}</value>
   </data>
@@ -414,78 +489,308 @@
   <data name="DefaultGameHint" xml:space="preserve">
     <value>Ohne Standardspiel startet die App bei Spiele. Mit Standardspiel startet sie beim ersten Mal direkt in dessen Gruppenübersicht. Danach wird der zuletzt verwendete Bereich wiederhergestellt.</value>
   </data>
-<data name="SaveCorrection" xml:space="preserve"><value>Korrektur speichern</value></data>
-<data name="CompleteScoring" xml:space="preserve"><value>Wertung abschließen</value></data>
-<data name="DeleteGameSession" xml:space="preserve"><value>Partie löschen</value></data>
-<data name="DeleteGameSessionTitle" xml:space="preserve"><value>Partie löschen?</value></data>
-<data name="DeleteGameSessionMessage" xml:space="preserve"><value>Möchtest du diese Partie wirklich löschen? Die gespeicherte Wertung und alle zugehörigen Daten werden dauerhaft entfernt.</value></data>
-<data name="HistoryGameFilter" xml:space="preserve"><value>Spiel</value></data>
-<data name="HistoryGroupFilter" xml:space="preserve"><value>Gruppe</value></data>
-<data name="HistoryAllGames" xml:space="preserve"><value>Alle Spiele</value></data>
-<data name="HistoryAllGroups" xml:space="preserve"><value>Alle Gruppen</value></data>
-<data name="HistoryEmpty" xml:space="preserve"><value>Keine abgeschlossenen Partien für diese Auswahl.</value></data>
-<data name="HistoryLoadFailed" xml:space="preserve"><value>Die Historie konnte nicht geladen werden.</value></data>
-<data name="HistoryOpenFailed" xml:space="preserve"><value>Die Partie konnte nicht geöffnet werden.</value></data>
-<data name="HistoryHeaderFormat" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
-<data name="HistoryDurationFormat" xml:space="preserve"><value>{0} h {1} min</value></data>
-<data name="CorrectionInvalid" xml:space="preserve"><value>Bitte vollständige gültige Wertungsdaten eingeben.</value></data>
-<data name="CorrectionFailed" xml:space="preserve"><value>Die Korrektur konnte nicht gespeichert werden.</value></data>
-<data name="AttractivenessValidation" xml:space="preserve"><value>Attraktivität muss zwischen 0 und 113 liegen.</value></data>
-<data name="ConservationValidation" xml:space="preserve"><value>Artenschutz muss zwischen 0 und 41 liegen.</value></data>
-<data name="ReputationValidation" xml:space="preserve"><value>Ruf muss leer bleiben oder zwischen 1 und 15 liegen.</value></data>
-<data name="ScoringNotFound" xml:space="preserve"><value>Die Wertung wurde nicht gefunden.</value></data>
-<data name="ScoringLoadFailed" xml:space="preserve"><value>Die Wertung konnte nicht geladen werden.</value></data>
-<data name="ScoreNameFormat" xml:space="preserve"><value>{0} · {1} Punkte</value></data>
-<data name="RawScoreFormat" xml:space="preserve"><value>Attraktivität: {0} · Artenschutz: {1}</value></data>
-<data name="PlaceFormat" xml:space="preserve"><value>Platz {0}</value></data>
-<data name="PointsFormat" xml:space="preserve"><value>{0} Punkte</value></data>
-<data name="TieInvalid" xml:space="preserve"><value>Die aktuelle Aufteilung ist noch keine gültige Rangfolge.</value></data>
-<data name="DragHere" xml:space="preserve"><value>Hierher ziehen</value></data>
-<data name="CalculatedPoints" xml:space="preserve"><value>Berechnete Punkte</value></data>
-<data name="OptionalValue" xml:space="preserve"><value>optional</value></data>
-<data name="OptionalReputation" xml:space="preserve"><value>optional · 1–15</value></data>
-<data name="PhotoRecognition" xml:space="preserve"><value>Fotoerkennung</value></data>
-<data name="PhotoRecognitionPending" xml:space="preserve"><value>Der Kamera-Einstieg ist vorbereitet. Die Bilderkennung folgt in einem späteren Slice.</value></data>
-<data name="Done" xml:space="preserve"><value>Fertig</value></data>
-<data name="Reputation" xml:space="preserve"><value>Ruf</value></data>
-<data name="Attractiveness" xml:space="preserve"><value>Attraktivität</value></data>
-<data name="Conservation" xml:space="preserve"><value>Artenschutz</value></data>
-<data name="ResolveTies" xml:space="preserve"><value>Gleichstände bearbeiten</value></data>
-<data name="ResolveTiesHint" xml:space="preserve"><value>Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden.</value></data>
-<data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
-<data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
-<data name="ThemeDeepForest" xml:space="preserve"><value>Deep Forest</value></data>
-<data name="ThemeRoyalBlue" xml:space="preserve"><value>Königsblau</value></data>
-<data name="ThemeDark" xml:space="preserve"><value>Dunkel</value></data>
-<data name="HistoryFilterSelectedFormat" xml:space="preserve"><value>✓ {0} ▾</value></data>
-<data name="HistoryFilterFormat" xml:space="preserve"><value>{0} ▾</value></data>
-<data name="ZooPlanSelected" xml:space="preserve"><value>Ausgewählt</value></data>
-<data name="PlayerColorGreen" xml:space="preserve"><value>Grün</value></data>
-<data name="PlayerColorWhite" xml:space="preserve"><value>Weiß</value></data>
-<data name="PlayerColorOrange" xml:space="preserve"><value>Orange</value></data>
-<data name="PlayerColorBrown" xml:space="preserve"><value>Braun</value></data>
-<data name="PlayerColorPurple" xml:space="preserve"><value>Lila</value></data>
-<data name="PlayerColorPink" xml:space="preserve"><value>Pink</value></data>
-<data name="PlayerColorTurquoise" xml:space="preserve"><value>Türkis</value></data>
-<data name="PlayerColorGray" xml:space="preserve"><value>Grau</value></data>
-<data name="PreviousGameSection" xml:space="preserve"><value>LETZTE PARTIE</value></data>
-<data name="GroupNameExample" xml:space="preserve"><value>z. B. Freitagabend</value></data>
-<data name="PlayerNameExample" xml:space="preserve"><value>z. B. Alex</value></data>
-<data name="PlayerNameLabel" xml:space="preserve"><value>Name</value></data>
-<data name="NewPlayerInline" xml:space="preserve"><value>Neuen Spieler anlegen</value></data>
-<data name="AddExistingPlayerAction" xml:space="preserve"><value>+ Vorhandenen Spieler hinzufügen</value></data>
-<data name="SelectExistingPlayerTitle" xml:space="preserve"><value>Vorhandenen Spieler auswählen</value></data>
-  <data name="ArkNovaSettingsTitle" xml:space="preserve"><value>Arche-Nova-Einstellungen</value></data>
-  <data name="CaptureReputation" xml:space="preserve"><value>Ruf erfassen</value></data>
-  <data name="CaptureReputationHint" xml:space="preserve"><value>Blendet die optionale Rufeingabe in der Wertung ein.</value></data>
-  <data name="OldScoringDisplay" xml:space="preserve"><value>Alte Punkteanzeige</value></data>
-  <data name="OldScoringDisplayHint" xml:space="preserve"><value>Zeigt die berechneten Punkte um 100 Punkte verschoben an.</value></data>
-  <data name="Result" xml:space="preserve"><value>Ergebnis</value></data>
-  <data name="SetColorForGameFormat" xml:space="preserve"><value>Farbe für {0} festlegen</value></data>
-  <data name="NoPlayerColor" xml:space="preserve"><value>Keine Farbe</value></data>
-  <data name="NumberWheelHint" xml:space="preserve"><value>Wischen oder Zahl antippen, um den Wert einzugeben.</value></data>
-  <data name="SuggestedValue" xml:space="preserve"><value>Vorschlag</value></data>
-  <data name="ScorePreview" xml:space="preserve"><value>Punktevorschau</value></data>
-  <data name="NumberWheelConfirmationHint" xml:space="preserve"><value>„Fertig“ übernimmt auch die angezeigten Vorschläge für Attraktivität und Artenschutz. Die Rufeingabe erscheint gemäß Spieleinstellungen als horizontaler Regler. Ruf bleibt optional; Verschieben erfasst einen ganzzahligen Wert. Das Zahlenfeld kann auch direkt bearbeitet oder geleert werden.</value></data>
-  <data name="ScoringInputHelpTitle" xml:space="preserve"><value>Wertung eingeben</value></data>
+  <data name="SaveCorrection" xml:space="preserve">
+    <value>Korrektur speichern</value>
+  </data>
+  <data name="CompleteScoring" xml:space="preserve">
+    <value>Wertung abschließen</value>
+  </data>
+  <data name="DeleteGameSession" xml:space="preserve">
+    <value>Partie löschen</value>
+  </data>
+  <data name="DeleteGameSessionTitle" xml:space="preserve">
+    <value>Partie löschen?</value>
+  </data>
+  <data name="DeleteGameSessionMessage" xml:space="preserve">
+    <value>Möchtest du diese Partie wirklich löschen? Die gespeicherte Wertung und alle zugehörigen Daten werden dauerhaft entfernt.</value>
+  </data>
+  <data name="HistoryGameFilter" xml:space="preserve">
+    <value>Spiel</value>
+  </data>
+  <data name="HistoryGroupFilter" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="HistoryAllGames" xml:space="preserve">
+    <value>Alle Spiele</value>
+  </data>
+  <data name="HistoryAllGroups" xml:space="preserve">
+    <value>Alle Gruppen</value>
+  </data>
+  <data name="HistoryEmpty" xml:space="preserve">
+    <value>Keine abgeschlossenen Partien für diese Auswahl.</value>
+  </data>
+  <data name="HistoryLoadFailed" xml:space="preserve">
+    <value>Die Historie konnte nicht geladen werden.</value>
+  </data>
+  <data name="HistoryOpenFailed" xml:space="preserve">
+    <value>Die Partie konnte nicht geöffnet werden.</value>
+  </data>
+  <data name="HistoryHeaderFormat" xml:space="preserve">
+    <value>{0} · {1} · {2}</value>
+  </data>
+  <data name="HistoryDurationFormat" xml:space="preserve">
+    <value>{0} h {1} min</value>
+  </data>
+  <data name="CorrectionInvalid" xml:space="preserve">
+    <value>Bitte vollständige gültige Wertungsdaten eingeben.</value>
+  </data>
+  <data name="CorrectionFailed" xml:space="preserve">
+    <value>Die Korrektur konnte nicht gespeichert werden.</value>
+  </data>
+  <data name="AttractivenessValidation" xml:space="preserve">
+    <value>Attraktivität muss zwischen 0 und 113 liegen.</value>
+  </data>
+  <data name="ConservationValidation" xml:space="preserve">
+    <value>Artenschutz muss zwischen 0 und 41 liegen.</value>
+  </data>
+  <data name="ReputationValidation" xml:space="preserve">
+    <value>Ruf muss leer bleiben oder zwischen 1 und 15 liegen.</value>
+  </data>
+  <data name="ScoringNotFound" xml:space="preserve">
+    <value>Die Wertung wurde nicht gefunden.</value>
+  </data>
+  <data name="ScoringLoadFailed" xml:space="preserve">
+    <value>Die Wertung konnte nicht geladen werden.</value>
+  </data>
+  <data name="ScoreNameFormat" xml:space="preserve">
+    <value>{0} · {1} Punkte</value>
+  </data>
+  <data name="RawScoreFormat" xml:space="preserve">
+    <value>Attraktivität: {0} · Artenschutz: {1}</value>
+  </data>
+  <data name="PlaceFormat" xml:space="preserve">
+    <value>Platz {0}</value>
+  </data>
+  <data name="PointsFormat" xml:space="preserve">
+    <value>{0} Punkte</value>
+  </data>
+  <data name="TieInvalid" xml:space="preserve">
+    <value>Die aktuelle Aufteilung ist noch keine gültige Rangfolge.</value>
+  </data>
+  <data name="DragHere" xml:space="preserve">
+    <value>Hierher ziehen</value>
+  </data>
+  <data name="CalculatedPoints" xml:space="preserve">
+    <value>Berechnete Punkte</value>
+  </data>
+  <data name="OptionalValue" xml:space="preserve">
+    <value>optional</value>
+  </data>
+  <data name="OptionalReputation" xml:space="preserve">
+    <value>optional · 1–15</value>
+  </data>
+  <data name="PhotoRecognition" xml:space="preserve">
+    <value>Fotoerkennung</value>
+  </data>
+  <data name="PhotoRecognitionPending" xml:space="preserve">
+    <value>Der Kamera-Einstieg ist vorbereitet. Die Bilderkennung folgt in einem späteren Slice.</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Fertig</value>
+  </data>
+  <data name="Reputation" xml:space="preserve">
+    <value>Ruf</value>
+  </data>
+  <data name="Attractiveness" xml:space="preserve">
+    <value>Attraktivität</value>
+  </data>
+  <data name="Conservation" xml:space="preserve">
+    <value>Artenschutz</value>
+  </data>
+  <data name="ResolveTies" xml:space="preserve">
+    <value>Gleichstände bearbeiten</value>
+  </data>
+  <data name="ResolveTiesHint" xml:space="preserve">
+    <value>Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden.</value>
+  </data>
+  <data name="SaveScoring" xml:space="preserve">
+    <value>Wertung speichern</value>
+  </data>
+  <data name="AppearanceTheme" xml:space="preserve">
+    <value>Darstellung</value>
+  </data>
+  <data name="ThemeDeepForest" xml:space="preserve">
+    <value>Deep Forest</value>
+  </data>
+  <data name="ThemeRoyalBlue" xml:space="preserve">
+    <value>Königsblau</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="HistoryFilterSelectedFormat" xml:space="preserve">
+    <value>✓ {0} ▾</value>
+  </data>
+  <data name="HistoryFilterFormat" xml:space="preserve">
+    <value>{0} ▾</value>
+  </data>
+  <data name="ZooPlanSelected" xml:space="preserve">
+    <value>Ausgewählt</value>
+  </data>
+  <data name="PlayerColorGreen" xml:space="preserve">
+    <value>Grün</value>
+  </data>
+  <data name="PlayerColorWhite" xml:space="preserve">
+    <value>Weiß</value>
+  </data>
+  <data name="PlayerColorOrange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="PlayerColorBrown" xml:space="preserve">
+    <value>Braun</value>
+  </data>
+  <data name="PlayerColorPurple" xml:space="preserve">
+    <value>Lila</value>
+  </data>
+  <data name="PlayerColorPink" xml:space="preserve">
+    <value>Pink</value>
+  </data>
+  <data name="PlayerColorTurquoise" xml:space="preserve">
+    <value>Türkis</value>
+  </data>
+  <data name="PlayerColorGray" xml:space="preserve">
+    <value>Grau</value>
+  </data>
+  <data name="PreviousGameSection" xml:space="preserve">
+    <value>LETZTE PARTIE</value>
+  </data>
+  <data name="GroupNameExample" xml:space="preserve">
+    <value>z. B. Freitagabend</value>
+  </data>
+  <data name="PlayerNameExample" xml:space="preserve">
+    <value>z. B. Alex</value>
+  </data>
+  <data name="PlayerNameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NewPlayerInline" xml:space="preserve">
+    <value>Neuen Spieler anlegen</value>
+  </data>
+  <data name="AddExistingPlayerAction" xml:space="preserve">
+    <value>+ Vorhandenen Spieler hinzufügen</value>
+  </data>
+  <data name="SelectExistingPlayerTitle" xml:space="preserve">
+    <value>Vorhandenen Spieler auswählen</value>
+  </data>
+  <data name="ArkNovaSettingsTitle" xml:space="preserve">
+    <value>Arche-Nova-Einstellungen</value>
+  </data>
+  <data name="CaptureReputation" xml:space="preserve">
+    <value>Ruf erfassen</value>
+  </data>
+  <data name="CaptureReputationHint" xml:space="preserve">
+    <value>Blendet die optionale Rufeingabe in der Wertung ein.</value>
+  </data>
+  <data name="OldScoringDisplay" xml:space="preserve">
+    <value>Alte Punkteanzeige</value>
+  </data>
+  <data name="OldScoringDisplayHint" xml:space="preserve">
+    <value>Zeigt die berechneten Punkte um 100 Punkte verschoben an.</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="SetColorForGameFormat" xml:space="preserve">
+    <value>Farbe für {0} festlegen</value>
+  </data>
+  <data name="NoPlayerColor" xml:space="preserve">
+    <value>Keine Farbe</value>
+  </data>
+  <data name="NumberWheelHint" xml:space="preserve">
+    <value>Wischen oder Zahl antippen, um den Wert einzugeben.</value>
+  </data>
+  <data name="SuggestedValue" xml:space="preserve">
+    <value>Vorschlag</value>
+  </data>
+  <data name="ScorePreview" xml:space="preserve">
+    <value>Punktevorschau</value>
+  </data>
+  <data name="NumberWheelConfirmationHint" xml:space="preserve">
+    <value>„Fertig“ übernimmt auch die angezeigten Vorschläge für Attraktivität und Artenschutz. Die Rufeingabe erscheint gemäß Spieleinstellungen als horizontaler Regler. Ruf bleibt optional; Verschieben erfasst einen ganzzahligen Wert. Das Zahlenfeld kann auch direkt bearbeitet oder geleert werden.</value>
+  </data>
+  <data name="ScoringInputHelpTitle" xml:space="preserve">
+    <value>Wertung eingeben</value>
+  </data>
+  <data name="NewSpecialCard" xml:space="preserve">
+    <value>Neue Spezialkarte</value>
+  </data>
+  <data name="EditSpecialCard" xml:space="preserve">
+    <value>Spezialkarte bearbeiten</value>
+  </data>
+  <data name="SpecialCardName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ShowArchivedCards" xml:space="preserve">
+    <value>Archivierte anzeigen</value>
+  </data>
+  <data name="ArchiveCard" xml:space="preserve">
+    <value>Archivieren</value>
+  </data>
+  <data name="UnarchiveCard" xml:space="preserve">
+    <value>Entarchivieren</value>
+  </data>
+  <data name="SpecialCardNameValidation" xml:space="preserve">
+    <value>Bitte einen Namen mit 1–120 Zeichen eingeben.</value>
+  </data>
+  <data name="SpecialCardOperationFailed" xml:space="preserve">
+    <value>Die Spezialkarten konnten nicht geladen oder gespeichert werden.</value>
+  </data>
+  <data name="SelectCardSymbol" xml:space="preserve">
+    <value>Symbol auswählen</value>
+  </data>
+  <data name="NoCardSymbol" xml:space="preserve">
+    <value>Kein Symbol</value>
+  </data>
+  <data name="SymbolPositionFormat" xml:space="preserve">
+    <value>Symbol {0}</value>
+  </data>
+  <data name="EditSpecialCardAction" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="CardSymbolAfrica" xml:space="preserve">
+    <value>Afrika</value>
+  </data>
+  <data name="CardSymbolAmerica" xml:space="preserve">
+    <value>Amerika</value>
+  </data>
+  <data name="CardSymbolAsia" xml:space="preserve">
+    <value>Asien</value>
+  </data>
+  <data name="CardSymbolAustralia" xml:space="preserve">
+    <value>Australien</value>
+  </data>
+  <data name="CardSymbolEurope" xml:space="preserve">
+    <value>Europa</value>
+  </data>
+  <data name="CardSymbolBear" xml:space="preserve">
+    <value>Bär</value>
+  </data>
+  <data name="CardSymbolBird" xml:space="preserve">
+    <value>Vogel</value>
+  </data>
+  <data name="CardSymbolHerbivore" xml:space="preserve">
+    <value>Pflanzenfresser</value>
+  </data>
+  <data name="CardSymbolPettingAnimal" xml:space="preserve">
+    <value>Streicheltier</value>
+  </data>
+  <data name="CardSymbolPredator" xml:space="preserve">
+    <value>Raubtier</value>
+  </data>
+  <data name="CardSymbolPrimate" xml:space="preserve">
+    <value>Primat</value>
+  </data>
+  <data name="CardSymbolReptile" xml:space="preserve">
+    <value>Reptil</value>
+  </data>
+  <data name="CardSymbolSeaAnimal" xml:space="preserve">
+    <value>Meerestier</value>
+  </data>
+  <data name="SelectedSymbol" xml:space="preserve">
+    <value>Ausgewählt</value>
+  </data>
+  <data name="CardSymbolScience" xml:space="preserve">
+    <value>Forschung</value>
+  </data>
+  <data name="SpecialCardManagementTitle" xml:space="preserve"><value>Spezialkarten</value></data>
 </root>

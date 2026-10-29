@@ -43,6 +43,12 @@ internal static class ArkNovaReferenceDataSeeder
             dbContext.ArkNovaZooPlans.Add(new ArkNovaZooPlan(option.Number));
         }
 
+        Guid[] existingCards = await dbContext.ArkNovaSpecialCards.Select(c => c.Id).ToArrayAsync(cancellationToken);
+        foreach (ArkNovaSpecialCard card in ArkNovaSpecialCardDefaults.Create())
+        {
+            if (!existingCards.Contains(card.Id))
+                dbContext.ArkNovaSpecialCards.Add(card);
+        }
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

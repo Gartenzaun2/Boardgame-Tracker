@@ -36,6 +36,13 @@ public sealed class ArkNovaCorrectionUseCase(IArkNovaScoringDataAccess read, IAr
             throw new InvalidOperationException("Participants cannot change.");
         foreach (var player in draft.Data.Players)
             ArkNovaScoringRules.ValidateScoreValues(player.Attractiveness, player.Conservation, player.Reputation);
+        foreach (ArkNovaSpecialCardAssignmentData assignment in draft.Data.SpecialCards)
+        {
+            bool active = current.Data.CardCatalog.Any(c => c.Id == assignment.SpecialCardId && !c.IsArchived);
+            bool retained = current.Data.SpecialCards.Any(c => c.PlayerId == assignment.PlayerId && c.SpecialCardId == assignment.SpecialCardId);
+            if (!active && !retained)
+                throw new InvalidOperationException("Archived or unknown cards cannot be newly assigned.");
+        }
         var plan = Prepare(draft);
         ArkNovaPlacementRules.ValidateResolution(plan.Scores, placements);
         await write.SaveAsync(draft.Data, placements, cancellationToken);

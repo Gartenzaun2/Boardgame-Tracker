@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -11,6 +12,8 @@ public sealed class ArkNovaCorrectionDraft
     public ArkNovaScoringGameSessionData Original { get; }
     public bool Saved { get; internal set; }
     public ArkNovaScoringGameSessionData Data { get; private set; }
+    public void RefreshCardCatalog(IReadOnlyList<ArkNovaSpecialCardData> catalog) => Data = Data with { CardCatalog = catalog };
+
     public void SetScore(Guid playerId, int? attractiveness, int? conservation, int? reputation)
     {
         ArkNovaScoringRules.ValidateScoreValues(attractiveness, conservation, reputation);
@@ -21,11 +24,17 @@ public sealed class ArkNovaCorrectionDraft
             ? p with { Attractiveness = attractiveness, Conservation = conservation, Reputation = reputation } : p).ToArray()
         };
     }
-    public void SetCard(Guid playerId, ArkNovaSpecialCard card, bool assigned)
+    public void SetCard(Guid playerId, Guid cardId, bool assigned)
     {
-        if (!Enum.IsDefined(card) || !Data.Players.Any(p => p.PlayerId == playerId)) throw new ArgumentException("Invalid card assignment.");
-        var cards = Data.SpecialCards.Where(c => c.PlayerId != playerId || c.SpecialCard != card).ToList();
-        if (assigned) cards.Add(new(playerId, card));
+        if (cardId == Guid.Empty || !Data.Players.Any(p => p.PlayerId == playerId))
+            throw new ArgumentException("Invalid card assignment.");
+        bool exists = Data.SpecialCards.Any(c => c.PlayerId == playerId && c.SpecialCardId == cardId);
+        if (assigned && !exists && !Data.CardCatalog.Any(c => c.Id == cardId && !c.IsArchived))
+            throw new InvalidOperationException("Archived or unknown cards cannot be newly assigned.");
+        List<ArkNovaSpecialCardAssignmentData> cards = Data.SpecialCards
+            .Where(c => c.PlayerId != playerId || c.SpecialCardId != cardId).ToList();
+        if (assigned)
+            cards.Add(new(playerId, cardId));
         Data = Data with { SpecialCards = cards };
     }
 }

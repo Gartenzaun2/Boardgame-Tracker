@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
+    xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:DataType="vm:ArkNovaScoringViewModel"
     Shell.NavBarIsVisible="False">
@@ -103,13 +104,10 @@
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSpecialCardOptionTapped" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="120,*" ColumnSpacing="10">
-                                        <Label Text="{Binding Symbols}" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" />
-                                        <VerticalStackLayout Grid.Column="1" Spacing="1">
-                                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="14" />
-                                            <Label Text="{Binding StatusText}" FontSize="10" TextColor="{DynamicResource TextPrimary}" />
-                                        </VerticalStackLayout>
-                                    </Grid>
+                                    <VerticalStackLayout Spacing="4">
+                                        <ark:ArkNovaSpecialCardView Card="{Binding Card}" />
+                                        <Label Text="{Binding StatusText}" FontSize="11" TextColor="{DynamicResource TextSecondary}" />
+                                    </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

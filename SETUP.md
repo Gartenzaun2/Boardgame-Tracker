@@ -88,16 +88,23 @@ Database.EnsureCreatedAsync()
 
 Anschließend werden notwendige Referenzdaten idempotent angelegt.
 
-`EnsureCreated` migriert ein älteres Schema nicht. Nach Schemaänderungen daher:
+`EnsureCreated` migriert ein älteres Schema nicht. Für die Umstellung der
+Arche-Nova-Spezialkarten existiert ein gezielter automatischer Upgradepfad:
+`DatabaseInitializer` prüft vor dem Seeding die alte Spalte `SpecialCard` und
+überführt die Werte 1–5 in stabile Karten-GUIDs. Kartentabelle, Datenübernahme,
+Assignment-Tabellentausch und FK-Prüfung erfolgen in einer SQLite-Transaktion.
+Bei unbekannten Altdaten oder FK-Fehlern bricht der Start mit Fehler ab; die
+Transaktion erhält den bisherigen Stand. Erneuter Start ist idempotent.
 
-1. App-Daten löschen oder App deinstallieren,
-2. App neu installieren/starten,
-3. Datenbank aus dem aktuellen Modell neu erzeugen lassen.
+Für dieses Update **keine App-Daten löschen oder deinstallieren**: Bestehende
+Partien und Kartenzuordnungen werden erhalten. Geräte-Smoke-Test: eine alte
+Installation mit zugeordneten Karten aktualisieren, Historie öffnen und alle
+Karten prüfen; danach Standardkarte bearbeiten/archivieren und erneut starten.
 
-Historische EF-Migrationen werden während dieser Phase nicht als Teil des
-aktuellen Quellmodells gepflegt. Sobald veröffentlichte Nutzerdaten erhalten
-werden müssen, wird ein kanonischer Migrationsverlauf mit `ModelSnapshot`
-verbindlich eingeführt.
+Andere, nicht ausdrücklich unterstützte Schemaänderungen erfordern in der
+Pre-Alpha weiterhin Neuaufbau der Entwicklungsdatenbank. Ein allgemeiner
+kanonischer EF-Migrationsverlauf mit `ModelSnapshot` wird dadurch nicht
+vorgezogen; dieser Slice besitzt einen begrenzten, getesteten SQLite-Upgradepfad.
 
 ## Versionsregel
 

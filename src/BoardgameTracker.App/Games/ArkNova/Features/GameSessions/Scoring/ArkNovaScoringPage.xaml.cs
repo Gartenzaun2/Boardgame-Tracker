@@ -90,7 +90,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
             if (option.IsAssignedToTarget)
             {
-                await _viewModel.RemoveSpecialCardAsync(playerId, option.Card);
+                await _viewModel.RemoveSpecialCardAsync(playerId, option.Card.Id);
                 return;
             }
 
@@ -100,7 +100,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
                     AppResources.SpecialCardMultipleTitle,
                     string.Format(
                         AppResources.SpecialCardMultipleMessageFormat,
-                        ArkNovaSpecialCardPresentation.GetName(option.Card)),
+                        option.Card.Name),
                     AppResources.Yes,
                     AppResources.Cancel);
 
@@ -110,7 +110,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
                 }
             }
 
-            await _viewModel.AssignSpecialCardAsync(playerId, option.Card);
+            await _viewModel.AssignSpecialCardAsync(playerId, option.Card.Id);
         }
         catch (Exception exception)
         {

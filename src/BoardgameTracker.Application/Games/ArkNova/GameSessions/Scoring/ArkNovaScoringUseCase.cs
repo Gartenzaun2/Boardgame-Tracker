@@ -42,25 +42,28 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringDataAccess dataAccess)
     public async Task AssignSpecialCardAsync(
         Guid gameSessionId,
         Guid playerId,
-        ArkNovaSpecialCard specialCard,
+        Guid specialCardId,
         CancellationToken cancellationToken = default)
     {
-        ValidateSpecialCardArguments(gameSessionId, playerId, specialCard);
-        await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
+        ValidateSpecialCardArguments(gameSessionId, playerId, specialCardId);
+        ArkNovaScoringGameSessionData data = await GetScoringGameSessionAsync(gameSessionId, cancellationToken);
+        if (!data.Players.Any(p => p.PlayerId == playerId)
+            || !data.CardCatalog.Any(c => c.Id == specialCardId && !c.IsArchived))
+            throw new InvalidOperationException("Only active cards may be assigned to an existing player.");
         await dataAccess.AddSpecialCardAsync(
-            new ArkNovaGameSessionSpecialCardAssignment(gameSessionId, playerId, specialCard),
+            new ArkNovaGameSessionSpecialCardAssignment(gameSessionId, playerId, specialCardId),
             cancellationToken);
     }
 
     public async Task RemoveSpecialCardAsync(
         Guid gameSessionId,
         Guid playerId,
-        ArkNovaSpecialCard specialCard,
+        Guid specialCardId,
         CancellationToken cancellationToken = default)
     {
-        ValidateSpecialCardArguments(gameSessionId, playerId, specialCard);
+        ValidateSpecialCardArguments(gameSessionId, playerId, specialCardId);
         await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
-        await dataAccess.RemoveSpecialCardAsync(gameSessionId, playerId, specialCard, cancellationToken);
+        await dataAccess.RemoveSpecialCardAsync(gameSessionId, playerId, specialCardId, cancellationToken);
     }
 
     public async Task<ArkNovaCompletionPlan> PrepareCompletionAsync(
@@ -154,14 +157,11 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringDataAccess dataAccess)
                 player.Conservation!.Value));
     }
 
-    private static void ValidateSpecialCardArguments(Guid gameSessionId, Guid playerId, ArkNovaSpecialCard specialCard)
+    private static void ValidateSpecialCardArguments(Guid gameSessionId, Guid playerId, Guid specialCardId)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
-        if (!Enum.IsDefined(specialCard))
-        {
-            throw new ArgumentOutOfRangeException(nameof(specialCard));
-        }
+        ArgumentOutOfRangeException.ThrowIfEqual(specialCardId, Guid.Empty);
     }
 }
 

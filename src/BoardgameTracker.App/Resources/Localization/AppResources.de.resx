@@ -366,36 +366,6 @@
   <data name="DiscardScoringFailed" xml:space="preserve">
     <value>Die Wertung konnte nicht verworfen werden.</value>
   </data>
-  <data name="ArkNovaSpecialCardAfricanElephantName" xml:space="preserve">
-    <value>Afrikanischer Elefant</value>
-  </data>
-  <data name="ArkNovaSpecialCardAsianElephantName" xml:space="preserve">
-    <value>Asiatischer Elefant</value>
-  </data>
-  <data name="ArkNovaSpecialCardBaldEagleName" xml:space="preserve">
-    <value>Weißkopfseeadler</value>
-  </data>
-  <data name="ArkNovaSpecialCardGoldenEagleName" xml:space="preserve">
-    <value>Steinadler</value>
-  </data>
-  <data name="ArkNovaSpecialCardSunBearName" xml:space="preserve">
-    <value>Malaienbär</value>
-  </data>
-  <data name="ArkNovaSpecialCardAfricanElephantSymbols" xml:space="preserve">
-    <value>Afrika · 🐘</value>
-  </data>
-  <data name="ArkNovaSpecialCardAsianElephantSymbols" xml:space="preserve">
-    <value>Asien · 🐘</value>
-  </data>
-  <data name="ArkNovaSpecialCardBaldEagleSymbols" xml:space="preserve">
-    <value>Nordamerika · 🦅</value>
-  </data>
-  <data name="ArkNovaSpecialCardGoldenEagleSymbols" xml:space="preserve">
-    <value>Europa · 🦅</value>
-  </data>
-  <data name="ArkNovaSpecialCardSunBearSymbols" xml:space="preserve">
-    <value>🐻</value>
-  </data>
   <data name="ScoringSecondaryValuesFormat" xml:space="preserve">
     <value>Besondere Karten: {0}</value>
   </data>
@@ -488,4 +458,33 @@
   <data name="ScorePreview" xml:space="preserve"><value>Punktevorschau</value></data>
   <data name="NumberWheelConfirmationHint" xml:space="preserve"><value>„Fertig“ übernimmt auch die angezeigten Vorschläge für Attraktivität und Artenschutz. Die Rufeingabe erscheint gemäß Spieleinstellungen als horizontaler Regler. Ruf bleibt optional; Verschieben erfasst einen ganzzahligen Wert. Das Zahlenfeld kann auch direkt bearbeitet oder geleert werden.</value></data>
   <data name="ScoringInputHelpTitle" xml:space="preserve"><value>Wertung eingeben</value></data>
+  <data name="NewSpecialCard" xml:space="preserve"><value>Neue Spezialkarte</value></data>
+  <data name="EditSpecialCard" xml:space="preserve"><value>Spezialkarte bearbeiten</value></data>
+  <data name="SpecialCardName" xml:space="preserve"><value>Name</value></data>
+  <data name="ShowArchivedCards" xml:space="preserve"><value>Archivierte anzeigen</value></data>
+  <data name="ArchiveCard" xml:space="preserve"><value>Archivieren</value></data>
+  <data name="UnarchiveCard" xml:space="preserve"><value>Entarchivieren</value></data>
+  <data name="SpecialCardNameValidation" xml:space="preserve"><value>Bitte einen Namen mit 1–120 Zeichen eingeben.</value></data>
+  <data name="SpecialCardOperationFailed" xml:space="preserve"><value>Die Spezialkarten konnten nicht geladen oder gespeichert werden.</value></data>
+
+  <data name="SelectCardSymbol" xml:space="preserve"><value>Symbol auswählen</value></data>
+  <data name="NoCardSymbol" xml:space="preserve"><value>Kein Symbol</value></data>
+  <data name="SymbolPositionFormat" xml:space="preserve"><value>Symbol {0}</value></data>
+  <data name="EditSpecialCardAction" xml:space="preserve"><value>Bearbeiten</value></data>
+  <data name="CardSymbolAfrica" xml:space="preserve"><value>Afrika</value></data>
+  <data name="CardSymbolAmerica" xml:space="preserve"><value>Amerika</value></data>
+  <data name="CardSymbolAsia" xml:space="preserve"><value>Asien</value></data>
+  <data name="CardSymbolAustralia" xml:space="preserve"><value>Australien</value></data>
+  <data name="CardSymbolEurope" xml:space="preserve"><value>Europa</value></data>
+  <data name="CardSymbolBear" xml:space="preserve"><value>Bär</value></data>
+  <data name="CardSymbolBird" xml:space="preserve"><value>Vogel</value></data>
+  <data name="CardSymbolHerbivore" xml:space="preserve"><value>Pflanzenfresser</value></data>
+  <data name="CardSymbolPettingAnimal" xml:space="preserve"><value>Streicheltier</value></data>
+  <data name="CardSymbolPredator" xml:space="preserve"><value>Raubtier</value></data>
+  <data name="CardSymbolPrimate" xml:space="preserve"><value>Primat</value></data>
+  <data name="CardSymbolReptile" xml:space="preserve"><value>Reptil</value></data>
+  <data name="CardSymbolSeaAnimal" xml:space="preserve"><value>Meerestier</value></data>
+  <data name="SelectedSymbol" xml:space="preserve"><value>Ausgewählt</value></data>
+  <data name="CardSymbolScience" xml:space="preserve"><value>Forschung</value></data>
+  <data name="SpecialCardManagementTitle" xml:space="preserve"><value>Spezialkarten</value></data>
 </root>

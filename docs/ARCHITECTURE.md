@@ -248,14 +248,37 @@ modelliert sind.
 
 ### Aktuelle Pre-Alpha-Datenbankstrategie
 
-Der Runtime-Start verwendet `Database.EnsureCreatedAsync()` und anschließend
-idempotentes Referenzdaten-Seeding.
+Der Runtime-Start verwendet `Database.EnsureCreatedAsync()`, den gezielten
+Arche-Nova-Spezialkarten-Schema-Upgrade und danach idempotentes Referenzdaten-Seeding.
+Neue Datenbanken erhalten direkt das aktuelle Modell. Bestehende Installationen
+mit Integer-Kartenwerten werden atomar auf die GUID-Referenztabelle umgestellt.
+Der Upgrade erkennt die alte Spalte, validiert alle Werte und ersetzt nur die
+Karten-Assignment-Tabelle; bei Fehlern erfolgt Rollback, niemals ein DB-Reset.
+Es bleibt kein paralleles Legacy-Kartenmodell bestehen. Die Startkarten besitzen
+deterministische IDs; Seeding ergänzt fehlende Karten, überschreibt aber keine
+Benutzeränderungen oder Archivzustände.
 
-Schemaänderungen werden in der Pre-Alpha-Phase durch Löschen/Neuaufbau der
-lokalen Datenbank übernommen. Ein kanonischer EF-Migrationsverlauf wird erst
-wieder eingeführt, wenn veröffentlichte Nutzerdaten versionsübergreifend
-migriert werden müssen. Historische Migrationen sind deshalb nicht Bestandteil
-des aktuellen Quellmodells.
+Andere Pre-Alpha-Schemaänderungen werden weiterhin ausdrücklich behandelt;
+dies ist kein allgemeines Migrationsframework und kein EF-Migrationsverlauf.
+Details und Upgrade-Smoke-Test stehen in `SETUP.md`.
+
+### Spezialkarten-Slice
+
+`Core/Games/ArkNova/ArkNovaSpecialCard` schützt Identität, Name, geordnete Symbole
+und Archivstatus. Der feste Symbolkatalog ist ein Enum, die Kartenidentität eine GUID.
+`Application/Games/ArkNova/SpecialCards` enthält Verwaltung, Leseprojektion und
+Persistenzport; Infrastructure implementiert den SQLite-Adapter.
+Verwaltungsdaten gehören nicht in `IArkNovaSettingsStore` oder Preferences.
+Die UI unter `App/Games/ArkNova/Features/SpecialCards` verwendet einen gemeinsamen
+Editor für Create/Edit und dieselbe ikonbasierte Kartenansicht wie die Wertung.
+Die Symbol-Präsentation ordnet ausschließlich feste Symboltypen auf Bildressourcen
+und lokalisierte Accessibility-Namen ab. Kartennamen kommen aus SQLite.
+
+Scoring arbeitet weiterhin ausschließlich mit Scoring-Sessions; die Korrektur
+bleibt ein eigener Completed-Pfad. Katalogdaten werden aktuell gelesen und
+Entwürfe beim Wiederöffnen aktualisiert. Neue Assignments setzen eine aktive
+Karte voraus; archivierte bestehende Assignments bleiben erhalten oder werden
+entfernt. Application und transaktionaler Persistenzpfad prüfen dies beim Speichern.
 
 ## 9. Domänenaggregate
 

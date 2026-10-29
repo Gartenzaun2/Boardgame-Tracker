@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
@@ -17,7 +18,7 @@ public interface IArkNovaScoringDataAccess
     Task<GameSession?> FindGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default);
     Task SaveCompletedGameSessionAsync(GameSession gameSession, CancellationToken cancellationToken = default);
     Task AddSpecialCardAsync(ArkNovaGameSessionSpecialCardAssignment assignment, CancellationToken cancellationToken = default);
-    Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, ArkNovaSpecialCard specialCard, CancellationToken cancellationToken = default);
+    Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, Guid specialCardId, CancellationToken cancellationToken = default);
     Task DeleteGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default);
 }
 
@@ -28,7 +29,10 @@ public sealed record ArkNovaScoringGameSessionData(
     DateTimeOffset StartedAt,
     DateTimeOffset? EndedAt,
     IReadOnlyList<ArkNovaScoringPlayerData> Players,
-    IReadOnlyList<ArkNovaSpecialCardAssignmentData> SpecialCards);
+    IReadOnlyList<ArkNovaSpecialCardAssignmentData> SpecialCards)
+{
+    public IReadOnlyList<ArkNovaSpecialCardData> CardCatalog { get; init; } = [];
+}
 
 public sealed record ArkNovaScoringPlayerData(
     Guid PlayerId,
@@ -41,4 +45,4 @@ public sealed record ArkNovaScoringPlayerData(
     int? Reputation,
     int? Placement);
 
-public sealed record ArkNovaSpecialCardAssignmentData(Guid PlayerId, ArkNovaSpecialCard SpecialCard);
+public sealed record ArkNovaSpecialCardAssignmentData(Guid PlayerId, Guid SpecialCardId);

@@ -1,4 +1,5 @@
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
@@ -16,6 +17,7 @@ public sealed class DatabaseInitializer(
             await contextFactory.CreateDbContextAsync(cancellationToken);
 
         await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+        await ArkNovaSpecialCardSchemaUpgrade.ApplyAsync(dbContext, cancellationToken);
         await ArkNovaReferenceDataSeeder.SeedAsync(dbContext, cancellationToken);
     }
 }
