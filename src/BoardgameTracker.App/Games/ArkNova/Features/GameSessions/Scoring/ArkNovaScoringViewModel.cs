@@ -1,3 +1,5 @@
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -16,7 +18,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
-    BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionUseCase correction,
+    ArkNovaCorrectionUseCase correction,
     IArkNovaSettingsStore settingsStore,
     ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
 {
@@ -33,7 +35,7 @@ public partial class ArkNovaScoringViewModel(
     [ObservableProperty] public partial bool IsSpecialCardPickerVisible { get; private set; }
     [ObservableProperty] public partial Guid? SpecialCardTargetPlayerId { get; private set; }
 
-    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; private set; }
+    public ArkNovaCorrectionDraft? Draft { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool IsHistorical => Draft is not null;
     public bool IsLiveScoring => !IsHistorical;
@@ -57,7 +59,10 @@ public partial class ArkNovaScoringViewModel(
 
     public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
-        if (IsBusy) return;
+        if (IsBusy)
+        {
+            return;
+        }
         try
         {
             IsBusy = true;
@@ -69,9 +74,12 @@ public partial class ArkNovaScoringViewModel(
                 return;
             }
 
-            if (data.Status == BoardgameTracker.Core.GameSessions.GameSessionStatus.Completed)
+            if (data.Status == GameSessionStatus.Completed)
             {
-                if (Draft?.Saved == true) Draft = null;
+                if (Draft?.Saved == true)
+                {
+                    Draft = null;
+                }
                 Draft ??= await correction.BeginAsync(gameSessionId, cancellationToken);
                 data = Draft.Data with { Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() };
             }
@@ -138,8 +146,14 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        if (Draft is not null) Draft.SetCard(playerId, card, true);
-        else await scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        if (Draft is not null)
+        {
+            Draft.SetCard(playerId, card, true);
+        }
+        else
+        {
+            await scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        }
         await LoadAsync(GameSessionId, cancellationToken);
     }
 
@@ -149,8 +163,14 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        if (Draft is not null) Draft.SetCard(playerId, card, false);
-        else await scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        if (Draft is not null)
+        {
+            Draft.SetCard(playerId, card, false);
+        }
+        else
+        {
+            await scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        }
         await LoadAsync(GameSessionId, cancellationToken);
     }
 
@@ -172,7 +192,10 @@ public partial class ArkNovaScoringViewModel(
 
     public async Task<ArkNovaCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
     {
-        if (!CanComplete) return null;
+        if (!CanComplete)
+        {
+            return null;
+        }
         return Draft is not null ? correction.Prepare(Draft) : await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
     }
 
@@ -189,19 +212,31 @@ public partial class ArkNovaScoringViewModel(
             Draft = null;
             await LoadAsync(GameSessionId, cancellationToken);
         }
-        else await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+        else
+        {
+            await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+        }
     }
 
     public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default)
     {
-        if (IsBusy) return false;
+        if (IsBusy)
+        {
+            return false;
+        }
 
         try
         {
             IsBusy = true;
             ErrorMessage = null;
-            if (IsHistorical) await correction.DeleteAsync(GameSessionId, cancellationToken);
-            else await scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
+            if (IsHistorical)
+            {
+                await correction.DeleteAsync(GameSessionId, cancellationToken);
+            }
+            else
+            {
+                await scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
+            }
             return true;
         }
         catch (Exception exception)

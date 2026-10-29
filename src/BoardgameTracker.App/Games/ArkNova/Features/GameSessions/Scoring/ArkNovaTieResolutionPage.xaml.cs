@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 using BoardgameTracker.App.Navigation;
@@ -24,7 +25,10 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         BindingContext = viewModel;
         _viewModel.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(ArkNovaTieResolutionViewModel.CanFinish)) RenderFrames();
+            if (e.PropertyName == nameof(ArkNovaTieResolutionViewModel.CanFinish))
+            {
+                RenderFrames();
+            }
         };
     }
 
@@ -35,7 +39,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         {
             throw new InvalidOperationException("Required gameSession navigation parameter is missing or invalid.");
         }
-        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out var draft) ? draft as BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft : null;
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaCorrectionDraft : null;
         _gameSessionId = gameSessionId;
     }
 
@@ -48,7 +52,10 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
 
     private void RenderFrames()
     {
-        if (FramesHost is null) return;
+        if (FramesHost is null)
+        {
+            return;
+        }
         FramesHost.Children.Clear();
         foreach (ArkNovaPlacementFrameViewModel frame in _viewModel.Frames)
         {
@@ -110,7 +117,10 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
     private bool _saving;
     private async void OnFinishClicked(object? sender, EventArgs e)
     {
-        if (_saving) return;
+        if (_saving)
+        {
+            return;
+        }
         _saving = true;
         try
         {
@@ -130,7 +140,10 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
             _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
             await DisplayAlertAsync(AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
         }
-        finally { _saving = false; }
+        finally
+        {
+            _saving = false;
+        }
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");

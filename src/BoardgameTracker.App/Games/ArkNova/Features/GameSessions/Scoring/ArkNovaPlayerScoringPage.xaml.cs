@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Core.Players;
@@ -28,7 +30,7 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         {
             throw new InvalidOperationException("Required scoring navigation parameters are missing or invalid.");
         }
-        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out var draft) ? draft as BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft : null;
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaCorrectionDraft : null;
         _gameSessionId = gameSessionId;
         _playerId = playerId;
     }
@@ -42,20 +44,29 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
     private bool _saving;
     private async void OnDoneClicked(object? sender, EventArgs e)
     {
-        if (_saving) return;
+        if (_saving)
+        {
+            return;
+        }
         _saving = true;
         try
         {
-            if (!_viewModel.IsValid) return;
+            if (!_viewModel.IsValid)
+            {
+                return;
+            }
             await _viewModel.FlushAsync();
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not save scoring for GameSession {GameSessionId}, Player {PlayerId}.", _gameSessionId, _playerId);
-            await DisplayAlertAsync(BoardgameTracker.App.Resources.Localization.AppResources.Scoring,
-            BoardgameTracker.App.Resources.Localization.AppResources.CorrectionFailed, BoardgameTracker.App.Resources.Localization.AppResources.Ok);
+            await DisplayAlertAsync(AppResources.Scoring,
+            AppResources.CorrectionFailed, AppResources.Ok);
         }
-        finally { _saving = false; }
+        finally
+        {
+            _saving = false;
+        }
     }
 }

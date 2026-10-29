@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
@@ -10,9 +11,9 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaTieResolutionViewModel(
     ArkNovaScoringUseCase scoringUseCase,
-    BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionUseCase correction) : ObservableObject
+    ArkNovaCorrectionUseCase correction) : ObservableObject
 {
-    public BoardgameTracker.Application.Games.ArkNova.GameSessions.History.ArkNovaCorrectionDraft? Draft { get; set; }
+    public ArkNovaCorrectionDraft? Draft { get; set; }
     private readonly Dictionary<Guid, int> _scores = [];
     private readonly Dictionary<Guid, int> _placements = [];
     private readonly Dictionary<Guid, (int Min, int Max)> _allowedRanges = [];
@@ -67,7 +68,10 @@ public partial class ArkNovaTieResolutionViewModel(
 
     public void Move(Guid playerId, int targetPlacement)
     {
-        if (!CanMove(playerId, targetPlacement)) return;
+        if (!CanMove(playerId, targetPlacement))
+        {
+            return;
+        }
         _placements[playerId] = targetPlacement;
         RefreshFrames();
     }
@@ -75,8 +79,14 @@ public partial class ArkNovaTieResolutionViewModel(
     public async Task CompleteAsync(CancellationToken cancellationToken = default)
     {
         ArkNovaPlacementRules.ValidateResolution(_scores, _placements);
-        if (Draft is not null) await correction.SaveAsync(Draft, _placements, cancellationToken);
-        else await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
+        if (Draft is not null)
+        {
+            await correction.SaveAsync(Draft, _placements, cancellationToken);
+        }
+        else
+        {
+            await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
+        }
     }
 
     private void RefreshFrames()

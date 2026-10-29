@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.8.2
+
+- Spielerkacheln in Gruppenanlage und -bearbeitung verwenden zugewiesene Spielerfarbe und gekoppelte Text-/Iconfarbe.
+- Hoch-/Runter-/Entfernen-Symbole vergrößert; gemeinsame Aktionsflächen mindestens 48 × 48 dp.
+- App-Version 0.8.8.2 / ApplicationVersion 20.
+
+## 0.8.8.1
+
+- Kleine zugehörige Vertrags-/Präsentationstypen gemeinsam mit ihrem Haupttyp abgelegt.
+- Historienablauf gegliedert und wiederholte vollqualifizierte Typnamen in der Wertung vereinfacht.
+- Verbindliche Regeln zu Begleittypen, expliziten einfachen Typen, var für komplexe Typen sowie mehrzeiligen if-/finally-Blöcken ergänzt.
+- App-Version 0.8.8.1 / ApplicationVersion 19.
+
 ## 0.8.8.0
 
 - Gemeinsame semantische Spielerfarben statt separatem Arche-Nova-Enum; jedes Spiel definiert seine erlaubte Teilmenge.

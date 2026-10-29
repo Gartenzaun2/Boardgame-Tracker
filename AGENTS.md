@@ -40,6 +40,16 @@ Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-
 
 Navigationsparameter ausschließlich über gemeinsame Konstanten aus `App/Navigation/NavigationParameters.cs` senden und in `ApplyQueryAttributes` auslesen; keine String-Literale für Schlüssel. Details: `docs/ARCHITECTURE.md`.
 
+## Lesbarkeit und Typdeklarationen
+
+Kleine, fachlich zugehörige Begleittypen dürfen in derselben Datei wie ihr Haupttyp stehen; keine Pflicht „ein Typ pro Datei“. Reine Implementierungsdetails möglichst privat verschachteln. Eigenständige Fachbegriffe, gemeinsame Verträge und Typen mit anderer Modul-/Schichtzugehörigkeit separat lassen. XAML-, DI- und EF-Verwendungen bei der Sichtbarkeit beachten.
+
+Einfache oder kurze Typen explizit schreiben, insbesondere `string?`, `bool`, `int`, `Guid`, Enums und gut lesbare Modelltypen. `var` nur für komplexe Typen verwenden, wenn es die Lesbarkeit verbessert, z. B. lange verschachtelte generische `IEnumerable`-/Dictionary-Typen; anonyme Typen benötigen `var`. Ein offensichtlicher Initialisierer ist allein kein Grund für `var`. Beispiele: `string? gameKey = settings.SelectedGameKey;`, `Guid? groupId = selection;`. Keine pauschale nachträgliche Umstellung unberührten Codes.
+
+Bei `if` mit genau einer einfachen Anweisung keine geschweiften Klammern verwenden; die Anweisung steht eingerückt auf einer eigenen Zeile (z. B. `if (isBusy)` und darunter `return;`). Ausnahme: Bei verschachtelten `if`-Anweisungen Klammern für eine eindeutige Block-/`else`-Zuordnung verwenden. Mehrere Anweisungen verwenden ebenfalls einen mehrzeiligen Klammerblock. Die öffnende Klammer darf auf derselben Zeile wie der zugehörige Ausdruck stehen, z. B. `if (condition) {` oder `finally {`; der Inhalt steht auf eigenen Zeilen. Keine Anweisung direkt hinter der Bedingung auf derselben Zeile und kein vollständiger `finally`-Block auf einer Zeile.
+
+Eine Anweisung pro Zeile; komplexe Abläufe durch Absätze, benannte Zwischenschritte und bei Bedarf private Methoden gliedern. Projekt-Typnamen über `using` einbinden, sofern kein Namenskonflikt besteht. Keine festen Zeilengrenzen oder zusätzlichen Wrapper allein zur Aufteilung einführen.
+
 ## Vorgehen und Entscheidungsgrenze
 Vor jeder Änderung betroffene Dateien und relevante Dokumentation lesen, die Implementierung verstehen und Auswirkungen auf Tests, Persistenz, UI und Dokumentation prüfen. Danach die kleinste sinnvolle Änderung durchführen; funktionierenden Code nicht unnötig neu schreiben.
 
