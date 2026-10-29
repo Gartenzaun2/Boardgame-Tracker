@@ -423,3 +423,22 @@ Gruppe anlegen und Gruppe bearbeiten bieten je Gruppenmitglied denselben transpa
 Der gemeinsame modale Dialog verwendet `SelectionDialog`: AppBackground außen, Surface-Einträge, SelectedSurface/SelectedBorder und ein sichtbares Häkchen für die Auswahl. Er nennt ausdrücklich das Spiel, z. B. „Farbe für Arche Nova festlegen“, sowie den betroffenen Spieler. Die Einträge zeigen Farbfeld und lokalisierten Namen; nur die erlaubten Farben und „Keine Farbe“ stehen zur Auswahl. Ein Tap übernimmt die Farbe in den Formularentwurf und schließt. Bei einer bereits vergebenen Farbe werden die bisherigen Farben getauscht; kein doppelter Gruppendefault entsteht. Schließen/System-Zurück ändert keine Auswahl. Erst Speichern persistiert die Gruppe samt Defaults atomar.
 
 Spielerkacheln in Gruppe anlegen und bearbeiten übernehmen eine zugewiesene Defaultfarbe unmittelbar aus der gemeinsamen Spielerpalette. Name, Farbname, Gaststatus, Palettenicon und Reihenfolge-/Entfernen-Aktionen verwenden auf der getönten Fläche die gekoppelte Spieler-Textfarbe. Ohne Zuweisung bleibt die Kachel auf dynamischem Surface mit Theme-Text; das Entfernen bleibt dort Danger. Nach Entfernen oder Tauschen einer Farbe aktualisieren sich Fläche und Texte sofort. Hoch-/Runter-/Entfernen-Symbole verwenden 26 sp und mindestens 48 × 48 dp Touch-Fläche; der Palettenbutton besitzt ebenfalls 48 × 48 dp.
+
+## Begrenzte numerische Wertungseingaben
+
+Die Arche-Nova-Spielereingabe nutzt native Zahlenräder ohne Umlauf und ein
+zugehöriges direkt editierbares Zahlenfeld. Rad und Eingabefeld bilden je eine
+gleich breite Spalte mit 16 dp Abstand zwischen Rad und Zahlenfeld sowie
+derselben 16-dp-Rundung aus `CardBorder`. Überschriften und Wertebereiche
+stehen zentriert. Die beiden Spalten haben 32 dp Zwischenraum; ihre Außenkanten
+fluchten mit Punktefläche und Fertig-Button. Die Eingabe bleibt auf ihrer gerundeten Surface transparent.
+32 dp Abstand trennen die Eingabegruppe von den berechneten Punkten. Räder erhalten `Surface`, `Outline`
+und `TextPrimary` aus dem aktiven Theme; keine Spielerfarbflächen oder eigenen
+Akzentfarben. Noch nicht erfasste Mittelwerte werden ausdrücklich als Vorschlag
+benannt. Unter den Punkten steht abhängig von der Spieleinstellung ein
+horizontaler Ruf-Slider mit Zahlenfeld, ohne zusätzlichen Erfassungsschalter.
+Der Slider verwendet `Primary` für Griff/aktive Spur und `Outline` für die
+inaktive Spur. Werte werden ganzzahlig erfasst; Ruf bleibt optional.
+Bedienhinweise gehören hinter das Info-Symbol im Kopf statt dauerhaft in den
+Screen. Vorschlagskennzeichnung und Validierungsfehler bleiben als Status
+sichtbar. Bei großen Schriften und Tastatur ist der Inhalt scrollbar.

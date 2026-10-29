@@ -41,8 +41,33 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         await _viewModel.LoadAsync(_gameSessionId, _playerId);
     }
 
+    private async void OnInfoClicked(object? sender, EventArgs e)
+    {
+        await DisplayAlertAsync(AppResources.ScoringInputHelpTitle,
+            $"{AppResources.NumberWheelHint}\n\n{AppResources.NumberWheelConfirmationHint}", AppResources.Ok);
+    }
+
+    private void OnReputationSliderChanged(object? sender, ValueChangedEventArgs e)
+    {
+        // Binding updates only display the current value or suggestion; only a different value is input.
+        if (BindingContext is ArkNovaPlayerScoringViewModel viewModel
+            && Math.Abs(e.NewValue - viewModel.ReputationSliderValue) > 0.001)
+            viewModel.ReputationSliderValue = e.NewValue;
+    }
+
+    private void OnReputationDragCompleted(object? sender, EventArgs e)
+    {
+        if (sender is not Slider slider)
+            return;
+        _viewModel.ReputationSliderValue = slider.Value;
+        slider.Value = _viewModel.ReputationSliderValue;
+    }
+
     private bool _saving;
-    private async void OnDoneClicked(object? sender, EventArgs e)
+    private async void OnDoneClicked(object? sender, EventArgs e) => await SaveAndCloseAsync(true);
+    private async void OnBackClicked(object? sender, EventArgs e) => await SaveAndCloseAsync(false);
+
+    private async Task SaveAndCloseAsync(bool confirmSuggestions)
     {
         if (_saving)
         {
@@ -51,6 +76,9 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         _saving = true;
         try
         {
+            if (confirmSuggestions)
+                _viewModel.ConfirmSuggestedValues();
+
             if (!_viewModel.IsValid)
             {
                 return;

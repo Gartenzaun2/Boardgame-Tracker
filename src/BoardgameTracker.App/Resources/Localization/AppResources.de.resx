@@ -483,4 +483,9 @@
   <data name="Result" xml:space="preserve"><value>Ergebnis</value></data>
   <data name="SetColorForGameFormat" xml:space="preserve"><value>Farbe für {0} festlegen</value></data>
   <data name="NoPlayerColor" xml:space="preserve"><value>Keine Farbe</value></data>
+  <data name="NumberWheelHint" xml:space="preserve"><value>Wischen oder Zahl antippen, um den Wert einzugeben.</value></data>
+  <data name="SuggestedValue" xml:space="preserve"><value>Vorschlag</value></data>
+  <data name="ScorePreview" xml:space="preserve"><value>Punktevorschau</value></data>
+  <data name="NumberWheelConfirmationHint" xml:space="preserve"><value>„Fertig“ übernimmt auch die angezeigten Vorschläge für Attraktivität und Artenschutz. Die Rufeingabe erscheint gemäß Spieleinstellungen als horizontaler Regler. Ruf bleibt optional; Verschieben erfasst einen ganzzahligen Wert. Das Zahlenfeld kann auch direkt bearbeitet oder geleert werden.</value></data>
+  <data name="ScoringInputHelpTitle" xml:space="preserve"><value>Wertung eingeben</value></data>
 </root>

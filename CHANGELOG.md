@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.8.9.4
+
+- Überschriften der Zahlenräder zentriert; größere Abstände zwischen Rädern und zu den Zahlenfeldern.
+- Außenkanten der Eingabegruppe bündig mit Punktefläche und Fertig-Button.
+- App-Version 0.8.9.4 / ApplicationVersion 25.
+
+## 0.8.9.3
+
+- Attraktivität und Artenschutz mit schmaleren, zusammengehörigen Rad-/Eingabespalten; Zahlenfelder übernehmen die gerundeten Konturen der Räder.
+- Zusätzlicher Abstand vor der Punktefläche.
+- App-Version 0.8.9.3 / ApplicationVersion 24.
+
+## 0.8.9.2
+
+- XAML-Laufzeitfehler beim Öffnen der Spielereingabe behoben: Ruf-Slider erhält seine aus den Fachregeln abgeleiteten Grenzen als double statt int.
+- App-Version 0.8.9.2 / ApplicationVersion 23.
+
+## 0.8.9.1
+
+- Rufeingabe unter den Punkten als horizontaler Slider gemäß Spieleinstellung; zusätzlicher Erfassungsschalter entfällt.
+- Hinweise zur Wertungseingabe hinter einem Info-Symbol im Seitenkopf.
+- App-Version 0.8.9.1 / ApplicationVersion 22.
+
+## 0.8.9.0
+
+- Arche-Nova-Spielerwertung mit nativen Zahlenrädern, festen Bereichsgrenzen und direkter Tastatureingabe.
+- Nicht erfasste Werte zeigen Mittelwertvorschläge; erst bewusste Eingabe oder „Fertig“ übernimmt die Pflichtwerte. Ruf bleibt separat optional.
+- Punktevorschau und bestehende gespeicherte Werte bleiben im Eingabescreen sichtbar.
+- App-Version 0.8.9.0 / ApplicationVersion 21.
+
 ## 0.8.8.2
 
 - Spielerkacheln in Gruppenanlage und -bearbeitung verwenden zugewiesene Spielerfarbe und gekoppelte Text-/Iconfarbe.
