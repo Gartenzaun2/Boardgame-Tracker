@@ -249,6 +249,18 @@ modelliert sind.
 - Spielspezifische EF-Konfigurationen liegen ausschließlich unter
   `Games/<GameName>/Persistence/SQLite/Configurations`.
 
+Es gibt genau einen gemeinsamen `sealed partial BoardgameTrackerDbContext`.
+Der generische Teil unter `Persistence/SQLite` enthält die allgemeinen DbSets
+und `OnModelCreating`; die Arche-Nova-DbSets stehen in
+`Games/ArkNova/Persistence/SQLite/BoardgameTrackerDbContext.ArkNova.cs` im selben
+Namespace wie der gemeinsame Context. Die Modellkonfiguration bleibt unverändert.
+
+`DatabaseInitializer` erstellt den Context, führt `EnsureCreatedAsync` aus und
+führt anschließend die registrierten `IDatabaseInitializationStep`-Implementierungen
+in Registrierungsreihenfolge auf demselben Context aus. `MauiProgram` registriert
+`ArkNovaReferenceDataSeeder` als spielspezifischen Schritt. Der generische
+Initialisierer kennt keine Spielmodule; Fehler und Abbruch werden weitergegeben.
+
 ### Aktuelle Pre-Alpha-Datenbankstrategie
 
 Der Runtime-Start verwendet `Database.EnsureCreatedAsync()` und danach idempotentes

@@ -6,6 +6,8 @@ Spezifikationen unter `docs/`.
 
 ## Unveröffentlicht
 
+- Gemeinsamen DbContext per partial nach allgemeinen und Arche-Nova-DbSets aufgeteilt. Datenbankinitialisierung führt generisch registrierte Schritte aus; Arche-Nova-Seeding wird im Composition Root registriert. Schema und Fachverhalten bleiben unverändert.
+
 - Android-Emulatorprüfung (API 35) für Dialoge, drei Themes, große Schrift, Partie-/Wertungsablauf, Korrekturen und Kartenverwaltung ausgeführt. Bestehenden Navigationsspeicherfehler beim Tabwechsel auf Unterseiten im Wireframe dokumentiert; Hardware-/iOS-Prüfung bleibt offen.
 
 - Native Hinweise, Fehler- und Sicherheitsabfragen durch gemeinsame App-Dialoge ersetzt; Historienfilter, Theme und Standardspiel verwenden App-Auswahl mit sichtbarer aktueller Auswahl. Zurück/Abbrechen bestätigt keine Aktion; ungespeicherte Entwürfe bleiben beim Dialogschließen erhalten.
