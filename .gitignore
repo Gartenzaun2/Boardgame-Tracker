@@ -1,3 +1,6 @@
+# Developer-local configuration and deployment
+.local/
+
 # .NET / MAUI build output
 [Bb]in/
 [Oo]bj/
