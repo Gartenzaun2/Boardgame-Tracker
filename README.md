@@ -42,11 +42,11 @@ Spielcode liegt unter `Games/<GameName>/`. Details stehen in
 
 ## Datenbank
 
-Neue Pre-Alpha-Datenbanken entstehen mit `EnsureCreatedAsync()`. Für bestehende
-Installationen erhält der gezielte, transaktionale Spezialkarten-Upgrade alte
-Zuordnungen und ergänzt die neuen Referenzdaten. Kein pauschales Löschen der
-App-Daten oder Deinstallieren bei diesem Spezialkarten-Upgrade. Voraussetzungen, andere
-Schemaänderungen und Upgrade-Smoke-Test stehen in [SETUP.md](SETUP.md).
+Neue Entwicklungsdatenbanken entstehen mit `EnsureCreatedAsync()`. Bis zum ersten
+Deployment sind keine Migrationsstrategien oder Kompatibilitätspfade für ältere
+Entwicklungsstände vorgesehen. Erfordert eine inkompatible Änderung eine
+Neuinstallation mit Verlust lokaler Entwicklungsdaten, wird ausdrücklich darauf
+hingewiesen. Details stehen in [SETUP.md](SETUP.md).
 
 ## Dokumentation und Einstieg in einen neuen Chat
 

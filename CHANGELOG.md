@@ -6,6 +6,8 @@ Spezifikationen unter `docs/`.
 
 ## Unveröffentlicht
 
+- Regel bis zum ersten Deployment ergänzt: keine Migrationsstrategie oder Altkompatibilität; notwendige Neuinstallation und Verlust lokaler Entwicklungsdaten ausdrücklich ankündigen. Upgrade-Prüfvorgaben angepasst; App-Code unverändert.
+
 - Markdown-Dokumentation konsolidiert: doppelte Feature-/Navigationsregeln zusammengeführt, veraltete DB-Reset- und UI-Angaben ersetzt.
 - Zuständigkeiten geschärft und Einstieg für neue Chats ergänzt.
 - Drei bestätigte UI-Codeabweichungen für spätere Behebung im Wireframe festgehalten; keine App-Codeänderung.
