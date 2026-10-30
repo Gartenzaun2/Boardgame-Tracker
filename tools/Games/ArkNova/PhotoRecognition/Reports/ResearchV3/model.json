@@ -1,0 +1,43 @@
+{
+  "methods": [
+    "B1_pool",
+    "B1_view"
+  ],
+  "limits": {
+    "B1_pool": {
+      "attractiveness": {
+        "residual": 0.5594837665557861,
+        "gradient": 0.35540807247161865,
+        "occupancy": 0.06
+      },
+      "conservation": {
+        "residual": 0.5867111682891846,
+        "gradient": 0.396830290555954,
+        "occupancy": 0.06
+      },
+      "reputation": {
+        "residual": 0.6070132851600647,
+        "gradient": 0.4448235332965851,
+        "occupancy": 0.06
+      }
+    },
+    "B1_view": {
+      "attractiveness": {
+        "residual": 1.0846558809280396,
+        "gradient": 0.5900434255599976,
+        "occupancy": 0.06
+      },
+      "conservation": {
+        "residual": 1.1817574501037598,
+        "gradient": 0.6738793849945068,
+        "occupancy": 0.06
+      },
+      "reputation": {
+        "residual": 1.2300467491149902,
+        "gradient": 0.7415130734443665,
+        "occupancy": 0.06
+      }
+    }
+  },
+  "selectedB1": "B1_pool"
+}

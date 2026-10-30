@@ -1,0 +1,33 @@
+{
+  "freezeHashesVerified": 101,
+  "firstTenAReproduced": [
+    6,
+    8,
+    7,
+    6,
+    7,
+    8,
+    12,
+    9,
+    9,
+    10
+  ],
+  "numericFailureImage": "Fall3Senkrecht.jpg",
+  "numericFailure": "coreDifference=1.0000000000000002 for reputation field 3",
+  "highAccepted": 43,
+  "highWrong": 8,
+  "mediumAccepted": 32,
+  "mediumWrong": 6,
+  "normalLooSupportedFields": 1680,
+  "normalLooFalseCandidatesPerMethod": 0,
+  "matchedCasesVerticalACorrect": 15,
+  "matchedCasesVerticalATotal": 24,
+  "matchedCasesObliqueACorrect": 67,
+  "matchedCasesObliqueATotal": 96,
+  "bothB1VariantsVerticalTop1": 0,
+  "solutionBuildWarnings": 0,
+  "solutionBuildErrors": 0,
+  "coreTestsPassed": 75,
+  "applicationTestsPassed": 175,
+  "researchChecksPassed": 5
+}

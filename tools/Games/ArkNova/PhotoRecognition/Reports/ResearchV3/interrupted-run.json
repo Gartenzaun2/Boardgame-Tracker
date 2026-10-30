@@ -1,0 +1,20 @@
+{
+  "status": "aborted",
+  "completedImagesBeforeCrash": 10,
+  "nextImage": "Fall3Senkrecht.jpg",
+  "exception": "ArgumentOutOfRangeException: Evidence fractions must be finite and between zero and one",
+  "firstTenACorrect": [
+    6,
+    8,
+    7,
+    6,
+    7,
+    8,
+    12,
+    9,
+    9,
+    10
+  ],
+  "source": "Initial frozen run stdout; metrics were in memory and not exported before exception.",
+  "recovery": "Preserve freeze.json and initial latch. New observer before A score validation; count A pipeline exceptions as failures. No clamping, thresholds, weights, patches, references or B1 code changed. Repeat to recover missing serialized results; not a new independent validation."
+}

@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Empty1Links.jpg",
+    "view": "left",
+    "path": "Normals\\Empty1Links.jpg.png"
+  },
+  {
+    "name": "Empty1Rechts.jpg",
+    "view": "right",
+    "path": "Normals\\Empty1Rechts.jpg.png"
+  },
+  {
+    "name": "Empty1Senkrecht.jpg",
+    "view": "vertical_top_down",
+    "path": "Normals\\Empty1Senkrecht.jpg.png"
+  },
+  {
+    "name": "Empty1Vorne.jpg",
+    "view": "front",
+    "path": "Normals\\Empty1Vorne.jpg.png"
+  },
+  {
+    "name": "Empty2Gegenueber.jpg",
+    "view": "opposite_side",
+    "path": "Normals\\Empty2Gegenueber.jpg.png"
+  },
+  {
+    "name": "Empty2Links.jpg",
+    "view": "left",
+    "path": "Normals\\Empty2Links.jpg.png"
+  },
+  {
+    "name": "Empty2Rechts.jpg",
+    "view": "right",
+    "path": "Normals\\Empty2Rechts.jpg.png"
+  },
+  {
+    "name": "Empty2Senkrecht.jpg",
+    "view": "vertical_top_down",
+    "path": "Normals\\Empty2Senkrecht.jpg.png"
+  },
+  {
+    "name": "Empty2Vorne.jpg",
+    "view": "front",
+    "path": "Normals\\Empty2Vorne.jpg.png"
+  },
+  {
+    "name": "Empty1Gegenueber.jpg",
+    "view": "opposite_side",
+    "path": "Normals\\Empty1Gegenueber.jpg.png"
+  }
+]

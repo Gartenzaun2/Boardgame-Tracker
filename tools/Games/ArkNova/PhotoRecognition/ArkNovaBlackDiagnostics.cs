@@ -9,12 +9,13 @@ namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 /// Read-only observer of the existing pipeline. All display operations use clones;
 /// raw Mats are borrowed only for the duration of Capture. No score is fed back.
 /// </summary>
-internal sealed class ArkNovaBlackDiagnostics(string outputDirectory)
+internal sealed class ArkNovaBlackDiagnostics(string outputDirectory, Action<ArkNovaBlackDiagnostics.Frame>? frameObserver = null)
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     private readonly List<Residual> _residuals = [];
     private RegistrationDiagnostics? _registration;
     public List<FieldMeasurement> Measurements { get; } = [];
+    public RegistrationDiagnostics? Registration => _registration;
 
     public static int Run(string assets, string dataset, string output)
     {
@@ -67,6 +68,13 @@ internal sealed class ArkNovaBlackDiagnostics(string outputDirectory)
 
     public void Capture(Frame frame, DiagnosticField[] fields)
     {
+        // Research observers borrow the existing warp; they never feed evidence
+        // back into A and must clone any matrices retained beyond this callback.
+        if (frameObserver is not null)
+        {
+            frameObserver(frame);
+            return;
+        }
         DiagnosticField[] focus = fields.Where(field => field.Value is 19 or 20 or 21).OrderBy(field => field.Value).ToArray();
         int x = focus.Min(field => field.Bounds.Left) - 24;
         int y = focus.Min(field => field.Bounds.Top) - 65;

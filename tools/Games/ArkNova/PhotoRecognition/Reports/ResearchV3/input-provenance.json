@@ -1,0 +1,12 @@
+{
+  "repository": "Gartenzaun2/Boardgame-Tracker",
+  "branch": "master",
+  "initialCommit": "299a6897fa5ee9fd6fafcc8dd10fc63cb8e94841",
+  "verifiedOriginMaster": "299a6897fa5ee9fd6fafcc8dd10fc63cb8e94841",
+  "archive": "ARK_NOVA_CODEX_RESEARCH_BATCH_V3.zip",
+  "archiveSha256": "584e0f2117bbac8c489b6156f74a00a28bbf3a50840a55cc985e4c04836115af",
+  "externalAccess": "Only the explicitly authorized archive; no external directories or model caches searched.",
+  "b2": "No DINOv3 weights in repository/archive; unavailable under the external data restriction.",
+  "b3": "Skipped before V3: B1 old calibration recall 15/119 below predeclared 0.25 gate; no top1 complementary gains.",
+  "gtIntegrity": "Schema/prefix inspection only before freeze; no V3 occupied predictions, metrics, fitting or parameter selection."
+}

@@ -6,10 +6,12 @@ namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 internal sealed class ArkNovaRankingCapture(string? diagnosticDirectory = null, RankingVariant diagnosticVariant = RankingVariant.Baseline)
 {
     public List<RankingObservation> Observations { get; } = [];
+    public Action<ArkNovaBlackDiagnostics.Frame>? FrameObserver { get; init; }
 
     public void Capture(ArkNovaBlackDiagnostics.Frame frame, CaptureField[] fields, Mat[] masks, Mat[] relaxed,
         Dictionary<string, double> trackVisibility)
     {
+        FrameObserver?.Invoke(frame);
         using Mat seed = Mat.Zeros(frame.Strict.Size(), MatType.CV_8UC1);
         using Mat allowed = Mat.Zeros(frame.Strict.Size(), MatType.CV_8UC1);
         using Mat currentA = SmoothChannel(frame.Lab, 1);

@@ -353,6 +353,11 @@ gegen eine bekannte Referenztafel, sechs Entwicklungsfotos und einen zusätzlich
 25-Foto-Datensatz mit festem Calibration-/Holdout-Split (Phase 1A).
 Dieser technische Prototyp ist noch keine App-Funktion. Mobile Bibliotheksauswahl,
 Geräteperformance und Anbindung an den vorhandenen Kamera-Einstieg stehen aus.
+Ein zusätzlicher Forschungsbatch mit zehn leeren Referenzfotos und 13 neuen
+belegten Fotos hat keinen ausreichend robusten klassischen Struktur-Signalweg
+für ein Ensemble nachgewiesen. DINOv3 blieb mangels autorisiert bereitgestellter
+Gewichte offen. Die bisherige Confidence liefert auf diesen neuen Fotos auch
+falsch akzeptierte Werte; daraus folgt keine Freigabe zur automatischen Übernahme.
 Die angestrebte Kombination aus mindestens 75 % automatisch akzeptierten Werten
 und mindestens 98 % Accuracy wird im unabhängigen Holdout noch nicht erreicht.
 Für die aktuelle technische Fotoanalyse werden Werte 0 nicht als CV-Kandidaten
