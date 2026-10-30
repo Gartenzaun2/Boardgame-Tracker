@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "imageProcessing": {
+    "targetLongEdgePx": 2000,
+    "jpegQuality": 88,
+    "exifOrientationApplied": true,
+    "note": "Downscaled from uploaded 3024x4032 / 4032x3024 JPEG originals."
+  },
+  "files": [
+    {
+      "name": "IMG_4265.jpg",
+      "sha256": "2a945141526ea53697f967452d9145a70680e3478135db7e2ed5006bc0fc6279",
+      "bytes": 812886
+    },
+    {
+      "name": "IMG_4266.jpg",
+      "sha256": "f0d9b977f48c9b20aac14d24aa6549704d8a151b649d916ab829acaed260ffdc",
+      "bytes": 815914
+    },
+    {
+      "name": "IMG_4267.jpg",
+      "sha256": "9a7b6cc0c37812276dbe54bc7ded158a19cce6a9460c7703d13c900e85548539",
+      "bytes": 787842
+    },
+    {
+      "name": "IMG_4268.jpg",
+      "sha256": "71108af1c7d5e51a7ee4dc0f793e0b912e44b13addd175eea3ff8d71866ea128",
+      "bytes": 789822
+    },
+    {
+      "name": "IMG_4269.jpg",
+      "sha256": "ee01b861074a076d606f15dff30337bdd49f37a52661f8542da74e21160f165c",
+      "bytes": 763917
+    },
+    {
+      "name": "IMG_4270.jpg",
+      "sha256": "d9aad5e30d1983a9bd35f53899a7dd5ef911778733375bc9087e9733760010b7",
+      "bytes": 771425
+    },
+    {
+      "name": "IMG_4271.jpg",
+      "sha256": "909732e10cced913fcf2faadd1849107e4ec57279c850d168c4fc6669aa15a43",
+      "bytes": 704632
+    },
+    {
+      "name": "IMG_4272.jpg",
+      "sha256": "17c1cfc4c1aeb5b67d73644fcb5e57a5b0dd4874f7ee75c708ddf9cb2d9bc9f8",
+      "bytes": 833876
+    },
+    {
+      "name": "IMG_4273.jpg",
+      "sha256": "1f38c2d9e1166b20de344f7cb7fd1ab5bfa8dc5c3dcc8018342d96f6a0d0d462",
+      "bytes": 821257
+    },
+    {
+      "name": "IMG_4274.jpg",
+      "sha256": "a5a2bcf5e14ed893bb66f73bfd34e725745ea9563d2df4561db2a4661ac47be8",
+      "bytes": 750160
+    },
+    {
+      "name": "IMG_4275.jpg",
+      "sha256": "afe045753b8e63e9daba8c4420faed4ca5932b0f7145265f803d936aab1c5953",
+      "bytes": 790561
+    },
+    {
+      "name": "IMG_4276.jpg",
+      "sha256": "f1c9cc533a77081f5d4100666c4c8805937ddb861308f841822b7c24b9a35eba",
+      "bytes": 787064
+    },
+    {
+      "name": "IMG_4277.jpg",
+      "sha256": "b3be8c17297ce92f475444a340cb81b63a5cead696cc8a05b1eaa8c1c0a90339",
+      "bytes": 774639
+    },
+    {
+      "name": "IMG_4278.jpg",
+      "sha256": "0f0be31e6b3a601428f6359b8040406328d404f07eeec918dd6f6ee46cd6c5fd",
+      "bytes": 765412
+    },
+    {
+      "name": "IMG_4279.jpg",
+      "sha256": "3913384689870f873e56d9ab53b971484bc01400324bf3e9c99c53472e60ebbb",
+      "bytes": 736934
+    },
+    {
+      "name": "IMG_4280.jpg",
+      "sha256": "942d31bdbc450de85a3a3b9a6f69669a65e4403e72b77f4a5ebf13c998cfd46b",
+      "bytes": 758398
+    },
+    {
+      "name": "IMG_4281.jpg",
+      "sha256": "1aef3699c6e6a47e83a38bd9375c61826682f73c546b4b79022d00b9e47c5773",
+      "bytes": 778395
+    },
+    {
+      "name": "IMG_4282.jpg",
+      "sha256": "d962264090f9e897054ec5b8608755d53da219c05875ff15e0bd0ec90aea11e1",
+      "bytes": 834742
+    },
+    {
+      "name": "IMG_4283.jpg",
+      "sha256": "facb90675214a3ff872fd021775adb4e5fa74fcdafbb867d55c7ce597547b51d",
+      "bytes": 748307
+    },
+    {
+      "name": "IMG_4284.jpg",
+      "sha256": "f4022be529aa220a355730fbfce35a40cb7e31a4e435aa4ca08455ab017f5f9a",
+      "bytes": 778917
+    },
+    {
+      "name": "IMG_4285.jpg",
+      "sha256": "2c1336518641ee1e5cc3a6ae650ed3894ede8b4bd50ba9a10320606f7d0b3976",
+      "bytes": 756142
+    },
+    {
+      "name": "IMG_4286.jpg",
+      "sha256": "fae026ff09fb13a215886e493cd50e7a672978d87dd0d2b763ff8424da03360b",
+      "bytes": 831014
+    },
+    {
+      "name": "IMG_4287.jpg",
+      "sha256": "2277e105903669af312edda95f953056f6003a0e03d3d3f3a2fd103a4172f240",
+      "bytes": 727842
+    },
+    {
+      "name": "IMG_4288.jpg",
+      "sha256": "31fdce1a2b1701d17717d3899673539d73e9112b9d43fc3cf4a40a09fb206cf4",
+      "bytes": 840091
+    },
+    {
+      "name": "IMG_4289.jpg",
+      "sha256": "4b9c0335098fc0abb3cdfc621df3a63a5ff88e2b6bd351aed6ea23c1211adf75",
+      "bytes": 814295
+    }
+  ]
+}

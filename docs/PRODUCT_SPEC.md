@@ -349,9 +349,12 @@ Arche-Nova-Einstellungen ausgewählt, z. B. Original oder Custom kompakt. Die
 eigentliche Fotoerkennung ist ein eigener nachfolgender Implementierungsslice.
 
 Ein separates Windows-Entwicklungswerkzeug erprobt inzwischen die lokale Bildanalyse
-gegen eine bekannte Referenztafel und sechs Entwicklungsfotos (Phase 1A).
+gegen eine bekannte Referenztafel, sechs Entwicklungsfotos und einen zusätzlichen
+25-Foto-Datensatz mit festem Calibration-/Holdout-Split (Phase 1A).
 Dieser technische Prototyp ist noch keine App-Funktion. Mobile Bibliotheksauswahl,
 Geräteperformance und Anbindung an den vorhandenen Kamera-Einstieg stehen aus.
+Die angestrebte Kombination aus mindestens 75 % automatisch akzeptierten Werten
+und mindestens 98 % Accuracy wird im unabhängigen Holdout noch nicht erreicht.
 Unsichere Nachbarfeldbelegung reduziert die Confidence, ohne den erkannten Wert
 automatisch auf ein anderes Feld zu verschieben.
 

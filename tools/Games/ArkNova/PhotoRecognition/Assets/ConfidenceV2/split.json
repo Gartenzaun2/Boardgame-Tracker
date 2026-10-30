@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "frozenBeforeThresholdChanges": true,
+  "baselineCommit": "9c77226",
+  "selectionPolicy": "Choose using calibration only. Evaluate holdout once after freezing the chosen policy. Never tune from holdout results.",
+  "calibration": [
+    "IMG_4265.jpg", "IMG_4266.jpg", "IMG_4267.jpg",
+    "IMG_4269.jpg", "IMG_4270.jpg", "IMG_4271.jpg",
+    "IMG_4273.jpg", "IMG_4274.jpg", "IMG_4276.jpg",
+    "IMG_4278.jpg", "IMG_4279.jpg", "IMG_4280.jpg", "IMG_4281.jpg",
+    "IMG_4282.jpg", "IMG_4283.jpg", "IMG_4284.jpg", "IMG_4285.jpg"
+  ],
+  "holdout": [
+    "IMG_4268.jpg", "IMG_4272.jpg", "IMG_4275.jpg", "IMG_4277.jpg",
+    "IMG_4286.jpg", "IMG_4287.jpg", "IMG_4288.jpg", "IMG_4289.jpg"
+  ]
+}

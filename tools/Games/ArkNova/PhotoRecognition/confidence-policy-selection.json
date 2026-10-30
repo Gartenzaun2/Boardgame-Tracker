@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "selectionDate": "2026-10-30",
+  "chosenVariant": "E_Guarded",
+  "selectedBeforeHoldoutEvaluation": true,
+  "baselineCommit": "9c77226",
+  "rationale": "Einzige getestete Variante mit >=98% inklusiver Calibration-Accuracy und ohne falsche High-/Phantom-High-Werte. Coverage-Ziel wird nicht erreicht. Keine weitere Anpassung anhand des Holdouts.",
+  "splitSha256": "6fc29cff66d73934b3ec69871938c8b6d5aa324007930d7a560e1120bafcbc31",
+  "policySourceSha256": "2b7925e5b88a009f8fce45cb19df8956ee80a0b6b216de565ce9fa9ab91996de",
+  "analyzerSourceSha256": "d49fc9d1705c4a35aab6fee0a6620879c53037f027d46f8b0a8de11ab2700e3c",
+  "calibrationReportSha256": "9d6b6af08a0fe6483fe3aacfe78bce02d34abd20cc5018271197b6d479aaefe2",
+  "calibrationSummary": {
+    "correct": 93,
+    "total": 123,
+    "rawAccuracy": 0.7560975609756098,
+    "finalCorrect": 86,
+    "high": {
+      "count": 38,
+      "correct": 38,
+      "wrong": 0,
+      "rawCorrect": 38
+    },
+    "medium": {
+      "count": 23,
+      "correct": 23,
+      "wrong": 0,
+      "rawCorrect": 23
+    },
+    "uncertain": {
+      "count": 62,
+      "correct": 25,
+      "wrong": 37,
+      "rawCorrect": 32
+    },
+    "confidenceAllDecisions": {
+      "high": {
+        "count": 38,
+        "correct": 38,
+        "wrong": 0,
+        "rawCorrect": 38
+      },
+      "medium": {
+        "count": 23,
+        "correct": 23,
+        "wrong": 0,
+        "rawCorrect": 23
+      },
+      "uncertain": {
+        "count": 143,
+        "correct": 106,
+        "wrong": 37,
+        "rawCorrect": 55
+      }
+    },
+    "highCoverage": 0.3089430894308943,
+    "acceptedCoverage": 0.4959349593495935,
+    "highAccuracy": 1,
+    "acceptedAccuracy": 1,
+    "presentHighAccuracy": 1,
+    "presentAcceptedAccuracy": 1,
+    "expectedDecisions": 204,
+    "registrationMissing": 0,
+    "absentDecisions": 81,
+    "correctNull": 81,
+    "explicitCorrectNull": 81,
+    "phantomValues": 0,
+    "phantomHigh": 0,
+    "phantomAccepted": 0,
+    "missingPresent": 15,
+    "rawMissingPresent": 2,
+    "neighborWarnings": 0,
+    "incompleteTrackWarnings": 0,
+    "rawNeighborWarnings": 8,
+    "incompleteTracks": 20,
+    "warnings": {
+      "insufficient_color_support": 96,
+      "weak_or_ambiguous_core": 11,
+      "unvalidated_conservation_evidence": 36
+    },
+    "manualChecksPerTwelvePresent": 6.048780487804879
+  }
+}
