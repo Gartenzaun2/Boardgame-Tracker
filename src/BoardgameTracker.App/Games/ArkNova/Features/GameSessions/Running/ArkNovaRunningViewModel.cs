@@ -17,7 +17,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 /// actions such as ending or discarding the gameSession.
 /// </summary>
 public partial class ArkNovaRunningViewModel(
-    IArkNovaRunningGameSessionQuery runningGameSessionQuery,
+    ArkNovaRunningGameSessionQuery runningGameSessionQuery,
     RunningGameSessionUseCase runningGameSessionUseCase,
     ILogger<ArkNovaRunningViewModel> logger) : ObservableObject
 {

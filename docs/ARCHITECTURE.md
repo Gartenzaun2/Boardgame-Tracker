@@ -4,7 +4,7 @@
 
 Boardgame Tracker ist ein **modularer Monolith mit pragmatischen Vertical Slices**.
 Die Architektur soll mehrere Brettspiele unterstützen, ohne eine generische Game
-Engine zu bauen. Fachliche Regeln bleiben unabhängig von MAUI, EF Core und
+Engine zu bauen. Domain-Regeln in Core bleiben unabhängig von MAUI, EF Core und
 SQLite; technische Abstraktionen werden nur eingeführt, wenn sie einen konkreten
 Nutzen haben.
 
@@ -18,21 +18,31 @@ Abstraktionsschichten; Verständlichkeit und reale fachliche Grenzen bleiben ma�
 
 ```text
 App -> Application -> Core
-          ^
-          |
-Infrastructure -> Application + Core
+Application -> EF Core
+App -> EF Core SQLite
 ```
 
 - **Core** enthält Domain-Entities, fachliche Regeln und spielespezifische
   Domain-Erweiterungen.
-- **Application** enthält Use Cases, Read Models und use-case-spezifische Ports.
-- **Infrastructure** enthält EF Core, SQLite und konkrete Implementierungen der
-  Application-Ports.
+- **Application** enthält Vertical Slices, Use Cases, konkrete Queries, Read Models,
+  DbContext, relationale EF-Konfigurationen, Initialisierung und Seeding. EF Core ist
+  eine bewusste Application-Abhängigkeit; SQLite-spezifische APIs sind dort verboten.
 - **App** enthält MAUI, XAML, ViewModels, Navigation, Präsentationslogik und den
-  Composition Root.
+  Composition Root sowie die SQLite-Providerkonfiguration.
 
-`App` darf `Infrastructure` nur im technischen Startup/Composition Root direkt
-verwenden. ViewModels kennen keine konkrete SQLite- oder EF-Core-Implementierung.
+SQLite wird einmal am Host-Rand ausgewählt: AddBoardgameTrackerSqlite registriert
+IDbContextFactory, UseSqlite, EF-Warning-Regeln und SqliteNameCollationInterceptor.
+ViewModels und Pages erhalten konkrete Use Cases/Queries, niemals einen DbContext.
+
+Der nachvollziehbare Programmfluss lautet:
+
+```text
+ViewModel-Command -> konkreter UseCase/Query -> DbContext -> Domain -> SaveChangesAsync
+```
+
+Beispiele: CreateGroupViewModel -> CreateGroupUseCase, HistoryPage ->
+CompletedGameSessionsQuery und ArkNovaScoringViewModel -> ArkNovaScoringUseCase.
+Die fachliche Aktion und ihr Transaktionsende sind im jeweiligen Slice sichtbar.
 
 ## 3. Verbindliches Domänenvokabular
 
@@ -104,21 +114,18 @@ BoardgameTracker.Application/
         History/
       SpecialCards/
       Settings/
-
-BoardgameTracker.Infrastructure/
-  Persistence/
-    SQLite/
-      Configurations/       # allgemeine EF-Konfigurationen
-      GameSessions/
-      Groups/
-  Games/
-    ArkNova/
       Persistence/
-        SQLite/
-          Configurations/
-          Seeding/
+        BoardgameTrackerDbContext.ArkNova.cs
+        Configurations/
+        Seeding/
+  Persistence/
+    BoardgameTrackerDbContext.cs
+    Configurations/         # allgemeines relationales EF-Modell
+    DatabaseInitializer.cs
+    IDatabaseInitializationStep.cs
 
 BoardgameTracker.App/
+  Persistence/SQLite/       # Providerregistrierung und Connection-Interceptor
   Features/                 # allgemeine UI-Features
     Games/
     Groups/
@@ -244,25 +251,29 @@ modelliert sind.
 
 ## 8. EF Core und Persistenz
 
-- EF Core 10 + SQLite.
-- Keine generischen Repository-Abstraktionen.
-- Persistenzports sind use-case-spezifisch und gehören der Application-Schicht.
-- Konkrete EF-/SQLite-Implementierungen liegen in Infrastructure.
-- Allgemeine EF-Konfigurationen liegen unter
-  `Persistence/SQLite/Configurations`.
-- Spielspezifische EF-Konfigurationen liegen ausschließlich unter
-  `Games/<GameName>/Persistence/SQLite/Configurations`.
+- Application verwendet EF Core 10 und das relationale Persistenzmodell direkt.
+- App und Integrationstests wählen SQLite als Provider; Core kennt keine Persistenztechnologie.
+- Keine Repositories, Stores oder DbContext-Interfaces nur zum Verstecken von EF Core.
+- Interfaces bleiben für echte Polymorphie, Host-/Plattformgrenzen und Spielmodul-Erweiterungspunkte.
+- Ein Slice erzeugt über IDbContextFactory einen kurzlebigen Context pro Operation;
+  kein Singleton hält einen erzeugten Context und kein Context wird parallel verwendet.
+- Konkrete Queries verwenden AsNoTracking und gezielte Read-Model-Projektionen.
+- Schreibaktionen verwenden Domainmethoden und SaveChangesAsync am fachlichen Ende.
+  Explizite Transaktionen schützen Aktionen mit mehreren direkten relationalen Writes,
+  etwa Reihenfolgetausch, Farbdefaults, Korrektur und History-Import.
+- Allgemeine Konfigurationen liegen in Application/Persistence/Configurations;
+  Spielkonfigurationen in Application/Games/<GameName>/Persistence/Configurations.
 
 Es gibt genau einen gemeinsamen `sealed partial BoardgameTrackerDbContext`.
-Der generische Teil unter `Persistence/SQLite` enthält die allgemeinen DbSets
+Der generische Teil unter `Application/Persistence` enthält die allgemeinen DbSets
 und `OnModelCreating`; die Arche-Nova-DbSets stehen in
-`Games/ArkNova/Persistence/SQLite/BoardgameTrackerDbContext.ArkNova.cs` im selben
+`Games/ArkNova/Persistence/BoardgameTrackerDbContext.ArkNova.cs` im selben
 Namespace wie der gemeinsame Context. Die allgemeinen und spielspezifischen Modellkonfigurationen bleiben getrennt.
 
 `DatabaseInitializer` erstellt den Context, führt `EnsureCreatedAsync` aus und
 führt anschließend die registrierten `IDatabaseInitializationStep`-Implementierungen
 in Registrierungsreihenfolge auf demselben Context aus. `MauiProgram` ruft explizit `AddArkNova()` auf. Diese Extension unter
-`App/Games/ArkNova` registriert die Ark-Nova-Application-, Infrastructure- und UI-Komponenten
+`App/Games/ArkNova` registriert die Ark-Nova-Application- und UI-Komponenten
 einschließlich `ArkNovaReferenceDataSeeder` als spielspezifischem Schritt. Allgemeine
 Dienste bleiben in `MauiProgram`. Die Registrierungen bleiben explizit, ihre Lifetimes
 und die Reihenfolge innerhalb mehrfach registrierter Verträge bleiben erhalten. Der generische
@@ -294,8 +305,7 @@ Neuinstallation und Datenverlust stehen in `SETUP.md`.
 
 `Core/Games/ArkNova/ArkNovaSpecialCard` schützt Identität, Name, geordnete Symbole
 und Archivstatus. Der feste Symbolkatalog ist ein Enum, die Kartenidentität eine GUID.
-`Application/Games/ArkNova/SpecialCards` enthält Verwaltung, Leseprojektion und
-Persistenzport; Infrastructure implementiert den SQLite-Adapter.
+`Application/Games/ArkNova/SpecialCards` enthält Verwaltung und Leseprojektion mit direktem EF-Zugriff.
 Verwaltungsdaten gehören nicht in `IArkNovaSettingsStore` oder Preferences.
 Die UI unter `App/Games/ArkNova/Features/SpecialCards` verwendet einen gemeinsamen
 Editor für Create/Edit und dieselbe ikonbasierte Kartenansicht wie die Wertung.
@@ -365,7 +375,12 @@ Ohne konkreten Bedarf werden nicht eingeführt:
 
 Namespace-Hierarchien folgen der fachlichen Ordnerstruktur; Tests spiegeln den
 getesteten Slice. Gemeinsame Fachbegriffe und Architekturverträge bleiben ihrer
-Schicht zugeordnet. Kleine Begleittypen dürfen beim Haupttyp stehen; XAML, DI
+Schicht zugeordnet. Core-Tests bleiben reine Unit-Tests ohne EF/SQLite.
+Application-Slice-Tests verwenden echte EF-/SQLite-Datenbanken mit isolierter Lebensdauer
+und Cleanup; keine Fakes für entfernte Store-/Query-Interfaces und kein EF InMemory als
+Ersatz für Constraints, Übersetzung oder Transaktionen. Architekturtests schützen Core,
+Providergrenze, EF-freie ViewModels sowie Gruppen- und Spielmodul-Ownership.
+Kleine Begleittypen dürfen beim Haupttyp stehen; XAML, DI
 und EF zählen als Verwendung. Die konkreten C#-Stilregeln zu Typdeklarationen,
 `var`, Klammern und mehrzeiligen Blöcken stehen ausschließlich in `AGENTS.md`.
 Bei Refactorings werden alte Domänensynonyme nicht als Compatibility-Aliase
@@ -387,14 +402,14 @@ vorsorgliche Abstraktion.
 
 Die allgemeine Spielerverwaltung liegt unter `Players/ListPlayers` und
 `Players/EditPlayer` in Application sowie den zugehörigen App-Features und
-SQLite-Adaptern. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
+konkreten EF-Slices. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
 das Bearbeiten speichert ausschließlich Name und Archivstatus des Player-Aggregats.
 `App/Navigation/IGameSessionNavigationHandler` ist die gemeinsame Navigation von Historie
 und Spielerverwaltung zu einer Partie. Jedes Spiel registriert seinen Handler
 im Modul; dieser entscheidet anhand des Session-Status über die konkrete Seite.
 Das allgemeine Player-Feature enthält keine Spielmodul-Abhängigkeiten.
 
-Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter in Infrastructure, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case und Persistenzport für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
+Konkrete CompletedGameSessionsQuery unter `Application/History`, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case mit direktem EF-Zugriff für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
 
 ## Gemeinsame Spielerfarben und Spielregeln
 
@@ -406,7 +421,7 @@ Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter 
 
 `Application/Groups/CreateGroup` und `EditGroup` enthalten gemeinsame Gruppendaten und optionale semantische Farbauswahlen für den aktuellen Spielschlüssel. Sie kennen keine konkreten Spieltypen oder Listen erlaubter Farben. Der registrierte Regelkatalog validiert die Auswahl; Gruppenfarben bleiben pro Spiel und Gruppenmitglied, keine globale Eigenschaft von `Player` oder `GroupPlayer`.
 
-Die allgemeinen SQLite-Adapter speichern Gruppe, neue Spieler, Reihenfolge und Farben in einer Transaktion. `Infrastructure/Persistence/SQLite/Groups/IGroupColorPersistence` ist die kleine technische Erweiterungsgrenze für Lesen und Ersetzen der Spieldefaults auf demselben DbContext. Der registrierte `Games/ArkNova/.../ArkNovaGroupColorPersistence` besitzt die Arche-Nova-Tabelle. Allgemeine Adapter greifen nicht direkt auf diese Tabelle zu; ohne Farbmodul werden keine fremden Defaults gelesen oder verändert.
+Die allgemeinen Gruppen-Use-Cases speichern Gruppe, neue Spieler, Reihenfolge und Farben in einer Transaktion. `Application/Groups/Colors/IGroupColorPersistence` ist die kleine technische Erweiterungsgrenze für Lesen und Ersetzen der Spieldefaults auf demselben DbContext. Der registrierte `Games/ArkNova/.../ArkNovaGroupColorPersistence` besitzt die Arche-Nova-Tabelle. Allgemeine Use Cases greifen nicht direkt auf diese Tabelle zu; ohne Farbmodul werden keine fremden Defaults gelesen oder verändert.
 
 Beide Gruppenformulare bleiben unter `App/Features/Groups`. `GroupColorSelectionViewModel` und `GroupColorPickerView` werden für Anlage und Bearbeitung gemeinsam verwendet. Der aktuelle Spielkontext entscheidet über die Palette. Der Composition Root registriert zusätzlich den lokalisierten Anzeigenamen des Spiels für den Dialogtitel. Ein weiteres Spiel ergänzt seine Regeln und bei Farbunterstützung seinen Persistenzadapter; gemeinsame Formulare und Verträge erhalten keine Spiel-Fallunterscheidungen. Der Architekturtest schützt die öffentlichen Gruppenverträge vor spielspezifischen Typen.
 
@@ -424,16 +439,20 @@ in DTOs deserialisiert. Der Plan enthält globale 1:1-Spielerzuordnungen und ble
 bis zum Commit ohne produktive Writes. Die App führt Dateiauswahl, Resolve und
 Preview im History-Feature aus; sie kennt keine konkreten Persistenzadapter.
 
-Der SQLite-Adapter führt Exportlesevorgänge und den abschließenden Import jeweils
+Die konkrete HistoryTransferPersistence im History/Transfer-Slice führt Exportlesevorgänge und den abschließenden Import jeweils
 auf einem kurzlebigen Context in einer Transaktion aus. Vor dem Import wird der
 lokale Snapshot einschließlich Modulreferenzen erneut geprüft; Änderungen erfordern
 neue Analyse. Die persistierten Entities entstehen über Domainkonstruktoren und
 Domainmethoden. SQLite-Namensindizes verwenden die pro Verbindung registrierte
-BGT_NAME-Collation mit der gemeinsamen EntityName-Semantik.
+BGT_NAME-Collation mit der gemeinsamen EntityName-Semantik (Trim + OrdinalIgnoreCase).
+Der App-seitige Connection-Interceptor registriert sie beim Erzeugen/Öffnen jeder
+Verbindung, auch für EnsureCreatedAsync. Das relationale Modell benennt die Collation,
+kennt aber keine SQLite-Typen. Tests verwenden denselben Registrierungscode und
+registrieren bei selbst übergebenen bereits offenen Verbindungen ausdrücklich vorab.
 
 Bekannte Spielmodule registrieren IGameTransferSchema (Version und Validierung)
 und IGameTransferPersistence (Projektion, Referenzmatching und Persistenz auf demselben
-Context). Arche Nova besitzt seine DTOs und Adapter unter Games/ArkNova; allgemeiner
+Context). Arche Nova besitzt seine DTOs und EF-Persistenz unter Application/Games/ArkNova; allgemeiner
 Transfercode kennt keine Arche-Nova-Felder. Custom Games sind noch nicht unterstützt.
 Format, Matching und Limits: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
@@ -446,23 +465,18 @@ Austauschmodell noch die Importpipeline. Details stehen in IMPORT_EXPORT.md.
 
 ## Fachliche Rollen und gemeinsame Implementierungen
 
-- `Query`: reine Leseprojektion ohne Mutation; etwa `ICompletedGameSessionsQuery` oder `IArkNovaPreparationQuery`.
-- `Store`: Application-owned Persistenzport für einen zusammenhängenden Use Case bzw. fachlichen Datenbereich. Lesen und Schreiben dürfen gemeinsam darin stehen.
-- `Persistence`: technische Infrastructure-Erweiterung, insbesondere für Arbeiten auf einem bestehenden Context/in derselben Transaktion (z. B. Gruppenfarben oder Spiel-Importdaten).
+- `Query`: reine Leseprojektion ohne Mutation; etwa `CompletedGameSessionsQuery` oder `ArkNovaPreparationQuery`.
+- `Store`: weiterhin sinnvoll für echte Preferences-/Hostgrenzen, kein EF-Wrapper.
+- `Persistence`: konkrete zusammenhängende EF-Komponente oder Spielmodul-Erweiterung, insbesondere für Arbeiten auf einem bestehenden Context/in derselben Transaktion (z. B. Gruppenfarben oder Spiel-Importdaten).
 - `UseCase`: Application-Orchestrierung, die Domainregeln und Persistenzoperationen für einen fachlichen Ablauf verbindet.
 - `Handler`: Dispatch-/Routing-/Navigations- oder Transportentscheidung. Kein allgemeiner Service-Ersatz.
 
 `DataAccess` ist kein bevorzugter Standardname. Konkrete Benennungs- und Kommentarregeln
 stehen in AGENTS.md; objektive Produktions-Namingregeln in .editorconfig.
 
-Eine Infrastructure-Klasse darf mehrere fachliche Application-Ports implementieren,
-wenn sie dieselbe persistierte Struktur besitzen. Die Use Cases bleiben getrennt:
-
-```text
-ArkNovaScoringUseCase           → IArkNovaScoringStore           ┐
-                                                               ├→ SqliteArkNovaGameSessionResultStore
-ArkNovaHistoryCorrectionUseCase → IArkNovaHistoryCorrectionStore ┘
-```
+Scoring und historische Korrektur verwenden EF Core direkt in getrennten Use Cases.
+Sie teilen ausschließlich die konkrete ArkNovaGameSessionResultQuery ohne Interface.
+Diese Klasse besitzt nur die gemeinsame Leseprojektion, keine Schreibmethoden.
 
 Die gemeinsame Projektion `ArkNovaGameSessionResultData`, ihre Spielerwerte und der
 CompletionPlan gehören unter `Application/Games/ArkNova/GameSessions/Results`, nicht
@@ -470,9 +484,9 @@ zum Live-Scoring-Slice. Sie können unvollständige Werte und alle GameSession-S
 repräsentieren. Die Schreibregeln bleiben spezifisch: Live-Scoring speichert inkrementell;
 historische Korrektur ersetzt Ergebniswerte/Placements/Kartenzuordnungen atomar für
 Completed. Prüfungen in Application und an der Persistenzgrenze sind bewusst vorhanden,
-damit inzwischen archivierte Karten nicht neu zugeordnet werden. Manuelle EF-State-
-Markierungen begrenzen Updates auf tatsächlich editierbare Werte; Setupdaten bleiben erhalten.
-Die SQLite-Adapter sind unter den jeweiligen Spiel-/Use-Case-Unterordnern eingeordnet.
+damit inzwischen archivierte Karten nicht neu zugeordnet werden. Die Domainmethoden
+ändern ausschließlich editierbare Ergebniswerte am geladenen Zustand; Setupdaten bleiben erhalten.
+Der EF-Code gehört zum jeweiligen Spiel-/Use-Case-Unterordner.
 
 `ArkNovaGameSessionNavigationHandler` implementiert die allgemeinen Ports
 `IGameSessionNavigationHandler` und `IGameSessionResumeHandler`. Gruppenliste, Historie,
@@ -481,7 +495,7 @@ restauriert zusätzlich den gespeicherten Gruppenkontext. Die allgemeinen Gruppe
 Features kennen keine konkreten Ark-Nova-Partieseiten. Der gemeinsame Wertungsscreen bleibt
 erhalten; `ArkNovaScoringMode` benennt Live-Scoring und historische Korrektur explizit.
 
-ImportPlan/ImportPlanner, Application-Port und HistoryTransferUseCase liegen in getrennten,
+ImportPlan/ImportPlanner, HistoryTransferPersistence und HistoryTransferUseCase liegen in getrennten,
 fachlich benannten Dateien. Kleine eng zugehörige Begleittypen bleiben beim Haupttyp.
 Weder Zeilenzahl noch ein gemeinsamer Entitytyp begründen eine Zusammenlegung/Trennung:
 maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini-Interfaces.

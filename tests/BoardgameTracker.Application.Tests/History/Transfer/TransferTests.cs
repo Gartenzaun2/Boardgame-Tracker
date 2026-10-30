@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Persistence.SQLite;
+using BoardgameTracker.Application.Tests.Persistence;
 using System.Text;
 using System.Text.Json;
 using BoardgameTracker.Application.History.Transfer;
@@ -8,9 +10,8 @@ using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
-using BoardgameTracker.Infrastructure.Games.ArkNova.History.Transfer;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.History;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -300,8 +301,8 @@ public sealed class TransferTests
     private sealed class Database : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
-        public SqliteHistoryTransferStore Store => new(this, [new ArkNovaTransferPersistence()]);
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(_connection).Options);
+        public HistoryTransferPersistence Store => new(this, [new ArkNovaTransferPersistence()]);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
         public static async Task<Database> CreateAsync()
         {
             Database database = new();

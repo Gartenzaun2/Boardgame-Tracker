@@ -160,7 +160,9 @@ serialisiert den Export genau einmal in BgtExportContent (Dateiname und UTF-8-By
 Erst dann wählt der Benutzer im App-Dialog Speichern, Teilen oder Abbrechen.
 HistoryExportFlow übergibt denselben Inhalt ausschließlich an das gewählte
 IHistoryExportTarget. Die Ausgabeadapter haben keine eigenen Format-, Matching- oder
-Serialisierungsregeln. Sie gehören zur App, nicht zur Domain oder zum SQLite-Adapter.
+Serialisierungsregeln. Sie gehören zur App; die konkrete HistoryTransferPersistence
+im Application-Slice übernimmt die EF-Persistenz. IGameTransferPersistence bleibt
+als Spielmodulgrenze erhalten und arbeitet auf demselben Context und derselben Transaktion.
 
 Speichern verwendet auf Android ACTION_CREATE_DOCUMENT mit CATEGORY_OPENABLE,
 vorgeschlagenem .bgt-Dateinamen und einem beschreibbaren Dokument-URI. Die Bytes werden

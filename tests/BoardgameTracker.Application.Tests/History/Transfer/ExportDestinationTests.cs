@@ -1,3 +1,10 @@
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Games.ArkNova.History.Transfer;
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova.GameSessions;
+using BoardgameTracker.Core.Players;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
@@ -13,11 +20,11 @@ public sealed class ExportDestinationTests
     [InlineData(1, true)]
     public async Task SaveOrShareReceivesTheSinglePreparedContent_WithoutInvokingOtherDestinations(int choice, bool cancel)
     {
-        Store store = new();
+        await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target save = new("Save", cancel);
         Target share = new("Share", cancel);
-        HistoryExportFlow flow = new(new(store, new BgtFormat([])), [save, share]);
-        Guid[] ids = [Guid.NewGuid(), Guid.NewGuid()];
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [save, share]);
+        Guid[] ids = store.Ids;
         int dialogCalls = 0;
         await flow.RunAsync(ids, "test", options =>
         {
@@ -32,18 +39,18 @@ public sealed class ExportDestinationTests
         Assert.Empty(choice == 0 ? share.Received : save.Received);
         Assert.Equal(1, dialogCalls);
         Assert.Equal(1, store.Calls);
-        Assert.Equal(ids, Assert.Single(store.RequestedIds));
+        Assert.Equal(ids.Order(), Read(content).GameSessions.Select(session => session.Id).Order());
         Assert.EndsWith(".bgt", content.FileName);
-        Assert.Equal(JsonSerializer.SerializeToUtf8Bytes(store.File, BgtFormat.JsonOptions), content.Bytes.ToArray());
+        Assert.Equal("test", Read(content).AppVersion);
     }
 
     [Fact]
     public async Task CancelingDestinationDialogDoesNotInvokeTransport()
     {
-        Store store = new();
+        await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target save = new("Save");
-        HistoryExportFlow flow = new(new(store, new BgtFormat([])), [save]);
-        await flow.RunAsync([Guid.NewGuid()], "test", _ => Task.FromResult(-1));
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [save]);
+        await flow.RunAsync([store.Ids[0]], "test", _ => Task.FromResult(-1));
         Assert.Equal(1, store.Calls);
         Assert.Empty(save.Received);
     }
@@ -51,8 +58,8 @@ public sealed class ExportDestinationTests
     [Fact]
     public async Task EmptyHistoryDisablesExportAndDoesNotGenerateOrChoose()
     {
-        Store store = new();
-        HistoryExportFlow flow = new(new(store, new BgtFormat([])), []);
+        await using ExportDatabase store = await ExportDatabase.CreateAsync();
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), []);
         Assert.False(HistoryExportFlow.CanExport([]));
         Assert.True(HistoryExportFlow.CanExport([Guid.NewGuid()]));
         await flow.RunAsync([], "test", _ => throw new InvalidOperationException("Dialog must not open."));
@@ -62,11 +69,11 @@ public sealed class ExportDestinationTests
     [Fact]
     public async Task CurrentFilterSelectionIsCapturedBeforeAwait_AndNextExportUsesNewFilters()
     {
-        Store store = new();
+        await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target target = new("Save");
-        HistoryExportFlow flow = new(new(store, new BgtFormat([])), [target]);
-        Guid first = Guid.NewGuid();
-        Guid second = Guid.NewGuid();
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [target]);
+        Guid first = store.Ids[0];
+        Guid second = store.Ids[1];
         List<Guid> visible = [first];
         await flow.RunAsync(visible, "test", _ =>
         {
@@ -75,20 +82,20 @@ public sealed class ExportDestinationTests
             return Task.FromResult(0);
         });
         await flow.RunAsync(visible, "test", _ => Task.FromResult(0));
-        Assert.Equal(new[] { first }, store.RequestedIds[0]);
-        Assert.Equal(new[] { second }, store.RequestedIds[1]);
+        Assert.Equal(new[] { first }, Read(target.Received[0]).GameSessions.Select(session => session.Id));
+        Assert.Equal(new[] { second }, Read(target.Received[1]).GameSessions.Select(session => session.Id));
         Assert.Equal(2, store.Calls);
     }
 
     [Fact]
     public async Task ThirdDestinationUsesSameContentContractWithoutExporterChanges()
     {
-        Store store = new();
+        await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target first = new("Save");
         Target second = new("Share");
         Target third = new("Future transport");
-        HistoryExportFlow flow = new(new(store, new BgtFormat([])), [first, second, third]);
-        await flow.RunAsync([Guid.NewGuid()], "test", choices =>
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [first, second, third]);
+        await flow.RunAsync([store.Ids[0]], "test", choices =>
         {
             Assert.Equal("Future transport", choices[2].DisplayName);
             return Task.FromResult(2);
@@ -126,19 +133,41 @@ public sealed class ExportDestinationTests
             return cancel ? Task.FromCanceled(new CancellationToken(true)) : Task.CompletedTask;
         }
     }
-    private sealed class Store : IHistoryTransferStore
+    private static BgtFile Read(BgtExportContent content) => JsonSerializer.Deserialize<BgtFile>(content.Bytes.Span, BgtFormat.JsonOptions)!;
+
+    private sealed class ExportDatabase(SliceDatabase database) : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         public int Calls { get; private set; }
-        public List<Guid[]> RequestedIds { get; } = [];
-        public BgtFile File { get; } = new(1, "test", DateTimeOffset.UtcNow, [], [], [], []);
-        public Task<BgtFile> ExportAsync(IReadOnlyCollection<Guid> gameSessionIds, string appVersion, CancellationToken cancellationToken = default)
+        public Guid[] Ids { get; private set; } = [];
+        public BoardgameTrackerDbContext CreateDbContext()
         {
             Calls++;
-            RequestedIds.Add(gameSessionIds.ToArray());
-            return Task.FromResult(File);
+            return database.CreateDbContext();
         }
-        public Task<TransferSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task<TransferPreview> PreviewAsync(ImportPlan plan, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task CommitAsync(ImportPlan plan, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public static async Task<ExportDatabase> CreateAsync()
+        {
+            SliceDatabase database = await SliceDatabase.CreateAsync();
+            List<Guid> ids = [];
+            for (int index = 0; index < 2; index++)
+            {
+                GameSession session = await database.AddSessionAsync(scoring: true);
+                await using BoardgameTrackerDbContext db = database.CreateDbContext();
+                session = await db.GameSessions.Include(s => s.Players).SingleAsync(s => s.Id == session.Id, TestContext.Current.CancellationToken);
+                foreach (GameSessionPlayer player in session.Players)
+                {
+                    player.SetPlacement(1);
+                    int plan = player.PlayerId == database.First.Id ? 1 : 3;
+                    ArkNovaGameSessionPlayer values = new(session.Id, player.PlayerId,
+                        plan == 1 ? PlayerColor.Blue : PlayerColor.Red, plan, plan + 1, plan);
+                    values.SetScoreValues(70, 20, null);
+                    db.ArkNovaGameSessionPlayers.Add(values);
+                }
+                session.Complete(DateTimeOffset.UtcNow);
+                await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+                ids.Add(session.Id);
+            }
+            return new(database) { Ids = ids.ToArray() };
+        }
+        public ValueTask DisposeAsync() => database.DisposeAsync();
     }
 }

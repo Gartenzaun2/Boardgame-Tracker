@@ -1,3 +1,6 @@
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.Persistence;
+using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Core.Groups;
@@ -12,68 +15,42 @@ public sealed class CreateGroupUseCaseTests
     [Fact]
     public async Task CreateGroupAsync_CreatesGroupWithExistingAndNewPlayersInRequestedOrder()
     {
-        Guid existingPlayerId = Guid.NewGuid();
-        FakeCreateGroupStore dataAccess = new(new HashSet<Guid> { existingPlayerId });
-        CreateGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        Guid existingPlayerId = database.First.Id;
+
+        CreateGroupUseCase useCase = new(database, new([]), []);
 
         Guid groupId = await useCase.CreateGroupAsync(new CreateGroupCommand(
             "Freitagabend",
             false,
             [
                 new CreateGroupPlayerInput(existingPlayerId, "Anna", false),
-                new CreateGroupPlayerInput(null, "Ben", true)
+                new CreateGroupPlayerInput(null, "Gast", true)
             ]), Token);
 
+        await using BoardgameTrackerDbContext db = database.CreateDbContext();
+        Group savedGroup = await db.Groups.Include(group => group.Players).SingleAsync(group => group.Id == groupId, Token);
+        Player guest = await db.Players.SingleAsync(player => player.IsGuest, Token);
         Assert.NotEqual(Guid.Empty, groupId);
-        Assert.NotNull(dataAccess.SavedGroup);
-        Assert.Single(dataAccess.SavedNewPlayers);
-        Assert.True(dataAccess.SavedNewPlayers.Single().IsGuest);
-
-        Group savedGroup = dataAccess.SavedGroup!;
+        Assert.True(guest.IsGuest);
+        Assert.Equal(3, await db.Players.CountAsync(Token));
         Assert.Collection(
             savedGroup.Players.OrderBy(player => player.DefaultOrder),
             first => Assert.Equal(existingPlayerId, first.PlayerId),
-            second => Assert.Equal(dataAccess.SavedNewPlayers.Single().Id, second.PlayerId));
+            second => Assert.Equal(guest.Id, second.PlayerId));
     }
 
     [Fact]
     public async Task CreateGroupAsync_RejectsInactiveOrMissingExistingPlayer()
     {
         Guid playerId = Guid.NewGuid();
-        FakeCreateGroupStore dataAccess = new(new HashSet<Guid>());
-        CreateGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        CreateGroupUseCase useCase = new(database, new([]), []);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.CreateGroupAsync(new CreateGroupCommand(
                 "Freitagabend",
                 false,
                 [new CreateGroupPlayerInput(playerId, "Anna", false)]), Token));
-    }
-
-    private sealed class FakeCreateGroupStore(IReadOnlySet<Guid> activeIds)
-        : ICreateGroupStore
-    {
-        public Group? SavedGroup { get; private set; }
-        public IReadOnlyCollection<Player> SavedNewPlayers { get; private set; } = [];
-
-        public Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<IReadOnlyList<SelectablePlayer>>([]);
-
-        public Task<IReadOnlySet<Guid>> GetActivePlayerIdsAsync(
-            IReadOnlyCollection<Guid> playerIds,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult(activeIds);
-
-        public Task SaveAsync(
-            Group group,
-            IReadOnlyCollection<Player> newPlayers,
-            GroupColorDefaults? colors,
-            CancellationToken cancellationToken = default)
-        {
-            SavedGroup = group;
-            SavedNewPlayers = newPlayers;
-            return Task.CompletedTask;
-        }
     }
 }

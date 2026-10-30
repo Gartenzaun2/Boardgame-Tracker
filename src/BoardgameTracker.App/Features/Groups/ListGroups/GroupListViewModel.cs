@@ -15,7 +15,7 @@ namespace BoardgameTracker.App.Features.Groups.ListGroups;
 /// Owns the game-context group overview, filters and navigation re-entry protection.
 /// </summary>
 public partial class GroupListViewModel(
-    IListGroupsQuery listGroupsQuery,
+    ListGroupsQuery listGroupsQuery,
     IAppNavigationSettingsStore navigationSettingsStore,
     ILogger<GroupListViewModel> logger,
     IEnumerable<IGameSessionNavigationHandler> navigationHandlers) : ObservableObject

@@ -19,7 +19,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
 /// delegates persistence to the start-gameSession Application use case.
 /// </summary>
 public partial class ArkNovaPreparationViewModel(
-    IArkNovaPreparationQuery preparationQuery,
+    ArkNovaPreparationQuery preparationQuery,
     StartArkNovaGameSessionUseCase startGameSessionUseCase,
     ILogger<ArkNovaPreparationViewModel> logger) : ObservableObject
 {

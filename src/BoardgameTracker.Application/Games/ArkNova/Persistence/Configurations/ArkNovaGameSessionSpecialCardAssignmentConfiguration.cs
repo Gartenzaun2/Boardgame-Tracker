@@ -1,0 +1,26 @@
+using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ArkNova;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using BoardgameTracker.Core.Games.ArkNova.GameSessions;
+using BoardgameTracker.Core.Players;
+
+namespace BoardgameTracker.Application.Games.ArkNova.Persistence.Configurations;
+
+internal sealed class ArkNovaGameSessionSpecialCardAssignmentConfiguration
+    : IEntityTypeConfiguration<ArkNovaGameSessionSpecialCardAssignment>
+{
+    public void Configure(EntityTypeBuilder<ArkNovaGameSessionSpecialCardAssignment> builder)
+    {
+        builder.ToTable("ArkNovaGameSessionSpecialCardAssignments");
+        builder.HasKey(x => new { x.GameSessionId, x.PlayerId, x.SpecialCardId });
+        builder.HasOne<ArkNovaSpecialCard>().WithMany().HasForeignKey(x => x.SpecialCardId)
+            .IsRequired().OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<GameSessionPlayer>()
+            .WithMany()
+            .HasForeignKey(x => new { x.GameSessionId, x.PlayerId })
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

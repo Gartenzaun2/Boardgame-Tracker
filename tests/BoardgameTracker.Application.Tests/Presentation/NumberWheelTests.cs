@@ -1,3 +1,7 @@
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using Microsoft.Extensions.Logging.Abstractions;
 using BoardgameTracker.Core.GameSessions;
@@ -86,8 +90,8 @@ public sealed class NumberWheelTests
     [InlineData(true)]
     public async Task ReputationVisibility_FollowsGameSettings(bool captureReputation)
     {
-        ScoringStore data = new(null, null, null);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data), new SettingsStore(captureReputation), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        await using ScoringDatabase data = await ScoringDatabase.CreateAsync(null, null, null);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(captureReputation), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal(captureReputation, viewModel.IsReputationVisible);
         Assert.Null(viewModel.ReputationValue);
@@ -122,8 +126,8 @@ public sealed class NumberWheelTests
     [Fact]
     public async Task OpeningEmptyPlayer_DoesNotSaveDisplayedSuggestions()
     {
-        ScoringStore data = new(null, null, null);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        await using ScoringDatabase data = await ScoringDatabase.CreateAsync(null, null, null);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal("57", viewModel.AttractivenessSuggestion);
         Assert.Equal("21", viewModel.ConservationSuggestion);
@@ -149,8 +153,8 @@ public sealed class NumberWheelTests
     [Fact]
     public async Task OpeningSavedPlayer_SelectsStoredValuesAndConfirmationPreservesThem()
     {
-        ScoringStore data = new(73, 19, 11);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        await using ScoringDatabase data = await ScoringDatabase.CreateAsync(73, 19, 11);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal(73, viewModel.AttractivenessValue);
         Assert.Equal(19, viewModel.ConservationValue);
@@ -165,8 +169,8 @@ public sealed class NumberWheelTests
     [Fact]
     public async Task FinalFlush_WaitsForActiveAutosave_ThenSavesLatestInput()
     {
-        ScoringStore data = new(70, 20, null) { BlockFirstSave = true };
-        ArkNovaPlayerScoringViewModel viewModel = new(new(data), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        await using ScoringDatabase data = await ScoringDatabase.CreateAsync(70, 20, null, blockFirstSave: true);
+        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         CancellationToken token = TestContext.Current.CancellationToken;
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, token);
         viewModel.AttractivenessValue = 80;
@@ -196,8 +200,8 @@ public sealed class NumberWheelTests
     [Fact]
     public async Task FailedFinalFlush_PropagatesFailureAndReleasesSaveGateForRetry()
     {
-        ScoringStore data = new(70, 20, null) { FailNextSave = true };
-        ArkNovaPlayerScoringViewModel viewModel = new(new(data), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        await using ScoringDatabase data = await ScoringDatabase.CreateAsync(70, 20, null, failNextSave: true);
+        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         CancellationToken token = TestContext.Current.CancellationToken;
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, token);
         await Assert.ThrowsAsync<InvalidOperationException>(() => viewModel.FlushAsync(token));
@@ -206,64 +210,65 @@ public sealed class NumberWheelTests
         Assert.Equal(2, data.SaveCount);
     }
 
-    private sealed class ScoringStore : IArkNovaScoringStore
+    private sealed class ScoringDatabase : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
-        public Guid GameSessionId { get; } = Guid.NewGuid();
-        public Guid PlayerId { get; } = Guid.NewGuid();
-        public ArkNovaGameSessionPlayer Player { get; }
-        public int SaveCount { get; private set; }
-        public bool BlockFirstSave { get; init; }
-        public bool FailNextSave { get; set; }
-        public TaskCompletionSource FirstSaveStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        public TaskCompletionSource ReleaseFirstSave { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private int _activeSaves;
-        public int MaxConcurrentSaves { get; private set; }
-        public bool ActiveSaveWasCancelled { get; private set; }
-
-        public ScoringStore(int? attractiveness, int? conservation, int? reputation)
+        private readonly SqliteConnection _connection = new("Data Source=:memory:");
+        private readonly SaveProbe _probe = new();
+        public Guid GameSessionId { get; private set; }
+        public Guid PlayerId { get; private set; }
+        public int SaveCount => _probe.SaveCount;
+        public int MaxConcurrentSaves => _probe.MaxConcurrentSaves;
+        public bool ActiveSaveWasCancelled => _probe.ActiveSaveWasCancelled;
+        public TaskCompletionSource FirstSaveStarted => _probe.FirstSaveStarted;
+        public TaskCompletionSource ReleaseFirstSave => _probe.ReleaseFirstSave;
+        public ArkNovaGameSessionPlayer Player
         {
-            Player = new(GameSessionId, PlayerId, PlayerColor.Blue, 1, 2, 1);
-            Player.SetScoreValues(attractiveness, conservation, reputation);
-        }
-
-        public Task<ArkNovaGameSessionResultData?> LoadGameSessionResultAsync(Guid gameSessionId, CancellationToken cancellationToken = default) =>
-            Task.FromResult<ArkNovaGameSessionResultData?>(new(GameSessionId, "Group", GameSessionStatus.Scoring,
-                DateTimeOffset.UtcNow, null,
-                [new(PlayerId, "Anna", 1, PlayerColor.Blue, 1, Player.Attractiveness, Player.Conservation, Player.Reputation, null)], []));
-        public Task<ArkNovaGameSessionPlayer?> FindScoringPlayerAsync(Guid gameSessionId, Guid playerId, CancellationToken cancellationToken = default) =>
-            Task.FromResult<ArkNovaGameSessionPlayer?>(Player);
-        public async Task SaveScoringPlayerAsync(ArkNovaGameSessionPlayer player, CancellationToken cancellationToken = default)
-        {
-            SaveCount++;
-            _activeSaves++;
-            MaxConcurrentSaves = Math.Max(MaxConcurrentSaves, _activeSaves);
-            try
+            get
             {
-                if (BlockFirstSave && SaveCount == 1)
-                {
-                    FirstSaveStarted.TrySetResult();
-                    await ReleaseFirstSave.Task.WaitAsync(TestContext.Current.CancellationToken);
-                    ActiveSaveWasCancelled = cancellationToken.IsCancellationRequested;
-                }
-                if (FailNextSave)
-                {
-                    FailNextSave = false;
-                    throw new InvalidOperationException("Simulated write failure.");
-                }
-            }
-            finally
-            {
-                _activeSaves--;
+                using BoardgameTrackerDbContext db = CreateDbContext();
+                return db.ArkNovaGameSessionPlayers.Single();
             }
         }
-        public Task<GameSession?> FindGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task SaveCompletedGameSessionAsync(GameSession gameSession, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task AssignSpecialCardAsync(ArkNovaGameSessionSpecialCardAssignment assignment, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, Guid specialCardId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task DeleteScoringGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>()
+            .UseTestSqlite(_connection).AddInterceptors(_probe).Options);
+
+        public static async Task<ScoringDatabase> CreateAsync(int? attractiveness, int? conservation, int? reputation,
+            bool blockFirstSave = false, bool failNextSave = false)
+        {
+            ScoringDatabase database = new();
+            CancellationToken token = TestContext.Current.CancellationToken;
+            await database._connection.OpenAsync(token);
+            await using BoardgameTrackerDbContext db = new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>()
+                .UseTestSqlite(database._connection).Options);
+            await db.Database.EnsureCreatedAsync(token);
+            BoardgameTracker.Core.Players.Player player = new("Anna");
+            BoardgameTracker.Core.Groups.Group group = new("Group", false, [player.Id]);
+            BoardgameTracker.Core.Games.Game game = new(ArkNovaGame.Key);
+            GameSession session = new(game.Id, group.Id, DateTimeOffset.UtcNow.AddHours(-2), [player.Id]);
+            session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));
+            database.GameSessionId = session.Id;
+            database.PlayerId = player.Id;
+            ArkNovaGameSessionPlayer values = new(session.Id, player.Id, PlayerColor.Blue, 1, 2, 1);
+            values.SetScoreValues(attractiveness, conservation, reputation);
+            db.AddRange(player, group, game, session, values, new ArkNovaZooPlan(1), new ArkNovaZooPlan(2));
+            await db.SaveChangesAsync(token);
+            database._probe.BlockFirstSave = blockFirstSave;
+            database._probe.FailNextSave = failNextSave;
+            return database;
+        }
+        public ValueTask DisposeAsync() => _connection.DisposeAsync();
     }
 
-    private static ArkNovaPlayerScoringViewModel CreateViewModel() => new(new ArkNovaScoringUseCase(new ScoringStore(null, null, null)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+    // These input-only tests never load or save, so no database is opened.
+    private sealed class UnopenedContextFactory : IDbContextFactory<BoardgameTrackerDbContext>
+    {
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().Options);
+    }
+    private static ArkNovaPlayerScoringViewModel CreateViewModel()
+    {
+        UnopenedContextFactory factory = new();
+        return new(new(factory, new(factory)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+    }
 
     private sealed class SettingsStore(bool captureReputation = false) : IArkNovaSettingsStore
     {

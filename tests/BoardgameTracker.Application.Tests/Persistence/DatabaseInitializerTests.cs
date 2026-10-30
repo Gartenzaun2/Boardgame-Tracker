@@ -1,5 +1,6 @@
+using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.Core.Players;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using BoardgameTracker.Application.Persistence;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -72,6 +73,6 @@ public sealed class DatabaseInitializerTests
     private sealed class ContextFactory(SqliteConnection connection) : IDbContextFactory<BoardgameTrackerDbContext>
     {
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(connection).Options);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options);
     }
 }

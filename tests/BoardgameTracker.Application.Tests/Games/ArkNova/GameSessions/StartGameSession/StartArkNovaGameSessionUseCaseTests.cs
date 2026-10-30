@@ -1,154 +1,52 @@
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
-using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
+using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Tests.Games.ArkNova.GameSessions.StartGameSession;
 
 public sealed class StartArkNovaGameSessionUseCaseTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
+    private static StartArkNovaGameSessionCommand Command(SliceDatabase database) => new(database.Group.Id, DateTimeOffset.UtcNow,
+        [new(database.First.Id, PlayerColor.Blue, 1, 2, 1), new(database.Second.Id, PlayerColor.Red, 3, 4, 4)]);
 
     [Fact]
     public async Task StartAsync_PersistsGameSessionAndArkNovaSnapshots()
     {
-        Guid groupId = Guid.NewGuid();
-        Guid gameId = Guid.NewGuid();
-        Guid anna = Guid.NewGuid();
-        Guid ben = Guid.NewGuid();
-        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
-            gameId,
-            false,
-            false,
-            [ben, anna],
-            Enumerable.Range(1, 14).ToHashSet()));
-        StartArkNovaGameSessionUseCase useCase = new(dataAccess);
-        DateTimeOffset startedAt = new(2026, 10, 27, 10, 0, 0, TimeSpan.Zero);
-
-        Guid gameSessionId = await useCase.StartAsync(new StartArkNovaGameSessionCommand(
-            groupId,
-            startedAt,
-            [
-                new(anna, PlayerColor.Blue, 1, 2, 1),
-                new(ben, PlayerColor.Red, 3, 4, 4)
-            ]), Token);
-
-        Assert.NotEqual(Guid.Empty, gameSessionId);
-        Assert.NotNull(dataAccess.SavedGameSession);
-        Assert.Equal(groupId, dataAccess.SavedGameSession!.GroupId);
-        Assert.Equal(gameId, dataAccess.SavedGameSession.GameId);
-        Assert.Equal(GameSessionStatus.Running, dataAccess.SavedGameSession.Status);
-        Assert.Equal(new[] { anna, ben }, dataAccess.SavedGameSession.Players.OrderBy(player => player.Order).Select(player => player.PlayerId));
-        Assert.Equal(2, dataAccess.SavedArkNovaPlayers.Count);
-        Assert.All(dataAccess.SavedArkNovaPlayers, player => Assert.Equal(gameSessionId, player.GameSessionId));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        Guid id = await new StartArkNovaGameSessionUseCase(database).StartAsync(Command(database), Token);
+        await using BoardgameTrackerDbContext db = database.CreateDbContext();
+        GameSession saved = await db.GameSessions.Include(session => session.Players).SingleAsync(Token);
+        Assert.Equal(id, saved.Id);
+        Assert.Equal(database.Group.Id, saved.GroupId);
+        Assert.Equal(database.GameId, saved.GameId);
+        Assert.Equal(GameSessionStatus.Running, saved.Status);
+        Assert.Equal(new[] { database.First.Id, database.Second.Id }, saved.Players.OrderBy(player => player.Order).Select(player => player.PlayerId));
+        Assert.Equal(2, await db.ArkNovaGameSessionPlayers.CountAsync(player => player.GameSessionId == id, Token));
+        Assert.Equal(4, (await db.ArkNovaGameSessionPlayers.SingleAsync(player => player.PlayerId == database.Second.Id, Token)).SelectedZooPlanNumber);
     }
 
-    [Fact]
-    public async Task StartAsync_WhenPlayersDoNotMatchGroup_Throws()
+    [Theory]
+    [InlineData("membership")]
+    [InlineData("archived")]
+    [InlineData("plan")]
+    [InlineData("open")]
+    public async Task StartAsync_RejectsInvalidPersistedContextWithoutWrites(string reason)
     {
-        Guid groupId = Guid.NewGuid();
-        Guid anna = Guid.NewGuid();
-        Guid ben = Guid.NewGuid();
-        Guid chris = Guid.NewGuid();
-        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
-            Guid.NewGuid(),
-            false,
-            false,
-            [anna, ben],
-            Enumerable.Range(1, 14).ToHashSet()));
-        StartArkNovaGameSessionUseCase useCase = new(dataAccess);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
-            new StartArkNovaGameSessionCommand(
-                groupId,
-                DateTimeOffset.UtcNow,
-                [
-                    new(anna, PlayerColor.Blue, 1, 2, 1),
-                    new(chris, PlayerColor.Red, 3, 4, 3)
-                ]), Token));
-    }
-
-    [Fact]
-    public async Task StartAsync_WhenGroupIsArchived_Throws()
-    {
-        Guid groupId = Guid.NewGuid();
-        Guid anna = Guid.NewGuid();
-        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
-            Guid.NewGuid(),
-            true,
-            false,
-            [anna],
-            Enumerable.Range(1, 14).ToHashSet()));
-        StartArkNovaGameSessionUseCase useCase = new(dataAccess);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
-            new StartArkNovaGameSessionCommand(
-                groupId,
-                DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 2, 1)]), Token));
-    }
-
-    [Fact]
-    public async Task StartAsync_WhenZooPlanIsUnknown_Throws()
-    {
-        Guid groupId = Guid.NewGuid();
-        Guid anna = Guid.NewGuid();
-        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
-            Guid.NewGuid(),
-            false,
-            false,
-            [anna],
-            Enumerable.Range(1, 14).ToHashSet()));
-        StartArkNovaGameSessionUseCase useCase = new(dataAccess);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
-            new StartArkNovaGameSessionCommand(
-                groupId,
-                DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 99, 1)]), Token));
-    }
-
-    [Fact]
-    public async Task StartAsync_WhenAnotherGameSessionIsOpen_Throws()
-    {
-        Guid groupId = Guid.NewGuid();
-        Guid anna = Guid.NewGuid();
-        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
-            Guid.NewGuid(),
-            false,
-            true,
-            [anna],
-            Enumerable.Range(1, 14).ToHashSet()));
-        StartArkNovaGameSessionUseCase useCase = new(dataAccess);
-
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
-            new StartArkNovaGameSessionCommand(
-                groupId,
-                DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 2, 1)]), Token));
-    }
-
-    private sealed class FakeRunningGameSessionStore(StartArkNovaGameSessionContext context)
-        : IStartArkNovaGameSessionStore
-    {
-        public GameSession? SavedGameSession { get; private set; }
-        public IReadOnlyCollection<ArkNovaGameSessionPlayer> SavedArkNovaPlayers { get; private set; } = [];
-
-        public Task<StartArkNovaGameSessionContext?> LoadContextAsync(
-            Guid groupId,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<StartArkNovaGameSessionContext?>(context);
-
-        public Task SaveAsync(
-            GameSession gameSession,
-            IReadOnlyCollection<ArkNovaGameSessionPlayer> arkNovaPlayers,
-            CancellationToken cancellationToken = default)
-        {
-            SavedGameSession = gameSession;
-            SavedArkNovaPlayers = [.. arkNovaPlayers];
-            return Task.CompletedTask;
-        }
+        await using SliceDatabase database = await SliceDatabase.CreateAsync(archived: reason == "archived");
+        StartArkNovaGameSessionCommand command = Command(database);
+        if (reason == "membership")
+            command = command with { Players = [new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1), command.Players[1]] };
+        if (reason == "plan")
+            command = command with { Players = [new(database.First.Id, PlayerColor.Blue, 1, 99, 1), command.Players[1]] };
+        if (reason == "open")
+            await database.AddSessionAsync();
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new StartArkNovaGameSessionUseCase(database).StartAsync(command, Token));
+        await using BoardgameTrackerDbContext db = database.CreateDbContext();
+        Assert.Equal(reason == "open" ? 1 : 0, await db.GameSessions.CountAsync(Token));
+        Assert.Empty(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token));
     }
 }

@@ -1,4 +1,7 @@
-using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
+using BoardgameTracker.App.Persistence.SQLite;
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.History.Transfer;
+using BoardgameTracker.Application.History;
 using BoardgameTracker.App.Features.Players.EditPlayer;
 using BoardgameTracker.App.Features.Players.ListPlayers;
 using BoardgameTracker.App.Navigation;
@@ -8,9 +11,8 @@ using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.Players;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.GameSessions.Resume;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -70,7 +72,7 @@ public sealed class PlayerManagementTests
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         Assert.True(await db.GroupPlayers.AnyAsync(member => member.PlayerId == id, Token));
         Assert.Equal(3, await db.GameSessionPlayers.CountAsync(member => member.PlayerId == id, Token));
-        var history = await new SqliteCompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
+        var history = await new CompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal("New name", Assert.Single(history).Players.Single(member => member.PlayerId == id).Name);
         await database.Edit.UpdatePlayerAsync(id, player.Name, false, Token);
         Assert.False((await database.Edit.GetAsync(id, Token))!.IsArchived);
@@ -158,9 +160,9 @@ public sealed class PlayerManagementTests
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         public Player[] Players { get; } = [new("Anna"), new("No games"), new("Guest", true), new("Archived"), new("Archived guest", true)];
         public GameSession Latest { get; private set; } = null!;
-        public SqliteListPlayersQuery Query => new(this);
-        public EditPlayerUseCase Edit => new(new SqliteEditPlayerStore(this));
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(_connection).Options);
+        public ListPlayersQuery Query => new(this);
+        public EditPlayerUseCase Edit => new(this);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
 
         public static async Task<Database> CreateAsync()
         {

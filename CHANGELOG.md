@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.4
+
+- Application-Slices verwenden EF Core direkt; reine EF-Persistenzports und SQLite-Adapter entfernt. Konkrete Queries ersetzen technische Query-Interfaces.
+- BoardgameTracker.Infrastructure aufgelöst: DbContext, relationale Konfiguration, Initialisierung und Seeding liegen in Application. SQLite-Providerkonfiguration und BGT_NAME-Registrierung liegen im MAUI-Host.
+- Spielmodul-, Transport-, Navigation- und Preferences-Grenzen bleiben erhalten. Scoring und historische Korrektur bleiben getrennte Use Cases mit gemeinsamer Ergebnisprojektion.
+- Relationale Slice-Integrationstests ersetzen Store-Fakes; Core bleibt technologieunabhängig. Architekturregeln und kanonische Dokumentation angepasst.
+- Keine beabsichtigte Änderung von Nutzerverhalten, Domain, Datenbankschema oder .bgt-Format. App-Version 0.10.0.4 / ApplicationVersion 41.
+
 ## 0.10.0.3
 
 - Repositoryregel: Agenten erstellen niemals selbst Commits; Änderungen bleiben lokal und ungestaged. Kein automatisches Staging oder Push, auch nicht aufgrund eingefügter Checklisten.

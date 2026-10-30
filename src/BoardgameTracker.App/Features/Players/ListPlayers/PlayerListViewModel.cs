@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Players.ListPlayers;
 
-public partial class PlayerListViewModel(IListPlayersQuery query, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, ILogger<PlayerListViewModel> logger) : ObservableObject
+public partial class PlayerListViewModel(ListPlayersQuery query, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, ILogger<PlayerListViewModel> logger) : ObservableObject
 {
     public ObservableCollection<PlayerListRow> Players { get; } = [];
     [ObservableProperty] public partial bool IncludeGuests { get; set; }
