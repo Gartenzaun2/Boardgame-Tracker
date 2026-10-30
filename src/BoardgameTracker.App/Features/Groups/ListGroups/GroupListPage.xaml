@@ -9,120 +9,131 @@
     x:DataType="local:GroupListViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <VerticalStackLayout Spacing="0" VerticalOptions="Center">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="28"
-                        Text="{x:Static res:AppResources.Groups}" />
-                    <Label
-                        FontSize="13"
-                        FontAttributes="Bold"
-                        Text="{Binding SelectedGameName}"
-                        TextColor="{DynamicResource TextPrimary}" />
-                </VerticalStackLayout>
-                <Button
-                    Grid.Column="1"
-                    Clicked="OnCreateGroupClicked"
-                    Style="{StaticResource PrimaryCompactButton}"
-                    Text="{x:Static res:AppResources.NewGroup}"
-                    VerticalOptions="Center" />
-            </Grid>
+    <Grid Padding="20,22">
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
+            <Grid.Triggers>
+                <MultiTrigger TargetType="Grid">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
+                        <BindingCondition Binding="{Binding IsNavigating}" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Grid.Triggers>
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="28"
+                            Text="{x:Static res:AppResources.Groups}" />
+                        <Label
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            Text="{Binding SelectedGameName}"
+                            TextColor="{DynamicResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <Button
+                        Grid.Column="1"
+                        Clicked="OnCreateGroupClicked"
+                        Style="{StaticResource PrimaryCompactButton}"
+                        Text="{x:Static res:AppResources.NewGroup}"
+                        VerticalOptions="Center" />
+                </Grid>
 
-            <BoxView Style="{StaticResource HeaderDivider}" />
+                <BoxView Style="{StaticResource HeaderDivider}" />
 
-            <HorizontalStackLayout Spacing="20">
-                <HorizontalStackLayout Spacing="6">
-                    <Switch IsToggled="{Binding IncludeTemporary}" />
-                    <Label Text="{x:Static res:AppResources.Temporary}" VerticalOptions="Center" />
+                <HorizontalStackLayout Spacing="20">
+                    <HorizontalStackLayout Spacing="6">
+                        <Switch IsToggled="{Binding IncludeTemporary}" />
+                        <Label Text="{x:Static res:AppResources.Temporary}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <Switch IsToggled="{Binding IncludeArchived}" />
+                        <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
                 </HorizontalStackLayout>
-                <HorizontalStackLayout Spacing="6">
-                    <Switch IsToggled="{Binding IncludeArchived}" />
-                    <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </HorizontalStackLayout>
-        </VerticalStackLayout>
+            </VerticalStackLayout>
 
-        <Label
-            Grid.Row="1"
-            IsVisible="{Binding HasError}"
-            Text="{Binding ErrorMessage}"
-            TextColor="{DynamicResource Danger}" />
+            <Label
+                Grid.Row="1"
+                IsVisible="{Binding HasError}"
+                Text="{Binding ErrorMessage}"
+                TextColor="{DynamicResource Danger}" />
 
-        <CollectionView
-            Grid.Row="2"
-            ItemsSource="{Binding Groups}">
-            <CollectionView.EmptyView>
-                <VerticalStackLayout Padding="0,12" Spacing="8">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="20"
-                        Text="{x:Static res:AppResources.NoGroupsYet}" />
-                    <Label Text="{x:Static res:AppResources.CreateFirstGroupHint}" />
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="local:GroupListItemViewModel">
-                    <Border
-                        Margin="0,0,0,12"
-                        Padding="16"
-                        BackgroundColor="{DynamicResource Surface}"
-                        Style="{StaticResource CardBorder}">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                            <VerticalStackLayout Spacing="5">
-                                <VerticalStackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnGroupTapped" CommandParameter="{Binding Id}" />
-                                </VerticalStackLayout.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="6">
+            <CollectionView
+                Grid.Row="2"
+                ItemsSource="{Binding Groups}">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="0,12" Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="20"
+                            Text="{x:Static res:AppResources.NoGroupsYet}" />
+                        <Label Text="{x:Static res:AppResources.CreateFirstGroupHint}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:GroupListItemViewModel">
+                        <Border
+                            Margin="0,0,0,12"
+                            Padding="16"
+                            BackgroundColor="{DynamicResource Surface}"
+                            Style="{StaticResource CardBorder}">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                <VerticalStackLayout Spacing="5">
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnGroupTapped" CommandParameter="{Binding Id}" />
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="20"
+                                            Text="{Binding Name}" />
+                                        <Image BackgroundColor="Transparent"
+                                            presentation:IconTint.Color="{DynamicResource TextPrimary}"
+                                            HeightRequest="20"
+                                            WidthRequest="20"
+                                            IsVisible="{Binding HasOpenGameSession}"
+                                            Source="icon_active_session.png"
+                                            SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
+                                            ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
+                                            VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding PlayerNames}" />
+                                        <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{DynamicResource TextSecondary}" />
+                                        <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{DynamicResource TextSecondary}" />
+                                    </HorizontalStackLayout>
                                     <Label
-                                        FontAttributes="Bold"
-                                        FontSize="20"
-                                        Text="{Binding Name}" />
-                                    <Image BackgroundColor="Transparent"
-                                        presentation:IconTint.Color="{DynamicResource TextPrimary}"
-                                        HeightRequest="20"
-                                        WidthRequest="20"
-                                        IsVisible="{Binding HasOpenGameSession}"
-                                        Source="icon_active_session.png"
-                                        SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
-                                        ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}"
-                                        VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label Text="{Binding PlayerNames}" />
-                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{DynamicResource TextSecondary}" />
-                                    <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{DynamicResource TextSecondary}" />
-                                </HorizontalStackLayout>
-                                <Label
-                                    FontSize="12"
-                                    Text="{Binding LastPlayedText}"
-                                    TextColor="{DynamicResource TextSecondary}" />
-                            </VerticalStackLayout>
-                            <ImageButton
-                                Grid.Column="1"
-                                Clicked="OnEditGroupClicked"
-                                CommandParameter="{Binding Id}"
-                                SemanticProperties.Description="{x:Static res:AppResources.EditGroup}"
-                                Source="icon_edit.png"
-                                Style="{StaticResource IconButton}"
-                                ToolTipProperties.Text="{x:Static res:AppResources.EditGroup}"
-                                VerticalOptions="Start" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                        FontSize="12"
+                                        Text="{Binding LastPlayedText}"
+                                        TextColor="{DynamicResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <ImageButton
+                                    Grid.Column="1"
+                                    Clicked="OnEditGroupClicked"
+                                    CommandParameter="{Binding Id}"
+                                    SemanticProperties.Description="{x:Static res:AppResources.EditGroup}"
+                                    Source="icon_edit.png"
+                                    Style="{StaticResource IconButton}"
+                                    ToolTipProperties.Text="{x:Static res:AppResources.EditGroup}"
+                                    VerticalOptions="Start" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-        <ActivityIndicator
-            Grid.Row="3"
-            HorizontalOptions="Center"
-            IsRunning="{Binding IsBusy}"
-            IsVisible="{Binding IsBusy}" />
+            <ActivityIndicator
+                Grid.Row="3"
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+        </Grid>
 
         <Grid
-            Grid.RowSpan="4"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">
@@ -133,7 +144,6 @@
         </Grid>
 
         <Grid
-            Grid.RowSpan="4"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsNavigating}">

@@ -9,79 +9,82 @@
     x:DataType="vm:ArkNovaScoringViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="14" RowDefinitions="Auto,*,Auto" RowSpacing="10" IsEnabled="{Binding IsIdle}">
-        <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
-                <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
-                <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
-                    <Label Text="{Binding GroupName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" />
-                    <Label Text="{Binding DateText}" FontSize="11" TextColor="{DynamicResource TextPrimary}" />
-                </VerticalStackLayout>
-                <ImageButton Grid.Column="2" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
-                <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
-            </Grid>
-            <BoxView Style="{StaticResource HeaderDivider}" />
-        </VerticalStackLayout>
+    <Grid Padding="14">
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*,Auto" RowSpacing="10" IsEnabled="{Binding IsScoringContentEnabled}">
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                    <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                        <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
+                        <Label Text="{Binding GroupName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" />
+                        <Label Text="{Binding DateText}" FontSize="11" TextColor="{DynamicResource TextPrimary}" />
+                    </VerticalStackLayout>
+                    <ImageButton Grid.Column="2" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
+                    <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
+                </Grid>
+                <BoxView Style="{StaticResource HeaderDivider}" />
+            </VerticalStackLayout>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" VerticalScrollBarVisibility="Never">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="7" />
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="vm:ArkNovaScoringPlayerViewModel">
-                    <Border Padding="10,8" BackgroundColor="{Binding Tint}" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
-                        <Grid ColumnDefinitions="*,58" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="2">
-                            <Grid Grid.RowSpan="4">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnPlayerTapped" CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="2">
-                                    <Label TextColor="{Binding PlayerTextColor}" Text="{Binding NameWithScore}" FontAttributes="Bold" FontSize="16" />
-                                    <Label Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" FontAttributes="Bold" TextColor="{Binding PlayerTextColor}" />
-                                    <Label TextColor="{Binding PlayerTextColor}" Grid.Row="2" Text="{Binding RawValuesText}" FontSize="12" />
-                                    <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{Binding PlayerTextColor}" />
+            <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" VerticalScrollBarVisibility="Never">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="7" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ArkNovaScoringPlayerViewModel">
+                        <Border Padding="10,8" BackgroundColor="{Binding Tint}" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
+                            <Grid ColumnDefinitions="*,58" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="2">
+                                <Grid Grid.RowSpan="4">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnPlayerTapped" CommandParameter="{Binding .}" />
+                                    </Grid.GestureRecognizers>
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="2">
+                                        <Label TextColor="{Binding PlayerTextColor}" Text="{Binding NameWithScore}" FontAttributes="Bold" FontSize="16" />
+                                        <Label Grid.Row="1" Text="{Binding Subtitle}" FontSize="12" FontAttributes="Bold" TextColor="{Binding PlayerTextColor}" />
+                                        <Label TextColor="{Binding PlayerTextColor}" Grid.Row="2" Text="{Binding RawValuesText}" FontSize="12" />
+                                        <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{Binding PlayerTextColor}" />
+                                    </Grid>
+                                </Grid>
+
+                                <Grid Grid.Column="1" Grid.RowSpan="4"
+                                      MinimumWidthRequest="52"
+                                      MinimumHeightRequest="72"
+                                      HorizontalOptions="End"
+                                      VerticalOptions="Center"
+                                      SemanticProperties.Description="{x:Static res:AppResources.SpecialCards}">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnAddSpecialCardTapped" CommandParameter="{Binding PlayerId}" />
+                                    </Grid.GestureRecognizers>
+                                    <Border Padding="5"
+                                            BackgroundColor="{DynamicResource IconSurface}"
+                                            Stroke="{DynamicResource Outline}"
+                                            StrokeShape="RoundRectangle 9"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="Fill">
+                                        <Image Source="icon_special_card.png"
+                                               Aspect="AspectFit"
+                                               Margin="3" />
+                                    </Border>
                                 </Grid>
                             </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                            <Grid Grid.Column="1" Grid.RowSpan="4"
-                                  MinimumWidthRequest="52"
-                                  MinimumHeightRequest="72"
-                                  HorizontalOptions="End"
-                                  VerticalOptions="Center"
-                                  SemanticProperties.Description="{x:Static res:AppResources.SpecialCards}">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnAddSpecialCardTapped" CommandParameter="{Binding PlayerId}" />
-                                </Grid.GestureRecognizers>
-                                <Border Padding="5"
-                                        BackgroundColor="{DynamicResource IconSurface}"
-                                        Stroke="{DynamicResource Outline}"
-                                        StrokeShape="RoundRectangle 9"
-                                        HorizontalOptions="Fill"
-                                        VerticalOptions="Fill">
-                                    <Image Source="icon_special_card.png"
-                                           Aspect="AspectFit"
-                                           Margin="3" />
-                                </Border>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <VerticalStackLayout Grid.Row="2" Spacing="6">
+            <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Button Style="{StaticResource DangerButton}" Text="{Binding DeleteText}"
+                        MinimumHeightRequest="44"
+                        Clicked="OnDiscardClicked" />
+                <Button Grid.Column="1" Text="{Binding CompleteText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnCompleteClicked" IsEnabled="{Binding CanComplete}" />
+            </Grid>
 
-        <VerticalStackLayout Grid.Row="2" Spacing="6">
-        <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
-        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-            <Button Style="{StaticResource DangerButton}" Text="{Binding DeleteText}"
-                    MinimumHeightRequest="44"
-                    Clicked="OnDiscardClicked" />
-            <Button Grid.Column="1" Text="{Binding CompleteText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnCompleteClicked" IsEnabled="{Binding CanComplete}" />
+            </VerticalStackLayout>
         </Grid>
 
-        </VerticalStackLayout>
-
-        <Grid Grid.RowSpan="3" IsVisible="{Binding IsSpecialCardPickerVisible}" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+        <Grid IsVisible="{Binding IsSpecialCardPickerVisible}" IsEnabled="{Binding IsIdle}" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
@@ -120,7 +123,7 @@
             </Border>
         </Grid>
 
-        <Grid Grid.RowSpan="3" IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>
     </Grid>

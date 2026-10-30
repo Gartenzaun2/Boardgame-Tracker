@@ -33,20 +33,26 @@ public partial class ArkNovaScoringViewModel(
     [ObservableProperty] public partial string DateText { get; private set; } = string.Empty;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool IsBusy { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool IsSaving { get; set; }
     public bool IsIdle => !IsBusy && !IsSaving;
+    public bool IsScoringContentEnabled => IsIdle && !IsSpecialCardPickerVisible;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool CompletionSaved { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-    [ObservableProperty] public partial bool IsSpecialCardPickerVisible { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanComplete))]
+    public partial bool IsSpecialCardPickerVisible { get; private set; }
     [ObservableProperty] public partial Guid? SpecialCardTargetPlayerId { get; private set; }
 
     public ArkNovaHistoryCorrectionDraft? Draft { get; private set; }
@@ -61,7 +67,7 @@ public partial class ArkNovaScoringViewModel(
     public bool IsLiveScoring => !IsHistorical;
     public string CompleteText => IsHistorical ? AppResources.SaveCorrection : AppResources.CompleteScoring;
     public string DeleteText => IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard;
-    public bool CanComplete => IsIdle && !CompletionSaved && Players.Count > 0 && Players.All(x => x.HasRequiredValues);
+    public bool CanComplete => IsScoringContentEnabled && !CompletionSaved && Players.Count > 0 && Players.All(x => x.HasRequiredValues);
 
     public string SpecialCardPickerTitle
     {
@@ -141,7 +147,7 @@ public partial class ArkNovaScoringViewModel(
 
     public void OpenSpecialCardPicker(Guid playerId)
     {
-        if (Players.All(x => x.PlayerId != playerId))
+        if (!IsScoringContentEnabled || Players.All(x => x.PlayerId != playerId))
         {
             return;
         }
@@ -196,7 +202,7 @@ public partial class ArkNovaScoringViewModel(
 
     public bool TryBeginNavigation()
     {
-        if (IsBusy)
+        if (!IsScoringContentEnabled)
         {
             return false;
         }

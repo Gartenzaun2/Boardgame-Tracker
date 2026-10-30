@@ -10,87 +10,105 @@
     x:DataType="local:EditGroupViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,*">
-        <VerticalStackLayout Spacing="8">
-            <Grid Padding="8,8,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
-                <ImageButton Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" Source="icon_back.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+    <Grid>
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" IsEnabled="False">
+            <Grid.Triggers>
+                <MultiTrigger TargetType="Grid">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
+                        <BindingCondition Binding="{Binding ColorSelection.IsVisible}" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Grid.Triggers>
+            <VerticalStackLayout Spacing="8">
+                <Grid Padding="8,8,12,8" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="4">
+                    <ImageButton Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" Source="icon_back.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
 
-                <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                    <Label FontAttributes="Bold" FontSize="21" Text="{x:Static res:AppResources.EditGroup}" VerticalOptions="Center" />
-                    <ImageButton Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
-                </HorizontalStackLayout>
-
-                <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" VerticalOptions="Center" />
-            </Grid>
-            <BoxView Style="{StaticResource HeaderDivider}" />
-        </VerticalStackLayout>
-
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <VerticalStackLayout Spacing="16">
-                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
-                        <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
-                        <Entry Style="{StaticResource InlineFormEntry}" Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNameExample}" Text="{Binding GroupName}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
-                            <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextPrimary}" />
-                        </VerticalStackLayout>
-                        <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                            <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{DynamicResource TextPrimary}" />
-                        </VerticalStackLayout>
-                        <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
-                    </Grid>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="10">
-                    <HorizontalStackLayout Spacing="2">
-                        <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupPlayers}" VerticalOptions="Center" />
-                        <ImageButton Clicked="OnPlayersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
+                    <HorizontalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label FontAttributes="Bold" FontSize="21" Text="{x:Static res:AppResources.EditGroup}" VerticalOptions="Center" />
+                        <ImageButton Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
                     </HorizontalStackLayout>
 
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="groupColors:GroupPlayerItemViewModel">
-                                <Border Margin="0,4" Padding="12" Style="{StaticResource GroupPlayerCard}">
-                                    <VerticalStackLayout Spacing="8">
-                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
-                                            <VerticalStackLayout Spacing="2">
-                                                <Label Style="{StaticResource GroupPlayerText}" FontAttributes="Bold" Text="{Binding Name}" />
-                                                <Label Style="{StaticResource GroupPlayerText}" Text="{Binding ColorName}" FontSize="12"
-                                                    IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:EditGroupPage}" />
-                                                <Label Style="{StaticResource GroupPlayerText}" FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" />
-                                            </VerticalStackLayout>
-                                            <ImageButton Grid.Column="1" Source="icon_palette.png" Style="{StaticResource GroupPlayerPalette}"
-                                            IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:EditGroupPage}"
-                                            Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenColorPickerCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" />
-                                            <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                            <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
-                                        </Grid>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-
-                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                    <Button Grid.Column="2" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" VerticalOptions="Center" />
+                </Grid>
+                <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
-        </ScrollView>
 
-        <groupColors:GroupColorPickerView Grid.RowSpan="2"
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                            <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
+                            <Entry Style="{StaticResource InlineFormEntry}" Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNameExample}" Text="{Binding GroupName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextPrimary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                                <Label FontSize="12" Text="{x:Static res:AppResources.ArchiveHint}" TextColor="{DynamicResource TextPrimary}" />
+                            </VerticalStackLayout>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="2">
+                            <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupPlayers}" VerticalOptions="Center" />
+                            <ImageButton Clicked="OnPlayersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
+                        </HorizontalStackLayout>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="groupColors:GroupPlayerItemViewModel">
+                                    <Border Margin="0,4" Padding="12" Style="{StaticResource GroupPlayerCard}">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Style="{StaticResource GroupPlayerText}" FontAttributes="Bold" Text="{Binding Name}" />
+                                                    <Label Style="{StaticResource GroupPlayerText}" Text="{Binding ColorName}" FontSize="12"
+                                                        IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:EditGroupPage}" />
+                                                    <Label Style="{StaticResource GroupPlayerText}" FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" />
+                                                </VerticalStackLayout>
+                                                <ImageButton Grid.Column="1" Source="icon_palette.png" Style="{StaticResource GroupPlayerPalette}"
+                                                IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:EditGroupPage}"
+                                                Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenColorPickerCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" />
+                                                <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                                <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                            </Grid>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+        <groupColors:GroupColorPickerView
             BindingContext="{Binding ColorSelection, x:DataType=local:EditGroupViewModel}"
-            IsVisible="{Binding IsVisible, x:DataType=groupColors:GroupColorSelectionViewModel}" />
+            IsVisible="{Binding IsVisible, x:DataType=groupColors:GroupColorSelectionViewModel}" >
+            <groupColors:GroupColorPickerView.Triggers>
+                <DataTrigger TargetType="groupColors:GroupColorPickerView"
+                    Binding="{Binding Source={x:Reference Page}, Path=ViewModel.IsBusy, x:DataType=local:EditGroupPage}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </groupColors:GroupColorPickerView.Triggers>
+        </groupColors:GroupColorPickerView>
 
         <Grid
-            Grid.RowSpan="2"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">

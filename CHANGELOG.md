@@ -4,6 +4,19 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.7
+
+- Page-interne modale Auswahl-Picker verwenden einheitlich den vorhandenen Zurück-Pfeil links im Header: Gruppenfarben, Kartensymbole und vorhandene Spieler folgen der Spezialkarten-Auswahl.
+- Sichtbarer Zurück-Pfeil und System-/Android-Zurück schließen ausschließlich die aktuelle Auswahl. Allgemeine Hinweis-, Bestätigungs- und Entscheidungsdialoge behalten ihre expliziten Textaktionen.
+- Bestehende Overlay-Modalität, Busy-Sperren und fachliche Auswahlfunktionen bleiben unverändert. UI-Konvention und Wireframe präzisiert. App-Version 0.10.0.7 / ApplicationVersion 44.
+
+## 0.10.0.6
+
+- Page-interne modale Overlays deaktivieren den darunterliegenden Seiteninhalt ausdrücklich: Spezialkarten-Auswahl in der Wertung, Symbol-Picker im Spezialkarten-Editor sowie Spieler- und Farbauswahl in Gruppenformularen korrigiert.
+- Weitere Page-Overlays projektweit geprüft und verbleibende Busy-Sperrlücken geschlossen. Dialoge und Busy-Layer liegen außerhalb des deaktivierten Inhalts; Shell-/Bottom-Navigation bleibt unverändert.
+- Modal- und Busy-Zustände bleiben getrennt; System-Zurück schließt offene Auswahlen zuerst. UI-Regeln und Wireframe entsprechend präzisiert.
+- Keine Änderung der fachlichen Scoring-, Spezialkarten- oder Persistenzlogik. App-Version 0.10.0.6 / ApplicationVersion 43.
+
 ## 0.10.0.5
 
 - Datei-/Ordnergranularität der Vertical Slices konsolidiert: kleine slice-eigene Commands, Inputs und Read Models stehen beim jeweiligen Haupttyp; unnötige Mini-Slice-Unterordner in Application und Tests entfernt.

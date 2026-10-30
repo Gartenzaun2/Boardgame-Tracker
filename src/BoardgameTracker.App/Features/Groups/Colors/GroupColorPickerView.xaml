@@ -6,12 +6,14 @@
  <Grid BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
   <Border Style="{StaticResource SelectionDialog}">
    <VerticalStackLayout Spacing="12">
-    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-     <VerticalStackLayout Spacing="4">
+    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+     <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Command="{Binding CloseCommand}"
+                  SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                  ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+     <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
       <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="18" LineBreakMode="WordWrap" />
       <Label Text="{Binding PlayerName}" FontSize="14" />
      </VerticalStackLayout>
-     <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Style="{StaticResource TextActionButton}" Command="{Binding CloseCommand}" />
     </Grid>
     <BoxView Style="{StaticResource HeaderDivider}" />
     <CollectionView ItemsSource="{Binding Options}" SelectionMode="None" HeightRequest="280" BackgroundColor="{DynamicResource AppBackground}">

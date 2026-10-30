@@ -10,240 +10,250 @@
     x:DataType="local:ArkNovaPreparationViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <VerticalStackLayout Spacing="8">
-        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-            <ImageButton
-                Clicked="OnBackClicked"
-                Source="icon_back.png"
-                Style="{StaticResource IconButton}"
-                SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.PrepareGame}" VerticalOptions="Center" />
-                    <ImageButton
-                        x:Name="RandomStartButton"
-                        Grid.Column="1"
-                        Clicked="OnRandomStartClicked"
-                        Margin="12,0,0,0"
-                        Source="icon_dice.png"
-                        Style="{StaticResource IconButton}"
-                        SemanticProperties.Description="{x:Static res:AppResources.DetermineStartingPlayer}"
-                        ToolTipProperties.Text="{x:Static res:AppResources.DetermineStartingPlayer}" />
-                </Grid>
-                <Label
-                    Margin="0,-4,0,0"
-                    FontSize="13"
-                    Text="{Binding GroupName}"
-                    TextColor="{DynamicResource TextPrimary}" />
+    <Grid Padding="18,18,18,14">
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
+            <Grid.Triggers>
+                <MultiTrigger TargetType="Grid">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Grid.Triggers>
+            <VerticalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <ImageButton
+                    Clicked="OnBackClicked"
+                    Source="icon_back.png"
+                    Style="{StaticResource IconButton}"
+                    SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.PrepareGame}" VerticalOptions="Center" />
+                        <ImageButton
+                            x:Name="RandomStartButton"
+                            Grid.Column="1"
+                            Clicked="OnRandomStartClicked"
+                            Margin="12,0,0,0"
+                            Source="icon_dice.png"
+                            Style="{StaticResource IconButton}"
+                            SemanticProperties.Description="{x:Static res:AppResources.DetermineStartingPlayer}"
+                            ToolTipProperties.Text="{x:Static res:AppResources.DetermineStartingPlayer}" />
+                    </Grid>
+                    <Label
+                        Margin="0,-4,0,0"
+                        FontSize="13"
+                        Text="{Binding GroupName}"
+                        TextColor="{DynamicResource TextPrimary}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
+
+            <Label
+                Grid.Row="1"
+                IsVisible="{Binding HasError}"
+                Text="{Binding ErrorMessage}"
+                TextColor="{DynamicResource Danger}" />
+
+            <ScrollView Grid.Row="2" Margin="0,-6,0,0">
+                <VerticalStackLayout Spacing="12">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{x:Static res:AppResources.PreviousGameSection}" FontSize="12" FontAttributes="Bold" />
+                        <Label Text="{Binding LastGameSessionText}" FontSize="13" />
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10">
+                        <Button
+                            Clicked="OnDrawZooPlansClicked"
+                            Style="{StaticResource SecondaryActionButton}"
+                            Text="{x:Static res:AppResources.DrawZooPlans}" />
+                        <Button
+                            Grid.Column="1"
+                            Clicked="OnRotateOrderClicked"
+                            Style="{StaticResource SecondaryActionButton}"
+                            Text="{x:Static res:AppResources.RotateOrder}" />
+                    </Grid>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:ArkNovaPreparationPlayerViewModel">
+                                <Border
+                                    Margin="0,0,0,10"
+                                    Padding="12"
+                                    BackgroundColor="{Binding ColorBrush}"
+                                    Style="{StaticResource CardBorder}">
+                                    <VerticalStackLayout Spacing="9">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                                            <Border
+                                                HeightRequest="32"
+                                                Stroke="#66FFFFFF"
+                                                StrokeShape="RoundRectangle 16"
+                                                WidthRequest="32">
+                                                <Label TextColor="{Binding PlayerTextColor}"
+                                                    FontAttributes="Bold"
+                                                    HorizontalTextAlignment="Center"
+                                                    Text="{Binding Position}"
+                                                    VerticalTextAlignment="Center" />
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                                                <Label TextColor="{Binding PlayerTextColor}" FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
+                                                <Label TextColor="{Binding PlayerTextColor}" FontSize="12" Text="{Binding ColorName}" />
+                                            </VerticalStackLayout>
+                                            <ImageButton
+                                                Grid.Column="2"
+                                                Clicked="OnMoveUpClicked" CommandParameter="{Binding .}"
+                                                Source="icon_up.png" IsEnabled="{Binding CanMoveUp}"
+                                                presentation:IconTint.Color="{Binding PlayerTextColor}"
+                                                Style="{StaticResource IconButton}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
+                                            <ImageButton
+                                                Grid.Column="3"
+                                                Clicked="OnMoveDownClicked" CommandParameter="{Binding .}"
+                                                Source="icon_down.png" IsEnabled="{Binding CanMoveDown}"
+                                                presentation:IconTint.Color="{Binding PlayerTextColor}"
+                                                Style="{StaticResource IconButton}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
+                                            <ImageButton
+                                                Grid.Column="4"
+                                                Clicked="OnColorClicked"
+                                                Source="icon_palette.png"
+                                                presentation:IconTint.Color="{Binding PlayerTextColor}"
+                                                Style="{StaticResource IconButton}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}"
+                                                ToolTipProperties.Text="{x:Static res:AppResources.ChooseColor}" />
+                                        </Grid>
+
+                                        <HorizontalStackLayout
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding IsColorPickerOpen}"
+                                            Spacing="8">
+                                            <Button
+                                                BackgroundColor="{x:Static colors:PlayerColorPresentation.BlueBackground}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.Blue}"
+                                                Clicked="OnBlueColorClicked"
+                                                IsVisible="{Binding CanChooseBlue}"
+                                                HeightRequest="44"
+                                                Padding="0"
+                                                Text=""
+                                                WidthRequest="44" />
+                                            <Button
+                                                BackgroundColor="{x:Static colors:PlayerColorPresentation.YellowBackground}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.Yellow}"
+                                                Clicked="OnYellowColorClicked"
+                                                IsVisible="{Binding CanChooseYellow}"
+                                                HeightRequest="44"
+                                                Padding="0"
+                                                Text=""
+                                                WidthRequest="44" />
+                                            <Button
+                                                BackgroundColor="{x:Static colors:PlayerColorPresentation.RedBackground}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.Red}"
+                                                Clicked="OnRedColorClicked"
+                                                IsVisible="{Binding CanChooseRed}"
+                                                HeightRequest="44"
+                                                Padding="0"
+                                                Text=""
+                                                WidthRequest="44" />
+                                            <Button
+                                                BackgroundColor="{x:Static colors:PlayerColorPresentation.BlackBackground}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.Black}"
+                                                Clicked="OnBlackColorClicked"
+                                                IsVisible="{Binding CanChooseBlack}"
+                                                HeightRequest="44"
+                                                Padding="0"
+                                                Text=""
+                                                WidthRequest="44" />
+                                        </HorizontalStackLayout>
+
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasZooPlans}">
+                                            <Border
+                                                Padding="4"
+                                                BackgroundColor="#BFFFFFFF"
+                                                Stroke="{DynamicResource SelectedBorder}"
+                                                StrokeShape="RoundRectangle 10"
+                                                StrokeThickness="{Binding Option1StrokeThickness}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        CommandParameter="{Binding .}"
+                                                        Tapped="OnZooPlanOption1Tapped" />
+                                                </Border.GestureRecognizers>
+                                                <Grid HeightRequest="88">
+                                                    <Image
+                                                        Aspect="Fill"
+                                                        HeightRequest="81"
+                                                        Source="{Binding ZooPlanOption1IconSource}" />
+                                                    <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option1Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
+
+                                                    <Border
+                                                        Margin="0,3,0,0"
+                                                        Padding="7,2"
+                                                        BackgroundColor="#DFFFFFFF"
+                                                        HorizontalOptions="Center"
+                                                        StrokeThickness="0"
+                                                        StrokeShape="RoundRectangle 10"
+                                                        VerticalOptions="Start">
+                                                        <Label TextColor="{DynamicResource GameGraphicText}"
+                                                            FontAttributes="Bold"
+                                                            FontSize="14"
+                                                            Text="{Binding ZooPlanOption1.Number}" />
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                            <Border
+                                                Grid.Column="1"
+                                                Padding="4"
+                                                BackgroundColor="#BFFFFFFF"
+                                                Stroke="{DynamicResource SelectedBorder}"
+                                                StrokeShape="RoundRectangle 10"
+                                                StrokeThickness="{Binding Option2StrokeThickness}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        CommandParameter="{Binding .}"
+                                                        Tapped="OnZooPlanOption2Tapped" />
+                                                </Border.GestureRecognizers>
+                                                <Grid HeightRequest="88">
+                                                    <Image
+                                                        Aspect="Fill"
+                                                        HeightRequest="81"
+                                                        Source="{Binding ZooPlanOption2IconSource}" />
+                                                    <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option2Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
+
+                                                    <Border
+                                                        Margin="0,3,0,0"
+                                                        Padding="7,2"
+                                                        BackgroundColor="#DFFFFFFF"
+                                                        HorizontalOptions="Center"
+                                                        StrokeThickness="0"
+                                                        StrokeShape="RoundRectangle 10"
+                                                        VerticalOptions="Start">
+                                                        <Label TextColor="{DynamicResource GameGraphicText}"
+                                                            FontAttributes="Bold"
+                                                            FontSize="14"
+                                                            Text="{Binding ZooPlanOption2.Number}" />
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Button
+                Grid.Row="3"
+                Clicked="OnStartClicked"
+                IsEnabled="{Binding CanStart}"
+                Style="{StaticResource PrimaryCompactButton}"
+                Text="{x:Static res:AppResources.StartGame}" />
         </Grid>
 
-        <BoxView Style="{StaticResource HeaderDivider}" />
-        </VerticalStackLayout>
-
-        <Label
-            Grid.Row="1"
-            IsVisible="{Binding HasError}"
-            Text="{Binding ErrorMessage}"
-            TextColor="{DynamicResource Danger}" />
-
-        <ScrollView Grid.Row="2" Margin="0,-6,0,0">
-            <VerticalStackLayout Spacing="12">
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{x:Static res:AppResources.PreviousGameSection}" FontSize="12" FontAttributes="Bold" />
-                    <Label Text="{Binding LastGameSessionText}" FontSize="13" />
-                </VerticalStackLayout>
-
-                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="10">
-                    <Button
-                        Clicked="OnDrawZooPlansClicked"
-                        Style="{StaticResource SecondaryActionButton}"
-                        Text="{x:Static res:AppResources.DrawZooPlans}" />
-                    <Button
-                        Grid.Column="1"
-                        Clicked="OnRotateOrderClicked"
-                        Style="{StaticResource SecondaryActionButton}"
-                        Text="{x:Static res:AppResources.RotateOrder}" />
-                </Grid>
-
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="0">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="local:ArkNovaPreparationPlayerViewModel">
-                            <Border
-                                Margin="0,0,0,10"
-                                Padding="12"
-                                BackgroundColor="{Binding ColorBrush}"
-                                Style="{StaticResource CardBorder}">
-                                <VerticalStackLayout Spacing="9">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-                                        <Border
-                                            HeightRequest="32"
-                                            Stroke="#66FFFFFF"
-                                            StrokeShape="RoundRectangle 16"
-                                            WidthRequest="32">
-                                            <Label TextColor="{Binding PlayerTextColor}"
-                                                FontAttributes="Bold"
-                                                HorizontalTextAlignment="Center"
-                                                Text="{Binding Position}"
-                                                VerticalTextAlignment="Center" />
-                                        </Border>
-                                        <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                                            <Label TextColor="{Binding PlayerTextColor}" FontAttributes="Bold" FontSize="17" Text="{Binding Name}" />
-                                            <Label TextColor="{Binding PlayerTextColor}" FontSize="12" Text="{Binding ColorName}" />
-                                        </VerticalStackLayout>
-                                        <ImageButton
-                                            Grid.Column="2"
-                                            Clicked="OnMoveUpClicked" CommandParameter="{Binding .}"
-                                            Source="icon_up.png" IsEnabled="{Binding CanMoveUp}"
-                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
-                                            Style="{StaticResource IconButton}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
-                                        <ImageButton
-                                            Grid.Column="3"
-                                            Clicked="OnMoveDownClicked" CommandParameter="{Binding .}"
-                                            Source="icon_down.png" IsEnabled="{Binding CanMoveDown}"
-                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
-                                            Style="{StaticResource IconButton}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
-                                        <ImageButton
-                                            Grid.Column="4"
-                                            Clicked="OnColorClicked"
-                                            Source="icon_palette.png"
-                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
-                                            Style="{StaticResource IconButton}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}"
-                                            ToolTipProperties.Text="{x:Static res:AppResources.ChooseColor}" />
-                                    </Grid>
-
-                                    <HorizontalStackLayout
-                                        HorizontalOptions="End"
-                                        IsVisible="{Binding IsColorPickerOpen}"
-                                        Spacing="8">
-                                        <Button
-                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.BlueBackground}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.Blue}"
-                                            Clicked="OnBlueColorClicked"
-                                            IsVisible="{Binding CanChooseBlue}"
-                                            HeightRequest="44"
-                                            Padding="0"
-                                            Text=""
-                                            WidthRequest="44" />
-                                        <Button
-                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.YellowBackground}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.Yellow}"
-                                            Clicked="OnYellowColorClicked"
-                                            IsVisible="{Binding CanChooseYellow}"
-                                            HeightRequest="44"
-                                            Padding="0"
-                                            Text=""
-                                            WidthRequest="44" />
-                                        <Button
-                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.RedBackground}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.Red}"
-                                            Clicked="OnRedColorClicked"
-                                            IsVisible="{Binding CanChooseRed}"
-                                            HeightRequest="44"
-                                            Padding="0"
-                                            Text=""
-                                            WidthRequest="44" />
-                                        <Button
-                                            BackgroundColor="{x:Static colors:PlayerColorPresentation.BlackBackground}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.Black}"
-                                            Clicked="OnBlackColorClicked"
-                                            IsVisible="{Binding CanChooseBlack}"
-                                            HeightRequest="44"
-                                            Padding="0"
-                                            Text=""
-                                            WidthRequest="44" />
-                                    </HorizontalStackLayout>
-
-                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasZooPlans}">
-                                        <Border
-                                            Padding="4"
-                                            BackgroundColor="#BFFFFFFF"
-                                            Stroke="{DynamicResource SelectedBorder}"
-                                            StrokeShape="RoundRectangle 10"
-                                            StrokeThickness="{Binding Option1StrokeThickness}">
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer
-                                                    CommandParameter="{Binding .}"
-                                                    Tapped="OnZooPlanOption1Tapped" />
-                                            </Border.GestureRecognizers>
-                                            <Grid HeightRequest="88">
-                                                <Image
-                                                    Aspect="Fill"
-                                                    HeightRequest="81"
-                                                    Source="{Binding ZooPlanOption1IconSource}" />
-                                                <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option1Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
-
-                                                <Border
-                                                    Margin="0,3,0,0"
-                                                    Padding="7,2"
-                                                    BackgroundColor="#DFFFFFFF"
-                                                    HorizontalOptions="Center"
-                                                    StrokeThickness="0"
-                                                    StrokeShape="RoundRectangle 10"
-                                                    VerticalOptions="Start">
-                                                    <Label TextColor="{DynamicResource GameGraphicText}"
-                                                        FontAttributes="Bold"
-                                                        FontSize="14"
-                                                        Text="{Binding ZooPlanOption1.Number}" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                        <Border
-                                            Grid.Column="1"
-                                            Padding="4"
-                                            BackgroundColor="#BFFFFFFF"
-                                            Stroke="{DynamicResource SelectedBorder}"
-                                            StrokeShape="RoundRectangle 10"
-                                            StrokeThickness="{Binding Option2StrokeThickness}">
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer
-                                                    CommandParameter="{Binding .}"
-                                                    Tapped="OnZooPlanOption2Tapped" />
-                                            </Border.GestureRecognizers>
-                                            <Grid HeightRequest="88">
-                                                <Image
-                                                    Aspect="Fill"
-                                                    HeightRequest="81"
-                                                    Source="{Binding ZooPlanOption2IconSource}" />
-                                                <Label Text="{x:Static res:AppResources.ZooPlanSelected}" IsVisible="{Binding Option2Selected}" FontSize="10" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
-
-                                                <Border
-                                                    Margin="0,3,0,0"
-                                                    Padding="7,2"
-                                                    BackgroundColor="#DFFFFFFF"
-                                                    HorizontalOptions="Center"
-                                                    StrokeThickness="0"
-                                                    StrokeShape="RoundRectangle 10"
-                                                    VerticalOptions="Start">
-                                                    <Label TextColor="{DynamicResource GameGraphicText}"
-                                                        FontAttributes="Bold"
-                                                        FontSize="14"
-                                                        Text="{Binding ZooPlanOption2.Number}" />
-                                                </Border>
-                                            </Grid>
-                                        </Border>
-                                    </Grid>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <Button
-            Grid.Row="3"
-            Clicked="OnStartClicked"
-            IsEnabled="{Binding CanStart}"
-            Style="{StaticResource PrimaryCompactButton}"
-            Text="{x:Static res:AppResources.StartGame}" />
-
         <Grid
-            Grid.RowSpan="4"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">

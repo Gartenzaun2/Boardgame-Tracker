@@ -70,6 +70,8 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     protected override bool OnBackButtonPressed()
     {
+        if (_viewModel.IsBusy)
+            return true;
         if (!_viewModel.ColorSelection.IsVisible) return base.OnBackButtonPressed();
         _viewModel.ColorSelection.Close();
         return true;
