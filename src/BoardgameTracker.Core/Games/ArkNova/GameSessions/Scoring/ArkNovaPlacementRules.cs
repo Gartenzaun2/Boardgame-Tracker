@@ -1,7 +1,7 @@
 namespace BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
 
 /// <summary>
-/// Creates and validates competition-ranking placements. Manual changes are restricted to
+/// Creates default competition-ranking placements. Manual changes are restricted to
 /// players that had the same calculated score and to that tie's original rank range.
 /// </summary>
 public static class ArkNovaPlacementRules
@@ -68,24 +68,6 @@ public static class ArkNovaPlacementRules
                 throw new ArgumentException("A tied player was moved outside the original tie range.", nameof(placements));
             }
 
-            int index = 0;
-            while (index < resolved.Length)
-            {
-                int expectedPlacement = basePlacement + index;
-                int actualPlacement = resolved[index];
-                if (actualPlacement != expectedPlacement)
-                {
-                    throw new ArgumentException("Placements do not form a valid competition ranking.", nameof(placements));
-                }
-
-                int groupSize = 1;
-                while (index + groupSize < resolved.Length && resolved[index + groupSize] == actualPlacement)
-                {
-                    groupSize++;
-                }
-
-                index += groupSize;
-            }
         }
     }
 }

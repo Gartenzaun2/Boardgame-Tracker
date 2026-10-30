@@ -413,16 +413,19 @@ Berechnete Punkte werden nicht redundant gespeichert.
 
 `Placement` wird nach der gegebenenfalls nötigen Gleichstandsauflösung
 persistiert, weil die tatsächliche Platzierung bei Punktgleichheit nicht allein
-aus den Punkten rekonstruierbar ist. Competition Ranking wird verwendet, z. B.:
+aus den Punkten rekonstruierbar ist. Geteilte Plätze sind erlaubt. Automatische
+Ausgangsplatzierungen verwenden Competition Ranking; die manuelle Arche-Nova-
+Platzwahl darf jeden Platz des eigenen Punktegleichstandsblocks verwenden,
+auch gemeinsame höhere Plätze wie `1,3,3,4`, ohne Ranglücken zu schließen.
 
-``` text
-1, 1, 3
-1, 2, 2, 4
-```
-
-Nur Spieler desselben ursprünglichen Punktegleichstands dürfen innerhalb des
-zugehörigen Rangbereichs verschoben werden. Jeder Spieler mit `Placement = 1`
-gilt als Gewinner.
+Gleichstandsblöcke werden zur Laufzeit aus Scores und aktueller Platzierung
+abgeleitet, nicht separat persistiert. Jeder Block besitzt seine Teilnehmer,
+einen lückenlosen erlaubten Platzbereich entsprechend seiner Größe und eine
+Zuordnung, die geteilte Plätze erlaubt. Die Auswahl ändert nur den Rang des
+gewählten Spielers. Platzgruppen sind eine UI-Projektion der aktuellen Zuordnung,
+keine zusätzlichen Entities. Blöcke überschneiden sich nicht; Spieler mit
+unterschiedlichen Punkten können nicht gegeneinander verschoben werden.
+Jeder Spieler mit `Placement = 1` gilt als Gewinner.
 
 Die globalen Arche-Nova-Präferenzen `Ruf erfassen` und `alte/neue
 Punkteanzeige` sind keine historischen Spieldaten und werden deshalb über den

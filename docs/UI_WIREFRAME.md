@@ -102,7 +102,10 @@ LETZTE PARTIE
 automatische Rotation zum letzten Verlierer und Farbdefaults folgen der Produktspezifikation.
 Ohne gespeicherte Defaults werden eindeutige Farben vorgeschlagen. Der Würfel
 animiert kurz und lost den Startspieler durch zyklische Rotation aus; die
-separate Rotationsaktion verschiebt um eine Position. Relative Reihenfolge bleibt erhalten.
+separate Rotationsaktion verschiebt um eine Position und erhält die relative Reihenfolge.
+Kompakte Hoch-/Runter-Iconbuttons verschieben einzelne Spieler innerhalb der
+konkreten Partiereihenfolge. An den Listenenden ist die jeweilige Richtung deaktiviert;
+Gruppen-Defaults werden nicht geändert.
 
 Je Spieler stehen zwei quadratische Zooplanskizzen mit Nummer nebeneinander,
 ohne zusätzlichen Plannamen. Aktuelle Skizzen verwenden `Fill`. Initial ist kein
@@ -148,6 +151,23 @@ Der Zurück-Pfeil im bestehenden IconButton-Stil verlässt nur die Kartenwahl.
 Ein Tap ordnet zu oder entfernt und schließt. Bei Mehrfachzuordnung
 an andere Spieler bleibt die ausdrückliche Bestätigung erhalten. Archivierte
 Karten erscheinen nur beim bereits zugeordneten Zielspieler zum Entfernen.
+
+Bei Punktgleichstand führt der Abschluss in die Gleichstandsansicht mit neutralen
+Platzüberschriften und Dividern für `1..n`. Unter jeder Überschrift stehen null,
+ein oder mehrere aktuell zugeordnete Spieler; leere Zielgruppen bleiben sichtbar.
+Eine Spielerzeile zeigt in einer Reihe Name, kleine Platz-Chips und rechtsbündige
+Punkte. Die Platznummer wird nicht am Namen wiederholt. Der Zeilenhintergrund und
+die Texte verwenden das bestehende Spielerfarbpaar, ohne Farbe die neutrale
+Theme-Darstellung. Platzüberschriften und Chips übernehmen keine Spielerfarbe.
+Die Chips verwenden Surface/Outline bzw. SelectedSurface/SelectedBorder.
+
+Nur Mitglieder eines Gleichstandsblocks erhalten dessen erlaubte Platz-Chips.
+Die Auswahl verschiebt ausschließlich diesen Spieler in die gewählte Gruppe,
+ohne Tausch oder Neuverteilung. Geteilte Plätze und leere Gruppen sind auch beim
+Speichern erlaubt, sofern die Zuordnung innerhalb des jeweiligen Tie-Blocks liegt.
+Pfeile und Drag & Drop entfallen. Das Info-Icon öffnet die Erklärung im vorhandenen
+App-Dialog; kein permanenter Hilfetext. Gespeicherte Zuordnungen werden beim
+Wiederöffnen erneut in dieselben Platzgruppen projiziert.
 
 Der Ergebnis-Screen zeigt gespeicherte Platzierungen, Punkte und Rohwerte sowie
 Spezialkarten mit aktuellen Symbolen/Namen. Spielerflächen behalten ihre Farbpaare;
@@ -208,6 +228,7 @@ und erfordert Bestätigung. Statistik und deren eigene Filter folgen separat.
 Allgemeine Einstellungen enthalten Standardspiel und „Darstellung“ mit Deep
 Forest, Königsblau und Dunkel. Struktur bleibt über alle Themes gleich. Farbe,
 Shell-TabBar und aktive Auswahl richten sich nach dem Design Guide.
+Ohne gespeicherte Auswahl ist Dunkel voreingestellt; eine gespeicherte Wahl bleibt erhalten.
 
 Arche-Nova-Einstellungen enthalten „Ruf erfassen“, alte/neue Punkteanzeige und
 „Spezialkarten“. Dort: Header mit Zurück und Info-Icon, „Archivierte anzeigen“, scrollbare

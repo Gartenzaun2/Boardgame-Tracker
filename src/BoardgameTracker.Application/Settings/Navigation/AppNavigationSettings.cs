@@ -19,7 +19,7 @@ public sealed record AppNavigationSettings(
     string? SelectedGameKey,
     AppMainSection? LastMainSection,
     Guid? LastGameSessionId,
-    AppTheme Theme = AppTheme.DeepForest)
+    AppTheme Theme = AppTheme.Dark)
 {
     public static AppNavigationSettings Default { get; } = new(null, null, null, null);
 }

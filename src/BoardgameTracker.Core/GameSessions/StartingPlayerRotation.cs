@@ -5,6 +5,21 @@ namespace BoardgameTracker.Core.GameSessions;
 /// </summary>
 public static class StartingPlayerRotation
 {
+    public static IReadOnlyList<T> MovePlayer<T>(IReadOnlyList<T> players, int sourceIndex, int targetIndex)
+    {
+        ArgumentNullException.ThrowIfNull(players);
+        ArgumentOutOfRangeException.ThrowIfNegative(sourceIndex);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(sourceIndex, players.Count);
+        ArgumentOutOfRangeException.ThrowIfNegative(targetIndex);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(targetIndex, players.Count);
+
+        List<T> result = [.. players];
+        T player = result[sourceIndex];
+        result.RemoveAt(sourceIndex);
+        result.Insert(targetIndex, player);
+        return result;
+    }
+
     public static IReadOnlyList<T> RotateToStart<T>(
         IReadOnlyList<T> players,
         int startIndex)

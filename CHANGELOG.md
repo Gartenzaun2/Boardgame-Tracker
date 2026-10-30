@@ -4,6 +4,32 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.9.0.9
+
+- Gleichstandsansicht nach neutralen Platzgruppen gegliedert, einschließlich leerer Zielplätze. Kompakte Spielerzeilen behalten ihre Spielerfarbe und passende Textfarbe aus der bestehenden Palette; Platz-Chips bleiben neutral.
+- Platzwahl verschiebt nur den gewählten Spieler in die Zielgruppe. Geteilte Plätze einschließlich Ranglücken innerhalb des eigenen Tie-Blocks sind speicherbar; Grenzen zwischen unterschiedlichen Scores bleiben geschützt.
+- App-Version 0.9.0.9 / ApplicationVersion 35.
+
+## 0.9.0.8
+
+- Gleichstandszeilen zeigen Rang, Name, Platz-Buttons und Punkte gemeinsam in einer horizontalen Zeile.
+- Platzwahl erhält geteilte Ränge und ändert nur den gewählten Spieler. Automatische Vergabe eindeutiger Plätze und erzwungener Tausch entfallen; gültiges Competition Ranking bleibt die Speicherregel.
+- App-Version 0.9.0.8 / ApplicationVersion 34.
+
+## 0.9.0.7
+
+- Gleichstandsauflösung verwendet direkte runde Platz-Buttons statt Pfeilen und Drag & Drop. Jeder Punktegleichstand bildet einen unabhängigen Block mit eindeutiger Zuordnung; die Auswahl eines belegten Platzes tauscht ausschließlich innerhalb dieses Blocks.
+- Hilfe zur Platzwahl liegt hinter dem bestehenden Info-Icon; finale Platzierungen werden über die vorhandenen Speicherpfade übernommen. Keine Schemaänderung.
+- App-Version 0.9.0.7 / ApplicationVersion 33.
+
+## 0.9.0.6
+
+- Partiestart mit Auf/Ab-Aktionen für die konkrete Partiereihenfolge; Gruppenreihenfolge bleibt erhalten. Rotationsaktion heißt „Reihenfolge rotieren“.
+- Wertung serialisiert Autosave und abschließendes Speichern, protokolliert Autosave-Fehler und unterscheidet Speicher- von nachgelagerten Navigationsfehlern. Bedienung und Mehrfachabschluss sind beim Speichern gesperrt.
+- Dunkel ist Standard ohne gespeicherte Theme-Auswahl; bestehende Präferenzen bleiben erhalten.
+- Gleichstände erhalten Auf/Ab-Aktionen innerhalb derselben Punktzahl; Drag & Drop übergibt die Spieler-ID explizit. Gewählte Platzierungen werden für Ergebnis und Historie gespeichert.
+- App-Version 0.9.0.6 / ApplicationVersion 32.
+
 ## 0.9.0.5
 
 - App-Start verwendet generische DI-Resume-Handler; Arche Nova stellt Wiederaufnahme und explizite Routen im eigenen Navigationsbereich bereit. AddArkNova registriert Handler und Routen, AppShell enthält ausschließlich allgemeine Routen. Fallback und Navigationsspeicher bleiben erhalten.

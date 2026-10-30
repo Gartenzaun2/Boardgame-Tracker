@@ -28,7 +28,8 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
             : null;
 
         return new AppNavigationSettings(defaultGame, selectedGame, section, gameSessionId,
-            AppThemeSelection.FromStoredValue(Preferences.Default.Get(ThemeKey, 0)));
+            AppThemeSelection.FromStoredValue(Preferences.Default.ContainsKey(ThemeKey)
+                ? Preferences.Default.Get(ThemeKey, 0) : null));
     }
 
     public void Save(AppNavigationSettings settings)

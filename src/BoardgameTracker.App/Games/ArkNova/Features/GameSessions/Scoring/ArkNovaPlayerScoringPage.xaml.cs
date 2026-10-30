@@ -77,6 +77,8 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
             return;
         }
         _saving = true;
+        ScoringInput.IsEnabled = false;
+        bool persisted = false;
         try
         {
             if (confirmSuggestions)
@@ -87,17 +89,26 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
                 return;
             }
             await _viewModel.FlushAsync();
+            persisted = true;
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not save scoring for GameSession {GameSessionId}, Player {PlayerId}.", _gameSessionId, _playerId);
+            _logger.LogError(exception, "Ark Nova player scoring failed. Persistence completed: {Persisted}.", persisted);
             await AppDialogPage.ShowAsync(this, AppResources.Scoring,
-            AppResources.CorrectionFailed, AppResources.Ok);
+                persisted ? AppResources.NavigationAfterSaveFailed : AppResources.CorrectionFailed, AppResources.Ok);
         }
         finally
         {
             _saving = false;
+            ScoringInput.IsEnabled = true;
         }
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        if (!_saving)
+            Dispatcher.Dispatch(async () => await SaveAndCloseAsync(false));
+        return true;
     }
 }

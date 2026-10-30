@@ -7,21 +7,87 @@
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
     x:DataType="vm:ArkNovaTieResolutionViewModel"
     Shell.NavBarIsVisible="False">
-    <Grid Padding="18" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="12">
+    <ContentPage.Resources>
+        <Style x:Key="PlacementButton" TargetType="Button" BasedOn="{StaticResource SecondaryActionButton}">
+            <Setter Property="WidthRequest" Value="32" />
+            <Setter Property="HeightRequest" Value="32" />
+            <Setter Property="MinimumWidthRequest" Value="32" />
+            <Setter Property="MinimumHeightRequest" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+            <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
+        </Style>
+    </ContentPage.Resources>
+    <Grid Padding="18" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="12" x:Name="ResolutionContent">
         <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
                 <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
-                <VerticalStackLayout Grid.Column="1" Spacing="1">
-                    <Label Text="{x:Static res:AppResources.ResolveTies}" FontAttributes="Bold" FontSize="22" />
-                    <Label Text="{x:Static res:AppResources.ResolveTiesHint}" FontSize="11" TextColor="{DynamicResource TextPrimary}" />
-                </VerticalStackLayout>
+                <Label Grid.Column="1" Text="{x:Static res:AppResources.ResolveTies}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" />
+                <ImageButton Grid.Column="2" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                    SemanticProperties.Description="{x:Static res:AppResources.ResolveTies}" />
             </Grid>
             <BoxView Style="{StaticResource HeaderDivider}" />
         </VerticalStackLayout>
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout x:Name="FramesHost" Spacing="8" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding PlacementGroups}" Spacing="12">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ArkNovaPlacementGroupViewModel">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="{Binding Title}" FontAttributes="Bold" />
+                            <BoxView Style="{StaticResource HeaderDivider}" />
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="4">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ArkNovaPlacementPlayerViewModel">
+                                        <Border Style="{StaticResource CardBorder}" Padding="8,6">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{Binding ColorStyle.BackgroundHex}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                <Label Text="{Binding Name}" FontAttributes="Bold" VerticalOptions="Center" MaxLines="1" LineBreakMode="TailTruncation">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                            <Setter Property="TextColor" Value="{Binding ColorStyle.TextHex}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                                <HorizontalStackLayout Grid.Column="1" VerticalOptions="Center" BindableLayout.ItemsSource="{Binding PlacementOptions}" IsVisible="{Binding HasPlacementOptions}" Spacing="4">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ArkNovaPlacementOptionViewModel">
+                                                            <Button Text="{Binding Text}" CommandParameter="{Binding .}" Clicked="OnPlacementClicked"
+                                                                Style="{StaticResource PlacementButton}" SemanticProperties.Description="{Binding Description}">
+                                                                <Button.Triggers>
+                                                                    <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                                                        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                                                                        <Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" />
+                                                                        <Setter Property="BorderWidth" Value="2" />
+                                                                    </DataTrigger>
+                                                                </Button.Triggers>
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+                                                </HorizontalStackLayout>
+                                                <Label Grid.Column="2" Text="{Binding ScoreText}" HorizontalTextAlignment="End" VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                            <Setter Property="TextColor" Value="{Binding ColorStyle.TextHex}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
         </ScrollView>
-        <Label Grid.Row="2" Text="{Binding ValidationMessage}" TextColor="{DynamicResource Danger}" FontSize="12" />
+        <Label Grid.Row="2" Text="{Binding ValidationMessage}" IsVisible="{Binding HasValidationMessage}" TextColor="{DynamicResource Danger}" />
         <Button Grid.Row="3" Text="{x:Static res:AppResources.SaveScoring}" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanFinish}" Clicked="OnFinishClicked" />
     </Grid>
 </ContentPage>

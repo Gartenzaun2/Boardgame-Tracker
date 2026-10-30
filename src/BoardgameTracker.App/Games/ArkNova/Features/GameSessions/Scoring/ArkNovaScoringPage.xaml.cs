@@ -49,7 +49,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private async void OnPlayerTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is not ArkNovaScoringPlayerViewModel player || !_viewModel.TryBeginNavigation())
+        if (_saving || e.Parameter is not ArkNovaScoringPlayerViewModel player || !_viewModel.TryBeginNavigation())
         {
             return;
         }
@@ -73,6 +73,8 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private void OnAddSpecialCardTapped(object? sender, TappedEventArgs e)
     {
+        if (_saving)
+            return;
         if (e.Parameter is Guid playerId)
         {
             _viewModel.OpenSpecialCardPicker(playerId);
@@ -83,6 +85,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     {
         if (_saving) return;
         _saving = true;
+        _viewModel.IsSaving = true;
         try
         {
             if (e.Parameter is not ArkNovaSpecialCardOptionViewModel option
@@ -120,7 +123,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
             await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
         }
-        finally { _saving = false; }
+        finally
+        {
+            _viewModel.IsSaving = false;
+            _saving = false;
+        }
     }
 
     private void OnSpecialCardPickerBackClicked(object? sender, EventArgs e) =>
@@ -129,8 +136,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private bool _saving;
     private async void OnCompleteClicked(object? sender, EventArgs e)
     {
-        if (_saving) return;
+        if (_saving || !_viewModel.CanComplete)
+            return;
         _saving = true;
+        _viewModel.IsSaving = true;
+        bool persisted = false;
         try
         {
             ArkNovaCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
@@ -139,31 +149,42 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             if (_viewModel.IsHistorical && !plan.HasTies)
             {
                 await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+                persisted = true;
                 return;
             }
             string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
             if (!plan.HasTies)
             {
                 await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
+                persisted = true;
             }
 
+            ShellNavigationQueryParameters parameters = new() { [NavigationParameters.GameSessionId] = _gameSessionId };
+            if (_viewModel.Draft is not null)
+                parameters[NavigationParameters.CorrectionDraft] = _viewModel.Draft;
             await Shell.Current.GoToAsync(
                 route,
-                new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId, [NavigationParameters.CorrectionDraft] = _viewModel.Draft! });
+                parameters);
         }
 
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Ark Nova scoring operation failed for GameSession {GameSessionId}.", _gameSessionId);
-            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.CorrectionFailed, AppResources.Ok);
+            _logger.LogError(exception, "Ark Nova scoring completion failed. Persistence completed: {Persisted}.", persisted);
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring,
+                persisted ? AppResources.NavigationAfterSaveFailed : AppResources.CorrectionFailed, AppResources.Ok);
         }
-        finally { _saving = false; }
+        finally
+        {
+            _viewModel.IsSaving = false;
+            _saving = false;
+        }
     }
 
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {
         if (_saving) return;
         _saving = true;
+        _viewModel.IsSaving = true;
         try
         {
             bool confirmed = await AppDialogPage.ShowAsync(this,
@@ -178,7 +199,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             }
 
         }
-        finally { _saving = false; }
+        finally
+        {
+            _viewModel.IsSaving = false;
+            _saving = false;
+        }
     }
 
     private async void OnCameraClicked(object? sender, EventArgs e) =>
@@ -192,6 +217,8 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     protected override bool OnBackButtonPressed()
     {
+        if (_saving)
+            return true;
         if (_viewModel.IsSpecialCardPickerVisible)
         {
             _viewModel.CloseSpecialCardPicker();

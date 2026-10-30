@@ -109,6 +109,7 @@ public partial class ArkNovaPreparationViewModel(
                     assignedColors[index]));
             }
 
+            UpdatePositions();
             if (data.LastGameSession is not null)
             {
                 Guid? startingPlayerId =
@@ -330,11 +331,23 @@ public partial class ArkNovaPreparationViewModel(
         UpdatePositions();
     }
 
+    public void MovePlayer(ArkNovaPreparationPlayerViewModel player, int offset)
+    {
+        int sourceIndex = Players.IndexOf(player);
+        int targetIndex = sourceIndex + offset;
+        if (IsBusy || sourceIndex < 0 || offset is not (-1 or 1) || targetIndex < 0 || targetIndex >= Players.Count)
+            return;
+
+        ReplacePlayers(StartingPlayerRotation.MovePlayer([.. Players], sourceIndex, targetIndex));
+    }
+
     private void UpdatePositions()
     {
         for (int index = 0; index < Players.Count; index++)
         {
             Players[index].Position = index + 1;
+            Players[index].CanMoveUp = index > 0;
+            Players[index].CanMoveDown = index < Players.Count - 1;
         }
     }
 }
@@ -354,6 +367,9 @@ public partial class ArkNovaPreparationPlayerViewModel(
 
     [ObservableProperty]
     public partial int Position { get; set; } = position;
+
+    [ObservableProperty] public partial bool CanMoveUp { get; set; }
+    [ObservableProperty] public partial bool CanMoveDown { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ColorName))]

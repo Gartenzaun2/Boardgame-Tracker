@@ -6,6 +6,19 @@ namespace BoardgameTracker.Core.Tests.Games.ArkNova.GameSessions.Scoring;
 public sealed class ArkNovaPlacementRulesTests
 {
     [Fact]
+    public void ValidateResolution_AllowsSharedHigherPlaceWithoutCompactingTieBlock()
+    {
+        Guid a = Guid.NewGuid();
+        Guid b = Guid.NewGuid();
+        Guid c = Guid.NewGuid();
+        Guid d = Guid.NewGuid();
+        Dictionary<Guid, int> scores = new() { [a] = 102, [b] = 96, [c] = 96, [d] = 80 };
+        ArkNovaPlacementRules.ValidateResolution(scores, new Dictionary<Guid, int> { [a] = 1, [b] = 3, [c] = 3, [d] = 4 });
+        Assert.Throws<ArgumentException>(() => ArkNovaPlacementRules.ValidateResolution(scores,
+            new Dictionary<Guid, int> { [a] = 1, [b] = 4, [c] = 3, [d] = 4 }));
+    }
+
+    [Fact]
     public void CreateDefaultPlacements_UsesCompetitionRanking()
     {
         Guid anna = Guid.NewGuid();
