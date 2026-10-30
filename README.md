@@ -40,7 +40,9 @@ statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzwe
 ## Architektur
 
 Modularer Monolith mit pragmatischen Vertical Slices und Composition:
-`App → Application → Core`, `Infrastructure → Application + Core`.
+`App → Application → Core`. Core enthält die technologieunabhängige Domain;
+Application enthält Vertical Slices mit direktem EF-Core-Zugriff. App enthält
+MAUI, den Composition Root und die SQLite-Providerkonfiguration.
 Allgemeine Domänenbegriffe bleiben `Game`, `GameSession`, `Group` und `Player`;
 Spielcode liegt unter `Games/<GameName>/`. Details stehen in
 [Architektur](docs/ARCHITECTURE.md) und [Datenmodell](docs/DATA_MODEL.md).

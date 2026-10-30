@@ -19,6 +19,13 @@ Projektüberblick und Einstieg: `README.md`; Zuständigkeiten und Arbeitsregeln:
 `AGENTS.md`; Projektgrenzen und Slice-Organisation: `docs/ARCHITECTURE.md`.
 Hier stehen ausschließlich Umgebungs-, Build-, Datenbank- und Lieferregeln.
 
+Die drei Produktionsprojekte sind Core, Application und App. Application referenziert
+EF Core und EF Core Relational; App und Application-Tests referenzieren zusätzlich
+den SQLite-Provider. Die Versionen bleiben zentral in Directory.Packages.props.
+DatabaseInitializer und spielabhängiges Seeding liegen in Application; der App-Host
+registriert DbContextFactory, SQLite und BGT_NAME in App/Persistence/SQLite.
+Integrationstests verwenden denselben Provider-/Collation-Code mit isolierten Datenbanken.
+
 ## Lokaler Entwicklungsablauf
 
 Standard gemäß `AGENTS.md`: Code ändern → Build → automatisierte Tests → fertig.

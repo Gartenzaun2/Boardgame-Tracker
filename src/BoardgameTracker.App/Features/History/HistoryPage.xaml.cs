@@ -8,12 +8,11 @@ using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
 
-
 namespace BoardgameTracker.App.Features.History;
 
 public partial class HistoryPage : ContentPage
 {
-    private readonly ICompletedGameSessionsQuery _query;
+    private readonly CompletedGameSessionsQuery _query;
     private readonly HistoryTransferUseCase _transfer;
     private readonly HistoryExportFlow _exportFlow;
     private Guid[] _visibleIds = [];
@@ -31,7 +30,7 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(ICompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
+    public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
     {
         InitializeComponent();
         ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);

@@ -1,13 +1,11 @@
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Groups;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.SpecialCards;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.StartGameSession;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Running;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Preparation;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Results;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
+using BoardgameTracker.Application.Games.ArkNova.Persistence.Groups;
+
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
+
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Application.Games.ArkNova.History.Transfer;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
-using BoardgameTracker.Infrastructure.Games.ArkNova.History.Transfer;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Games.ArkNova.Navigation;
 using BoardgameTracker.App.Features.Groups.Colors;
@@ -19,16 +17,14 @@ using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
 using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
+using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Groups.Colors;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BoardgameTracker.App.Games.ArkNova;
@@ -44,14 +40,12 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddSingleton(ArkNovaPlayerColors.Rules);
         services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();
         services.AddSingleton(new GameColorPresentation(ArkNovaGame.Key, () => AppResources.ArkNova));
-        services.AddTransient<IArkNovaPreparationQuery, SqliteArkNovaPreparationQuery>();
-        services.AddTransient<IStartArkNovaGameSessionStore, SqliteStartArkNovaGameSessionStore>();
+        services.AddTransient<ArkNovaPreparationQuery>();
         services.AddTransient<StartArkNovaGameSessionUseCase>();
-        services.AddTransient<IArkNovaRunningGameSessionQuery, SqliteArkNovaRunningGameSessionQuery>();
-        services.AddTransient<IArkNovaScoringStore, SqliteArkNovaGameSessionResultStore>();
+        services.AddTransient<ArkNovaRunningGameSessionQuery>();
+        services.AddTransient<ArkNovaGameSessionResultQuery>();
         services.AddTransient<ArkNovaScoringUseCase>();
         services.AddSingleton<IArkNovaSettingsStore, MauiArkNovaSettingsStore>();
-        services.AddTransient<IArkNovaHistoryCorrectionStore, SqliteArkNovaGameSessionResultStore>();
         services.AddTransient<ArkNovaHistoryCorrectionUseCase>();
         services.AddTransient<ArkNovaPreparationViewModel>();
         services.AddTransient<ArkNovaPreparationPage>();
@@ -65,7 +59,6 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaTieResolutionPage>();
         services.AddTransient<ArkNovaResultViewModel>();
         services.AddTransient<ArkNovaResultPage>();
-        services.AddTransient<IArkNovaSpecialCardStore, SqliteArkNovaSpecialCardStore>();
         services.AddTransient<ArkNovaSpecialCardUseCase>();
         services.AddTransient<ArkNovaSpecialCardsViewModel>();
         services.AddTransient<ArkNovaSpecialCardsPage>();

@@ -15,8 +15,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.10.0.3</ApplicationDisplayVersion>
-    <ApplicationVersion>40</ApplicationVersion>
+    <ApplicationDisplayVersion>0.10.0.4</ApplicationDisplayVersion>
+    <ApplicationVersion>41</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
@@ -47,6 +48,5 @@
   <ItemGroup>
     <ProjectReference Include="..\BoardgameTracker.Core\BoardgameTracker.Core.csproj" />
     <ProjectReference Include="..\BoardgameTracker.Application\BoardgameTracker.Application.csproj" />
-    <ProjectReference Include="..\BoardgameTracker.Infrastructure\BoardgameTracker.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

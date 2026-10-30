@@ -2,7 +2,7 @@ using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions.Resume;
 using BoardgameTracker.Application.Settings.Navigation;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
+using BoardgameTracker.Application.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +16,7 @@ public partial class App : Microsoft.Maui.Controls.Application
 {
     private readonly IServiceProvider _services;
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
-    private readonly IOpenGameSessionQuery _openGameSessionQuery;
+    private readonly OpenGameSessionQuery _openGameSessionQuery;
     private readonly DatabaseInitializer _databaseInitializer;
     private readonly ILogger<App> _logger;
     private readonly IEnumerable<IGameSessionResumeHandler> _resumeHandlers;
@@ -28,7 +28,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         BoardgameTracker.App.Theming.ThemeManager themes,
         IAppNavigationSettingsStore settings,
         IEnumerable<IGameSessionResumeHandler> resumeHandlers,
-        IOpenGameSessionQuery openGameSessionQuery)
+        OpenGameSessionQuery openGameSessionQuery)
     {
         InitializeComponent();
         themes.Apply(settings.Get().Theme, persist: false);

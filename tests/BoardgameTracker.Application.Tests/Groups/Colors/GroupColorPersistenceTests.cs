@@ -1,4 +1,6 @@
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Groups;
+using BoardgameTracker.App.Persistence.SQLite;
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.Games.ArkNova.Persistence.Groups;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -6,8 +8,8 @@ using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Infrastructure.Persistence.SQLite;
-using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Groups.ListGroups;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -112,7 +114,7 @@ public sealed class GroupColorPersistenceTests
     public async Task CreateAsync_SavesExistingAndNewPlayersWithTheirSelectedColors()
     {
         await using var fixture = await Fixture.CreateAsync();
-        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
         var id = await create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Red), new(fixture.First.Id, fixture.First.Name, false, PlayerColor.Blue)],
             ArkNovaGame.Key), TestContext.Current.CancellationToken);
@@ -133,7 +135,7 @@ public sealed class GroupColorPersistenceTests
                 CREATE TRIGGER RejectNewColor BEFORE INSERT ON ArkNovaGroupPlayers
                 BEGIN SELECT RAISE(ABORT, 'Simulated color write failure'); END;
                 """, TestContext.Current.CancellationToken);
-        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
         await Assert.ThrowsAsync<DbUpdateException>(() => create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Red)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var verify = fixture.CreateDbContext();
@@ -170,7 +172,7 @@ public sealed class GroupColorPersistenceTests
     public async Task CreateAsync_RejectsGlobalColorOutsideCurrentGameRules()
     {
         await using var fixture = await Fixture.CreateAsync();
-        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Green)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var db = fixture.CreateDbContext();
@@ -184,13 +186,13 @@ public sealed class GroupColorPersistenceTests
         public Player Second { get; } = new("Ben");
         public Group Group { get; private set; } = null!;
         public GamePlayerColorCatalog Catalog => new([ArkNovaPlayerColors.Rules]);
-        public EditGroupUseCase UseCase => new(new SqliteEditGroupStore(this, [new ArkNovaGroupColorPersistence()]), Catalog);
+        public EditGroupUseCase UseCase => new(this, Catalog, [new ArkNovaGroupColorPersistence()]);
 
         public BoardgameTrackerDbContext CreateDbContext()
         {
             var options = new DbContextOptionsBuilder<BoardgameTrackerDbContext>();
-            BoardgameTrackerDbContextOptions.Configure(options, _connection.ConnectionString);
-            options.UseSqlite(_connection);
+            SqliteServiceCollectionExtensions.Configure(options, _connection.ConnectionString);
+            options.UseTestSqlite(_connection);
             return new(options.Options);
         }
 

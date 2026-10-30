@@ -3,15 +3,13 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
+using Microsoft.EntityFrameworkCore;
+using BoardgameTracker.Application.Persistence;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
 
-/// <summary>
-/// Validates a prepared Ark Nova setup against persisted group/reference data,
-/// creates the domain gameSession snapshot and persists it atomically.
-/// </summary>
-public sealed class StartArkNovaGameSessionUseCase(
-    IStartArkNovaGameSessionStore store)
+/// <summary>Validates persisted group/reference data before creating the complete session snapshot.</summary>
+public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {
     public async Task<Guid> StartAsync(
         StartArkNovaGameSessionCommand command,
@@ -21,7 +19,11 @@ public sealed class StartArkNovaGameSessionUseCase(
         ArgumentOutOfRangeException.ThrowIfEqual(command.GroupId, Guid.Empty);
         ArgumentNullException.ThrowIfNull(command.Players);
 
-        StartArkNovaGameSessionContext? context = await store.LoadContextAsync(
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        StartArkNovaGameSessionContext? context = await LoadContextAsync(
+            dbContext,
             command.GroupId,
             cancellationToken);
 
@@ -88,8 +90,74 @@ public sealed class StartArkNovaGameSessionUseCase(
                 player.SelectedZooPlanNumber.GetValueOrDefault()))
         ];
 
-        await store.SaveAsync(gameSession, arkNovaPlayers, cancellationToken);
+        // One SaveChanges inserts the aggregate and game-specific snapshots atomically.
+
+        await dbContext.GameSessions.AddAsync(gameSession, cancellationToken);
+        await dbContext.ArkNovaGameSessionPlayers.AddRangeAsync(arkNovaPlayers, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return gameSession.Id;
+    }
+
+    private static async Task<StartArkNovaGameSessionContext?> LoadContextAsync(
+        BoardgameTrackerDbContext dbContext,
+        Guid groupId,
+        CancellationToken cancellationToken = default)
+    {
+
+        var group = await dbContext.Groups
+            .AsNoTracking()
+            .Where(candidate => candidate.Id == groupId)
+            .Select(candidate => new
+            {
+                candidate.Id,
+                candidate.IsArchived
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (group is null)
+        {
+            return null;
+        }
+
+        Guid? gameId = await dbContext.Games
+            .AsNoTracking()
+            .Where(game => game.Key == ArkNovaGame.Key)
+            .Select(game => (Guid?)game.Id)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (gameId is null)
+        {
+            throw new InvalidOperationException(
+                "Ark Nova reference data is missing from the database.");
+        }
+
+        Guid[] groupPlayerIds = await dbContext.GroupPlayers
+            .AsNoTracking()
+            .Where(player => player.GroupId == groupId)
+            .OrderBy(player => player.DefaultOrder)
+            .Select(player => player.PlayerId)
+            .ToArrayAsync(cancellationToken);
+
+        int[] zooPlanNumbers = await dbContext.ArkNovaZooPlans
+            .AsNoTracking()
+            .Select(plan => plan.Number)
+            .ToArrayAsync(cancellationToken);
+
+        bool hasOpenGameSession = await dbContext.GameSessions
+            .AsNoTracking()
+            .AnyAsync(
+                gameSession => gameSession.GameId == gameId.Value
+                            && gameSession.GroupId == groupId
+                            && (gameSession.Status == GameSessionStatus.Running
+                             || gameSession.Status == GameSessionStatus.Scoring),
+                cancellationToken);
+
+        return new StartArkNovaGameSessionContext(
+            gameId.Value,
+            group.IsArchived,
+            hasOpenGameSession,
+            groupPlayerIds,
+            zooPlanNumbers.ToHashSet());
     }
 }

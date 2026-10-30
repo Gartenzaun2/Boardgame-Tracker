@@ -1,3 +1,7 @@
+using BoardgameTracker.Application.Tests.Persistence;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Core.Players;
+using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Groups;
@@ -12,15 +16,24 @@ public sealed class EditGroupUseCaseTests
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
         Group group = new("Alt", false, [first, second]);
-        FakeEditGroupStore dataAccess = new(group);
-        EditGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
+        {
+            foreach (var member in group.Players)
+                seed.Players.Add(new Player(member.PlayerId.ToString(), false, member.PlayerId));
+            seed.Groups.Add(group);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+        EditGroupUseCase useCase = new(database, new([]), []);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, "Neu", false, true, [second, first]), TestContext.Current.CancellationToken);
 
-        Assert.Same(group, dataAccess.SavedGroup);
+        await using BoardgameTrackerDbContext db = database.CreateDbContext();
+        group = await db.Groups.Include(g => g.Players).SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken);
         Assert.Equal("Neu", group.Name);
-        Assert.False(group.IsTemporary);
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.False((await verify.Groups.SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken)).IsTemporary);
         Assert.True(group.IsArchived);
         Assert.Equal(2, group.Players.Count);
         Assert.Equal(1, group.Players.Single(player => player.PlayerId == second).DefaultOrder);
@@ -31,26 +44,42 @@ public sealed class EditGroupUseCaseTests
     public async Task UpdateGroupAsync_CanMakeTemporaryGroupPermanent()
     {
         Group group = new("Einmalig", true, [Guid.NewGuid()]);
-        FakeEditGroupStore dataAccess = new(group);
-        EditGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
+        {
+            foreach (var member in group.Players)
+                seed.Players.Add(new Player(member.PlayerId.ToString(), false, member.PlayerId));
+            seed.Groups.Add(group);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+        EditGroupUseCase useCase = new(database, new([]), []);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, group.Name, true, false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
 
-        Assert.False(group.IsTemporary);
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.False((await verify.Groups.SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken)).IsTemporary);
     }
 
     [Fact]
     public async Task UpdateGroupAsync_DoesNotMakePermanentGroupTemporary()
     {
         Group group = new("Stammgruppe", false, [Guid.NewGuid()]);
-        FakeEditGroupStore dataAccess = new(group);
-        EditGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
+        {
+            foreach (var member in group.Players)
+                seed.Players.Add(new Player(member.PlayerId.ToString(), false, member.PlayerId));
+            seed.Groups.Add(group);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+        EditGroupUseCase useCase = new(database, new([]), []);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, group.Name, false, false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
 
-        Assert.False(group.IsTemporary);
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.False((await verify.Groups.SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken)).IsTemporary);
     }
 
     [Fact]
@@ -59,36 +88,18 @@ public sealed class EditGroupUseCaseTests
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
         Group group = new("Freitagabend", false, [first, second]);
-        FakeEditGroupStore dataAccess = new(group);
-        EditGroupUseCase useCase = new(dataAccess, new([]));
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
+        {
+            foreach (var member in group.Players)
+                seed.Players.Add(new Player(member.PlayerId.ToString(), false, member.PlayerId));
+            seed.Groups.Add(group);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+        EditGroupUseCase useCase = new(database, new([]), []);
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.UpdateGroupAsync(new EditGroupCommand(
                 group.Id, group.Name, false, false, [first, Guid.NewGuid()]), TestContext.Current.CancellationToken));
-    }
-
-    private sealed class FakeEditGroupStore(Group group) : IEditGroupStore
-    {
-        public Group? SavedGroup { get; private set; }
-
-        public Task<EditGroupDetails?> GetDetailsAsync(
-            Guid groupId,
-            string? gameKey,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<EditGroupDetails?>(null);
-
-        public Task<Group?> GetAggregateAsync(
-            Guid groupId,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<Group?>(groupId == group.Id ? group : null);
-
-        public Task SaveAsync(
-            Group groupToSave,
-            GroupColorDefaults? colors,
-            CancellationToken cancellationToken = default)
-        {
-            SavedGroup = groupToSave;
-            return Task.CompletedTask;
-        }
     }
 }

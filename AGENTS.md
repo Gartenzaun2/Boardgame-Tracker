@@ -3,7 +3,7 @@
 ## Projekt und Struktur
 Boardgame Tracker ist eine bestehende mobile .NET-MAUI-App zur Erfassung und Auswertung von Brettspielpartien; Arche Nova ist das erste vollständig unterstützte Spiel. Ohne ausdrücklichen Auftrag weder neu aufbauen noch grundlegend umstrukturieren.
 
-`BoardgameTracker.sln` bündelt vier Projekte unter `src/`; `tests/` enthält Core- und Application-Tests (xUnit v3/Microsoft Testing Platform). Ressourcen und Lokalisierung liegen unter `src/BoardgameTracker.App/Resources/`.
+`BoardgameTracker.sln` bündelt drei Produktionsprojekte unter `src/`; `tests/` enthält Core- und Application-Tests (xUnit v3/Microsoft Testing Platform). Ressourcen und Lokalisierung liegen unter `src/BoardgameTracker.App/Resources/`.
 
 ## Repository access boundary
 Work only inside the current Boardgame-Tracker repository.
@@ -71,21 +71,22 @@ Modularer Monolith mit pragmatischen Vertical Slices:
 
 ```text
 App -> Application -> Core
-Infrastructure -> Application + Core
+Application -> EF Core
+App -> EF Core SQLite
 ```
 
 - Core: Domainmodell, Invarianten, Berechnungen, reine Fachregeln.
-- Application: Use Cases, Orchestrierung, Read Models, notwendige technische Ports.
-- Infrastructure: EF Core, SQLite, DbContext, technische Implementierungen.
+- Application: Vertical Slices, Use Cases, konkrete Queries, Read Models, EF Core, DbContext, Modellkonfiguration und Seeding.
+- App-Providerbereich: SQLite-Konfiguration und verbindungsspezifische Collation.
 - App: MAUI, XAML, ViewModels, Navigation, Presentation, Lokalisierung, Composition Root.
 
-Neue Funktionalität primär nach fachlichem Use Case bzw. Slice organisieren, nicht nach technischem Typ. Änderungen möglichst innerhalb des betroffenen Slice halten. Ein Slice darf seine eng zusammengehörigen ViewModels, Commands, Read Models, Application-Logik und Persistenzadapter nah beieinander halten.
+Neue Funktionalität primär nach fachlichem Use Case bzw. Slice organisieren, nicht nach technischem Typ. Änderungen möglichst innerhalb des betroffenen Slice halten. Ein Slice darf seine eng zusammengehörigen ViewModels, Commands, Read Models, Application-Logik und EF-Zugriffe nah beieinander halten.
 
 Keine gemeinsame Abstraktion nur deshalb einführen, weil zwei Slices ähnlich aussehen. Gemeinsamen Code erst extrahieren, wenn eine stabile gemeinsame fachliche oder technische Semantik erkennbar ist. Cross-Slice-Abhängigkeiten vermeiden; vorhandene Domain- und Application-Verträge nutzen.
 
-Autoritative Fachregeln gehören nicht in ViewModels. Feature-ViewModels kennen keine konkreten EF-/SQLite-Implementierungen. Infrastructure nur im technischen Startup/Composition Root der App anbinden. EF-Entities nicht bis in App/ViewModels durchreichen; App und ViewModels arbeiten mit Domain-/Application-Modellen oder expliziten Read Models.
+Autoritative Fachregeln gehören nicht in ViewModels. Feature-ViewModels kennen keine konkreten EF-/SQLite-Implementierungen. SQLite ausschließlich im Host-/Providerbereich konfigurieren; keine SQLite-spezifischen APIs in Application. EF-Entities nicht bis in App/ViewModels durchreichen; App und ViewModels arbeiten mit Domain-/Application-Modellen oder expliziten Read Models.
 
-Vertical Slices und Composition erhalten; Arche-Nova-Logik bleibt unter `Games/ArkNova/`. Allgemeine Gruppen-Commands, Read Models und Persistenzports dürfen keine spielspezifischen Typen oder festverdrahteten Farbregeln enthalten. Gemeinsame semantische `PlayerColor`-Werte sind erlaubt; jedes Spiel registriert seine erlaubte Teilmenge und einen eigenen Farb-Persistenzadapter. Gruppenformulare bleiben allgemein. Der Architekturtest für allgemeine Gruppenverträge muss erhalten bleiben. Domänenbegriffe `Game`, `GameSession`, `Group`, `Player` beibehalten.
+Vertical Slices und Composition erhalten; Arche-Nova-Logik bleibt unter `Games/ArkNova/`. Allgemeine Gruppen-Commands, Read Models und EF-Zugriffe dürfen keine spielspezifischen Typen oder festverdrahteten Farbregeln enthalten. Gemeinsame semantische `PlayerColor`-Werte sind erlaubt; jedes Spiel registriert seine erlaubte Teilmenge und einen eigenen Farb-Persistenzadapter. Gruppenformulare bleiben allgemein. Der Architekturtest für allgemeine Gruppenverträge muss erhalten bleiben. Domänenbegriffe `Game`, `GameSession`, `Group`, `Player` beibehalten.
 
 Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-/Helper-/Utils-Abstraktionen und keine Interfaces ausschließlich für Mockbarkeit oder Symmetrie einführen.
 
@@ -104,7 +105,7 @@ ViewModel-Konstruktoren nur für Dependency Injection und einfachen synchronen I
 
 Seiten-/ViewModel-Ladevorgänge über die vorhandenen Lifecycle-/Load-Mechanismen durchführen und gegen unbeabsichtigtes mehrfaches Laden absichern.
 
-Domain-, Application- und Infrastructure-Code dürfen keine Abhängigkeit auf MAUI `MainThread`, `Dispatcher` oder andere UI-Thread-APIs besitzen. UI-Thread-Marshalling ausschließlich in App/Presentation durchführen und nur, wenn es tatsächlich erforderlich ist. Keine `MainThread`-Aufrufe verwenden, um unbekannte Nebenläufigkeitsprobleme zu verdecken.
+Core- und Application-Code dürfen keine Abhängigkeit auf MAUI `MainThread`, `Dispatcher` oder andere UI-Thread-APIs besitzen. UI-Thread-Marshalling ausschließlich in App/Presentation durchführen und nur, wenn es tatsächlich erforderlich ist. Keine `MainThread`-Aufrufe verwenden, um unbekannte Nebenläufigkeitsprobleme zu verdecken.
 
 Sichtbare Texte ausschließlich über die bestehende Lokalisierung führen. Bestehende Theme-, Resource- und Style-Systeme verwenden; Farben, Abstände oder Fonts nicht lokal hartcodieren, wenn bereits semantische Ressourcen vorhanden sind.
 
@@ -112,7 +113,7 @@ Sichtbare Texte ausschließlich über die bestehende Lokalisierung führen. Best
 Asynchrone Commands, Use Cases sowie Persistenz- und I/O-Aufrufe vollständig `await`en.
 
 - `async void` nur für echte UI-/Framework-Eventhandler verwenden.
-- Keine Fire-and-forget-Tasks aus ViewModels, Application-Use-Cases oder Infrastructure starten, sofern Lebensdauer und Fehlerbehandlung nicht ausdrücklich definiert sind.
+- Keine Fire-and-forget-Tasks aus ViewModels, Application-Use-Cases starten, sofern Lebensdauer und Fehlerbehandlung nicht ausdrücklich definiert sind.
 - Schreibende Commands gegen unbeabsichtigte Parallel- oder Doppelaufrufe über vorhandene Busy-/CanExecute-Mechanismen absichern.
 - Vorhandene `CancellationToken` vollständig bis zu EF-/I/O-Aufrufen durchreichen; nicht ohne Grund durch `CancellationToken.None` ersetzen.
 - Keine künstliche Parallelisierung einführen, wenn der Use Case sequenziell ist.
@@ -120,6 +121,10 @@ Asynchrone Commands, Use Cases sowie Persistenz- und I/O-Aufrufe vollständig `a
 Exceptions nur dort abfangen, wo sie sinnvoll behandelt, übersetzt oder geloggt werden können. Kein leeres `catch` und kein pauschales `catch (Exception)` ausschließlich zum Unterdrücken technischer Fehler. Technische Details an einer geeigneten Boundary loggen; dem Benutzer nur eine fachlich verständliche Meldung zeigen.
 
 ## EF Core und Persistenz
+`BoardgameTrackerDbContext` gehört zu Application und wird direkt in Slices verwendet, niemals in Pages/ViewModels. Über `IDbContextFactory<BoardgameTrackerDbContext>` lebt ein Context nur für eine Operation.
+
+Keine Store-/Repository-/DbContext-Interfaces zum Verstecken von EF Core. Reine Reads verwenden konkrete Query-Klassen; Interfaces bleiben für echte Polymorphie, Host-/Plattformgrenzen und Spielmodul-Erweiterungspunkte. Datenbankbezogene Application-Slices mit echten relationalen EF-/SQLite-Integrationstests prüfen; Core-Tests bleiben technologieunabhängig.
+
 `BoardgameTrackerDbContext` als kurzlebige Unit of Work behandeln.
 
 - keinen DbContext in Singleton-Services oder langlebigen ViewModels halten;
@@ -137,7 +142,7 @@ Keine Persistenzänderung allein zur Bequemlichkeit der UI einführen. Schema-, 
 
 ## Benennung und Lernorientierung
 
-Namen sollen den primär behandelten fachlichen Gegenstand und die Aktion/Rolle erkennen lassen, ohne dass die Implementierung geöffnet werden muss. `Query` bezeichnet reine Read-Projections, `Store` einen Application-owned fachlichen Persistenzport, `Persistence` eine technische Infrastructure-Komponente, `UseCase` fachliche Application-Orchestrierung und `Handler` Dispatch/Routing/Navigation/Transportentscheidungen. `DataAccess` ist kein Standard-Suffix für neue oder refactorte Typen. Gemeinsame technische Implementierungen mehrerer Ports sind erlaubt; die fachlichen Use-Case-Grenzen bleiben erhalten (ARCHITECTURE.md).
+Namen sollen den primär behandelten fachlichen Gegenstand und die Aktion/Rolle erkennen lassen, ohne dass die Implementierung geöffnet werden muss. `Query` bezeichnet konkrete reine Read-Projections, `Persistence` eine fachlich benannte EF-Komponente oder einen echten Spielmodul-Erweiterungspunkt, `UseCase` fachliche Application-Orchestrierung und `Handler` Dispatch/Routing/Navigation/Transportentscheidungen. `DataAccess` ist kein Standard-Suffix für neue oder refactorte Typen. Preferences-Stores schützen eine echte Hostgrenze. Feature-/Use-Case-Namen machen den Programmfluss sichtbar; Scoring und historische Korrektur bleiben getrennte Use Cases (ARCHITECTURE.md).
 
 Methoden bevorzugen Verb und Gegenstand, etwa `LoadCorrectionDraftAsync`, `SaveCorrectionAsync` oder `GetPreparationAsync`. Generische Namen wie `ExecuteAsync`, `BeginAsync`, `Prepare`, `ProcessAsync`, `HandleAsync`, `SaveAsync` und `DeleteAsync` nur verwenden, wenn Typkontext und Signatur die konkrete Rolle bereits eindeutig machen. Beispiele sind keine mechanisch anzuwendende Namensschablone. Keine unnötigen Abkürzungen; `GameSession` ausschreiben, IDs fachlich benennen (`gameSessionId`, `playerId`, `specialCardId`). Asynchrone Methoden tragen gemäß .NET-Konvention `Async`. Interne Renames vollständig durchführen, ohne Compatibility-Aliase.
 

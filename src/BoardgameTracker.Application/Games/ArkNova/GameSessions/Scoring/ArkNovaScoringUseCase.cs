@@ -4,18 +4,19 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using BoardgameTracker.Application.Persistence;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 
-/// <summary>
-/// Orchestrates scoring edits and completion while keeping scoring rules in the Core layer.
-/// </summary>
-public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
+/// <summary>Coordinates incremental scoring and completion; domain types protect scoring rules.</summary>
+public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, ArkNovaGameSessionResultQuery resultQuery)
 {
     public Task<ArkNovaGameSessionResultData?> LoadGameSessionResultAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
-        return store.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
+        return resultQuery.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
     }
 
     public async Task SavePlayerScoreAsync(
@@ -29,7 +30,10 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
         await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
-        ArkNovaGameSessionPlayer? player = await store.FindScoringPlayerAsync(gameSessionId, playerId, cancellationToken);
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+        ArkNovaGameSessionPlayer? player = await dbContext.ArkNovaGameSessionPlayers
+            .SingleOrDefaultAsync(player => player.GameSessionId == gameSessionId && player.PlayerId == playerId, cancellationToken);
 
         if (player is null)
         {
@@ -37,7 +41,7 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         }
 
         player.SetScoreValues(attractiveness, conservation, reputation);
-        await store.SaveScoringPlayerAsync(player, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AssignSpecialCardAsync(
@@ -51,7 +55,7 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         if (!data.Players.Any(p => p.PlayerId == playerId)
             || !data.CardCatalog.Any(c => c.Id == specialCardId && !c.IsArchived))
             throw new InvalidOperationException("Only active cards may be assigned to an existing player.");
-        await store.AssignSpecialCardAsync(
+        await PersistSpecialCardAssignmentAsync(
             new ArkNovaGameSessionSpecialCardAssignment(gameSessionId, playerId, specialCardId),
             cancellationToken);
     }
@@ -64,7 +68,7 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
     {
         ValidateSpecialCardArguments(gameSessionId, playerId, specialCardId);
         await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
-        await store.RemoveSpecialCardAsync(gameSessionId, playerId, specialCardId, cancellationToken);
+        await DeleteSpecialCardAssignmentAsync(gameSessionId, playerId, specialCardId, cancellationToken);
     }
 
     public async Task<ArkNovaGameSessionCompletionPlan> PrepareCompletionAsync(
@@ -92,7 +96,10 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         Dictionary<Guid, int> scores = CreateScores(scoringData);
         ArkNovaPlacementRules.ValidateResolution(scores, placements);
 
-        GameSession? gameSession = await store.FindGameSessionAsync(gameSessionId, cancellationToken);
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+        GameSession? gameSession = await dbContext.GameSessions.Include(session => session.Players)
+            .SingleOrDefaultAsync(session => session.Id == gameSessionId, cancellationToken);
         if (gameSession is null || gameSession.Status != GameSessionStatus.Scoring)
         {
             throw new InvalidOperationException("Only a GameSession in scoring can be completed.");
@@ -104,21 +111,20 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         }
 
         gameSession.Complete(completedAt);
-        await store.SaveCompletedGameSessionAsync(gameSession, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
-
 
     public async Task DiscardAsync(
         Guid gameSessionId,
         CancellationToken cancellationToken = default)
     {
         await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
-        await store.DeleteScoringGameSessionAsync(gameSessionId, cancellationToken);
+        await DeleteScoringGameSessionAsync(gameSessionId, cancellationToken);
     }
 
     private async Task EnsureScoringGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken)
     {
-        ArkNovaGameSessionResultData? gameSession = await store.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
+        ArkNovaGameSessionResultData? gameSession = await resultQuery.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
         if (gameSession is null || gameSession.Status != GameSessionStatus.Scoring)
         {
             throw new InvalidOperationException("Only a GameSession in scoring can be changed here.");
@@ -129,7 +135,7 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         CancellationToken cancellationToken)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
-        ArkNovaGameSessionResultData? gameSession = await store.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
+        ArkNovaGameSessionResultData? gameSession = await resultQuery.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
 
         if (gameSession is null)
         {
@@ -163,5 +169,68 @@ public sealed class ArkNovaScoringUseCase(IArkNovaScoringStore store)
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(specialCardId, Guid.Empty);
+    }
+
+    private async Task PersistSpecialCardAssignmentAsync(
+        ArkNovaGameSessionSpecialCardAssignment assignment,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignment);
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        await using IDbContextTransaction transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        if (!await dbContext.ArkNovaSpecialCards.AnyAsync(c => c.Id == assignment.SpecialCardId && !c.IsArchived, cancellationToken))
+            throw new InvalidOperationException("Only active special cards may be assigned.");
+        bool exists = await dbContext.ArkNovaGameSessionSpecialCardAssignments.AnyAsync(
+            x => x.GameSessionId == assignment.GameSessionId
+                 && x.PlayerId == assignment.PlayerId
+                 && x.SpecialCardId == assignment.SpecialCardId,
+            cancellationToken);
+
+        if (!exists)
+        {
+            dbContext.ArkNovaGameSessionSpecialCardAssignments.Add(assignment);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    private async Task DeleteSpecialCardAssignmentAsync(
+        Guid gameSessionId,
+        Guid playerId,
+        Guid specialCardId,
+        CancellationToken cancellationToken = default)
+    {
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        ArkNovaGameSessionSpecialCardAssignment? assignment = await dbContext.ArkNovaGameSessionSpecialCardAssignments
+            .SingleOrDefaultAsync(
+                x => x.GameSessionId == gameSessionId && x.PlayerId == playerId && x.SpecialCardId == specialCardId,
+                cancellationToken);
+
+        if (assignment is not null)
+        {
+            dbContext.ArkNovaGameSessionSpecialCardAssignments.Remove(assignment);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    private async Task DeleteScoringGameSessionAsync(
+        Guid gameSessionId,
+        CancellationToken cancellationToken = default)
+    {
+        await using BoardgameTrackerDbContext dbContext =
+            await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        GameSession? gameSession = await dbContext.GameSessions
+            .SingleOrDefaultAsync(x => x.Id == gameSessionId, cancellationToken);
+
+        if (gameSession is not null)
+        {
+            dbContext.GameSessions.Remove(gameSession);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }
