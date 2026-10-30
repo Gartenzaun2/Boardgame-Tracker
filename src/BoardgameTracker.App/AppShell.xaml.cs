@@ -6,6 +6,8 @@ using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings.Navigation;
+using BoardgameTracker.App.Features.Players.ListPlayers;
+using BoardgameTracker.App.Features.Players.EditPlayer;
 
 namespace BoardgameTracker.App;
 
@@ -34,6 +36,8 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
+        Routing.RegisterRoute(nameof(PlayerListPage), typeof(PlayerListPage));
+        Routing.RegisterRoute(nameof(EditPlayerPage), typeof(EditPlayerPage));
 
         TabBar tabBar = new();
         _gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));

@@ -5,6 +5,8 @@ namespace BoardgameTracker.Application.Tests.GameSessions.Running;
 
 public sealed class RunningGameSessionUseCaseTests
 {
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task BeginScoringAsync_TransitionsAndSavesGameSession()
     {
@@ -18,7 +20,7 @@ public sealed class RunningGameSessionUseCaseTests
         RunningGameSessionUseCase useCase = new(dataAccess);
         DateTimeOffset endedAt = startedAt.AddHours(2);
 
-        await useCase.BeginScoringAsync(gameSession.Id, endedAt);
+        await useCase.BeginScoringAsync(gameSession.Id, endedAt, Token);
 
         Assert.Same(gameSession, dataAccess.SavedGameSession);
         Assert.Equal(GameSessionStatus.Scoring, gameSession.Status);
@@ -36,7 +38,7 @@ public sealed class RunningGameSessionUseCaseTests
         FakeDataAccess dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
 
-        await useCase.DiscardAsync(gameSession.Id);
+        await useCase.DiscardAsync(gameSession.Id, Token);
 
         Assert.Same(gameSession, dataAccess.DeletedGameSession);
     }
@@ -55,7 +57,7 @@ public sealed class RunningGameSessionUseCaseTests
         RunningGameSessionUseCase useCase = new(dataAccess);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            useCase.BeginScoringAsync(gameSession.Id, startedAt.AddMinutes(2)));
+            useCase.BeginScoringAsync(gameSession.Id, startedAt.AddMinutes(2), Token));
     }
 
     private sealed class FakeDataAccess(GameSession? gameSession)

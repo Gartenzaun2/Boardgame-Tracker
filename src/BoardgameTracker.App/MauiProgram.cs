@@ -19,6 +19,11 @@ using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using BoardgameTracker.App.Features.Players.ListPlayers;
+using BoardgameTracker.App.Features.Players.EditPlayer;
+using BoardgameTracker.Application.Players.ListPlayers;
+using BoardgameTracker.Application.Players.EditPlayer;
+using BoardgameTracker.Infrastructure.Persistence.SQLite.Players;
 
 namespace BoardgameTracker.App;
 
@@ -60,6 +65,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<DatabaseInitializer>();
 
         builder.Services.AddSingleton<IListGroupsQuery, SqliteListGroupsQuery>();
+        builder.Services.AddSingleton<IListPlayersQuery, SqliteListPlayersQuery>();
+        builder.Services.AddTransient<IEditPlayerDataAccess, SqliteEditPlayerDataAccess>();
+        builder.Services.AddTransient<EditPlayerUseCase>();
+        builder.Services.AddTransient<PlayerListViewModel>();
+        builder.Services.AddTransient<PlayerListPage>();
+        builder.Services.AddTransient<EditPlayerViewModel>();
+        builder.Services.AddTransient<EditPlayerPage>();
         builder.Services.AddTransient<ICreateGroupDataAccess, SqliteCreateGroupDataAccess>();
         builder.Services.AddTransient<CreateGroupUseCase>();
         builder.Services.AddSingleton<GamePlayerColorCatalog>();

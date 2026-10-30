@@ -5,7 +5,6 @@ using BoardgameTracker.Application.History;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.History;
@@ -15,6 +14,7 @@ public partial class HistoryPage : ContentPage
     private readonly IHistoryQuery _query;
     private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
+    private readonly IEnumerable<IGameHistoryHandler> _historyHandlers;
     private IReadOnlyList<HistoryGameSession> _all = [];
     private string?[] _games = [];
     private Guid?[] _groups = [];
@@ -25,12 +25,13 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger)
+    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers)
     {
         InitializeComponent();
         _query = query;
         _settings = settings;
         _logger = logger;
+        _historyHandlers = historyHandlers;
     }
 
     protected override async void OnAppearing()
@@ -146,11 +147,9 @@ public partial class HistoryPage : ContentPage
 
         try
         {
-            if (card.Data.GameKey != ArkNovaGame.Key)
-            {
-                throw new InvalidOperationException();
-            }
-            await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = card.Data.GameSessionId });
+            IGameHistoryHandler handler = _historyHandlers.FirstOrDefault(handler => handler.GameKey == card.Data.GameKey)
+                ?? throw new InvalidOperationException("No history handler is registered for this game.");
+            await handler.OpenAsync(card.Data.GameSessionId);
         }
         catch (Exception exception)
         {

@@ -424,4 +424,17 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
         ResourceManager.GetString(key, CultureInfo.CurrentUICulture)
         ?? throw new InvalidOperationException(
             $"Localization resource '{key}' was not found.");
+    public static string Players => GetString(nameof(Players));
+    public static string ShowGuests => GetString(nameof(ShowGuests));
+    public static string PlayersShowArchived => GetString(nameof(PlayersShowArchived));
+    public static string EditPlayer => GetString(nameof(EditPlayer));
+    public static string PlayerCreatedFormat => GetString(nameof(PlayerCreatedFormat));
+    public static string PlayerLastPlayedFormat => GetString(nameof(PlayerLastPlayedFormat));
+    public static string PlayerNoGameSession => GetString(nameof(PlayerNoGameSession));
+    public static string PlayersEmpty => GetString(nameof(PlayersEmpty));
+    public static string PlayersLoadFailed => GetString(nameof(PlayersLoadFailed));
+    public static string PlayerSaveFailed => GetString(nameof(PlayerSaveFailed));
+    public static string PlayerNavigationFailed => GetString(nameof(PlayerNavigationFailed));
+    public static string PlayerNameRequired => GetString(nameof(PlayerNameRequired));
+    public static string PlayersInfo => GetString(nameof(PlayersInfo));
 }

@@ -16,7 +16,8 @@
             <BoxView Style="{StaticResource HeaderDivider}" />
         </VerticalStackLayout>
 
-        <VerticalStackLayout Grid.Row="1" Spacing="12">
+        <ScrollView Grid.Row="1">
+        <VerticalStackLayout Spacing="12">
             <Border Padding="16" Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="{x:Static res:AppResources.AppearanceTheme}" FontAttributes="Bold" />
@@ -35,6 +36,13 @@
                 </Grid>
             </Border>
 
+            <Border Padding="16" Style="{StaticResource CardBorder}">
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnPlayersTapped" /></Border.GestureRecognizers>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{x:Static res:AppResources.Players}" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
+                </Grid>
+            </Border>
             <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />
@@ -48,5 +56,6 @@
                 </Grid>
             </Border>
         </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

@@ -24,5 +24,6 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
 
         builder.Property(x => x.IsActive)
             .IsRequired();
+        builder.Property(x => x.CreatedAt).IsRequired();
     }
 }

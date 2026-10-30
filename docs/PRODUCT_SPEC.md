@@ -21,6 +21,21 @@ Ein Gast ist ein normaler Spieler mit `IsGuest = true`. Wird der Spieler
 später regulär gepflegt, wird lediglich `IsGuest = false` gesetzt.
 Historische Partien bleiben dadurch automatisch erhalten.
 
+Unter allgemeinen Einstellungen → `Spieler` können Namen und Archivstatus
+bestehender Spieler bearbeitet werden. Standardmäßig erscheinen nur aktive
+Nicht-Gäste. `Gäste anzeigen` und `Archivierte anzeigen` sind unabhängig kombinierbar
+und bleiben Screen-State. Gaststatus ist in diesem Editor nicht veränderbar.
+Archivieren ändert ausschließlich den Aktivstatus; Gruppenmitgliedschaften,
+Partien und Auswertungen bleiben erhalten. Historische Namen werden weiterhin
+aus der aktuellen Player-Entität gelesen.
+
+Spielerkarten zeigen Name, Edit-Icon, echten Anlagezeitpunkt und einen eigenen
+`Zuletzt gespielt`-Button. Maßgeblich ist wie bei Gruppen die Partie mit dem
+neuesten Startzeitpunkt, einschließlich laufender Partien. Die Navigation öffnet
+je nach Status laufende Partie oder Wertung über denselben Spiel-Handler wie die
+Historie. Ohne Partie erscheint ein nicht klickbarer Leerzustand. Gast-/Archiv-Chips
+erscheinen nur bei zutreffendem Status; ausschließlich das Edit-Icon öffnet den Editor.
+
 ### Gruppe
 
 - feste Zusammensetzung von Spielern
