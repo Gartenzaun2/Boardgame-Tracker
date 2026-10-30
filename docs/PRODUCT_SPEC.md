@@ -355,6 +355,9 @@ Dieser technische Prototyp ist noch keine App-Funktion. Mobile Bibliotheksauswah
 Geräteperformance und Anbindung an den vorhandenen Kamera-Einstieg stehen aus.
 Die angestrebte Kombination aus mindestens 75 % automatisch akzeptierten Werten
 und mindestens 98 % Accuracy wird im unabhängigen Holdout noch nicht erreicht.
+Für die aktuelle technische Fotoanalyse werden Werte 0 nicht als CV-Kandidaten
+angeboten; schwache Feld-Evidenz führt zu Enthaltung und manueller Eingabe.
+Attraktivität 0 und Artenschutz 0 bleiben manuell uneingeschränkt gültig.
 Unsichere Nachbarfeldbelegung reduziert die Confidence, ohne den erkannten Wert
 automatisch auf ein anderes Feld zu verschieben.
 

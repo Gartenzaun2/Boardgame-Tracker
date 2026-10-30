@@ -317,7 +317,7 @@ internal sealed class ArkNovaBlackDiagnostics(string outputDirectory)
     private static Rect Relative(Rect rectangle, Point origin) => new(rectangle.X - origin.X, rectangle.Y - origin.Y, rectangle.Width, rectangle.Height);
     private static Rect Expanded(Rect rectangle, int margin) => new(rectangle.X - margin, rectangle.Y - margin, rectangle.Width + margin * 2, rectangle.Height + margin * 2);
 
-    private static void DrawField(Mat image, DiagnosticField field, Point origin)
+    internal static void DrawField(Mat image, DiagnosticField field, Point origin)
     {
         using Mat maskCopy = field.Mask.Clone();
         Cv2.FindContours(maskCopy, out Point[][] contours, out _, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
