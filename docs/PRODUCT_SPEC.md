@@ -501,7 +501,13 @@ Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. 
 Am unteren Rand der Historie stehen dauerhaft „Importieren“ (Secondary) und
 „N Partien exportieren“ (Primary). Export verwendet exakt die aktuell gefilterten
 abgeschlossenen Partien und deren notwendige Abhängigkeiten. Ohne Ergebnis ist
-Export deaktiviert. Die native Teilen-Funktion gibt eine lokale .bgt-Datei weiter.
+Export deaktiviert. Nach der Exportaktion wird der vollständige validierte .bgt-Inhalt
+für genau den aktuellen Filterstand einmal erzeugt und serialisiert. Erst danach öffnet
+sich der App-Dialog „Exportieren“ mit „Speichern“, „Teilen“ und „Abbrechen“.
+„Speichern“ öffnet einen nativen Dokument-Picker mit Speicherort- und Dateinamenwahl;
+der vorgeschlagene Name endet auf .bgt. „Teilen“ öffnet ausschließlich den nativen
+Share-Sheet. Beide Ziele verwenden denselben zuvor erzeugten Inhalt. Abbruch im Dialog
+oder nativen Picker/Share-Sheet ist kein Fehler und führt zu keiner weiteren Aktion.
 Import öffnet die native Dateiauswahl unabhängig von History-Filtern.
 
 Nach Analyse werden ausschließlich offene Gruppenzuordnungen aufgelöst. Sichere

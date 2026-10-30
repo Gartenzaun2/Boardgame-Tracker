@@ -151,3 +151,37 @@ Mitgliedschaften, Partie-IDs und Modulreferenzdaten gegen den analysierten Stand
 Änderungen muss erneut analysiert werden. Der Plan wird nochmals berechnet. Alle Inserts
 und Moduldaten werden gemeinsam gespeichert; jede Exception rollt die Transaktion zurück.
 Kein automatisches Löschen, kein Überschreiben bestehender Partien, keine Teilübernahme.
+
+## Ausgabeziele und Erweiterbarkeit
+
+Nach Tap auf den History-Exportbutton werden die aktuell gefilterten GameSession-IDs
+festgehalten. HistoryTransferUseCase.CreateExportContentAsync erzeugt, validiert und
+serialisiert den Export genau einmal in BgtExportContent (Dateiname und UTF-8-Bytes).
+Erst dann wählt der Benutzer im App-Dialog Speichern, Teilen oder Abbrechen.
+HistoryExportFlow übergibt denselben Inhalt ausschließlich an das gewählte
+IHistoryExportTarget. Die Ausgabeadapter haben keine eigenen Format-, Matching- oder
+Serialisierungsregeln. Sie gehören zur App, nicht zur Domain oder zum SQLite-Adapter.
+
+Speichern verwendet auf Android ACTION_CREATE_DOCUMENT mit CATEGORY_OPENABLE,
+vorgeschlagenem .bgt-Dateinamen und einem beschreibbaren Dokument-URI. Die Bytes werden
+direkt in das vom Benutzer ausgewählte Dokument geschrieben; keine Speicherberechtigung
+für allgemeine Verzeichnisse nötig. Auf iOS exportiert UIDocumentPickerViewController
+mit asCopy eine temporäre Datei in den gewählten Speicherort; die temporäre Quelldatei
+wird danach entfernt. Speichern ist ein echter nativer Dokumentflow, kein Share-Sheet.
+
+Teilen verwendet den vorhandenen MAUI-Share-Flow mit einer .bgt-Datei im App-Cache.
+Die Cache-Datei bleibt für empfangende Apps lesbar, auch wenn das Share-Sheet bereits
+geschlossen ist. Der native Share-Sheet stellt die installierten Ziele bereit.
+
+Abbrechen der Zielauswahl, des Dokument-Pickers oder Share-Sheets beendet den Export
+normal. Es gibt keine automatische Doppelaktion und keinen Wechsel zum anderen Ziel.
+Tatsächliche I/O-Fehler werden über den bestehenden Fehlerdialog angezeigt.
+
+Weitere Ziele können später über IHistoryExportTarget registriert werden. Ein QR-Code
+wäre ausschließlich ein Transport desselben versionierten BGT-Inhalts bzw. einer eindeutig
+daraus abgeleiteten Transportrepräsentation. Formatversionen, Spielschemas, Validierung,
+Matching und ImportPlan bleiben davon unberührt. QR-Code, Kompression und Segmentierung
+sind in diesem Stand nicht implementiert.
+
+Native API-Verträge: [Android ACTION_CREATE_DOCUMENT](https://learn.microsoft.com/en-us/dotnet/api/android.content.intent.actioncreatedocument)
+und [iOS Dokumentexport als Kopie](https://developer.apple.com/documentation/uikit/uidocumentpickerviewcontroller/init(forExporting:asCopy:)).

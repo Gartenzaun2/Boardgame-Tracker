@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BoardgameTracker.Core.Names;
 
 namespace BoardgameTracker.Application.History.Transfer;
@@ -129,6 +130,14 @@ public sealed class HistoryTransferUseCase(IHistoryTransferStore store, BgtForma
         BgtFile file = await store.ExportAsync(gameSessionIds, appVersion, cancellationToken);
         format.Validate(file);
         return file;
+    }
+    public async Task<BgtExportContent> CreateExportContentAsync(IReadOnlyCollection<Guid> gameSessionIds, string appVersion, CancellationToken cancellationToken = default)
+    {
+        BgtFile file = await ExportAsync(gameSessionIds, appVersion, cancellationToken);
+        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(file, BgtFormat.JsonOptions);
+        if (bytes.Length > BgtFormat.MaximumBytes)
+            throw new InvalidDataException("SizeLimit");
+        return new($"boardgame-tracker-{Guid.CreateVersion7()}.bgt", bytes);
     }
     public async Task<ImportPlan> AnalyzeAsync(Stream stream, CancellationToken cancellationToken = default)
     {

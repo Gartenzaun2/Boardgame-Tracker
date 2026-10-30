@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportFlow.cs" Link="Presentation\HistoryExportFlow.cs" />
+    <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportTargets.cs;..\..\src\BoardgameTracker.App\Platforms\Android\HistoryExportFileSaver.cs;..\..\src\BoardgameTracker.App\Platforms\iOS\HistoryExportFileSaver.cs" LogicalName="ExportTransport.%(Identity)" />
+  </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>

@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
 using BoardgameTracker.App.Games.ArkNova;
@@ -66,6 +67,10 @@ public static class MauiProgram
         builder.Services.AddArkNova();
         builder.Services.AddSingleton<BgtFormat>();
         builder.Services.AddTransient<HistoryTransferUseCase>();
+        builder.Services.AddSingleton<HistoryExportFileSaver>();
+        builder.Services.AddSingleton<IHistoryExportTarget, SaveHistoryExportTarget>();
+        builder.Services.AddSingleton<IHistoryExportTarget, ShareHistoryExportTarget>();
+        builder.Services.AddTransient<HistoryExportFlow>();
         builder.Services.AddSingleton<IHistoryTransferStore, SqliteHistoryTransferStore>();
         builder.Services.AddSingleton<DatabaseInitializer>();
 

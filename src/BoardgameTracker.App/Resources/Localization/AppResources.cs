@@ -9,6 +9,7 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string TransferShare => GetString(nameof(TransferShare));
     public static string TransferImport => GetString(nameof(TransferImport));
     public static string TransferExportOne => GetString(nameof(TransferExportOne));
     public static string TransferExportMany => GetString(nameof(TransferExportMany));

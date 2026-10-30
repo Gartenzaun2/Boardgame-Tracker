@@ -1,4 +1,4 @@
-using System.Text.Json;
+using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
@@ -18,17 +18,13 @@ public partial class HistoryPage
     }
     private async void OnExportClicked(object? sender, EventArgs e)
     {
-        if (_visibleIds.Length == 0 || !StartTransfer())
+        if (!HistoryExportFlow.CanExport(_visibleIds) || !StartTransfer())
             return;
         try
         {
-            BgtFile file = await _transfer.ExportAsync(_visibleIds.ToArray(), AppInfo.Current.VersionString);
-            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(file, BgtFormat.JsonOptions);
-            if (bytes.Length > BgtFormat.MaximumBytes)
-                throw new InvalidDataException("SizeLimit");
-            string path = Path.Combine(FileSystem.CacheDirectory, $"boardgame-tracker-{Guid.CreateVersion7()}.bgt");
-            await File.WriteAllBytesAsync(path, bytes);
-            await Share.Default.RequestAsync(new ShareFileRequest { Title = AppResources.TransferExportTitle, File = new ShareFile(path, "application/json") });
+            await _exportFlow.RunAsync(_visibleIds, AppInfo.Current.VersionString,
+                targets => AppDialogPage.ChooseAsync(this, AppResources.TransferExportTitle,
+                    targets.Select(target => target.DisplayName).ToArray(), -1, AppResources.Cancel));
         }
         catch (Exception exception)
         {
