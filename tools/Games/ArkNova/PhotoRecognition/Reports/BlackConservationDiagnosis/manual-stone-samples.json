@@ -1,0 +1,10 @@
+{
+  "purpose": "Manually selected small interior samples of visible black wood, based on registered diagnosis images. Diagnostic annotations only; never used by recognition. Not a whole-stone mask or a change to score ground truth/polygons.",
+  "coordinates": "2000x1400 analysis image, rectangle x/y/width/height",
+  "images": {
+    "IMG_4265": [671, 431, 10, 10],
+    "IMG_4266": [667, 432, 10, 8],
+    "IMG_4267": [665, 434, 10, 8],
+    "IMG_4268": [651, 431, 12, 10]
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "value": 21,
+  "bounds": {
+    "top": 426,
+    "bottom": 469,
+    "left": 745,
+    "right": 883,
+    "location": {},
+    "size": {},
+    "topLeft": {},
+    "bottomRight": {}
+  },
+  "all": {
+    "count": 4684,
+    "hsv": {
+      "h": {
+        "min": 17,
+        "p10": 24,
+        "median": 46,
+        "p90": 58,
+        "max": 99,
+        "mean": 44.93104184457729
+      },
+      "s": {
+        "min": 20,
+        "p10": 34,
+        "median": 60,
+        "p90": 67,
+        "max": 100,
+        "mean": 54.27625960717336
+      },
+      "v": {
+        "min": 87,
+        "p10": 139,
+        "median": 173,
+        "p90": 204,
+        "max": 253,
+        "mean": 172.71370623398803
+      }
+    },
+    "lab": {
+      "l": {
+        "min": 82,
+        "p10": 143,
+        "median": 174,
+        "p90": 203,
+        "max": 247,
+        "mean": 173.68210930828351
+      },
+      "a": {
+        "min": 109,
+        "p10": 111,
+        "median": 114,
+        "p90": 126,
+        "max": 130,
+        "mean": 116.28906917164817
+      },
+      "b": {
+        "min": 119,
+        "p10": 136,
+        "median": 146,
+        "p90": 149,
+        "max": 153,
+        "mean": 143.75192143467123
+      }
+    },
+    "lightDelta": {
+      "min": -137,
+      "p10": -27,
+      "median": -1,
+      "p90": 40,
+      "max": 169,
+      "mean": 1.4370196413321947
+    },
+    "rawLightDelta": {
+      "min": -118,
+      "p10": -8,
+      "median": 17,
+      "p90": 58,
+      "max": 187,
+      "mean": 19.803800170794194
+    },
+    "referenceDistance": {
+      "min": 10.04987562112089,
+      "p10": 17.549928774784245,
+      "median": 21.93171219946131,
+      "p90": 55.98214000911362,
+      "max": 170.09115203325538,
+      "mean": 30.191256588681657
+    },
+    "x": {
+      "min": 0,
+      "p10": 0.12318840579710146,
+      "median": 0.5,
+      "p90": 0.8695652173913043,
+      "max": 0.9927536231884058,
+      "mean": 0.4967357269273119
+    },
+    "y": {
+      "min": 0,
+      "p10": 0.2558139534883721,
+      "median": 0.6046511627906976,
+      "p90": 0.9069767441860465,
+      "max": 0.9767441860465116,
+      "mean": 0.5843345977399544
+    }
+  },
+  "strict": {
+    "count": 0,
+    "hsv": {
+      "h": null,
+      "s": null,
+      "v": null
+    },
+    "lab": {
+      "l": null,
+      "a": null,
+      "b": null
+    },
+    "lightDelta": null,
+    "rawLightDelta": null,
+    "referenceDistance": null,
+    "x": null,
+    "y": null
+  },
+  "darkPixelsVBelow85": 0,
+  "darkRejectedByLightDelta": 0,
+  "darkRejectedByDifference": 0,
+  "note": "Counts overlap. OpenCV HSV H:0..179, S/V:0..255; encoded 8-bit LAB. No semantic pixel classifier.",
+  "strictPixels": []
+}

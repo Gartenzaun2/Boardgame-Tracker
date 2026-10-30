@@ -1,0 +1,254 @@
+[
+  {
+    "value": 0,
+    "fullColor": 0.0925650557620818,
+    "coreColor": 0.08323765786452353,
+    "score": 0.6016204756884721
+  },
+  {
+    "value": 2,
+    "fullColor": 0.045715928694652096,
+    "coreColor": 0.04401709401709402,
+    "score": 0.3658543138064415
+  },
+  {
+    "value": 20,
+    "fullColor": 0.027362660492527887,
+    "coreColor": 0.03724569640062598,
+    "score": 0.2574511535171411
+  },
+  {
+    "value": 3,
+    "fullColor": 0.029608404966571154,
+    "coreColor": 0.025911708253358923,
+    "score": 0.2532037554413661
+  },
+  {
+    "value": 29,
+    "fullColor": 0.015055131467345207,
+    "coreColor": 0.0168506682161534,
+    "score": 0.20634383831235178
+  },
+  {
+    "value": 41,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.1890236716555554
+  },
+  {
+    "value": 28,
+    "fullColor": 0.020504058094831266,
+    "coreColor": 0.023204068658614112,
+    "score": 0.18847071161787093
+  },
+  {
+    "value": 16,
+    "fullColor": 0.00017927572606669058,
+    "coreColor": 0.00025627883136852895,
+    "score": 0.18584241984269764
+  },
+  {
+    "value": 1,
+    "fullColor": 0.014825581395348838,
+    "coreColor": 0.012115967113803547,
+    "score": 0.17598738255528834
+  },
+  {
+    "value": 30,
+    "fullColor": 0.018826135105204873,
+    "coreColor": 0.021587108543630284,
+    "score": 0.17508833693363524
+  },
+  {
+    "value": 4,
+    "fullColor": 0.013374805598755831,
+    "coreColor": 0.017757009345794394,
+    "score": 0.16384994000410202
+  },
+  {
+    "value": 17,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.15503994076716177
+  },
+  {
+    "value": 27,
+    "fullColor": 0.013073343673831153,
+    "coreColor": 0.018830525272547072,
+    "score": 0.14987130438164747
+  },
+  {
+    "value": 15,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.14494234623381075
+  },
+  {
+    "value": 40,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.14042759487283984
+  },
+  {
+    "value": 39,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.12537133045697738
+  },
+  {
+    "value": 38,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.1221825979431845
+  },
+  {
+    "value": 5,
+    "fullColor": 0.0046111281893636644,
+    "coreColor": 0.005993545412632549,
+    "score": 0.11507587704621915
+  },
+  {
+    "value": 14,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.09251905050854789
+  },
+  {
+    "value": 18,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.09160594474962688
+  },
+  {
+    "value": 19,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.08465813776158604
+  },
+  {
+    "value": 8,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.08340268958635705
+  },
+  {
+    "value": 35,
+    "fullColor": 0.00022148394241417498,
+    "coreColor": 0.0003040437823046519,
+    "score": 0.08266241323369737
+  },
+  {
+    "value": 10,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.0817720122903919
+  },
+  {
+    "value": 36,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.07895657833176946
+  },
+  {
+    "value": 37,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.07788428608391668
+  },
+  {
+    "value": 9,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.07703092666031441
+  },
+  {
+    "value": 12,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.0726018917316742
+  },
+  {
+    "value": 13,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.07128371292361817
+  },
+  {
+    "value": 11,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.06964564920782722
+  },
+  {
+    "value": 34,
+    "fullColor": 0.00044296788482834997,
+    "coreColor": 0.0006080875646093037,
+    "score": 0.06885109460438076
+  },
+  {
+    "value": 7,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.06737910616819712
+  },
+  {
+    "value": 6,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.06687163404295245
+  },
+  {
+    "value": 21,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.06644195221885962
+  },
+  {
+    "value": 22,
+    "fullColor": 0.00021829294913774285,
+    "coreColor": 0.0003252032520325203,
+    "score": 0.0637757054737105
+  },
+  {
+    "value": 23,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.062100573055319595
+  },
+  {
+    "value": 26,
+    "fullColor": 0.0006647462884998891,
+    "coreColor": 0.0009910802775024777,
+    "score": 0.05551495840193264
+  },
+  {
+    "value": 33,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.05259874604667325
+  },
+  {
+    "value": 24,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.050396984362770944
+  },
+  {
+    "value": 25,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.04679202006165445
+  },
+  {
+    "value": 31,
+    "fullColor": 0.00022148394241417498,
+    "coreColor": 0.0003040437823046519,
+    "score": 0.045716770403322476
+  },
+  {
+    "value": 32,
+    "fullColor": 0,
+    "coreColor": 0,
+    "score": 0.04522309507142673
+  }
+]

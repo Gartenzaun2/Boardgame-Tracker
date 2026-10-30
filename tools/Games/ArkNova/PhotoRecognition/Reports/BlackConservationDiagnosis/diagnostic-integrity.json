@@ -1,0 +1,117 @@
+{
+  "baselineCommit": "8eb351e",
+  "scope": "Diagnosis only; no recalibration. IMG_4268 is explicitly inspected at user request, not reused for policy selection.",
+  "blackDecisionsCompared": 12,
+  "decisions": [
+    {
+      "image": "IMG_4265",
+      "track": "attractiveness",
+      "value": 21,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4265",
+      "track": "conservation",
+      "value": 0,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4265",
+      "track": "reputation",
+      "value": 11,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4266",
+      "track": "attractiveness",
+      "value": 21,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4266",
+      "track": "conservation",
+      "value": 0,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4266",
+      "track": "reputation",
+      "value": 11,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4267",
+      "track": "attractiveness",
+      "value": 113,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4267",
+      "track": "conservation",
+      "value": 0,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4267",
+      "track": "reputation",
+      "value": 11,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4268",
+      "track": "attractiveness",
+      "value": 21,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4268",
+      "track": "conservation",
+      "value": 0,
+      "scoreError": 0.0,
+      "unchanged": true
+    },
+    {
+      "image": "IMG_4268",
+      "track": "reputation",
+      "value": 11,
+      "scoreError": 0.0,
+      "unchanged": true
+    }
+  ],
+  "protectedFiles": [
+    {
+      "file": "src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/ArkNovaFieldOccupancy.cs",
+      "sha256": "9a0ae79179e5ff076af6ea890977ed942f49aa0ecadba47512b262a9eb420a01"
+    },
+    {
+      "file": "tools\\Games\\ArkNova\\PhotoRecognition/ArkNovaConfidencePolicy.cs",
+      "sha256": "2b7925e5b88a009f8fce45cb19df8956ee80a0b6b216de565ce9fa9ab91996de"
+    },
+    {
+      "file": "tools\\Games\\ArkNova\\PhotoRecognition/Assets/scoring_regions_v2.json",
+      "sha256": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910"
+    },
+    {
+      "file": "tools\\Games\\ArkNova\\PhotoRecognition/Assets/ConfidenceV2/scoring_ground_truth_v2.json",
+      "sha256": "6e0556bba958efa45724301d15f38c684651276c458a9c7c9b8522b07ff4182e"
+    },
+    {
+      "file": "tools\\Games\\ArkNova\\PhotoRecognition/Assets/ConfidenceV2/split.json",
+      "sha256": "6fc29cff66d73934b3ec69871938c8b6d5aa324007930d7a560e1120bafcbc31"
+    },
+    {
+      "file": "tools\\Games\\ArkNova\\PhotoRecognition/confidence-policy-selection.json",
+      "sha256": "54494c55293603e6cbcead42b26e10e62563616a76668584dcc97d2f1314440f"
+    }
+  ]
+}

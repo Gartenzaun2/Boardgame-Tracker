@@ -591,6 +591,14 @@ Die Rohgenauigkeit beträgt 42/60. Die 75-%-/98-%-Ziele sind nicht gemeinsam err
 ein erfolgreiches Sicherheitsgate bezeichnet keine Produktionsreife. `viewIndex`
 ist die Aufnahmereihenfolge und keine kalibrierte Kameraposition.
 
+Der optionale `ArkNovaBlackDiagnostics`-Observer im Entwicklungswerkzeug liest die
+tatsächlich verwendeten Zwischenmatrizen synchron und exportiert ausschließlich
+Diagnostik. Bildannotationen verwenden Kopien. Der Aufruf `diagnose-black` untersucht
+IMG_4265–4268 ohne Änderung von Schwellen, Gewichtung, Confidence oder Geometrie.
+Die bestätigte physische Belegung ist Artenschutz 20; die Diagnose weist Feld 0
+als Fehlgewinner und keine strenge Schwarzbelegung auf 21 nach. Ergebnisse und
+methodische Grenzen stehen unter `PhotoRecognition/Reports/BlackConservationDiagnosis`.
+
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
 Kamera-Handler bleibt ein Platzhalter; eine spätere Anbindung verwendet denselben
