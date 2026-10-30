@@ -13,6 +13,12 @@ für IMG_4265–4268 enthält Masken, Heatmaps, Referenz-/Core-Vergleiche, Pixel
 und lokale Feature-Residuen. Ground Truth 20 und Polygon 20 sind bestätigt.
 Die Messung findet Feld 0 als Fehlgewinner; Feld 21 enthält keine strengen Schwarzpixel.
 
+Das nachfolgende [A/B/C-Rankingexperiment](Reports/RankingExperiment/README.md)
+übernimmt ausschließlich den CV-Ausschluss von 0 mit Mindest-Evidenz und Enthaltung.
+Die Holdout-Rohgenauigkeit steigt von 42/60 auf 45/60, Schwarz-Artenschutz von
+2/5 auf 5/5. Die Confidence-Policy bleibt unverändert. `analyze` verwendet diese
+ausgewählte Rangfolge; historische Vergleichs-/Diagnosebefehle behalten ihre Baseline.
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:
@@ -23,6 +29,8 @@ dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- analyze 
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 calibration artifacts/confidence-v2-calibration.json
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 holdout artifacts/confidence-v2-holdout.json
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- diagnose-black tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 tools/Games/ArkNova/PhotoRecognition/Reports/BlackConservationDiagnosis
+dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- ranking tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 calibration artifacts/ranking-calibration.json
+dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- ranking tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 holdout artifacts/ranking-holdout.json
 ```
 
 `benchmark` prüft die unveränderte **Baseline A** auf allen sechs alten Fotos und zusätzlich ein leeres
@@ -33,6 +41,17 @@ Registrierung und keine High-Kandidaten auf der leeren Referenztafel.
 `analyze` liefert bei gescheiterter Registrierung Exitcode 1 und eine leere Farbmenge;
 Exitcode 0 bestätigt nur die Registrierung, nicht die Richtigkeit der Kandidaten.
 `analyze` verwendet die ausgewählte abgesicherte Confidence-Variante E.
+Zuvor schließt die ausgewählte Ranking-Variante A Nullfelder aus, prüft Mindest-
+Evidenz und liefert bei unzureichender Unterstützung null. Manuelle Score-0-Eingaben
+werden dadurch nicht verändert. Weder B noch C wurden für `analyze` aktiviert.
+
+`ranking` liefert Rohgenauigkeit, Rang 2, Null-/Phantomzählungen, Abstände,
+Farbe-/Track-Auswertungen und die unveränderte Confidence als Sekundärwert.
+Calibration vergleicht acht feste Flag-Kombinationen; Holdout lädt vor Bildzugriff
+die versiegelte Auswahl. Beide Aufrufe prüfen die Eingabebild-Hashes. Ein erneuter
+Holdout-Aufruf ist ausschließlich Reproduktion derselben Regeln, keine neue Validierung.
+`ranking-debug <assets> <dataset> <output>` exportiert nur IMG_4265–4267;
+IMG_4268 wurde im einzigen tatsächlichen Holdout-Lauf mit exportiert.
 
 `confidence` prüft Dataset-Hashes und den unveränderlichen 17/8-Split. Calibration
 vergleicht die fünf benannten Varianten, Holdout ausschließlich A und die zuvor

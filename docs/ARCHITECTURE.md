@@ -568,7 +568,8 @@ Die nicht rekonstruierte Richtungsheuristik ist im Analyzer deaktiviert; das rei
 Handoff-Prädikat bleibt für eine spätere kalibrierte Richtungsinformation testbar.
 
 `ArkNovaConfidencePolicy` im Entwicklungswerkzeug vergleicht fünf kleine Varianten.
-`analyze` verwendet die auf Calibration gewählte Variante E: lokale Feldsichtbarkeit,
+`analyze` verwendet nach der CV-Kandidatenbildung die auf Calibration gewählte
+Confidence-Variante E: lokale Feldsichtbarkeit,
 mindestens zwei unabhängig belegte Tracks zur Unterstützung einer Spielerfarbe
 (je mindestens 15 % Kernfarbe), kernbasierte Dominanz gegenüber dem zweitbesten
 Feld und zurückhaltende Medium-Freigabe bei gesättigten Scores. Ohne Farbstützung
@@ -598,6 +599,31 @@ IMG_4265–4268 ohne Änderung von Schwellen, Gewichtung, Confidence oder Geomet
 Die bestätigte physische Belegung ist Artenschutz 20; die Diagnose weist Feld 0
 als Fehlgewinner und keine strenge Schwarzbelegung auf 21 nach. Ergebnisse und
 methodische Grenzen stehen unter `PhotoRecognition/Reports/BlackConservationDiagnosis`.
+
+`ArkNovaRankingCapture` liest dieselben registrierten Pixel und Feldmasken für das
+separate A/B/C-Rankingexperiment. Die acht Varianten teilen eine Registrierung;
+die Original-Baseline wird je Entscheidung auf Gleichheit mit dem Analyzer geprüft.
+Relative Schwarz-Evidenz und Kernrangfolge bei Sättigung sind nur Experimente.
+Übernommen wurde ausschließlich `A_NoZero` in `ArkNovaRankingRules`.
+`analyze` schließt Wert 0 aus der CV-Kandidatenbildung aus. Schwache Kandidaten
+(Score <0,38, FullColor <0,06 oder CoreColor <0,06) bleiben null. Nach Ersatz eines
+früheren Nullfeld-Gewinners gilt zusätzlich CoreColor >=0,10. Ein stark belegtes
+ausgeschlossenes Nullfeld kann als reine Kontrollregion Enthaltung auslösen;
+es wird weder als Wert noch als Nachbaralternative angeboten. Die Kontrollregel
+verlangt mindestens 30 % Full-/Core-Farbe und einen Score mindestens wie der Ersatz.
+Keine dieser Grenzen ändert die Confidence-Policy oder die manuelle Domain: dort
+bleibt 0 weiterhin zulässig. Die Polygondatei wird nicht verändert.
+
+Das Rankingexperiment verwendet denselben 17/8-Split. Die Auswahl wurde vor dem
+einzigen Holdout-Lauf in `ranking-selection.json` einschließlich Quellcode-,
+Geometrie-, Ground-Truth- und Split-Hashes eingefroren. Calibration verbessert sich
+von 93 auf 94/123, Holdout von 42 auf 45/60 richtige ausgegebene Rohkandidaten;
+Schwarz-Artenschutz erreicht dort 5/5 statt 2/5. Zwei schwache Schwarz-Rufkandidaten
+auf Calibration werden zusätzlich zurückgehalten. Die unveränderte Confidence-
+Policy bleibt auf Holdout bei 38,3 % Coverage. Berichte und Vorher-/Nachher-Bilder
+liegen unter `PhotoRecognition/Reports/RankingExperiment`. Frühere `benchmark`-,
+`confidence`- und `diagnose-black`-Aufrufe behalten ihre dokumentierte historische
+Baseline für Regression/Vergleich; sie sind keine aktuelle CV-Eingabefunktion.
 
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende

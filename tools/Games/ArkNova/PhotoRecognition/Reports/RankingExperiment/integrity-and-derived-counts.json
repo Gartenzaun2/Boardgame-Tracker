@@ -1,0 +1,89 @@
+{
+  "baselineCommit": "deb028f",
+  "selectedVariant": "A_NoZero",
+  "actualHoldoutEvaluationsThisTask": 1,
+  "protectedDataAndConfidenceUnchanged": true,
+  "allFrozenHashesMatch": true,
+  "partitions": [
+    {
+      "partition": "calibration",
+      "variants": [
+        {
+          "id": "0",
+          "rawPhantomColors": 27,
+          "finalPhantomColors": 0,
+          "correct": 93,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "1",
+          "rawPhantomColors": 20,
+          "finalPhantomColors": 0,
+          "correct": 94,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "2",
+          "rawPhantomColors": 27,
+          "finalPhantomColors": 4,
+          "correct": 87,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "3",
+          "rawPhantomColors": 24,
+          "finalPhantomColors": 4,
+          "correct": 88,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "4",
+          "rawPhantomColors": 27,
+          "finalPhantomColors": 0,
+          "correct": 94,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "5",
+          "rawPhantomColors": 20,
+          "finalPhantomColors": 0,
+          "correct": 94,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "6",
+          "rawPhantomColors": 27,
+          "finalPhantomColors": 4,
+          "correct": 93,
+          "expectedDecisions": 204
+        },
+        {
+          "id": "7",
+          "rawPhantomColors": 24,
+          "finalPhantomColors": 4,
+          "correct": 93,
+          "expectedDecisions": 204
+        }
+      ]
+    },
+    {
+      "partition": "holdout",
+      "variants": [
+        {
+          "id": "0",
+          "rawPhantomColors": 12,
+          "finalPhantomColors": 0,
+          "correct": 42,
+          "expectedDecisions": 96
+        },
+        {
+          "id": "1",
+          "rawPhantomColors": 9,
+          "finalPhantomColors": 0,
+          "correct": 45,
+          "expectedDecisions": 96
+        }
+      ]
+    }
+  ]
+}

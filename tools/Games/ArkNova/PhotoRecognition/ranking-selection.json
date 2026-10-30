@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "deb028f",
+  "selectedVariant": 1,
+  "selectedName": "A_NoZero",
+  "selectedBeforeHoldout": true,
+  "selectionBasis": "Calibration only: A improves raw accuracy 93->94/123, black conservation 6->8/11; no Red/Yellow regression, Blue +1. C adds no incremental benefit over A. Both B designs rejected for regressions and phantom colors. No thresholds selected from holdout.",
+  "splitSha256": "6fc29cff66d73934b3ec69871938c8b6d5aa324007930d7a560e1120bafcbc31",
+  "sourceHashes": {
+    "ArkNovaRankingRules.cs": "134dd816997a3c90f0da0f7eaa845abba1258ab7183bd71f2c16c80bbf083c93",
+    "ArkNovaRankingCapture.cs": "2307d87886dc870dfaa5e086b962c7646037577abd0e3b07d4cd0d4765a9045e",
+    "ArkNovaPhotoAnalyzer.cs": "8cc2eb13ed72247c8d3d3ed1bc6789eee4090632f17767cff980eeeed58673f8",
+    "ArkNovaConfidencePolicy.cs": "2b7925e5b88a009f8fce45cb19df8956ee80a0b6b216de565ce9fa9ab91996de",
+    "ArkNovaRankingExperiment.cs": "cb0e0f2cb5b4e02004f93147ec2a0e0c196b4794566c0677ffeb447bfdfad931",
+    "Program.cs": "0ae4567d3b942b0511749e7984970a70524326f9493a541ea8e8b8cb1734329b",
+    "Assets/scoring_regions_v2.json": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910",
+    "Assets/ConfidenceV2/scoring_ground_truth_v2.json": "6e0556bba958efa45724301d15f38c684651276c458a9c7c9b8522b07ff4182e",
+    "Assets/ConfidenceV2/manifest.json": "2b2645eb041cd63afe42dfdd714040fa0dfd10eb877a03dedf972115636b8f5b",
+    "../../../../src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/ArkNovaFieldOccupancy.cs": "9a0ae79179e5ff076af6ea890977ed942f49aa0ecadba47512b262a9eb420a01"
+  },
+  "calibrationReportSha256": "9759661511d7cf204f280a7bd6d1304bcecc60952771846cf8093e115adac097",
+  "calibrationSummary": {
+    "correct": 94,
+    "total": 123,
+    "rawAccuracy": 0.7642276422764228,
+    "top1Correct": 94,
+    "topRankCorrectBeforeAbstention": 97,
+    "correctAtRank2": 7,
+    "nullCount": 77,
+    "nullPresent": 17,
+    "phantomValues": 21,
+    "phantomAfterConfidence": 0,
+    "phantomAccepted": 0,
+    "meanRankingGap": 0.3779906451642505,
+    "medianRankingGap": 0.3437097228425684,
+    "meanSignedScoreGap": 0.3779906451642505,
+    "medianSignedScoreGap": 0.3437097228425684,
+    "acceptedCoverage": 0.4959349593495935,
+    "acceptedAccuracy": 1,
+    "wrongHigh": 0
+  }
+}

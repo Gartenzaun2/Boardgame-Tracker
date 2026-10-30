@@ -64,7 +64,7 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         PreparationMilliseconds = timer.Elapsed.TotalMilliseconds;
     }
 
-    public RecognitionResult Analyze(string imagePath, ArkNovaBlackDiagnostics? diagnostics = null)
+    public RecognitionResult Analyze(string imagePath, ArkNovaBlackDiagnostics? diagnostics = null, ArkNovaRankingCapture? rankingCapture = null)
     {
         Stopwatch timer = Stopwatch.StartNew();
         using Mat image = ReadImage(imagePath); // OpenCV normalizes EXIF orientation by default.
@@ -127,13 +127,13 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         using Mat warped = new();
         Cv2.WarpPerspective(small, warped, transform, _reference.Size());
         diagnostics?.RecordRegistration(registration, projected, target, inlierMask, AnalysisScale / _referenceRegistrationScale);
-        Dictionary<string, ColorScores> colors = AnalyzeFields(warped, validity, trackVisibility, diagnostics);
+        Dictionary<string, ColorScores> colors = AnalyzeFields(warped, validity, trackVisibility, diagnostics, rankingCapture);
         return new(registration, colors, new(decode, registered - decode,
             timer.Elapsed.TotalMilliseconds - registered, timer.Elapsed.TotalMilliseconds));
     }
 
     private Dictionary<string, ColorScores> AnalyzeFields(Mat warped, Mat validity, Dictionary<string, double> trackVisibility,
-        ArkNovaBlackDiagnostics? diagnostics)
+        ArkNovaBlackDiagnostics? diagnostics, ArkNovaRankingCapture? rankingCapture)
     {
         using Mat currentRegion = new(warped, _scoringBounds);
         using Mat referenceRegion = new(_reference, _scoringBounds);
@@ -201,6 +201,10 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
                 }
             }
         }
+        rankingCapture?.Capture(new(warped, _reference, hsv, lab, referenceLab, currentSmooth, referenceSmooth,
+            difference, black, relaxedBlack, black, validity, _scoringBounds.Location),
+            _fields.Select(field => new ArkNovaRankingCapture.CaptureField(field.Track, field.Value, field.Bounds, field.Mask, field.Core)).ToArray(),
+            masks, relaxed, trackVisibility);
         Dictionary<string, ColorScores> results = [];
         string[] names = ["red", "blue", "yellow", "black"];
         for (int color = 0; color < names.Length; color++)
@@ -264,7 +268,7 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         return results;
     }
 
-    private static Mat GrowMask(Mat seed, Mat allowed)
+    internal static Mat GrowMask(Mat seed, Mat allowed)
     {
         Mat grown = seed.Clone();
         using Mat kernel = Cv2.GetStructuringElement(MorphShapes.Ellipse, new Size(3, 3));
@@ -330,5 +334,4 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
 internal sealed record RegistrationDiagnostics(bool Success, int Matches, int Inliers, double? ReprojectionP95,
     double MinimumTrackVisibility, double InlierSpread, string? Failure);
 internal sealed record StageTimings(double DecodeMilliseconds, double RegistrationMilliseconds, double OccupancyMilliseconds, double TotalMilliseconds);
-internal sealed record ColorScores(Dictionary<string, FieldPrediction> Tracks);
 internal sealed record RecognitionResult(RegistrationDiagnostics Registration, Dictionary<string, ColorScores> Colors, StageTimings Timings);

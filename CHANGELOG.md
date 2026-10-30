@@ -4,6 +4,13 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.11
+
+- Rohe Foto-Feldrangfolge mit acht A/B/C-Kombinationen ausschließlich auf Calibration untersucht: CV-Ausschluss von 0 mit Mindest-Evidenz/Enthaltung, relative Schwarz-Evidenz und Kernrangfolge bei gesättigten Farbtermen.
+- Nur A übernommen: `analyze` liefert keinen CV-Wert 0 mehr; schwache Ersatzkandidaten werden als null zurückgehalten. Manuelle Nullwerte und Domainregeln unverändert. Zwei relative Schwarzmodelle sowie die Kernrangfolge bleiben dokumentierte, nicht aktivierte Experimente.
+- Auswahl vor dem einzigen Holdout-Lauf mit Quellcode-/Eingabe-Hashes eingefroren. Calibration 93→94/123 Rohwerte richtig, Schwarz-Artenschutz 6→8/11; Holdout 42→45/60 und Schwarz-Artenschutz 2→5/5. Rot/Gelb unverändert, Blau auf Calibration +1 und auf Holdout unverändert. Zwei schwache Schwarz-Rufwerte auf Calibration werden zusätzlich zurückgehalten.
+- Bestehende Confidence-Policy ohne neue Schwellen erneut ausgeführt; Holdout-Coverage bleibt 38,3 % bei 100 % Accuracy der akzeptierten Werte. Vergleichsbilder, Top-3-/Rangberichte, Negativprüfungen und Regeltests ergänzt. Keine Kamera-/Mobile-/Scoring-Integration oder Paketänderung. App-Version 0.10.0.11 / ApplicationVersion 48.
+
 ## 0.10.0.10
 
 - Reine Schwarz-/Artenschutz-Diagnose für IMG_4265–4268: optionaler Observer exportiert unveränderte Warp-, Strict-/Relaxed-/Grown-Masken, kontinuierliche LAB-Differenz, Core-Vergleiche und lokale Feature-Residuen unter dem PhotoRecognition-Tool.
