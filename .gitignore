@@ -6,6 +6,7 @@
 [Oo]bj/
 artifacts/
 TestResults/
+ios-build.log
 
 # Visual Studio / Rider / VS Code user state
 .vs/
