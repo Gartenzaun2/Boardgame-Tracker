@@ -174,3 +174,11 @@ Testsuiten ausführen. Anschließend passend zum Prüfauftrag auf dem Zielgerät
 
 Für iOS-Gerätetests ist die passende Apple-Toolchain erforderlich. Nur tatsächlich
 ausgeführte Geräteprüfungen als erfolgreich melden.
+
+## Entwicklungsdatenbank nach Import-/Export-Schemaänderung
+
+Die Umstellung auf Player.IsArchived und eindeutige Player-/Group-Namensindizes
+ist mit bisherigen Entwicklungsdatenbanken inkompatibel. Vor Installation dieses
+Stands ist eine Neuinstallation bzw. ein bewusster Neuaufbau der Entwicklungsdatenbank
+notwendig. Dabei gehen lokale Entwicklungsdaten verloren. Die App löscht oder migriert
+bestehende Daten nicht automatisch. Keine persistenten Import-Aliase und keine DB-Migrationen.

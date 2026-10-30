@@ -15,7 +15,7 @@ Erstes vollständig unterstütztes Spiel: **Arche Nova**.
 ### Player
 
 Ein Spieler besitzt einen Namen, einen Gaststatus (`IsGuest`) und einen
-Aktivstatus (`IsActive`). Das technische Modell steht in `DATA_MODEL.md`.
+Archivstatus (`IsArchived`). Das technische Modell steht in `DATA_MODEL.md`.
 
 Ein Gast ist ein normaler Spieler mit `IsGuest = true`. Wird der Spieler
 später regulär gepflegt, wird lediglich `IsGuest = false` gesetzt.
@@ -25,7 +25,7 @@ Unter allgemeinen Einstellungen → `Spieler` können Namen und Archivstatus
 bestehender Spieler bearbeitet werden. Standardmäßig erscheinen nur aktive
 Nicht-Gäste. `Gäste anzeigen` und `Archivierte anzeigen` sind unabhängig kombinierbar
 und bleiben Screen-State. Gaststatus ist in diesem Editor nicht veränderbar.
-Archivieren ändert ausschließlich den Aktivstatus; Gruppenmitgliedschaften,
+Archivieren ändert ausschließlich den Archivstatus; Gruppenmitgliedschaften,
 Partien und Auswertungen bleiben erhalten. Historische Namen werden weiterhin
 aus der aktuellen Player-Entität gelesen.
 
@@ -495,3 +495,23 @@ Neben speziell unterstützten Spielen wie Arche Nova sollen Benutzer später eig
 ## App-Darstellung
 
 Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. Die Auswahl wird lokal in Preferences gespeichert und sofort angewendet. Sie ist spielunabhängig, verändert keine historischen Daten und folgt der verbindlichen Palette in `UI_DESIGN_GUIDE.md`. Historie zeigt Monatsgruppen ohne notwendige Sticky-Überschriften und kompakte Spiel-/Gruppenfilter.
+
+## Partien importieren und exportieren
+
+Am unteren Rand der Historie stehen dauerhaft „Importieren“ (Secondary) und
+„N Partien exportieren“ (Primary). Export verwendet exakt die aktuell gefilterten
+abgeschlossenen Partien und deren notwendige Abhängigkeiten. Ohne Ergebnis ist
+Export deaktiviert. Die native Teilen-Funktion gibt eine lokale .bgt-Datei weiter.
+Import öffnet die native Dateiauswahl unabhängig von History-Filtern.
+
+Nach Analyse werden ausschließlich offene Gruppenzuordnungen aufgelöst. Sichere
+Spielerzuordnungen sind fest; manuelle Zuordnungen gelten global im Import. Nach jeder
+Entscheidung werden alle offenen Gruppen neu bewertet. Alternativ werden Gruppen
+getrennt und erhalten deterministisch den ersten freien „Name Import [N]“-Namen.
+Die Vorschau zeigt neue/vorhandene Spiele, automatisch/manuell zugeordnete/neue Spieler,
+zusammengeführte/neue Gruppen, Partien zum Import/Überspringen und Referenzdaten.
+Erst „Jetzt importieren“ schreibt sämtliche Daten atomar. Abbrechen schreibt nichts.
+Lokaler Zustand gewinnt bei allen Zuordnungen; vorhandene Partie-IDs werden ohne
+Inhaltsvergleich übersprungen. Änderungen während des Importflows erfordern erneute
+Analyse. Fehler übernehmen keine Teildaten. Erfolgreicher Import lädt die Historie neu.
+Unterstützt ist aktuell Arche Nova; Custom Games sind ein späteres Feature.

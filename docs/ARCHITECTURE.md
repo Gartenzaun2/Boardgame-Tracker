@@ -253,7 +253,7 @@ Es gibt genau einen gemeinsamen `sealed partial BoardgameTrackerDbContext`.
 Der generische Teil unter `Persistence/SQLite` enthält die allgemeinen DbSets
 und `OnModelCreating`; die Arche-Nova-DbSets stehen in
 `Games/ArkNova/Persistence/SQLite/BoardgameTrackerDbContext.ArkNova.cs` im selben
-Namespace wie der gemeinsame Context. Die Modellkonfiguration bleibt unverändert.
+Namespace wie der gemeinsame Context. Die allgemeinen und spielspezifischen Modellkonfigurationen bleiben getrennt.
 
 `DatabaseInitializer` erstellt den Context, führt `EnsureCreatedAsync` aus und
 führt anschließend die registrierten `IDatabaseInitializationStep`-Implementierungen
@@ -384,7 +384,7 @@ vorsorgliche Abstraktion.
 Die allgemeine Spielerverwaltung liegt unter `Players/ListPlayers` und
 `Players/EditPlayer` in Application sowie den zugehörigen App-Features und
 SQLite-Adaptern. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
-das Bearbeiten speichert ausschließlich Name und Aktivstatus des Player-Aggregats.
+das Bearbeiten speichert ausschließlich Name und Archivstatus des Player-Aggregats.
 `App/Navigation/IGameHistoryHandler` ist die gemeinsame Navigation von Historie
 und Spielerverwaltung zu einer Partie. Jedes Spiel registriert seinen Handler
 im Modul; dieser entscheidet anhand des Session-Status über die konkrete Seite.
@@ -411,3 +411,24 @@ Beide Gruppenformulare bleiben unter `App/Features/Groups`. `GroupColorSelection
 Die App aktiviert `MauiStrictXamlCompilation` und `MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 sind Buildfehler. Bei geändertem BindingContext wird `x:DataType` angegeben. Command-Bindings über `x:Reference` verwenden eine typisierte ViewModel-Property der Page statt des untypisierten BindingContext. Keine Unterdrückung durch `x:Object`.
 
 Abgefangene technische Fehler in Historie und Wertungsansichten werden über injiziertes `ILogger<T>` mit Exception und relevantem ID-Kontext protokolliert; sichtbare Meldungen bleiben lokalisiert. Im Debug-Build gibt der Microsoft-Debug-Provider die Meldungen bei angeschlossenem Debugger aus. Es werden keine dauerhaften Protokolldateien oder Telemetriedienste eingeführt.
+
+## Lokaler Austausch historischer Partien
+
+Unter `Application/History/Transfer` liegen das unabhängige BGT-Austauschmodell,
+Formatprüfung, ImportPlan und die Export-/Import-Use-Cases. JSON wird ausschließlich
+in DTOs deserialisiert. Der Plan enthält globale 1:1-Spielerzuordnungen und bleibt
+bis zum Commit ohne produktive Writes. Die App führt Dateiauswahl, Resolve und
+Preview im History-Feature aus; sie kennt keine konkreten Persistenzadapter.
+
+Der SQLite-Adapter führt Exportlesevorgänge und den abschließenden Import jeweils
+auf einem kurzlebigen Context in einer Transaktion aus. Vor dem Import wird der
+lokale Snapshot einschließlich Modulreferenzen erneut geprüft; Änderungen erfordern
+neue Analyse. Die persistierten Entities entstehen über Domainkonstruktoren und
+Domainmethoden. SQLite-Namensindizes verwenden die pro Verbindung registrierte
+BGT_NAME-Collation mit der gemeinsamen EntityName-Semantik.
+
+Bekannte Spielmodule registrieren IGameTransferSchema (Version und Validierung)
+und IGameTransferPersistence (Projektion, Referenzmatching und Persistenz auf demselben
+Context). Arche Nova besitzt seine DTOs und Adapter unter Games/ArkNova; allgemeiner
+Transfercode kennt keine Arche-Nova-Felder. Custom Games sind noch nicht unterstützt.
+Format, Matching und Limits: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).

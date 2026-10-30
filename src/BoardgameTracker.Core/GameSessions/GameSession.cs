@@ -17,7 +17,7 @@ public sealed class GameSession
         Guid gameId,
         Guid groupId,
         DateTimeOffset startedAt,
-        IReadOnlyList<Guid> playerIds)
+        IReadOnlyList<Guid> playerIds, Guid? id = null)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
@@ -38,7 +38,8 @@ public sealed class GameSession
                 nameof(playerIds));
         }
 
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.CreateVersion7();
+        ArgumentOutOfRangeException.ThrowIfEqual(Id, Guid.Empty);
         GameId = gameId;
         GroupId = groupId;
         Status = GameSessionStatus.Running;

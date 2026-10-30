@@ -12,7 +12,7 @@ public sealed class Game
     public Game(string key)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         Key = key.Trim();
     }
 

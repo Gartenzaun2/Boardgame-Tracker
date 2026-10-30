@@ -811,4 +811,55 @@
   <data name="PlayerNameRequired" xml:space="preserve"><value>Bitte einen Spielernamen eingeben.</value></data>
   <data name="PlayersInfo" xml:space="preserve"><value>Spieler können umbenannt oder archiviert werden. Archivierte Spieler bleiben in bestehenden Partien und Auswertungen erhalten.</value></data>
   <data name="PlayerNavigationFailed" xml:space="preserve"><value>Die Ansicht konnte nicht geöffnet werden.</value></data>
+  <data name="TransferImport" xml:space="preserve">
+    <value>Importieren</value>
+  </data>
+  <data name="TransferExportOne" xml:space="preserve">
+    <value>1 Partie exportieren</value>
+  </data>
+  <data name="TransferExportMany" xml:space="preserve">
+    <value>{0} Partien exportieren</value>
+  </data>
+  <data name="TransferExportTitle" xml:space="preserve">
+    <value>Partien exportieren</value>
+  </data>
+  <data name="TransferPickFile" xml:space="preserve">
+    <value>Boardgame-Tracker-Datei (.bgt) auswählen</value>
+  </data>
+  <data name="TransferResolveGroup" xml:space="preserve">
+    <value>Gruppe „{0}“ zuordnen
+{1}</value>
+  </data>
+  <data name="TransferMerge" xml:space="preserve">
+    <value>Spieler zuordnen und Gruppen zusammenführen</value>
+  </data>
+  <data name="TransferSplit" xml:space="preserve">
+    <value>Groups trennen</value>
+  </data>
+  <data name="TransferMapPlayer" xml:space="preserve">
+    <value>Importiert: {0} → lokalen Spieler wählen</value>
+  </data>
+  <data name="TransferPreview" xml:space="preserve">
+    <value>Importvorschau</value>
+  </data>
+  <data name="TransferCommit" xml:space="preserve">
+    <value>Jetzt importieren</value>
+  </data>
+  <data name="TransferSuccess" xml:space="preserve">
+    <value>Die Partien wurden importiert.</value>
+  </data>
+  <data name="TransferUpdateRequired" xml:space="preserve">
+    <value>Die Datei verwendet ein nicht unterstütztes Format oder Spiel. Bitte die App aktualisieren. Custom Games werden noch nicht unterstützt.</value>
+  </data>
+  <data name="TransferFailed" xml:space="preserve">
+    <value>Die Datei konnte nicht verarbeitet werden. Bitte Format, Namen und Zuordnungen prüfen. Beim Import wurden keine Daten übernommen. Bei zwischenzeitlichen Änderungen den Import erneut starten.</value>
+  </data>
+  <data name="TransferPreviewFormat" xml:space="preserve">
+    <value>Partien: {0} importieren, {1} bereits vorhanden
+Spiele: {2} vorhanden
+Spieler: {3} automatisch, {4} manuell zugeordnet, {5} neu
+Gruppen: {6} zusammengeführt, {7} neu
+Referenzdaten: {8} vorhanden, {9} neu
+Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
+  </data>
 </root>

@@ -14,6 +14,8 @@ internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
         builder.ToTable("Groups");
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name).UseCollation("BGT_NAME");
+        builder.HasIndex(x => x.Name).IsUnique();
 
         builder.Property(x => x.Name)
             .HasMaxLength(100)

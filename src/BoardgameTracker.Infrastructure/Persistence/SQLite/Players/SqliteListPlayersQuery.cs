@@ -9,8 +9,8 @@ public sealed class SqliteListPlayersQuery(IDbContextFactory<BoardgameTrackerDbC
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         List<PlayerListItem> players = await db.Players.AsNoTracking()
-            .Where(player => (includeGuests || !player.IsGuest) && (includeArchived || player.IsActive))
-            .Select(player => new PlayerListItem(player.Id, player.Name, player.IsGuest, player.IsActive, player.CreatedAt, null, null, null))
+            .Where(player => (includeGuests || !player.IsGuest) && (includeArchived || !player.IsArchived))
+            .Select(player => new PlayerListItem(player.Id, player.Name, player.IsGuest, player.IsArchived, player.CreatedAt, null, null, null))
             .ToListAsync(cancellationToken);
         if (players.Count == 0)
             return [];

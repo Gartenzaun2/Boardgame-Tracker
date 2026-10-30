@@ -9,9 +9,13 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite;
 /// <summary>
 /// EF Core unit-of-work and mapping root for the local Boardgame Tracker SQLite database.
 /// </summary>
-public sealed partial class BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerDbContext> options)
-    : DbContext(options)
+public sealed partial class BoardgameTrackerDbContext : DbContext
 {
+    public BoardgameTrackerDbContext(DbContextOptions<BoardgameTrackerDbContext> options) : base(options)
+    {
+        if (Database.GetDbConnection() is Microsoft.Data.Sqlite.SqliteConnection connection)
+            connection.CreateCollation("BGT_NAME", (left, right) => BoardgameTracker.Core.Names.EntityName.Comparer.Compare(left?.Trim(), right?.Trim()));
+    }
     public DbSet<Player> Players => Set<Player>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupPlayer> GroupPlayers => Set<GroupPlayer>();

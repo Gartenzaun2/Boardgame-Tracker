@@ -4,6 +4,15 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## Unveröffentlicht
+
+- Lokaler .bgt-Import/Export abgeschlossener Arche-Nova-Partien aus der Historie mit Resolve, Vorschau und atomarem Commit.
+- Globale 1:1-Spielerzuordnungen, lokale Stammdatenpriorität, Gruppentrennung und Spezialkartenmatching.
+- Player.IsArchived ersetzt den inversen Aktivstatus; eindeutige Player-/Group-Namen nach Trim + OrdinalIgnoreCase.
+- Neue reguläre Entities verwenden UUIDv7. Importierte und deterministische IDs bleiben erhalten.
+- Inkompatible Entwicklungsdatenbankänderung: Neuaufbau/Neuinstallation erforderlich, lokale Entwicklungsdaten gehen verloren (SETUP.md).
+- Custom Games werden noch nicht unterstützt.
+
 ## 0.9.0.11
 
 - Einstellungen: „Spieler“ steht nach Darstellung und Standardspiel direkt vor den spielspezifischen Einstellungen.

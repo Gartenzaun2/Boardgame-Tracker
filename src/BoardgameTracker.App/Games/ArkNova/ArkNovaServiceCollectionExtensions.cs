@@ -1,3 +1,7 @@
+using BoardgameTracker.Application.History.Transfer;
+using BoardgameTracker.Application.Games.ArkNova.History.Transfer;
+using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
+using BoardgameTracker.Infrastructure.Games.ArkNova.History.Transfer;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Games.ArkNova.Navigation;
 using BoardgameTracker.App.Features.Groups.Colors;
@@ -29,6 +33,8 @@ public static class ArkNovaServiceCollectionExtensions
 {
     public static IServiceCollection AddArkNova(this IServiceCollection services)
     {
+        services.AddSingleton<IGameTransferSchema, ArkNovaTransferSchema>();
+        services.AddSingleton<IGameTransferPersistence, ArkNovaTransferPersistence>();
         services.AddTransient<IGameHistoryHandler, ArkNovaGameHistoryHandler>();
         services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         services.AddSingleton(ArkNovaPlayerColors.Rules);

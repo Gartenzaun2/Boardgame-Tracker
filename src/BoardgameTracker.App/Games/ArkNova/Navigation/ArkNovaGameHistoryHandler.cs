@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Navigation;
@@ -10,6 +11,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Navigation;
 public sealed class ArkNovaGameHistoryHandler(ArkNovaScoringUseCase scoring) : IGameHistoryHandler
 {
     public string GameKey => ArkNovaGame.Key;
+    public string DisplayName => AppResources.ArkNova;
 
     public async Task OpenAsync(Guid gameSessionId)
     {

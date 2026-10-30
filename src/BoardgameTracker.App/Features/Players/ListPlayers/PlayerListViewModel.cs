@@ -76,7 +76,7 @@ public sealed record PlayerListRow(PlayerListItem Data)
 {
     public string Name => Data.Name;
     public bool IsGuest => Data.IsGuest;
-    public bool IsArchived => !Data.IsActive;
+    public bool IsArchived => Data.IsArchived;
     public bool HasStatus => IsGuest || IsArchived;
     public bool HasLastGameSession => Data.LastGameSessionId is Guid id && id != Guid.Empty && !string.IsNullOrWhiteSpace(Data.LastGameKey);
     public bool HasNoGameSession => !HasLastGameSession;

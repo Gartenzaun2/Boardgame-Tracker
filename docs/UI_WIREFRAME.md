@@ -302,3 +302,23 @@ Historien-Hauptseite funktioniert. Der Fehler wurde im Emulator bestätigt und
 ist nicht Teil der Dialog- oder Altkompatibilitätsbereinigung.
 
 Die Anleitung für ausdrücklich beauftragte Geräteprüfungen steht in `SETUP.md`.
+
+## Historie – lokaler Import/Export
+
+Feste untere Aktionsleiste außerhalb der scrollenden Partienliste:
+
+```text
+[Importieren] [23 Partien exportieren]
+ Secondary            Primary
+```
+
+Bei null Ergebnissen ist Export deaktiviert. Import öffnet die native Dateiauswahl,
+Export die native Teilen-Funktion. Busy-Overlay und Aufrufschutz sichern den Flow.
+Es gibt keinen zusätzlichen Einstieg unter Einstellungen.
+
+Resolve verwendet App-Auswahldialoge: importierte Gruppe mit sicheren Zuordnungen,
+„Spieler zuordnen und Gruppen zusammenführen“ oder „Gruppen trennen“. Nur noch
+zulässige lokale Spieler sind auswählbar. Schließen bricht den Import ab. Danach
+folgt die vollständige Importvorschau mit Zusammenfassung, neuen Gruppennamen und
+„Jetzt importieren“/Abbrechen. Erst Bestätigen schreibt. Fehler/Erfolg verwenden den
+bestehenden AppDialogPage. Nach Erfolg wird die Partienliste aktualisiert.
