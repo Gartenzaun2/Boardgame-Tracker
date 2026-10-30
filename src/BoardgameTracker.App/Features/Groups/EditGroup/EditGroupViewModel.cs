@@ -6,7 +6,7 @@ using BoardgameTracker.App.Presentation.PlayerColors;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Groups.EditGroup;
+using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BoardgameTracker.Core.Players;

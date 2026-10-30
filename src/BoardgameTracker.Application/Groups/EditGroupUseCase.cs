@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Application.Persistence;
 
-namespace BoardgameTracker.Application.Groups.EditGroup;
+namespace BoardgameTracker.Application.Groups;
 
 /// <summary>Changes group metadata, fixed-member order and module-owned defaults together.</summary>
 public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerColorCatalog colorCatalog, IEnumerable<IGroupColorPersistence> colorStores)
@@ -163,3 +163,32 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
 
     }
 }
+
+/// <summary>Game-independent changes to fixed-membership group metadata and order.</summary>
+public sealed record EditGroupCommand(
+    Guid GroupId,
+    string Name,
+    bool MakePermanent,
+    bool IsArchived,
+    IReadOnlyList<Guid> OrderedPlayerIds,
+    GroupColorDefaults? ColorDefaults = null);
+
+/// <summary>
+/// Application read model containing exactly the persisted group state needed by the edit screen.
+/// </summary>
+public sealed record EditGroupDetails(
+    Guid Id,
+    string Name,
+    bool IsTemporary,
+    bool IsArchived,
+    IReadOnlyList<EditGroupPlayer> Players);
+
+/// <summary>
+/// Projected player data used while editing a group.
+/// </summary>
+public sealed record EditGroupPlayer(
+    Guid PlayerId,
+    string Name,
+    bool IsGuest,
+    int DefaultOrder,
+    PlayerColor? DefaultColor = null);

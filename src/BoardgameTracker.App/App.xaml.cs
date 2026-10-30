@@ -1,6 +1,6 @@
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.GameSessions;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.Extensions.DependencyInjection;

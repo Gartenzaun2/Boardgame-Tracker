@@ -1,5 +1,5 @@
 using System.Reflection;
-using BoardgameTracker.Application.Groups.EditGroup;
+using BoardgameTracker.Application.Groups;
 
 namespace BoardgameTracker.Application.Tests.Architecture;
 
@@ -9,7 +9,12 @@ public sealed class GroupModuleBoundaryTests
     public void GeneralGroupContracts_DoNotExposeGameSpecificTypes()
     {
         var types = typeof(EditGroupCommand).Assembly.GetExportedTypes()
-            .Where(type => type.Namespace?.StartsWith("BoardgameTracker.Application.Groups.", StringComparison.Ordinal) == true);
+            .Where(type => type.Namespace == "BoardgameTracker.Application.Groups"
+                || type.Namespace?.StartsWith("BoardgameTracker.Application.Groups.", StringComparison.Ordinal) == true)
+            .ToArray();
+        Assert.Contains(typeof(CreateGroupUseCase), types);
+        Assert.Contains(typeof(EditGroupUseCase), types);
+        Assert.Contains(typeof(ListGroupsQuery), types);
         foreach (var type in types)
         {
             AssertNeutral(type.BaseType);

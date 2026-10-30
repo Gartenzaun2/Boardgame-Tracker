@@ -4,7 +4,7 @@ using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Groups.CreateGroup;
+using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 

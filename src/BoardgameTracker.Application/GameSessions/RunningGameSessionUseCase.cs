@@ -2,7 +2,7 @@ using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardgameTracker.Application.GameSessions.Running;
+namespace BoardgameTracker.Application.GameSessions;
 
 /// <summary>Changes a running session through domain methods within one short-lived context.</summary>
 public sealed class RunningGameSessionUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)

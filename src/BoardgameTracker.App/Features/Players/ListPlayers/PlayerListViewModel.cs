@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Players.ListPlayers;
+using BoardgameTracker.Application.Players;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 

@@ -103,15 +103,25 @@ BoardgameTracker.Core/
 
 BoardgameTracker.Application/
   GameSessions/
+    OpenGameSessionQuery.cs
+    RunningGameSessionUseCase.cs
   Groups/
+    CreateGroupUseCase.cs
+    EditGroupUseCase.cs
+    ListGroupsQuery.cs
+    Colors/
+  Players/
+    EditPlayerUseCase.cs
+    ListPlayersQuery.cs
   Games/
     ArkNova/
       GameSessions/
+        StartArkNovaGameSessionUseCase.cs
+        ArkNovaRunningGameSessionQuery.cs
         Preparation/
-        Running/
         Scoring/
-        StartGameSession/
         History/
+        Results/
       SpecialCards/
       Settings/
       Persistence/
@@ -157,14 +167,40 @@ gemeinsamen Kern und werden von den Spielemodulen verwendet bzw. erweitert.
 Application- und UI-Code wird primär nach **Use Case/Feature** organisiert und
 nicht nach technischen Klassentypen.
 
-Bevorzugt:
+Slice-Grenzen sind fachliche Grenzen und nicht automatisch Verzeichnisgrenzen.
+Kleine Slices liegen flach im übergeordneten fachlichen Bereich; ihre kleinen
+Commands, Inputs, Read Models und Results stehen standardmäßig in der Hauptdatei:
 
 ```text
-Games/ArkNova/GameSessions/
+Application/
+  Groups/
+    CreateGroupUseCase.cs    # auch Command, PlayerInput und SelectablePlayer
+    EditGroupUseCase.cs      # auch Command, Details und Player-Projektion
+    ListGroupsQuery.cs       # auch GroupListItem
+    Colors/                 # gemeinsam verwendete Farbregeln und Modulvertrag
+```
+
+Eine eigene Datei bleibt sinnvoll für sliceübergreifend verwendete Typen,
+eigenständige Fachbegriffe, echte Contracts/Extension Points, relevante eigene
+Logik oder einen unabhängigen Änderungsgrund. Eine Zusammenführung darf die
+Hauptdatei nicht deutlich unübersichtlicher machen. So bleiben etwa gemeinsame
+Ergebnisdaten von Scoring und Korrektur, GroupColorDefaults sowie die echten
+Persistenz-Erweiterungspunkte separat.
+
+Ordner dienen der Navigation und Verständlichkeit. Ein eigener Slice-Ordner
+gruppiert mehrere eigenständige Komponenten; ein kleiner Use Case braucht ihn
+nicht automatisch. Verschachtelung folgt der tatsächlichen Komplexität des Features,
+nicht Symmetrie oder einer festen Mindestzahl von Dateien.
+
+Für umfangreichere Features sind Unterordner weiterhin sinnvoll, zum Beispiel
+in der App mit XAML, Pages und ViewModels:
+
+```text
+App/Games/ArkNova/Features/GameSessions/
   Preparation/
   Running/
   Scoring/
-  StartGameSession/
+  Result/
 ```
 
 Nicht als Standardstruktur:
@@ -380,8 +416,9 @@ Application-Slice-Tests verwenden echte EF-/SQLite-Datenbanken mit isolierter Le
 und Cleanup; keine Fakes für entfernte Store-/Query-Interfaces und kein EF InMemory als
 Ersatz für Constraints, Übersetzung oder Transaktionen. Architekturtests schützen Core,
 Providergrenze, EF-freie ViewModels sowie Gruppen- und Spielmodul-Ownership.
-Kleine Begleittypen dürfen beim Haupttyp stehen; XAML, DI
-und EF zählen als Verwendung. Die konkreten C#-Stilregeln zu Typdeklarationen,
+Kleine ausschließlich slice-eigene Begleittypen stehen standardmäßig beim Haupttyp;
+Tests spiegeln die fachliche Gruppierung ohne unnötige Ein-Datei-Unterordner.
+XAML, DI und EF zählen als Verwendung. Die konkreten C#-Stilregeln zu Typdeklarationen,
 `var`, Klammern und mehrzeiligen Blöcken stehen ausschließlich in `AGENTS.md`.
 Bei Refactorings werden alte Domänensynonyme nicht als Compatibility-Aliase
 weitergeführt.
@@ -400,8 +437,8 @@ vorsorgliche Abstraktion.
 
 ## Historien-Slice
 
-Die allgemeine Spielerverwaltung liegt unter `Players/ListPlayers` und
-`Players/EditPlayer` in Application sowie den zugehörigen App-Features und
+Die allgemeine Spielerverwaltung liegt in `Application/Players/ListPlayersQuery.cs`
+und `Application/Players/EditPlayerUseCase.cs` sowie den zugehörigen App-Features und
 konkreten EF-Slices. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
 das Bearbeiten speichert ausschließlich Name und Archivstatus des Player-Aggregats.
 `App/Navigation/IGameSessionNavigationHandler` ist die gemeinsame Navigation von Historie
@@ -419,7 +456,7 @@ Konkrete CompletedGameSessionsQuery unter `Application/History`, Listenoberfläc
 
 ## Gruppenbearbeitung und Modulgrenze
 
-`Application/Groups/CreateGroup` und `EditGroup` enthalten gemeinsame Gruppendaten und optionale semantische Farbauswahlen für den aktuellen Spielschlüssel. Sie kennen keine konkreten Spieltypen oder Listen erlaubter Farben. Der registrierte Regelkatalog validiert die Auswahl; Gruppenfarben bleiben pro Spiel und Gruppenmitglied, keine globale Eigenschaft von `Player` oder `GroupPlayer`.
+`Application/Groups/CreateGroupUseCase.cs` und `EditGroupUseCase.cs` enthalten jeweils den Use Case und seine kleinen Begleittypen für gemeinsame Gruppendaten und optionale semantische Farbauswahlen für den aktuellen Spielschlüssel. Sie kennen keine konkreten Spieltypen oder Listen erlaubter Farben. Der registrierte Regelkatalog validiert die Auswahl; Gruppenfarben bleiben pro Spiel und Gruppenmitglied, keine globale Eigenschaft von `Player` oder `GroupPlayer`.
 
 Die allgemeinen Gruppen-Use-Cases speichern Gruppe, neue Spieler, Reihenfolge und Farben in einer Transaktion. `Application/Groups/Colors/IGroupColorPersistence` ist die kleine technische Erweiterungsgrenze für Lesen und Ersetzen der Spieldefaults auf demselben DbContext. Der registrierte `Games/ArkNova/.../ArkNovaGroupColorPersistence` besitzt die Arche-Nova-Tabelle. Allgemeine Use Cases greifen nicht direkt auf diese Tabelle zu; ohne Farbmodul werden keine fremden Defaults gelesen oder verändert.
 

@@ -2,7 +2,7 @@ using BoardgameTracker.Core.Players;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardgameTracker.Application.Players.EditPlayer;
+namespace BoardgameTracker.Application.Players;
 
 public sealed class EditPlayerUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {

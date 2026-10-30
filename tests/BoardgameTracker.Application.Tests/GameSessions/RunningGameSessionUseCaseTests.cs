@@ -1,10 +1,10 @@
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
-using BoardgameTracker.Application.GameSessions.Running;
+using BoardgameTracker.Application.GameSessions;
 using BoardgameTracker.Core.GameSessions;
 
-namespace BoardgameTracker.Application.Tests.GameSessions.Running;
+namespace BoardgameTracker.Application.Tests.GameSessions;
 
 public sealed class RunningGameSessionUseCaseTests
 {

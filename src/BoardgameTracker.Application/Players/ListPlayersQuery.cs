@@ -1,7 +1,7 @@
 using BoardgameTracker.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardgameTracker.Application.Players.ListPlayers;
+namespace BoardgameTracker.Application.Players;
 
 public sealed class ListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext> factory)
 {
@@ -30,3 +30,6 @@ public sealed class ListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext
             .OrderBy(player => player.Name, StringComparer.CurrentCultureIgnoreCase).ThenBy(player => player.PlayerId).ToArray();
     }
 }
+
+public sealed record PlayerListItem(Guid PlayerId, string Name, bool IsGuest, bool IsArchived,
+    DateTimeOffset CreatedAt, DateTimeOffset? LastPlayedAt, Guid? LastGameSessionId, string? LastGameKey);

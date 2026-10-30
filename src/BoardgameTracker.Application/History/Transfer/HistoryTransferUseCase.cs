@@ -32,3 +32,5 @@ public sealed class HistoryTransferUseCase(HistoryTransferPersistence persistenc
         return persistence.CommitAsync(plan, cancellationToken);
     }
 }
+
+public sealed record TransferPreview(int GamesExisting, int ReferencesExisting, int ReferencesNew);

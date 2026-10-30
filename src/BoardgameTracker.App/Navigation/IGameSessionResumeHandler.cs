@@ -1,4 +1,4 @@
-using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.GameSessions;
 
 namespace BoardgameTracker.App.Navigation;
 

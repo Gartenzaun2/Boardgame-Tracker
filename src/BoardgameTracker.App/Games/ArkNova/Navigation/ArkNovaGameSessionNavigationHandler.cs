@@ -1,5 +1,5 @@
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
-using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;

@@ -1,15 +1,13 @@
 using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.Application.Tests.Persistence;
-using BoardgameTracker.Application.Games.ArkNova.Persistence.Groups;
+using BoardgameTracker.Application.Games.ArkNova.Persistence;
 using BoardgameTracker.Application.Groups.Colors;
-using BoardgameTracker.Application.Groups.CreateGroup;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Application.Persistence;
-using BoardgameTracker.Application.Groups.ListGroups;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

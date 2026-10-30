@@ -1,5 +1,5 @@
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Players.EditPlayer;
+using BoardgameTracker.Application.Players;
 using BoardgameTracker.Core.Players;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;

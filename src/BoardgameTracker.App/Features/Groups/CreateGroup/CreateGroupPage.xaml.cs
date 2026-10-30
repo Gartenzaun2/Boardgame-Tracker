@@ -1,6 +1,6 @@
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Groups.CreateGroup;
+using BoardgameTracker.Application.Groups;
 
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 

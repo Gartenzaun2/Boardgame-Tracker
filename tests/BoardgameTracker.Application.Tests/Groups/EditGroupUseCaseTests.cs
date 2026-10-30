@@ -3,10 +3,10 @@ using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Groups.Colors;
-using BoardgameTracker.Application.Groups.EditGroup;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.Groups;
 
-namespace BoardgameTracker.Application.Tests.Groups.EditGroup;
+namespace BoardgameTracker.Application.Tests.Groups;
 
 public sealed class EditGroupUseCaseTests
 {

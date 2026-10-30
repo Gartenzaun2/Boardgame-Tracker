@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Navigation;
