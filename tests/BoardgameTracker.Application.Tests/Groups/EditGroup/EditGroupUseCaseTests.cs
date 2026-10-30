@@ -7,15 +7,15 @@ namespace BoardgameTracker.Application.Tests.Groups.EditGroup;
 public sealed class EditGroupUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ChangesNameOrderAndArchiveStateWithoutChangingPlayership()
+    public async Task UpdateGroupAsync_ChangesNameOrderAndArchiveStateWithoutChangingPlayership()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
         Group group = new("Alt", false, [first, second]);
-        FakeEditGroupDataAccess dataAccess = new(group);
+        FakeEditGroupStore dataAccess = new(group);
         EditGroupUseCase useCase = new(dataAccess, new([]));
 
-        await useCase.ExecuteAsync(new EditGroupCommand(
+        await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, "Neu", false, true, [second, first]), TestContext.Current.CancellationToken);
 
         Assert.Same(group, dataAccess.SavedGroup);
@@ -28,46 +28,46 @@ public sealed class EditGroupUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_CanMakeTemporaryGroupPermanent()
+    public async Task UpdateGroupAsync_CanMakeTemporaryGroupPermanent()
     {
         Group group = new("Einmalig", true, [Guid.NewGuid()]);
-        FakeEditGroupDataAccess dataAccess = new(group);
+        FakeEditGroupStore dataAccess = new(group);
         EditGroupUseCase useCase = new(dataAccess, new([]));
 
-        await useCase.ExecuteAsync(new EditGroupCommand(
+        await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, group.Name, true, false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
 
         Assert.False(group.IsTemporary);
     }
 
     [Fact]
-    public async Task ExecuteAsync_DoesNotMakePermanentGroupTemporary()
+    public async Task UpdateGroupAsync_DoesNotMakePermanentGroupTemporary()
     {
         Group group = new("Stammgruppe", false, [Guid.NewGuid()]);
-        FakeEditGroupDataAccess dataAccess = new(group);
+        FakeEditGroupStore dataAccess = new(group);
         EditGroupUseCase useCase = new(dataAccess, new([]));
 
-        await useCase.ExecuteAsync(new EditGroupCommand(
+        await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, group.Name, false, false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
 
         Assert.False(group.IsTemporary);
     }
 
     [Fact]
-    public async Task ExecuteAsync_RejectsOrderThatChangesPlayership()
+    public async Task UpdateGroupAsync_RejectsOrderThatChangesPlayership()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
         Group group = new("Freitagabend", false, [first, second]);
-        FakeEditGroupDataAccess dataAccess = new(group);
+        FakeEditGroupStore dataAccess = new(group);
         EditGroupUseCase useCase = new(dataAccess, new([]));
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
-            useCase.ExecuteAsync(new EditGroupCommand(
+            useCase.UpdateGroupAsync(new EditGroupCommand(
                 group.Id, group.Name, false, false, [first, Guid.NewGuid()]), TestContext.Current.CancellationToken));
     }
 
-    private sealed class FakeEditGroupDataAccess(Group group) : IEditGroupDataAccess
+    private sealed class FakeEditGroupStore(Group group) : IEditGroupStore
     {
         public Group? SavedGroup { get; private set; }
 

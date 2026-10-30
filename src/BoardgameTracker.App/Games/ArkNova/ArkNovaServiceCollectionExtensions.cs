@@ -1,3 +1,9 @@
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Groups;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.SpecialCards;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.StartGameSession;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Running;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Preparation;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Results;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Application.Games.ArkNova.History.Transfer;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
@@ -12,7 +18,6 @@ using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Services;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
@@ -21,7 +26,6 @@ using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
 using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
@@ -35,20 +39,20 @@ public static class ArkNovaServiceCollectionExtensions
     {
         services.AddSingleton<IGameTransferSchema, ArkNovaTransferSchema>();
         services.AddSingleton<IGameTransferPersistence, ArkNovaTransferPersistence>();
-        services.AddTransient<IGameHistoryHandler, ArkNovaGameHistoryHandler>();
+        services.AddTransient<IGameSessionNavigationHandler, ArkNovaGameSessionNavigationHandler>();
         services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         services.AddSingleton(ArkNovaPlayerColors.Rules);
         services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();
         services.AddSingleton(new GameColorPresentation(ArkNovaGame.Key, () => AppResources.ArkNova));
         services.AddTransient<IArkNovaPreparationQuery, SqliteArkNovaPreparationQuery>();
-        services.AddTransient<IStartArkNovaGameSessionDataAccess, SqliteStartArkNovaGameSessionDataAccess>();
+        services.AddTransient<IStartArkNovaGameSessionStore, SqliteStartArkNovaGameSessionStore>();
         services.AddTransient<StartArkNovaGameSessionUseCase>();
         services.AddTransient<IArkNovaRunningGameSessionQuery, SqliteArkNovaRunningGameSessionQuery>();
-        services.AddTransient<IArkNovaScoringDataAccess, SqliteArkNovaScoringDataAccess>();
+        services.AddTransient<IArkNovaScoringStore, SqliteArkNovaGameSessionResultStore>();
         services.AddTransient<ArkNovaScoringUseCase>();
         services.AddSingleton<IArkNovaSettingsStore, MauiArkNovaSettingsStore>();
-        services.AddTransient<IArkNovaCorrectionDataAccess, SqliteArkNovaCorrectionDataAccess>();
-        services.AddTransient<ArkNovaCorrectionUseCase>();
+        services.AddTransient<IArkNovaHistoryCorrectionStore, SqliteArkNovaGameSessionResultStore>();
+        services.AddTransient<ArkNovaHistoryCorrectionUseCase>();
         services.AddTransient<ArkNovaPreparationViewModel>();
         services.AddTransient<ArkNovaPreparationPage>();
         services.AddTransient<ArkNovaRunningViewModel>();
@@ -61,7 +65,7 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaTieResolutionPage>();
         services.AddTransient<ArkNovaResultViewModel>();
         services.AddTransient<ArkNovaResultPage>();
-        services.AddTransient<IArkNovaSpecialCardDataAccess, SqliteArkNovaSpecialCardDataAccess>();
+        services.AddTransient<IArkNovaSpecialCardStore, SqliteArkNovaSpecialCardStore>();
         services.AddTransient<ArkNovaSpecialCardUseCase>();
         services.AddTransient<ArkNovaSpecialCardsViewModel>();
         services.AddTransient<ArkNovaSpecialCardsPage>();
@@ -70,7 +74,7 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaSettingsViewModel>();
         services.AddTransient<ArkNovaSettingsPage>();
 
-        services.AddSingleton<IGameSessionResumeHandler, ArkNovaGameSessionResumeHandler>();
+        services.AddSingleton<IGameSessionResumeHandler, ArkNovaGameSessionNavigationHandler>();
         ArkNovaRoutes.Register();
 
         return services;

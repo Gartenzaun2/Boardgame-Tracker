@@ -7,13 +7,13 @@ namespace BoardgameTracker.Application.Groups.CreateGroup;
 /// <summary>
 /// Creates a valid fixed-membership group and coordinates player reuse/creation through the slice-specific persistence port.
 /// </summary>
-public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess, GamePlayerColorCatalog colorCatalog)
+public sealed class CreateGroupUseCase(ICreateGroupStore store, GamePlayerColorCatalog colorCatalog)
 {
     public Task<IReadOnlyList<SelectablePlayer>> GetSelectablePlayersAsync(
         CancellationToken cancellationToken = default) =>
-        dataAccess.GetSelectablePlayersAsync(cancellationToken);
+        store.GetSelectablePlayersAsync(cancellationToken);
 
-    public async Task<Guid> ExecuteAsync(
+    public async Task<Guid> CreateGroupAsync(
         CreateGroupCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -43,7 +43,7 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess, GamePl
         }
 
         IReadOnlySet<Guid> activePlayerIds =
-            await dataAccess.GetActivePlayerIdsAsync(
+            await store.GetActivePlayerIdsAsync(
                 requestedExistingIds,
                 cancellationToken);
 
@@ -75,7 +75,7 @@ public sealed class CreateGroupUseCase(ICreateGroupDataAccess dataAccess, GamePl
 
         GroupColorDefaults? colors = command.GameKey is null ? null : new(command.GameKey,
             playerIds.Select((id, index) => (id, command.Players[index].DefaultColor)).ToDictionary(p => p.id, p => p.DefaultColor));
-        await dataAccess.SaveAsync(group, newPlayers, colors, cancellationToken);
+        await store.SaveAsync(group, newPlayers, colors, cancellationToken);
         return group.Id;
     }
 }

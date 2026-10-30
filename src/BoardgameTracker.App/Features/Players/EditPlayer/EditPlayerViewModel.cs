@@ -52,7 +52,7 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, ILogger<Edit
         ErrorMessage = null;
         try
         {
-            await useCase.ExecuteAsync(_playerId, Name, IsArchived, cancellationToken);
+            await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
             return true;
         }
         catch (ArgumentException)

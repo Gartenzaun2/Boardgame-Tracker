@@ -10,7 +10,7 @@ namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
 /// </summary>
 public interface IArkNovaRunningGameSessionQuery
 {
-    Task<ArkNovaRunningGameSessionData?> ExecuteAsync(
+    Task<ArkNovaRunningGameSessionData?> GetRunningGameSessionAsync(
         Guid gameSessionId,
         CancellationToken cancellationToken = default);
 }

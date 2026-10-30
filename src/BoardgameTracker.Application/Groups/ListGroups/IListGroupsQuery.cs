@@ -7,7 +7,7 @@ namespace BoardgameTracker.Application.Groups.ListGroups;
 /// </summary>
 public interface IListGroupsQuery
 {
-    Task<IReadOnlyList<GroupListItem>> ExecuteAsync(
+    Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
         bool includeTemporary = false,
         bool includeArchived = false,

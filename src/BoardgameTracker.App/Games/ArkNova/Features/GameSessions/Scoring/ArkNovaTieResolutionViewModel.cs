@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Presentation.PlayerColors;
 using BoardgameTracker.App.Resources.Localization;
@@ -12,9 +13,9 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaTieResolutionViewModel(
     ArkNovaScoringUseCase scoringUseCase,
-    ArkNovaCorrectionUseCase correction) : ObservableObject
+    ArkNovaHistoryCorrectionUseCase correction) : ObservableObject
 {
-    public ArkNovaCorrectionDraft? Draft { get; set; }
+    public ArkNovaHistoryCorrectionDraft? Draft { get; set; }
     private readonly Dictionary<Guid, int> _scores = [];
     private readonly Dictionary<Guid, int> _placements = [];
     private readonly Dictionary<Guid, string> _names = [];
@@ -44,15 +45,15 @@ public partial class ArkNovaTieResolutionViewModel(
         IsBusy = true;
         try
         {
-            ArkNovaScoringGameSessionData gameSession = Draft?.Data ?? await scoringUseCase.LoadAsync(gameSessionId, cancellationToken)
+            ArkNovaGameSessionResultData gameSession = Draft?.Data ?? await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
                 ?? throw new InvalidOperationException("The scoring GameSession does not exist.");
             if (Draft is null && gameSession.Status == GameSessionStatus.Completed)
             {
-                Draft = await correction.BeginAsync(gameSessionId, cancellationToken);
+                Draft = await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 gameSession = Draft.Data;
             }
-            ArkNovaCompletionPlan plan = Draft is not null
-                ? correction.Prepare(Draft)
+            ArkNovaGameSessionCompletionPlan plan = Draft is not null
+                ? correction.CreateCorrectionCompletionPlan(Draft)
                 : await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
 
             GameSessionId = gameSessionId;
@@ -60,7 +61,7 @@ public partial class ArkNovaTieResolutionViewModel(
             _placements.Clear();
             _names.Clear();
             _colors.Clear();
-            foreach (ArkNovaScoringPlayerData player in gameSession.Players)
+            foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players)
             {
                 _scores[player.PlayerId] = plan.Scores[player.PlayerId];
                 _placements[player.PlayerId] = plan.DefaultPlacements[player.PlayerId];
@@ -106,7 +107,7 @@ public partial class ArkNovaTieResolutionViewModel(
         {
             ArkNovaPlacementRules.ValidateResolution(_scores, _placements);
             if (Draft is not null)
-                await correction.SaveAsync(Draft, _placements, cancellationToken);
+                await correction.SaveCorrectionAsync(Draft, _placements, cancellationToken);
             else
                 await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
 

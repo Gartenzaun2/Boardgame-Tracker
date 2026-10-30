@@ -4,6 +4,11 @@ Boardgame Tracker ist eine .NET-MAUI-App für Android und iOS zum Verwalten von
 Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist
 **Arche Nova**.
 
+Boardgame Tracker ist zugleich ein Lernprojekt. Architektur und Code sollen korrekt,
+wartbar und nachvollziehbar sein. Nicht offensichtliche fachliche und technische
+Entscheidungen werden bewusst dokumentiert; Kommentare erklären bevorzugt das Warum
+statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzweck.
+
 ## Aktueller Funktionsstand
 
 - Hauptnavigation: `Spiele · Gruppen · Historie · Einstellungen`.

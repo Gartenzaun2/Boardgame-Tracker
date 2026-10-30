@@ -57,7 +57,7 @@ public partial class ArkNovaRunningViewModel(
             IsBusy = true;
             ErrorMessage = null;
 
-            ArkNovaRunningGameSessionData? data = await runningGameSessionQuery.ExecuteAsync(
+            ArkNovaRunningGameSessionData? data = await runningGameSessionQuery.GetRunningGameSessionAsync(
                 gameSessionId,
                 cancellationToken);
 

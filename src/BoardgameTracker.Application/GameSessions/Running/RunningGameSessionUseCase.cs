@@ -7,7 +7,7 @@ namespace BoardgameTracker.Application.GameSessions.Running;
 /// running. Domain state transitions remain protected by <see cref="GameSession"/>.
 /// </summary>
 public sealed class RunningGameSessionUseCase(
-    IRunningGameSessionDataAccess dataAccess)
+    IRunningGameSessionStore store)
 {
     public async Task BeginScoringAsync(
         Guid gameSessionId,
@@ -16,7 +16,7 @@ public sealed class RunningGameSessionUseCase(
     {
         GameSession gameSession = await GetRunningGameSessionAsync(gameSessionId, cancellationToken);
         gameSession.BeginScoring(endedAt);
-        await dataAccess.SaveAsync(gameSession, cancellationToken);
+        await store.SaveAsync(gameSession, cancellationToken);
     }
 
     public async Task DiscardAsync(
@@ -24,7 +24,7 @@ public sealed class RunningGameSessionUseCase(
         CancellationToken cancellationToken = default)
     {
         GameSession gameSession = await GetRunningGameSessionAsync(gameSessionId, cancellationToken);
-        await dataAccess.DeleteAsync(gameSession, cancellationToken);
+        await store.DeleteAsync(gameSession, cancellationToken);
     }
 
     private async Task<GameSession> GetRunningGameSessionAsync(
@@ -33,7 +33,7 @@ public sealed class RunningGameSessionUseCase(
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
 
-        GameSession? gameSession = await dataAccess.FindAsync(gameSessionId, cancellationToken);
+        GameSession? gameSession = await store.FindAsync(gameSessionId, cancellationToken);
 
         if (gameSession is null)
         {

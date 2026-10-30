@@ -1,20 +1,6 @@
-using System.Text.Json;
 using BoardgameTracker.Core.Names;
 
 namespace BoardgameTracker.Application.History.Transfer;
-
-public sealed record LocalPlayer(Guid Id, string Name);
-public sealed record LocalGroup(Guid Id, string Name, Guid[] PlayerIds);
-public sealed record TransferSnapshot(LocalPlayer[] Players, LocalGroup[] Groups, Guid[] GameSessionIds, IReadOnlyDictionary<string, System.Text.Json.JsonElement>? ModuleState = null);
-public sealed record GroupResolution(Guid GroupId, bool Split, IReadOnlyDictionary<Guid, Guid> PlayerMappings);
-public sealed record GroupConflict(BgtGroup Imported, LocalGroup Local, IReadOnlyDictionary<Guid, Guid> FixedMappings);
-public sealed record PlannedPlayer(BgtPlayer Imported, Guid LocalId, bool IsNew, bool IsManual);
-public sealed record PlannedGroup(BgtGroup Imported, Guid LocalId, string Name, bool IsNew);
-public sealed record ImportPlan(BgtFile Source, TransferSnapshot Snapshot, GroupResolution[] Resolutions,
-    PlannedPlayer[] Players, PlannedGroup[] Groups, BgtGameSession[] GameSessions, int Skipped, GroupConflict[] Conflicts)
-{
-    public bool CanCommit => Conflicts.Length == 0;
-}
 
 public static class ImportPlanner
 {
@@ -26,6 +12,8 @@ public static class ImportPlanner
         BgtGroup[] groups = file.Groups.Where(group => neededGroups.Contains(group.Id)).OrderBy(group => group.Id).ToArray();
         HashSet<Guid> neededPlayers = groups.SelectMany(group => group.GroupPlayers.Select(player => player.PlayerId)).ToHashSet();
         BgtPlayer[] players = file.Players.Where(player => neededPlayers.Contains(player.Id)).OrderBy(player => player.Id).ToArray();
+        // Resolve stable player identities first, apply decisions globally, then evaluate all
+        // groups again. A mapping chosen for one group constrains every other group in the file.
         Dictionary<Guid, Guid> mappings = [];
         HashSet<Guid> manual = [];
         foreach (BgtPlayer player in players)
@@ -110,46 +98,5 @@ public static class ImportPlanner
             || mappings.Any(mapping => mapping.Key != importedId && mapping.Value == localId))
             throw new InvalidDataException("PlayerMappingConflict");
         mappings[importedId] = localId;
-    }
-}
-
-public sealed record TransferPreview(int GamesExisting, int ReferencesExisting, int ReferencesNew);
-
-public interface IHistoryTransferStore
-{
-    Task<BgtFile> ExportAsync(IReadOnlyCollection<Guid> gameSessionIds, string appVersion, CancellationToken cancellationToken = default);
-    Task<TransferSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken = default);
-    Task<TransferPreview> PreviewAsync(ImportPlan plan, CancellationToken cancellationToken = default);
-    Task CommitAsync(ImportPlan plan, CancellationToken cancellationToken = default);
-}
-
-public sealed class HistoryTransferUseCase(IHistoryTransferStore store, BgtFormat format)
-{
-    public async Task<BgtFile> ExportAsync(IReadOnlyCollection<Guid> gameSessionIds, string appVersion, CancellationToken cancellationToken = default)
-    {
-        BgtFile file = await store.ExportAsync(gameSessionIds, appVersion, cancellationToken);
-        format.Validate(file);
-        return file;
-    }
-    public async Task<BgtExportContent> CreateExportContentAsync(IReadOnlyCollection<Guid> gameSessionIds, string appVersion, CancellationToken cancellationToken = default)
-    {
-        BgtFile file = await ExportAsync(gameSessionIds, appVersion, cancellationToken);
-        byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(file, BgtFormat.JsonOptions);
-        if (bytes.Length > BgtFormat.MaximumBytes)
-            throw new InvalidDataException("SizeLimit");
-        return new($"boardgame-tracker-{Guid.CreateVersion7()}.bgt", bytes);
-    }
-    public async Task<ImportPlan> AnalyzeAsync(Stream stream, CancellationToken cancellationToken = default)
-    {
-        BgtFile file = await format.ReadAsync(stream, cancellationToken);
-        return ImportPlanner.Analyze(file, await store.ReadSnapshotAsync(cancellationToken));
-    }
-    public Task<TransferPreview> PreviewAsync(ImportPlan plan, CancellationToken cancellationToken = default) => store.PreviewAsync(plan, cancellationToken);
-    public Task CommitAsync(ImportPlan plan, CancellationToken cancellationToken = default)
-    {
-        format.Validate(plan.Source);
-        if (!plan.CanCommit)
-            throw new InvalidOperationException("UnresolvedImport");
-        return store.CommitAsync(plan, cancellationToken);
     }
 }

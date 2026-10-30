@@ -10,6 +10,10 @@ Nutzen haben.
 
 Erstes vollständig unterstütztes Spiel ist **Arche Nova** (`ArkNova`).
 
+Das Projekt dient zusätzlich als Lernprojekt. Nicht offensichtliche Trade-offs werden
+nachvollziehbar dokumentiert. Lernorientierung rechtfertigt keine zusätzlichen
+Abstraktionsschichten; Verständlichkeit und reale fachliche Grenzen bleiben maßgeblich.
+
 ## 2. Projektgrenzen
 
 ```text
@@ -267,7 +271,7 @@ Initialisierer kennt keine Spielmodule; Fehler und Abbruch werden weitergegeben.
 Die App erhält `IEnumerable<IGameSessionResumeHandler>` aus `App/Navigation` per DI
 und wählt für eine gemerkte offene Partie den ersten Handler anhand des GameKey.
 Ohne passenden Handler wird LastGameSessionId gelöscht und die bestehende
-Hauptnavigation verwendet. `ArkNovaGameSessionResumeHandler` unter
+Hauptnavigation verwendet. `ArkNovaGameSessionNavigationHandler` unter
 `App/Games/ArkNova/Navigation` übernimmt Spiel-/Gruppenkontext und Navigation
 zu Running oder Scoring. `ArkNovaRoutes.Register()` registriert dort explizit
 die bisherigen Spielrouten und wird von `AddArkNova()` aufgerufen; App und Shell
@@ -385,7 +389,7 @@ Die allgemeine Spielerverwaltung liegt unter `Players/ListPlayers` und
 `Players/EditPlayer` in Application sowie den zugehörigen App-Features und
 SQLite-Adaptern. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
 das Bearbeiten speichert ausschließlich Name und Archivstatus des Player-Aggregats.
-`App/Navigation/IGameHistoryHandler` ist die gemeinsame Navigation von Historie
+`App/Navigation/IGameSessionNavigationHandler` ist die gemeinsame Navigation von Historie
 und Spielerverwaltung zu einer Partie. Jedes Spiel registriert seinen Handler
 im Modul; dieser entscheidet anhand des Session-Status über die konkrete Seite.
 Das allgemeine Player-Feature enthält keine Spielmodul-Abhängigkeiten.
@@ -439,3 +443,59 @@ orchestriert über HistoryExportFlow und registrierte IHistoryExportTarget-Ausga
 Speichern oder Teilen. Native Dokument-Picker liegen unter Platforms/Android und
 Platforms/iOS; Share verwendet MAUI. Weitere Transportziele ändern weder das
 Austauschmodell noch die Importpipeline. Details stehen in IMPORT_EXPORT.md.
+
+## Fachliche Rollen und gemeinsame Implementierungen
+
+- `Query`: reine Leseprojektion ohne Mutation; etwa `ICompletedGameSessionsQuery` oder `IArkNovaPreparationQuery`.
+- `Store`: Application-owned Persistenzport für einen zusammenhängenden Use Case bzw. fachlichen Datenbereich. Lesen und Schreiben dürfen gemeinsam darin stehen.
+- `Persistence`: technische Infrastructure-Erweiterung, insbesondere für Arbeiten auf einem bestehenden Context/in derselben Transaktion (z. B. Gruppenfarben oder Spiel-Importdaten).
+- `UseCase`: Application-Orchestrierung, die Domainregeln und Persistenzoperationen für einen fachlichen Ablauf verbindet.
+- `Handler`: Dispatch-/Routing-/Navigations- oder Transportentscheidung. Kein allgemeiner Service-Ersatz.
+
+`DataAccess` ist kein bevorzugter Standardname. Konkrete Benennungs- und Kommentarregeln
+stehen in AGENTS.md; objektive Produktions-Namingregeln in .editorconfig.
+
+Eine Infrastructure-Klasse darf mehrere fachliche Application-Ports implementieren,
+wenn sie dieselbe persistierte Struktur besitzen. Die Use Cases bleiben getrennt:
+
+```text
+ArkNovaScoringUseCase           → IArkNovaScoringStore           ┐
+                                                               ├→ SqliteArkNovaGameSessionResultStore
+ArkNovaHistoryCorrectionUseCase → IArkNovaHistoryCorrectionStore ┘
+```
+
+Die gemeinsame Projektion `ArkNovaGameSessionResultData`, ihre Spielerwerte und der
+CompletionPlan gehören unter `Application/Games/ArkNova/GameSessions/Results`, nicht
+zum Live-Scoring-Slice. Sie können unvollständige Werte und alle GameSession-Status
+repräsentieren. Die Schreibregeln bleiben spezifisch: Live-Scoring speichert inkrementell;
+historische Korrektur ersetzt Ergebniswerte/Placements/Kartenzuordnungen atomar für
+Completed. Prüfungen in Application und an der Persistenzgrenze sind bewusst vorhanden,
+damit inzwischen archivierte Karten nicht neu zugeordnet werden. Manuelle EF-State-
+Markierungen begrenzen Updates auf tatsächlich editierbare Werte; Setupdaten bleiben erhalten.
+Die SQLite-Adapter sind unter den jeweiligen Spiel-/Use-Case-Unterordnern eingeordnet.
+
+`ArkNovaGameSessionNavigationHandler` implementiert die allgemeinen Ports
+`IGameSessionNavigationHandler` und `IGameSessionResumeHandler`. Gruppenliste, Historie,
+Spielerbereich und Resume delegieren Status→Zielroute an denselben Modulbaustein. Resume
+restauriert zusätzlich den gespeicherten Gruppenkontext. Die allgemeinen Gruppen-/History-
+Features kennen keine konkreten Ark-Nova-Partieseiten. Der gemeinsame Wertungsscreen bleibt
+erhalten; `ArkNovaScoringMode` benennt Live-Scoring und historische Korrektur explizit.
+
+ImportPlan/ImportPlanner, Application-Port und HistoryTransferUseCase liegen in getrennten,
+fachlich benannten Dateien. Kleine eng zugehörige Begleittypen bleiben beim Haupttyp.
+Weder Zeilenzahl noch ein gemeinsamer Entitytyp begründen eine Zusammenlegung/Trennung:
+maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini-Interfaces.
+
+## Bewusste technische Entscheidungen
+
+SQLite kann die verwendeten DateTimeOffset-Sortierungen nicht zuverlässig übersetzen.
+Die lokalen Listen projizieren deshalb nur benötigte Partiemetadaten und sortieren sie
+anschließend im Speicher. Für die derzeit kleine lokale Datenmenge bleibt das bewusst
+akzeptierte technische Schuld; keine neue Timestampdarstellung oder Schemaänderung.
+IDbContextFactory, gezielte AsNoTracking-Projektionen, ExecuteUpdate/Delete und compiled
+MAUI-Bindings bleiben bestehen. Größere Performanceänderungen benötigen Messdaten.
+
+App injiziert feste Settings-/Open-GameSession-Abhängigkeiten direkt. Nur AppShell wird
+weiterhin im Bootstrap über IServiceProvider aufgelöst: Die Seitenerzeugung muss nach
+InitializeComponent und Theme-Anwendung erfolgen. Eine zusätzliche Startup-Serviceschicht
+würde diese Lebensdauer nur verstecken. Navigation-Preferences liegen bei App/Navigation.

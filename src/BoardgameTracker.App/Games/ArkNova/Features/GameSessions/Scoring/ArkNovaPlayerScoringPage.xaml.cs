@@ -31,7 +31,7 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
         {
             throw new InvalidOperationException("Required scoring navigation parameters are missing or invalid.");
         }
-        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaCorrectionDraft : null;
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaHistoryCorrectionDraft : null;
         _gameSessionId = gameSessionId;
         _playerId = playerId;
     }

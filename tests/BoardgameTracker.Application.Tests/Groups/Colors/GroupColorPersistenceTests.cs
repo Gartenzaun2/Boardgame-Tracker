@@ -1,3 +1,4 @@
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Groups;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups.CreateGroup;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -5,7 +6,6 @@ using BoardgameTracker.Application.Groups.EditGroup;
 using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.Groups;
 using Microsoft.Data.Sqlite;
@@ -16,47 +16,47 @@ namespace BoardgameTracker.Application.Tests.Groups.Colors;
 public sealed class GroupColorPersistenceTests
 {
     [Fact]
-    public async Task ExecuteAsync_RejectsDefaultColorForUnknownPlayer()
+    public async Task UpdateGroupAsync_RejectsDefaultColorForUnknownPlayer()
     {
         await using var fixture = await Fixture.CreateAsync();
         var colors = fixture.Colors();
         colors.Remove(fixture.First.Id);
         colors.Add(Guid.NewGuid(), PlayerColor.Blue);
-        await Assert.ThrowsAsync<ArgumentException>(() => fixture.UseCase.ExecuteAsync(
+        await Assert.ThrowsAsync<ArgumentException>(() => fixture.UseCase.UpdateGroupAsync(
             fixture.Command(colors), TestContext.Current.CancellationToken));
         await fixture.AssertOriginalAsync();
     }
 
     [Fact]
-    public async Task ExecuteAsync_RejectsDuplicateDefaultColors()
+    public async Task UpdateGroupAsync_RejectsDuplicateDefaultColors()
     {
         await using var fixture = await Fixture.CreateAsync();
         var colors = fixture.Colors();
         colors[fixture.Second.Id] = PlayerColor.Blue;
-        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.UseCase.ExecuteAsync(
+        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.UseCase.UpdateGroupAsync(
             fixture.Command(colors), TestContext.Current.CancellationToken));
         await fixture.AssertOriginalAsync();
     }
 
     [Fact]
-    public async Task ExecuteAsync_RejectsUndefinedDefaultColor()
+    public async Task UpdateGroupAsync_RejectsUndefinedDefaultColor()
     {
         await using var fixture = await Fixture.CreateAsync();
         var colors = fixture.Colors();
         colors[fixture.First.Id] = (PlayerColor)999;
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => fixture.UseCase.ExecuteAsync(
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => fixture.UseCase.UpdateGroupAsync(
             fixture.Command(colors), TestContext.Current.CancellationToken));
         await fixture.AssertOriginalAsync();
     }
 
     [Fact]
-    public async Task ExecuteAsync_SwapsOrderAndColorsWithCommonMetadataInOneEdit()
+    public async Task UpdateGroupAsync_SwapsOrderAndColorsWithCommonMetadataInOneEdit()
     {
         await using var fixture = await Fixture.CreateAsync();
         var colors = fixture.Colors();
         colors[fixture.First.Id] = PlayerColor.Red;
         colors[fixture.Second.Id] = PlayerColor.Blue;
-        await fixture.UseCase.ExecuteAsync(fixture.Command(colors), TestContext.Current.CancellationToken);
+        await fixture.UseCase.UpdateGroupAsync(fixture.Command(colors), TestContext.Current.CancellationToken);
         var result = await fixture.UseCase.GetAsync(fixture.Group.Id, ArkNovaGame.Key, TestContext.Current.CancellationToken);
         Assert.NotNull(result);
         Assert.Equal("Neu", result.Name);
@@ -72,7 +72,7 @@ public sealed class GroupColorPersistenceTests
     {
         await using var fixture = await Fixture.CreateAsync();
         var common = fixture.UseCase;
-        await common.ExecuteAsync(fixture.Command() with { ColorDefaults = null }, TestContext.Current.CancellationToken);
+        await common.UpdateGroupAsync(fixture.Command() with { ColorDefaults = null }, TestContext.Current.CancellationToken);
         await using var db = fixture.CreateDbContext();
         var colors = await new ArkNovaGroupColorPersistence().ReadAsync(db, fixture.Group.Id, TestContext.Current.CancellationToken);
         Assert.Equal(PlayerColor.Blue, colors[fixture.First.Id]);
@@ -81,7 +81,7 @@ public sealed class GroupColorPersistenceTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenColorInsertFails_RollsBackCommonChangesAndDefaults()
+    public async Task UpdateGroupAsync_WhenColorInsertFails_RollsBackCommonChangesAndDefaults()
     {
         await using var fixture = await Fixture.CreateAsync();
         await using (var db = fixture.CreateDbContext())
@@ -91,7 +91,7 @@ public sealed class GroupColorPersistenceTests
                 BEGIN SELECT RAISE(ABORT, 'Simulated color write failure'); END;
                 """, TestContext.Current.CancellationToken);
         }
-        await Assert.ThrowsAsync<DbUpdateException>(() => fixture.UseCase.ExecuteAsync(
+        await Assert.ThrowsAsync<DbUpdateException>(() => fixture.UseCase.UpdateGroupAsync(
             fixture.Command(fixture.Colors()), TestContext.Current.CancellationToken));
         await fixture.AssertOriginalAsync();
     }
@@ -112,8 +112,8 @@ public sealed class GroupColorPersistenceTests
     public async Task CreateAsync_SavesExistingAndNewPlayersWithTheirSelectedColors()
     {
         await using var fixture = await Fixture.CreateAsync();
-        var create = new CreateGroupUseCase(new SqliteCreateGroupDataAccess(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
-        var id = await create.ExecuteAsync(new("Neu", false,
+        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        var id = await create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Red), new(fixture.First.Id, fixture.First.Name, false, PlayerColor.Blue)],
             ArkNovaGame.Key), TestContext.Current.CancellationToken);
         var result = await fixture.UseCase.GetAsync(id, ArkNovaGame.Key, TestContext.Current.CancellationToken);
@@ -133,8 +133,8 @@ public sealed class GroupColorPersistenceTests
                 CREATE TRIGGER RejectNewColor BEFORE INSERT ON ArkNovaGroupPlayers
                 BEGIN SELECT RAISE(ABORT, 'Simulated color write failure'); END;
                 """, TestContext.Current.CancellationToken);
-        var create = new CreateGroupUseCase(new SqliteCreateGroupDataAccess(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
-        await Assert.ThrowsAsync<DbUpdateException>(() => create.ExecuteAsync(new("Neu", false,
+        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        await Assert.ThrowsAsync<DbUpdateException>(() => create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Red)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var verify = fixture.CreateDbContext();
         Assert.Equal(1, await verify.Groups.CountAsync(TestContext.Current.CancellationToken));
@@ -158,11 +158,11 @@ public sealed class GroupColorPersistenceTests
                 [fixture.Second.Id] = null
             })
         };
-        await fixture.UseCase.ExecuteAsync(command, TestContext.Current.CancellationToken);
+        await fixture.UseCase.UpdateGroupAsync(command, TestContext.Current.CancellationToken);
         var arkNova = await fixture.UseCase.GetAsync(fixture.Group.Id, ArkNovaGame.Key, TestContext.Current.CancellationToken);
         Assert.Equal(PlayerColor.Blue, arkNova!.Players.Single(player => player.PlayerId == fixture.First.Id).DefaultColor);
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => fixture.UseCase.ExecuteAsync(
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => fixture.UseCase.UpdateGroupAsync(
             command with { ColorDefaults = new(colorlessGame, fixture.Colors()) }, TestContext.Current.CancellationToken));
     }
 
@@ -170,8 +170,8 @@ public sealed class GroupColorPersistenceTests
     public async Task CreateAsync_RejectsGlobalColorOutsideCurrentGameRules()
     {
         await using var fixture = await Fixture.CreateAsync();
-        var create = new CreateGroupUseCase(new SqliteCreateGroupDataAccess(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => create.ExecuteAsync(new("Neu", false,
+        var create = new CreateGroupUseCase(new SqliteCreateGroupStore(fixture, [new ArkNovaGroupColorPersistence()]), fixture.Catalog);
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => create.CreateGroupAsync(new("Neu", false,
             [new(null, "Chris", false, PlayerColor.Green)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var db = fixture.CreateDbContext();
         Assert.Equal(2, await db.Players.CountAsync(TestContext.Current.CancellationToken));
@@ -184,7 +184,7 @@ public sealed class GroupColorPersistenceTests
         public Player Second { get; } = new("Ben");
         public Group Group { get; private set; } = null!;
         public GamePlayerColorCatalog Catalog => new([ArkNovaPlayerColors.Rules]);
-        public EditGroupUseCase UseCase => new(new SqliteEditGroupDataAccess(this, [new ArkNovaGroupColorPersistence()]), Catalog);
+        public EditGroupUseCase UseCase => new(new SqliteEditGroupStore(this, [new ArkNovaGroupColorPersistence()]), Catalog);
 
         public BoardgameTrackerDbContext CreateDbContext()
         {

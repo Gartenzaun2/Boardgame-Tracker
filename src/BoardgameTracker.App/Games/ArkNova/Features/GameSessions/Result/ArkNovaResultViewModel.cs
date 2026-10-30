@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.App.Presentation.PlayerColors;
 using System.Collections.ObjectModel;
@@ -22,14 +23,14 @@ public partial class ArkNovaResultViewModel(
 
     public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
-        ArkNovaScoringGameSessionData gameSession = await scoringUseCase.LoadAsync(gameSessionId, cancellationToken)
+        ArkNovaGameSessionResultData gameSession = await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
             ?? throw new InvalidOperationException("The completed Ark Nova GameSession does not exist.");
         ArkNovaScoringDisplayMode mode = settingsStore.Get().ScoringDisplayMode;
         GroupName = gameSession.GroupName;
         DurationText = FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
         Players.Clear();
 
-        foreach (ArkNovaScoringPlayerData player in gameSession.Players
+        foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players
                      .OrderBy(x => x.Placement ?? int.MaxValue)
                      .ThenBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase))
         {
@@ -55,7 +56,7 @@ public partial class ArkNovaResultViewModel(
 public sealed class ArkNovaResultPlayerViewModel
 {
     public ArkNovaResultPlayerViewModel(
-        ArkNovaScoringPlayerData player,
+        ArkNovaGameSessionResultPlayerData player,
         IReadOnlyList<ArkNovaSpecialCardData> cards,
         ArkNovaScoringDisplayMode mode)
     {

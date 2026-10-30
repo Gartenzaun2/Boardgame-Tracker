@@ -5,7 +5,7 @@ namespace BoardgameTracker.Infrastructure.Persistence.SQLite.Players;
 
 public sealed class SqliteListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext> factory) : IListPlayersQuery
 {
-    public async Task<IReadOnlyList<PlayerListItem>> ExecuteAsync(bool includeGuests = false, bool includeArchived = false, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<PlayerListItem>> ListPlayersAsync(bool includeGuests = false, bool includeArchived = false, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         List<PlayerListItem> players = await db.Players.AsNoTracking()

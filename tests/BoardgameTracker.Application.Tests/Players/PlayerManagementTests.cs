@@ -1,3 +1,4 @@
+using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
 using BoardgameTracker.App.Features.Players.EditPlayer;
 using BoardgameTracker.App.Features.Players.ListPlayers;
 using BoardgameTracker.App.Navigation;
@@ -28,7 +29,7 @@ public sealed class PlayerManagementTests
     public async Task List_FiltersGuestsAndArchivedIndependently(bool guests, bool archived, int expectedCount)
     {
         await using Database database = await Database.CreateAsync();
-        IReadOnlyList<PlayerListItem> rows = await database.Query.ExecuteAsync(guests, archived, Token);
+        IReadOnlyList<PlayerListItem> rows = await database.Query.ListPlayersAsync(guests, archived, Token);
         Assert.Equal(expectedCount, rows.Count);
         Assert.Contains(rows, player => player.PlayerId == database.Players[0].Id);
         Assert.All(rows, player => Assert.True((guests || !player.IsGuest) && (archived || !player.IsArchived)));
@@ -41,7 +42,7 @@ public sealed class PlayerManagementTests
         DateTimeOffset before = DateTimeOffset.UtcNow;
         await using Database database = await Database.CreateAsync();
         DateTimeOffset after = DateTimeOffset.UtcNow;
-        IReadOnlyList<PlayerListItem> rows = await database.Query.ExecuteAsync(cancellationToken: Token);
+        IReadOnlyList<PlayerListItem> rows = await database.Query.ListPlayersAsync(cancellationToken: Token);
         PlayerListItem player = rows.Single(row => row.PlayerId == database.Players[0].Id);
         Assert.Equal(database.Players[0].CreatedAt, player.CreatedAt);
         Assert.InRange(player.CreatedAt, before, after);
@@ -60,7 +61,7 @@ public sealed class PlayerManagementTests
         await using Database database = await Database.CreateAsync();
         Guid id = database.Players[0].Id;
         DateTimeOffset createdAt = database.Players[0].CreatedAt;
-        await database.Edit.ExecuteAsync(id, "  New name  ", true, Token);
+        await database.Edit.UpdatePlayerAsync(id, "  New name  ", true, Token);
         Player player = (await database.Edit.GetAsync(id, Token))!;
         Assert.Equal("New name", player.Name);
         Assert.True(player.IsArchived);
@@ -69,9 +70,9 @@ public sealed class PlayerManagementTests
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         Assert.True(await db.GroupPlayers.AnyAsync(member => member.PlayerId == id, Token));
         Assert.Equal(3, await db.GameSessionPlayers.CountAsync(member => member.PlayerId == id, Token));
-        var history = await new SqliteHistoryQuery(database).ListAsync(cancellationToken: Token);
+        var history = await new SqliteCompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal("New name", Assert.Single(history).Players.Single(member => member.PlayerId == id).Name);
-        await database.Edit.ExecuteAsync(id, player.Name, false, Token);
+        await database.Edit.UpdatePlayerAsync(id, player.Name, false, Token);
         Assert.False((await database.Edit.GetAsync(id, Token))!.IsArchived);
     }
 
@@ -82,7 +83,7 @@ public sealed class PlayerManagementTests
     {
         await using Database database = await Database.CreateAsync();
         Guid id = database.Players[0].Id;
-        await Assert.ThrowsAsync<ArgumentException>(() => database.Edit.ExecuteAsync(id, name, true, Token));
+        await Assert.ThrowsAsync<ArgumentException>(() => database.Edit.UpdatePlayerAsync(id, name, true, Token));
         Player player = (await database.Edit.GetAsync(id, Token))!;
         Assert.Equal("Anna", player.Name);
         Assert.False(player.IsArchived);
@@ -139,12 +140,13 @@ public sealed class PlayerManagementTests
         }
     }
 
-    private sealed class HistoryHandler(string key) : IGameHistoryHandler
+    private sealed class HistoryHandler(string key) : IGameSessionNavigationHandler
     {
         public string GameKey => key;
         public string DisplayName => key;
+        public Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => throw new NotSupportedException();
         public List<Guid> Opened { get; } = [];
-        public Task OpenAsync(Guid gameSessionId)
+        public Task OpenGameSessionAsync(Guid gameSessionId)
         {
             Opened.Add(gameSessionId);
             return Task.CompletedTask;
@@ -157,7 +159,7 @@ public sealed class PlayerManagementTests
         public Player[] Players { get; } = [new("Anna"), new("No games"), new("Guest", true), new("Archived"), new("Archived guest", true)];
         public GameSession Latest { get; private set; } = null!;
         public SqliteListPlayersQuery Query => new(this);
-        public EditPlayerUseCase Edit => new(new SqliteEditPlayerDataAccess(this));
+        public EditPlayerUseCase Edit => new(new SqliteEditPlayerStore(this));
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(_connection).Options);
 
         public static async Task<Database> CreateAsync()

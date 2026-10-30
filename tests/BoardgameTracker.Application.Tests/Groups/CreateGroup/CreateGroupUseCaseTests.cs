@@ -10,13 +10,13 @@ public sealed class CreateGroupUseCaseTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public async Task ExecuteAsync_CreatesGroupWithExistingAndNewPlayersInRequestedOrder()
+    public async Task CreateGroupAsync_CreatesGroupWithExistingAndNewPlayersInRequestedOrder()
     {
         Guid existingPlayerId = Guid.NewGuid();
-        FakeCreateGroupDataAccess dataAccess = new(new HashSet<Guid> { existingPlayerId });
+        FakeCreateGroupStore dataAccess = new(new HashSet<Guid> { existingPlayerId });
         CreateGroupUseCase useCase = new(dataAccess, new([]));
 
-        Guid groupId = await useCase.ExecuteAsync(new CreateGroupCommand(
+        Guid groupId = await useCase.CreateGroupAsync(new CreateGroupCommand(
             "Freitagabend",
             false,
             [
@@ -37,21 +37,21 @@ public sealed class CreateGroupUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_RejectsInactiveOrMissingExistingPlayer()
+    public async Task CreateGroupAsync_RejectsInactiveOrMissingExistingPlayer()
     {
         Guid playerId = Guid.NewGuid();
-        FakeCreateGroupDataAccess dataAccess = new(new HashSet<Guid>());
+        FakeCreateGroupStore dataAccess = new(new HashSet<Guid>());
         CreateGroupUseCase useCase = new(dataAccess, new([]));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            useCase.ExecuteAsync(new CreateGroupCommand(
+            useCase.CreateGroupAsync(new CreateGroupCommand(
                 "Freitagabend",
                 false,
                 [new CreateGroupPlayerInput(playerId, "Anna", false)]), Token));
     }
 
-    private sealed class FakeCreateGroupDataAccess(IReadOnlySet<Guid> activeIds)
-        : ICreateGroupDataAccess
+    private sealed class FakeCreateGroupStore(IReadOnlySet<Guid> activeIds)
+        : ICreateGroupStore
     {
         public Group? SavedGroup { get; private set; }
         public IReadOnlyCollection<Player> SavedNewPlayers { get; private set; } = [];

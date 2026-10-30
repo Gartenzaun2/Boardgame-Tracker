@@ -69,7 +69,7 @@ public partial class ArkNovaPreparationViewModel(
             IsBusy = true;
             ErrorMessage = null;
 
-            ArkNovaPreparationData? data = await preparationQuery.ExecuteAsync(
+            ArkNovaPreparationData? data = await preparationQuery.GetPreparationAsync(
                 groupId,
                 cancellationToken);
 
@@ -254,7 +254,7 @@ public partial class ArkNovaPreparationViewModel(
                 DateTimeOffset.UtcNow,
                 setupPlayers);
 
-            return await startGameSessionUseCase.ExecuteAsync(command, cancellationToken);
+            return await startGameSessionUseCase.StartAsync(command, cancellationToken);
         }
         catch (Exception exception)
         {

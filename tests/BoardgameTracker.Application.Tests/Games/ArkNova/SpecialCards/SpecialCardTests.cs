@@ -1,3 +1,6 @@
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.SpecialCards;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Results;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using Microsoft.Extensions.Logging.Abstractions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
@@ -9,7 +12,6 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using Microsoft.Data.Sqlite;
@@ -121,12 +123,12 @@ public sealed class SpecialCardTests
         await scoring.AssignSpecialCardAsync(session.Id, f.A.Id, card, Token);
         await scoring.AssignSpecialCardAsync(session.Id, f.B.Id, card, Token);
         await scoring.AssignSpecialCardAsync(session.Id, f.A.Id, card, Token);
-        Assert.Equal(2, (await f.Scoring.LoadAsync(session.Id, Token))!.SpecialCards.Count);
+        Assert.Equal(2, (await f.Scoring.LoadGameSessionResultAsync(session.Id, Token))!.SpecialCards.Count);
         await f.Cards.SetArchivedAsync(card, true, Token);
         await Assert.ThrowsAsync<InvalidOperationException>(() => scoring.AssignSpecialCardAsync(session.Id, f.A.Id, card, Token));
         await Assert.ThrowsAsync<InvalidOperationException>(() => scoring.AssignSpecialCardAsync(session.Id, f.A.Id, Guid.NewGuid(), Token));
         await scoring.RemoveSpecialCardAsync(session.Id, f.A.Id, card, Token);
-        Assert.Single((await f.Scoring.LoadAsync(session.Id, Token))!.SpecialCards);
+        Assert.Single((await f.Scoring.LoadGameSessionResultAsync(session.Id, Token))!.SpecialCards);
     }
 
     [Fact]
@@ -142,22 +144,22 @@ public sealed class SpecialCardTests
         }
         await f.Cards.SetArchivedAsync(card, true, Token);
         await f.Cards.UpdateAsync(card, "Bär", ArkNovaCardSymbol.Bear, ArkNovaCardSymbol.Bear, null, Token);
-        ArkNovaCorrectionUseCase correction = new(f.Scoring, new SqliteArkNovaCorrectionDataAccess(f));
-        ArkNovaCorrectionDraft draft = await correction.BeginAsync(session.Id, Token);
+        ArkNovaHistoryCorrectionUseCase correction = new(new SqliteArkNovaGameSessionResultStore(f));
+        ArkNovaHistoryCorrectionDraft draft = await correction.LoadCorrectionDraftAsync(session.Id, Token);
         Assert.Contains(draft.Data.SpecialCards, c => c.SpecialCardId == card);
         ArkNovaSpecialCardData current = draft.Data.CardCatalog.Single(c => c.Id == card);
         Assert.Equal("Bär", current.Name);
         Assert.Equal(new[] { ArkNovaCardSymbol.Bear, ArkNovaCardSymbol.Bear }, current.Symbols);
         Assert.True(current.IsArchived);
         Assert.Throws<InvalidOperationException>(() => draft.SetCard(f.B.Id, card, true));
-        await correction.SaveAsync(draft, correction.Prepare(draft).DefaultPlacements, Token);
-        draft = await correction.BeginAsync(session.Id, Token);
+        await correction.SaveCorrectionAsync(draft, correction.CreateCorrectionCompletionPlan(draft).DefaultPlacements, Token);
+        draft = await correction.LoadCorrectionDraftAsync(session.Id, Token);
         Assert.Contains(draft.Data.SpecialCards, c => c.SpecialCardId == card);
         draft.SetCard(f.A.Id, card, false);
         Assert.Throws<InvalidOperationException>(() => draft.SetCard(f.A.Id, card, true));
-        await correction.SaveAsync(draft, correction.Prepare(draft).DefaultPlacements, Token);
-        Assert.Empty((await f.Scoring.LoadAsync(session.Id, Token))!.SpecialCards);
-        Assert.Equal(GameSessionStatus.Completed, (await f.Scoring.LoadAsync(session.Id, Token))!.Status);
+        await correction.SaveCorrectionAsync(draft, correction.CreateCorrectionCompletionPlan(draft).DefaultPlacements, Token);
+        Assert.Empty((await f.Scoring.LoadGameSessionResultAsync(session.Id, Token))!.SpecialCards);
+        Assert.Equal(GameSessionStatus.Completed, (await f.Scoring.LoadGameSessionResultAsync(session.Id, Token))!.Status);
     }
 
     [Fact]
@@ -165,12 +167,12 @@ public sealed class SpecialCardTests
     {
         await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
         GameSession session = await f.AddSessionAsync(true);
-        ArkNovaCorrectionUseCase correction = new(f.Scoring, new SqliteArkNovaCorrectionDataAccess(f));
-        ArkNovaCorrectionDraft draft = await correction.BeginAsync(session.Id, Token);
+        ArkNovaHistoryCorrectionUseCase correction = new(new SqliteArkNovaGameSessionResultStore(f));
+        ArkNovaHistoryCorrectionDraft draft = await correction.LoadCorrectionDraftAsync(session.Id, Token);
         draft.SetCard(f.A.Id, ArkNovaSpecialCardDefaults.SunBear, true);
         await f.Cards.SetArchivedAsync(ArkNovaSpecialCardDefaults.SunBear, true, Token);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => correction.SaveAsync(draft, correction.Prepare(draft).DefaultPlacements, Token));
-        Assert.Empty((await f.Scoring.LoadAsync(session.Id, Token))!.SpecialCards);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => correction.SaveCorrectionAsync(draft, correction.CreateCorrectionCompletionPlan(draft).DefaultPlacements, Token));
+        Assert.Empty((await f.Scoring.LoadGameSessionResultAsync(session.Id, Token))!.SpecialCards);
     }
 
     [Fact]
@@ -187,7 +189,7 @@ public sealed class SpecialCardTests
             db.Remove(card);
             await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync(Token));
         }
-        await new ArkNovaCorrectionUseCase(f.Scoring, new SqliteArkNovaCorrectionDataAccess(f)).DeleteAsync(session.Id, Token);
+        await new ArkNovaHistoryCorrectionUseCase(new SqliteArkNovaGameSessionResultStore(f)).DeleteCompletedGameSessionAsync(session.Id, Token);
         await using BoardgameTrackerDbContext check = f.CreateDbContext();
         Assert.Empty(await check.ArkNovaGameSessionSpecialCardAssignments.ToListAsync(Token));
         Assert.Equal(5, await check.ArkNovaSpecialCards.CountAsync(Token));
@@ -230,7 +232,7 @@ public sealed class SpecialCardTests
         Assert.Equal("Mein Bär", edited.Name);
         Assert.Equal(ArkNovaCardSymbol.Science, edited.Symbol1);
         Assert.True(edited.IsArchived);
-        ArkNovaScoringGameSessionData data = (await fixture.Scoring.LoadAsync(session.Id, Token))!;
+        ArkNovaGameSessionResultData data = (await fixture.Scoring.LoadGameSessionResultAsync(session.Id, Token))!;
         Assert.Equal(GameSessionStatus.Completed, data.Status);
         Assert.Equal(2, data.Players.Count);
         Assert.Equal(cardId, Assert.Single(data.SpecialCards).SpecialCardId);
@@ -244,8 +246,8 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
     public Player B { get; } = new("Ben");
     public Group Group { get; private set; } = null!;
     private Guid _gameId;
-    public SqliteArkNovaScoringDataAccess Scoring => new(this);
-    public ArkNovaSpecialCardUseCase Cards => new(new SqliteArkNovaSpecialCardDataAccess(this));
+    public SqliteArkNovaGameSessionResultStore Scoring => new(this);
+    public ArkNovaSpecialCardUseCase Cards => new(new SqliteArkNovaSpecialCardStore(this));
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(_connection).Options);
     public static async Task<SpecialCardDatabase> CreateAsync()
