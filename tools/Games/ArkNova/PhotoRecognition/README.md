@@ -4,6 +4,10 @@ Ausführbares .NET-10-Werkzeug für Windows x64. Es verarbeitet eine Bilddatei l
 und liefert Registrierung, zwölf Feldkandidaten, Confidence, mögliche Nachbarwerte
 und Stufenzeiten als JSON. Es ist noch keine mobile Kamera-Funktion.
 
+Aktueller Confidence-V2-Stand: **38,3 % Coverage bei 23/23 richtigen akzeptierten
+Holdout-Werten**. Das 75-%-Coverage-Ziel wird nicht erreicht. Alle Ergebnisse,
+Ablationen, Fehlertypen und Perspektiven stehen in [CONFIDENCE_V2.md](CONFIDENCE_V2.md).
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:
@@ -11,15 +15,30 @@ Vom Solution-Root in PowerShell:
 ```powershell
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- benchmark tools/Games/ArkNova/PhotoRecognition/Assets artifacts/ark-nova-benchmark.json
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- analyze tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/IMG_4257.JPG artifacts/ark-nova-photo.json
+dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 calibration artifacts/confidence-v2-calibration.json
+dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 holdout artifacts/confidence-v2-holdout.json
 ```
 
-`benchmark` prüft alle sechs Fotos gegen die Ground Truth und zusätzlich ein leeres
+`benchmark` prüft die unveränderte **Baseline A** auf allen sechs alten Fotos und zusätzlich ein leeres
 Bild, eine halbierte Referenztafel sowie die leere Referenztafel. Exitcode 0 verlangt
 genau 72 ausgewertete Werte, mindestens 60 Treffer, keine falschen High-Werte in den
 drei bekannten Rot-Artenschutz-Konflikten, abgewiesene schlechte/unvollständige
 Registrierung und keine High-Kandidaten auf der leeren Referenztafel.
 `analyze` liefert bei gescheiterter Registrierung Exitcode 1 und eine leere Farbmenge;
 Exitcode 0 bestätigt nur die Registrierung, nicht die Richtigkeit der Kandidaten.
+`analyze` verwendet die ausgewählte abgesicherte Confidence-Variante E.
+
+`confidence` prüft Dataset-Hashes und den unveränderlichen 17/8-Split. Calibration
+vergleicht die fünf benannten Varianten, Holdout ausschließlich A und die zuvor
+eingefrorene Auswahl. Ein fehlender oder veränderter Policy-/Split-Freeze verhindert
+Holdout-Auswertung. Die mitgelieferten Berichte sind die ursprüngliche Auswertung;
+erneute Aufrufe dienen der Reproduktion, nicht weiterer Holdout-Kalibrierung.
+Exitcode 0 bedeutet: Sicherheitsgate der gewählten Variante bestanden (kein falsches
+High, kein Phantom-High, exakte Entscheidungszahl und Negativtests bestanden).
+Exitcode 1 bedeutet: Sicherheitsgate verletzt. Coverage-/Accuracy-Ziele stehen als
+separate boolesche Ergebnisse im Bericht; Exitcode 0 bestätigt keine Produktionsreife.
+Die Accuracy zählt akzeptierte Phantomfarben als Fehler. Alle Details zu Rohkandidat,
+Enthaltung, Sichtbarkeit und beiden Nachbarn bleiben in den Confidence-Berichten.
 Aufruf ohne gültige Argumente: Exitcode 2.
 
 Ergebnisse sind technische Diagnostik. Der Analyzer kennt weder Spielernamen noch
@@ -30,7 +49,9 @@ scheinbar erkannter Nullwert. Alle Schwellen sind experimentell.
 
 - `Assets`: unverändert übernommenes, vom Benutzer bereitgestelltes Masterbild,
   Polygongeometrie v2, Ground Truth und sechs Fotos. SHA-256-Werte stehen in
-  `Assets/manifest.json`. Rund 27 MB, ausschließlich Entwicklungsdaten;
+  `Assets/manifest.json`. Zusätzlich enthält `Assets/ConfidenceV2` die 25 unveränderten
+  2000-px-Bilder, Ground Truth, Manifest, Datensatznotizen und den vor Kalibrierung
+  fixierten Split. Insgesamt rund 46 MB, ausschließlich Entwicklungsdaten;
   die App verpackt diese Dateien nicht.
 - `ArkNovaPhotoAnalyzer`: EXIF-orientiertes Decode, SIFT auf maximal 1600 px langer
   Kante, Ratio-Test, RANSAC, Qualitäts-/Sichtbarkeitsprüfung, Warp auf halbe
@@ -40,6 +61,11 @@ scheinbar erkannter Nullwert. Alle Schwellen sind experimentell.
 - `Application/.../Scoring/ArkNovaFieldOccupancy`: bildbibliotheksfreie
   Score-/Confidence-Formeln und Konfliktprädikat. Deren Unit Tests laufen in der
   vorhandenen Application-Testsuite.
+- `ArkNovaConfidencePolicy`: reine Confidence-Ablationen und gewählte Absicherung;
+  ihre Tests werden ohne CV-Abhängigkeit in der Application-Testsuite kompiliert.
+- `confidence-policy-selection.json`: vor Holdout versiegelte Auswahl einschließlich
+  Quellcode-/Split-Hashes und Calibration-Ergebnis. `Reports` enthält Ausgangsdiagnose,
+  Calibration-Ablationen und unveränderte erste Holdout-Auswertung.
 - Referenzfeatures werden einmal pro Analyzer-Aufbau berechnet und im Speicher
   wiederverwendet. Es existiert noch kein serialisiertes Descriptor-Asset.
 - `benchmark-results.json`: gemessener Release-Lauf vom 30.10.2026 inklusive aller
@@ -50,7 +76,7 @@ nicht im Paket enthalten. Dies ist eine rekonstruierte Pipeline und keine exakte
 Portierung. Gleiche Gesamtgenauigkeit bedeutet nicht dieselben Einzelfehler.
 Es werden weder OCR noch Ground-Truth-Werte zur Erkennung verwendet.
 
-## Gemessener Stand
+## Baseline auf den sechs ursprünglichen Fotos
 
 Windows 10.0.26200, .NET 10.0.14, OpenCV 4.13, 16 logische Prozessoren:
 
@@ -110,7 +136,8 @@ Vor Phase 1B/1C sind nötig:
 2. Referenzfeatures als versioniertes Asset vorberechnen; Laufzeit und Speicher auf
    echtem Mittelklassegerät messen. Die 2-/4-/5-Sekunden-Vorgaben sind bisher
    ausschließlich Ziele; ein harter mobiler 5-Sekunden-Abbruch ist nicht implementiert.
-3. 10–30 unabhängige Fotos und weitere Negativfälle zur Kalibrierung auswerten.
+3. Die in Confidence V2 sichtbaren Rohfehler beheben und anschließend einen neuen
+   unabhängigen Holdout mit kontrolliert dokumentierten Kamerapositionen auswerten.
 4. Erst dann den bestehenden Kamera-Handler anbinden und Ergebnisse nach Spielerfarbe
    in den vorhandenen Scoring-Entwurf übernehmen; manuelle Korrektur bleibt möglich.
 

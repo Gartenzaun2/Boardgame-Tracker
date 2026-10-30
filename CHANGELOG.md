@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.9
+
+- Confidence-V2-Benchmark mit 25 unverändert übernommenen 2000-px-Fotos, SHA-256-Prüfung und festem Calibration-/Holdout-Split (17/8). Alle 300 Entscheidungen einschließlich 117 absichtlich abwesender Farb-/Track-Kombinationen werden berücksichtigt.
+- Confidence-Diagnostik, kleine Ablationen A–E und Auswertungen je Track, Farbe und viewIndex ergänzt. Accuracy akzeptierter Werte zählt Phantomfarben als Fehler; Rohkandidaten und Enthaltung bleiben getrennt nachvollziehbar.
+- Variante E ausschließlich anhand von Calibration ausgewählt und vor Holdout per Quellcode-/Split-Hash eingefroren: lokale Feldsichtbarkeit, Kern-Dominanz bei gesättigten Scores und Absicherung der Farbanwesenheit. Artenschutz bleibt aufgrund nicht trennbarer Calibration-Fehler Uncertain; keine automatische Nachbarfeldkorrektur.
+- Holdout: 42/60 Rohwerte richtig, 23/60 akzeptiert (38,3 % Coverage), 23/23 akzeptierte Werte richtig, keine Phantomwerte. Sicherheitsgate bestanden; das 75-%-Coverage-Ziel wird ausdrücklich nicht erreicht. Keine weitere Kalibrierung anhand des Holdouts.
+- Reproduzierbare Berichte, Perspektivvergleich und Tests ergänzt. Keine Kamera-/Scoring-UI-, Mobile-, Persistenz- oder Paketänderungen. App-Version 0.10.0.9 / ApplicationVersion 46.
+
 ## 0.10.0.8
 
 - Technischer Arche-Nova-Fotoanalyseprototyp (Phase 1A) als separates .NET-Entwicklungswerkzeug unter `tools/Games/ArkNova/PhotoRecognition`: SIFT/RANSAC-Registrierung, Sichtbarkeitsprüfung, Farb-/Referenzdifferenz, Field Occupancy und konservative Nachbarfeld-Konflikte.

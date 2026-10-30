@@ -222,9 +222,11 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
                 int? alternative = null;
                 string? warning = null;
                 double grownFraction = Fraction(grown, best.Field, false, _scoringBounds.Location);
+                List<NeighborEvidence> neighbors = [];
                 foreach (Field neighbor in _fields.Where(field => field.Track == track && Math.Abs(field.Value - best.Field.Value) == 1))
                 {
                     double neighborFraction = Fraction(grown, neighbor, false, _scoringBounds.Location);
+                    neighbors.Add(new(neighbor.Value, neighborFraction, Fraction(validity, neighbor, false)));
                     // The original Python growth/alignment code was not supplied. Until
                     // independently calibrated, any appreciable adjacent grown evidence
                     // conservatively vetoes High. Zero alignment disables the uncalibrated
@@ -236,7 +238,6 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
                         confidence = ArkNovaRecognitionConfidence.Uncertain;
                         alternative = neighbor.Value;
                         warning = balancedConflict ? "balanced_neighbor_conflict" : "conservative_neighbor_evidence";
-                        break;
                     }
                 }
                 // No evidence is not a valid zero score.
@@ -247,7 +248,9 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
                     warning ??= visible ? "incomplete_track" : "insufficient_field_visibility";
                 }
                 tracks[track] = new(visible && (best.FullColor > 0 || best.CoreColor > 0) ? best.Field.Value : null,
-                    confidence.ToString(), original.ToString(), alternative, warning, best.Score, margin, best.FullColor, best.CoreColor);
+                    confidence.ToString(), original.ToString(), alternative, warning, best.Score, margin, best.FullColor, best.CoreColor,
+                    trackVisibility[track], Fraction(validity, best.Field, false), grownFraction, neighbors,
+                    evidence[1].Field.Value, evidence[1].Score, evidence[1].FullColor, evidence[1].CoreColor);
             }
             results[names[color]] = new(tracks);
         }
@@ -320,7 +323,5 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
 internal sealed record RegistrationDiagnostics(bool Success, int Matches, int Inliers, double? ReprojectionP95,
     double MinimumTrackVisibility, double InlierSpread, string? Failure);
 internal sealed record StageTimings(double DecodeMilliseconds, double RegistrationMilliseconds, double OccupancyMilliseconds, double TotalMilliseconds);
-internal sealed record FieldPrediction(int? Value, string Confidence, string OriginalConfidence, int? Alternative,
-    string? Warning, double Score, double Margin, double FullColor, double CoreColor);
 internal sealed record ColorScores(Dictionary<string, FieldPrediction> Tracks);
 internal sealed record RecognitionResult(RegistrationDiagnostics Registration, Dictionary<string, ColorScores> Colors, StageTimings Timings);

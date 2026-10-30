@@ -1,0 +1,646 @@
+{
+  "schemaVersion": 2,
+  "valueOrder": [
+    "attractiveness",
+    "conservation",
+    "reputation"
+  ],
+  "notes": [
+    "IMG_4264 was referenced by the user but was not present in the uploaded ZIP.",
+    "Single-color filename-to-color mapping was inferred from the visible scoring-track pieces.",
+    "For single-color photos, null means that color is intentionally absent and may be used to test false-positive detections.",
+    "viewIndex preserves capture order within each scenario; it is not yet a calibrated physical camera-angle label."
+  ],
+  "photos": {
+    "IMG_4265.jpg": {
+      "scenario": "single_black",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "black"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": null,
+        "black": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        }
+      }
+    },
+    "IMG_4266.jpg": {
+      "scenario": "single_black",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "black"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": null,
+        "black": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        }
+      }
+    },
+    "IMG_4267.jpg": {
+      "scenario": "single_black",
+      "difficulty": "normal",
+      "viewIndex": 3,
+      "presentColors": [
+        "black"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": null,
+        "black": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        }
+      }
+    },
+    "IMG_4268.jpg": {
+      "scenario": "single_black",
+      "difficulty": "normal",
+      "viewIndex": 4,
+      "presentColors": [
+        "black"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": null,
+        "black": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        }
+      }
+    },
+    "IMG_4269.jpg": {
+      "scenario": "single_yellow",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "yellow"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "black": null
+      }
+    },
+    "IMG_4270.jpg": {
+      "scenario": "single_yellow",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "yellow"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "black": null
+      }
+    },
+    "IMG_4271.jpg": {
+      "scenario": "single_yellow",
+      "difficulty": "normal",
+      "viewIndex": 3,
+      "presentColors": [
+        "yellow"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "black": null
+      }
+    },
+    "IMG_4272.jpg": {
+      "scenario": "single_yellow",
+      "difficulty": "normal",
+      "viewIndex": 4,
+      "presentColors": [
+        "yellow"
+      ],
+      "expected": {
+        "red": null,
+        "blue": null,
+        "yellow": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "black": null
+      }
+    },
+    "IMG_4273.jpg": {
+      "scenario": "single_red",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "red"
+      ],
+      "expected": {
+        "red": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "blue": null,
+        "yellow": null,
+        "black": null
+      }
+    },
+    "IMG_4274.jpg": {
+      "scenario": "single_red",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "red"
+      ],
+      "expected": {
+        "red": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "blue": null,
+        "yellow": null,
+        "black": null
+      }
+    },
+    "IMG_4275.jpg": {
+      "scenario": "single_red",
+      "difficulty": "normal",
+      "viewIndex": 3,
+      "presentColors": [
+        "red"
+      ],
+      "expected": {
+        "red": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "blue": null,
+        "yellow": null,
+        "black": null
+      }
+    },
+    "IMG_4276.jpg": {
+      "scenario": "single_blue",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "blue"
+      ],
+      "expected": {
+        "red": null,
+        "blue": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "yellow": null,
+        "black": null
+      }
+    },
+    "IMG_4277.jpg": {
+      "scenario": "single_blue",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "blue"
+      ],
+      "expected": {
+        "red": null,
+        "blue": {
+          "attractiveness": 21,
+          "conservation": 20,
+          "reputation": 11
+        },
+        "yellow": null,
+        "black": null
+      }
+    },
+    "IMG_4278.jpg": {
+      "scenario": "four_colors_a",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 57,
+          "conservation": 24,
+          "reputation": 15
+        },
+        "blue": {
+          "attractiveness": 48,
+          "conservation": 21,
+          "reputation": 11
+        },
+        "black": {
+          "attractiveness": 66,
+          "conservation": 9,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 59,
+          "conservation": 12,
+          "reputation": 8
+        }
+      }
+    },
+    "IMG_4279.jpg": {
+      "scenario": "four_colors_a",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 57,
+          "conservation": 24,
+          "reputation": 15
+        },
+        "blue": {
+          "attractiveness": 48,
+          "conservation": 21,
+          "reputation": 11
+        },
+        "black": {
+          "attractiveness": 66,
+          "conservation": 9,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 59,
+          "conservation": 12,
+          "reputation": 8
+        }
+      }
+    },
+    "IMG_4280.jpg": {
+      "scenario": "four_colors_a",
+      "difficulty": "normal",
+      "viewIndex": 3,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 57,
+          "conservation": 24,
+          "reputation": 15
+        },
+        "blue": {
+          "attractiveness": 48,
+          "conservation": 21,
+          "reputation": 11
+        },
+        "black": {
+          "attractiveness": 66,
+          "conservation": 9,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 59,
+          "conservation": 12,
+          "reputation": 8
+        }
+      }
+    },
+    "IMG_4281.jpg": {
+      "scenario": "four_colors_a",
+      "difficulty": "normal",
+      "viewIndex": 4,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 57,
+          "conservation": 24,
+          "reputation": 15
+        },
+        "blue": {
+          "attractiveness": 48,
+          "conservation": 21,
+          "reputation": 11
+        },
+        "black": {
+          "attractiveness": 66,
+          "conservation": 9,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 59,
+          "conservation": 12,
+          "reputation": 8
+        }
+      }
+    },
+    "IMG_4282.jpg": {
+      "scenario": "four_colors_b",
+      "difficulty": "normal",
+      "viewIndex": 1,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 58,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 55,
+          "conservation": 22,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 23,
+          "reputation": 10
+        },
+        "red": {
+          "attractiveness": 60,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4283.jpg": {
+      "scenario": "four_colors_b",
+      "difficulty": "normal",
+      "viewIndex": 2,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 58,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 55,
+          "conservation": 22,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 23,
+          "reputation": 10
+        },
+        "red": {
+          "attractiveness": 60,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4284.jpg": {
+      "scenario": "four_colors_b",
+      "difficulty": "normal",
+      "viewIndex": 3,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 58,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 55,
+          "conservation": 22,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 23,
+          "reputation": 10
+        },
+        "red": {
+          "attractiveness": 60,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4285.jpg": {
+      "scenario": "four_colors_b",
+      "difficulty": "normal",
+      "viewIndex": 4,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 58,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 55,
+          "conservation": 22,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 23,
+          "reputation": 10
+        },
+        "red": {
+          "attractiveness": 60,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4286.jpg": {
+      "scenario": "four_colors_c",
+      "difficulty": "hard",
+      "viewIndex": 1,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 54,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 56,
+          "conservation": 21,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 24,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 62,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4287.jpg": {
+      "scenario": "four_colors_c",
+      "difficulty": "hard",
+      "viewIndex": 2,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 54,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 56,
+          "conservation": 21,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 24,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 62,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4288.jpg": {
+      "scenario": "four_colors_c",
+      "difficulty": "hard",
+      "viewIndex": 3,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 54,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 56,
+          "conservation": 21,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 24,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 62,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    },
+    "IMG_4289.jpg": {
+      "scenario": "four_colors_c",
+      "difficulty": "hard",
+      "viewIndex": 4,
+      "presentColors": [
+        "red",
+        "blue",
+        "yellow",
+        "black"
+      ],
+      "expected": {
+        "yellow": {
+          "attractiveness": 54,
+          "conservation": 24,
+          "reputation": 11
+        },
+        "blue": {
+          "attractiveness": 56,
+          "conservation": 21,
+          "reputation": 10
+        },
+        "black": {
+          "attractiveness": 62,
+          "conservation": 24,
+          "reputation": 12
+        },
+        "red": {
+          "attractiveness": 62,
+          "conservation": 21,
+          "reputation": 9
+        }
+      }
+    }
+  }
+}

@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\tools\Games\ArkNova\PhotoRecognition\ArkNovaConfidencePolicy.cs" Link="Games\ArkNova\ArkNovaConfidencePolicy.cs" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="xunit.v3.mtp-v2" />

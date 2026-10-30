@@ -556,16 +556,40 @@ noch. Benchmark, Grenzen und Aufruf stehen im README des Werkzeugs.
 
 Die Registrierung verlangt ausreichende Matches/Inlier, begrenzten Projektionsfehler,
 räumlich verteilte Inlier, eine plausible konvexe Bildprojektion und mindestens 75 %
-mittlere Feldsichtbarkeit je Track. Kandidaten müssen mindestens 97 % sichtbar sein;
-unvollständige Tracks erhalten konservativ Uncertain. Diese experimentellen Grenzen
+mittlere Feldsichtbarkeit je Track. Kandidaten müssen mindestens 97 % sichtbar sein.
+Diese experimentellen Grenzen
 sind keine produktiv validierten Schwellen. Außerhalb des Fotos liegende schwarze
 Warp-Ränder dürfen keine Farbevidenz liefern. Schlechte Registrierung liefert keine Werte.
 
-Wegen fehlender Originalimplementierung ist die Konfliktschicht konservativer:
-zusätzlich zu den Handoff-Regeln senkt bereits mindestens 6 % erweiterte Farbmaske im
-direkten Artenschutz-Nachbarfeld High auf Uncertain. Werte werden dabei nie umgeschrieben.
+Der Analyzer behält die ursprüngliche Baseline als Diagnostik bei: unvollständige
+Tracks (<99 %) und mindestens 6 % erweiterte Farbmaske im direkten Artenschutz-
+Nachbarfeld reduzieren High auf Uncertain. Werte werden dabei nie umgeschrieben.
 Die nicht rekonstruierte Richtungsheuristik ist im Analyzer deaktiviert; das reine
 Handoff-Prädikat bleibt für eine spätere kalibrierte Richtungsinformation testbar.
+
+`ArkNovaConfidencePolicy` im Entwicklungswerkzeug vergleicht fünf kleine Varianten.
+`analyze` verwendet die auf Calibration gewählte Variante E: lokale Feldsichtbarkeit,
+mindestens zwei unabhängig belegte Tracks zur Unterstützung einer Spielerfarbe
+(je mindestens 15 % Kernfarbe), kernbasierte Dominanz gegenüber dem zweitbesten
+Feld und zurückhaltende Medium-Freigabe bei gesättigten Scores. Ohne Farbstützung
+liefert sie null/Uncertain statt eines scheinbaren Werts. RawPrediction bleibt in
+den Confidence-Berichten separat erhalten. Artenschutz wird wegen nicht zuverlässig
+trennbarer Calibration-Fehler grundsätzlich Uncertain; dies ist eine dokumentierte
+Grenze des Prototyps, keine produktive Erkennungsfreigabe.
+
+Der Confidence-V2-Datensatz wird unverändert mit 2000-px-Bildern verwendet.
+`split.json` fixiert 17 Calibration- und 8 Holdout-Fotos. Die Auswahl wurde vor
+Holdout-Auswertung mit Split-/Quellcode-Hashes eingefroren; der Benchmark prüft
+dies vor Zugriff auf Holdout-Bilder. Ground Truth beeinflusst nur Auswertung und
+Gates, niemals Feldentscheidung oder Farbanwesenheit. Alle 300 Entscheidungen
+(183 vorhandene Werte, 117 explizit abwesende Farb-/Track-Kombinationen) zählen;
+akzeptierte Phantomfarben sind Accuracy-Fehler. Die vollständigen Berichte liegen
+unter `tools/Games/ArkNova/PhotoRecognition/Reports`.
+
+Der Holdout bestätigt nur 38,3 % Coverage bei 23/23 richtigen akzeptierten Werten.
+Die Rohgenauigkeit beträgt 42/60. Die 75-%-/98-%-Ziele sind nicht gemeinsam erreicht;
+ein erfolgreiches Sicherheitsgate bezeichnet keine Produktionsreife. `viewIndex`
+ist die Aufnahmereihenfolge und keine kalibrierte Kameraposition.
 
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
