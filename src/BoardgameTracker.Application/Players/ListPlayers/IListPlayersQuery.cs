@@ -2,7 +2,7 @@ namespace BoardgameTracker.Application.Players.ListPlayers;
 
 public interface IListPlayersQuery
 {
-    Task<IReadOnlyList<PlayerListItem>> ExecuteAsync(bool includeGuests = false, bool includeArchived = false, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PlayerListItem>> ListPlayersAsync(bool includeGuests = false, bool includeArchived = false, CancellationToken cancellationToken = default);
 }
 
 public sealed record PlayerListItem(Guid PlayerId, string Name, bool IsGuest, bool IsArchived,

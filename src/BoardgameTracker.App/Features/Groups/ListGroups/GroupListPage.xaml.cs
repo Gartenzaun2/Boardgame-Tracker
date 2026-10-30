@@ -1,26 +1,23 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
-using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
-using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Core.Games.ArkNova;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
 /// <summary>
-/// Shell root page for selecting, creating and editing groups. Concrete navigation
-/// stays in the view while navigation re-entry state is held by the view model.
+/// Owns group selection and form navigation; registered game handlers own game routes.
+/// Navigation re-entry state remains in the view model.
 /// </summary>
 public partial class GroupListPage : ContentPage
 {
     private readonly GroupListViewModel _viewModel;
+    private readonly IEnumerable<IGameSessionNavigationHandler> _navigationHandlers;
 
-    public GroupListPage(GroupListViewModel viewModel)
+    public GroupListPage(GroupListViewModel viewModel, IEnumerable<IGameSessionNavigationHandler> navigationHandlers)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _navigationHandlers = navigationHandlers;
         BindingContext = _viewModel;
     }
 
@@ -64,7 +61,8 @@ public partial class GroupListPage : ContentPage
             return;
         }
 
-        if (_viewModel.SelectedGameKey != ArkNovaGame.Key)
+        IGameSessionNavigationHandler? handler = _navigationHandlers.FirstOrDefault(candidate => candidate.GameKey == _viewModel.SelectedGameKey);
+        if (handler is null)
         {
             _viewModel.EndNavigation();
             return;
@@ -72,36 +70,7 @@ public partial class GroupListPage : ContentPage
 
         try
         {
-            if (group?.OpenGameSessionId is Guid gameSessionId)
-            {
-                string route = group.OpenGameSessionStatus switch
-                {
-                    GameSessionStatus.Running => nameof(ArkNovaRunningPage),
-                    GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
-                    _ => throw new InvalidOperationException(
-                        $"Unsupported open GameSession status '{group.OpenGameSessionStatus}'.")
-                };
-
-                if (Shell.Current is AppShell shell)
-                {
-                    shell.RememberGameSession(gameSessionId, ArkNovaGame.Key);
-                }
-
-                await Shell.Current.GoToAsync(
-                    route,
-                    new ShellNavigationQueryParameters
-                    {
-                        [NavigationParameters.GameSessionId] = gameSessionId
-                    });
-                return;
-            }
-
-            await Shell.Current.GoToAsync(
-                nameof(ArkNovaPreparationPage),
-                new ShellNavigationQueryParameters
-                {
-                    [NavigationParameters.GroupId] = groupId
-                });
+            await handler.OpenGroupAsync(groupId, group?.OpenGameSessionId, group?.OpenGameSessionStatus);
         }
         catch
         {

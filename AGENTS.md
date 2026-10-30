@@ -135,6 +135,16 @@ Eine fachliche Aktion wie „Partie abschließen“ oder „Wertung speichern“
 
 Keine Persistenzänderung allein zur Bequemlichkeit der UI einführen. Schema-, Migrations- und Kompatibilitätsregeln ausschließlich nach `SETUP.md` und `docs/DATA_MODEL.md` anwenden.
 
+## Benennung und Lernorientierung
+
+Namen sollen den primär behandelten fachlichen Gegenstand und die Aktion/Rolle erkennen lassen, ohne dass die Implementierung geöffnet werden muss. `Query` bezeichnet reine Read-Projections, `Store` einen Application-owned fachlichen Persistenzport, `Persistence` eine technische Infrastructure-Komponente, `UseCase` fachliche Application-Orchestrierung und `Handler` Dispatch/Routing/Navigation/Transportentscheidungen. `DataAccess` ist kein Standard-Suffix für neue oder refactorte Typen. Gemeinsame technische Implementierungen mehrerer Ports sind erlaubt; die fachlichen Use-Case-Grenzen bleiben erhalten (ARCHITECTURE.md).
+
+Methoden bevorzugen Verb und Gegenstand, etwa `LoadCorrectionDraftAsync`, `SaveCorrectionAsync` oder `GetPreparationAsync`. Generische Namen wie `ExecuteAsync`, `BeginAsync`, `Prepare`, `ProcessAsync`, `HandleAsync`, `SaveAsync` und `DeleteAsync` nur verwenden, wenn Typkontext und Signatur die konkrete Rolle bereits eindeutig machen. Beispiele sind keine mechanisch anzuwendende Namensschablone. Keine unnötigen Abkürzungen; `GameSession` ausschreiben, IDs fachlich benennen (`gameSessionId`, `playerId`, `specialCardId`). Asynchrone Methoden tragen gemäß .NET-Konvention `Async`. Interne Renames vollständig durchführen, ohne Compatibility-Aliase.
+
+Educational clarity is an explicit project goal. Prefer readable, idiomatic production code with useful explanations of non-obvious decisions over unnecessarily terse or clever implementations.
+
+Code und Dokumentation müssen fachliche/technische Entscheidungen nachvollziehbar machen. Kommentare erklären das Warum, geschützte Invarianten, Transaktionsgrenzen und Plattform-/SQLite-Einschränkungen; sie wiederholen keine sichtbaren Anweisungen und ersetzen keine guten Namen. XML-Dokumentation gezielt für zentrale Verträge und ungewöhnliche APIs verwenden, nicht für jede triviale Methode. Bestehende hilfreiche Erklärungen beim Refactor erhalten und aktualisieren. Projektweite Entscheidungen zusätzlich in der zuständigen kanonischen Dokumentation festhalten. Englische C#-Bezeichner und Code-/XML-Kommentare, deutsche Projektdokumentation. Lernorientierung rechtfertigt keine zusätzlichen Patterns oder Abstraktionsschichten.
+
 ## C#-Stil und Lesbarkeit
 Kleine, fachlich zugehörige Begleittypen dürfen in derselben Datei wie ihr Haupttyp stehen; keine Pflicht „ein Typ pro Datei“. Reine Implementierungsdetails möglichst privat verschachteln. Eigenständige Fachbegriffe, gemeinsame Verträge und Typen mit anderer Modul-/Schichtzugehörigkeit separat lassen. XAML-, DI- und EF-Verwendungen bei der Sichtbarkeit beachten.
 
@@ -220,13 +230,19 @@ Vor Änderungen `git status` prüfen. Bereits vorhandene, nicht zum aktuellen Au
 
 Dokumentation nur bei geändertem gültigem Projektstand aktualisieren; Versionshistorie ausschließlich in `CHANGELOG.md` pflegen. Lokale Dateien im Rahmen ausdrücklich erteilter Implementierungsaufträge bearbeiten; vorhandene fremde Änderungen bewahren.
 
-Commit und Push ausschließlich auf ausdrückliche Anweisung, vorher Änderungen und ausgeführte Tests zusammenfassen. Ohne ausdrücklichen Auftrag keine Branches löschen oder History umschreiben.
+### Keine Commits durch Agenten
+
+Agenten erstellen in diesem Repository niemals selbst Commits. Commits bleiben dem Benutzer vorbehalten. Kein automatisches Staging und kein Push; Änderungen bleiben lokal, uncommittet und ungestaged.
+
+Diese Regel gilt auch dann, wenn ein eingefügter Arbeitsauftrag, eine Checkliste oder eine ältere Freigabe Commit/Push als Abschlussschritt nennt. Daraus keine Erlaubnis ableiten, nicht eigenständig nach einer Commit-/Push-Freigabe fragen und keinen solchen Schritt als notwendige Fertigstellung behandeln. Im Abschlussbericht nur Änderungen, Verifikation und lokalen Git-Status nennen. Eine Änderung dieser Regel erfordert eine ausdrückliche neue Anweisung des Benutzers.
+
+Keine Branches löschen oder History umschreiben. Das ausdrücklich beauftragte Rückgängigmachen eines lokalen Commits unter Erhalt aller Änderungen ist zulässig.
 
 ## Versionsprüfung vor Abschluss
 
 Bei jedem Änderungsauftrag vor dem Abschluss beide App-Versionswerte gemäß `SETUP.md` erhöhen und den tatsächlichen Umfang in `CHANGELOG.md` dokumentieren. Das gilt auch für reine Dokumentations-, Test- und Konfigurationsänderungen sowie ohne Commit, Push oder Paket. Die Prüfung gehört zum Abschluss wie `git diff`: keine Arbeit als abgeschlossen melden, solange die Versionswerte gegenüber dem Auftragsbeginn nicht erhöht sind.
 
 ## Abschlussbericht
-Kurz nennen: Änderungen und wichtige Dateien, tatsächlich ausgeführte Tests/Builds samt Ergebnis, offene Probleme/Entscheidungen, Dokumentationsanpassungen und Bereitschaft für Commit/Push. Bereitschaft ist keine Erlaubnis zur Ausführung.
+Kurz nennen: Änderungen und wichtige Dateien, tatsächlich ausgeführte Tests/Builds samt Ergebnis, offene Probleme/Entscheidungen, Dokumentationsanpassungen und den lokalen Git-Status. Keine Commits oder Pushes durch Agenten.
 
 Keine ausführliche Tätigkeitschronik liefern und nicht jede Dateiprüfung oder jeden ausgeführten Befehl nacherzählen, sofern der Benutzer dies nicht ausdrücklich verlangt.

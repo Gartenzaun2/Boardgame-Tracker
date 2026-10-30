@@ -13,7 +13,7 @@ public sealed class SqliteListGroupsQuery(
     IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
     : IListGroupsQuery
 {
-    public async Task<IReadOnlyList<GroupListItem>> ExecuteAsync(
+    public async Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
         bool includeTemporary = false,
         bool includeArchived = false,

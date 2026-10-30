@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Presentation.Controls;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
@@ -143,7 +144,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         bool persisted = false;
         try
         {
-            ArkNovaCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
+            ArkNovaGameSessionCompletionPlan? plan = await _viewModel.PrepareCompletionAsync();
             if (plan is null) return;
 
             if (_viewModel.IsHistorical && !plan.HasTies)

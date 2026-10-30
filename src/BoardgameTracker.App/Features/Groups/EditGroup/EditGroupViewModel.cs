@@ -163,7 +163,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             Dictionary<Guid, PlayerColor?> defaultColors = Players
                 .ToDictionary(player => player.PlayerId!.Value, player => player.DefaultColor);
 
-            await editGroup.ExecuteAsync(new EditGroupCommand(
+            await editGroup.UpdateGroupAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
                 MakePermanent,

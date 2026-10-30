@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Players.ListPlayers;
 
-public partial class PlayerListViewModel(IListPlayersQuery query, IEnumerable<IGameHistoryHandler> historyHandlers, ILogger<PlayerListViewModel> logger) : ObservableObject
+public partial class PlayerListViewModel(IListPlayersQuery query, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, ILogger<PlayerListViewModel> logger) : ObservableObject
 {
     public ObservableCollection<PlayerListRow> Players { get; } = [];
     [ObservableProperty] public partial bool IncludeGuests { get; set; }
@@ -31,7 +31,7 @@ public partial class PlayerListViewModel(IListPlayersQuery query, IEnumerable<IG
         ErrorMessage = null;
         try
         {
-            IReadOnlyList<PlayerListItem> rows = await query.ExecuteAsync(IncludeGuests, IncludeArchived, cancellationToken);
+            IReadOnlyList<PlayerListItem> rows = await query.ListPlayersAsync(IncludeGuests, IncludeArchived, cancellationToken);
             Players.Clear();
             foreach (PlayerListItem row in rows)
                 Players.Add(new(row));
@@ -56,9 +56,9 @@ public partial class PlayerListViewModel(IListPlayersQuery query, IEnumerable<IG
         ErrorMessage = null;
         try
         {
-            IGameHistoryHandler handler = historyHandlers.FirstOrDefault(handler => handler.GameKey == row.Data.LastGameKey)
+            IGameSessionNavigationHandler handler = navigationHandlers.FirstOrDefault(handler => handler.GameKey == row.Data.LastGameKey)
                 ?? throw new InvalidOperationException("No history handler is registered for this game.");
-            await handler.OpenAsync(row.Data.LastGameSessionId!.Value);
+            await handler.OpenGameSessionAsync(row.Data.LastGameSessionId!.Value);
         }
         catch (Exception exception)
         {

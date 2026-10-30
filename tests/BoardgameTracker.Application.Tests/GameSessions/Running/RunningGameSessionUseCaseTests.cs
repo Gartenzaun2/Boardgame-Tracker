@@ -16,7 +16,7 @@ public sealed class RunningGameSessionUseCaseTests
             Guid.NewGuid(),
             startedAt,
             [Guid.NewGuid()]);
-        FakeDataAccess dataAccess = new(gameSession);
+        FakeRunningGameSessionStore dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
         DateTimeOffset endedAt = startedAt.AddHours(2);
 
@@ -35,7 +35,7 @@ public sealed class RunningGameSessionUseCaseTests
             Guid.NewGuid(),
             DateTimeOffset.UtcNow,
             [Guid.NewGuid()]);
-        FakeDataAccess dataAccess = new(gameSession);
+        FakeRunningGameSessionStore dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
 
         await useCase.DiscardAsync(gameSession.Id, Token);
@@ -53,15 +53,15 @@ public sealed class RunningGameSessionUseCaseTests
             startedAt,
             [Guid.NewGuid()]);
         gameSession.BeginScoring(startedAt.AddMinutes(1));
-        FakeDataAccess dataAccess = new(gameSession);
+        FakeRunningGameSessionStore dataAccess = new(gameSession);
         RunningGameSessionUseCase useCase = new(dataAccess);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.BeginScoringAsync(gameSession.Id, startedAt.AddMinutes(2), Token));
     }
 
-    private sealed class FakeDataAccess(GameSession? gameSession)
-        : IRunningGameSessionDataAccess
+    private sealed class FakeRunningGameSessionStore(GameSession? gameSession)
+        : IRunningGameSessionStore
     {
         public GameSession? SavedGameSession { get; private set; }
         public GameSession? DeletedGameSession { get; private set; }

@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
@@ -20,7 +21,7 @@ public partial class ArkNovaPlayerScoringViewModel(
     public const double ReputationMinimum = ArkNovaScoringRules.MinimumReputation;
     public const double ReputationMaximum = ArkNovaScoringRules.MaximumReputation;
 
-    public ArkNovaCorrectionDraft? Draft { get; set; }
+    public ArkNovaHistoryCorrectionDraft? Draft { get; set; }
     private CancellationTokenSource? _autosaveCts;
     private readonly SemaphoreSlim _saveGate = new(1, 1);
     private bool _loading;
@@ -47,8 +48,8 @@ public partial class ArkNovaPlayerScoringViewModel(
         _loading = true;
         try
         {
-            ArkNovaScoringGameSessionData? gameSession = Draft?.Data ?? await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
-            ArkNovaScoringPlayerData? player = gameSession?.Players.SingleOrDefault(x => x.PlayerId == playerId);
+            ArkNovaGameSessionResultData? gameSession = Draft?.Data ?? await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
+            ArkNovaGameSessionResultPlayerData? player = gameSession?.Players.SingleOrDefault(x => x.PlayerId == playerId);
             if (player is null)
             {
                 throw new InvalidOperationException("The scoring player does not exist.");

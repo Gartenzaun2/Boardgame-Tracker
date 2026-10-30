@@ -28,7 +28,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
             || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
             throw new InvalidOperationException("Required gameSession navigation parameter is missing or invalid.");
 
-        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaCorrectionDraft : null;
+        _viewModel.Draft = query.TryGetValue(NavigationParameters.CorrectionDraft, out object? draft) ? draft as ArkNovaHistoryCorrectionDraft : null;
         _gameSessionId = gameSessionId;
     }
 

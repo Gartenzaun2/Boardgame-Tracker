@@ -4,6 +4,19 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.3
+
+- Repositoryregel: Agenten erstellen niemals selbst Commits; Änderungen bleiben lokal und ungestaged. Kein automatisches Staging oder Push, auch nicht aufgrund eingefügter Checklisten.
+- App-Version 0.10.0.3 / ApplicationVersion 40.
+
+## 0.10.0.2
+
+- Architektur-/Naming-Konsolidierung: fachliche Stores statt unspezifischer DataAccess-Ports; sprechende Query-/Use-Case-Methoden und passende Slice-Namespaces.
+- Scoring und historische Korrektur teilen neutrale Ergebnisprojektionen und eine SQLite-Implementierung bei getrennten Application-Ports/Use-Cases.
+- Gemeinsame GameSession-Navigation für Gruppen, Historie, Spielerbereich und Resume; expliziter Modus im wiederverwendeten Wertungs-ViewModel.
+- Klarere Startup-Abhängigkeiten, getrennte Importplan-/Orchestrierungsdateien und entfernte Ordnerplatzhalter. Lernorientierung und hilfreiche Kommentare als Projektrichtlinie; Naming-Warnings in .editorconfig.
+- Keine beabsichtigte Änderung von Nutzerverhalten, Domain-Invarianten oder Datenbankschema. App-Version 0.10.0.2 / ApplicationVersion 39.
+
 ## 0.10.0.1
 
 - App-Version 0.10.0.1 / ApplicationVersion 38; fehlende Versionserhöhung für den aktuellen Entwicklungsstand nachgeholt.

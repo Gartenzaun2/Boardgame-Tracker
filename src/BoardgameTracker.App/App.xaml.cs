@@ -15,6 +15,8 @@ namespace BoardgameTracker.App;
 public partial class App : Microsoft.Maui.Controls.Application
 {
     private readonly IServiceProvider _services;
+    private readonly IAppNavigationSettingsStore _navigationSettingsStore;
+    private readonly IOpenGameSessionQuery _openGameSessionQuery;
     private readonly DatabaseInitializer _databaseInitializer;
     private readonly ILogger<App> _logger;
     private readonly IEnumerable<IGameSessionResumeHandler> _resumeHandlers;
@@ -25,11 +27,16 @@ public partial class App : Microsoft.Maui.Controls.Application
         ILogger<App> logger,
         BoardgameTracker.App.Theming.ThemeManager themes,
         IAppNavigationSettingsStore settings,
-        IEnumerable<IGameSessionResumeHandler> resumeHandlers)
+        IEnumerable<IGameSessionResumeHandler> resumeHandlers,
+        IOpenGameSessionQuery openGameSessionQuery)
     {
         InitializeComponent();
         themes.Apply(settings.Get().Theme, persist: false);
+        // AppShell is constructed after InitializeComponent and theme application.
+        // Resolving it lazily preserves resource/lifecycle ordering for its pages.
         _services = services;
+        _navigationSettingsStore = settings;
+        _openGameSessionQuery = openGameSessionQuery;
         _databaseInitializer = databaseInitializer;
         _logger = logger;
         _resumeHandlers = resumeHandlers;
@@ -52,17 +59,12 @@ public partial class App : Microsoft.Maui.Controls.Application
             AppShell shell = _services.GetRequiredService<AppShell>();
             window.Page = shell;
 
-            IAppNavigationSettingsStore navigationStore =
-                _services.GetRequiredService<IAppNavigationSettingsStore>();
-            IOpenGameSessionQuery openGameSessionQuery =
-                _services.GetRequiredService<IOpenGameSessionQuery>();
-
-            AppNavigationSettings state = navigationStore.Get();
+            AppNavigationSettings state = _navigationSettingsStore.Get();
 
             if (state.LastGameSessionId is Guid rememberedGameSessionId)
             {
                 OpenGameSession? rememberedGameSession =
-                    await openGameSessionQuery.GetAsync(rememberedGameSessionId);
+                    await _openGameSessionQuery.GetAsync(rememberedGameSessionId);
 
                 IGameSessionResumeHandler? handler = rememberedGameSession is null
                     ? null
@@ -75,7 +77,7 @@ public partial class App : Microsoft.Maui.Controls.Application
                 }
 
                 state = state with { LastGameSessionId = null };
-                navigationStore.Save(state);
+                _navigationSettingsStore.Save(state);
             }
 
             AppMainSection initialSection = ResolveInitialSection(state);

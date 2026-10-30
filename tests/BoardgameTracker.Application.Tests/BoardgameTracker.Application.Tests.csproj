@@ -3,6 +3,9 @@
     <Compile Include="..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportFlow.cs" Link="Presentation\HistoryExportFlow.cs" />
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportTargets.cs;..\..\src\BoardgameTracker.App\Platforms\Android\HistoryExportFileSaver.cs;..\..\src\BoardgameTracker.App\Platforms\iOS\HistoryExportFileSaver.cs" LogicalName="ExportTransport.%(Identity)" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\Groups\**\*.cs;..\..\src\BoardgameTracker.App\Features\Groups\**\*.xaml" LogicalName="GeneralGroupFeature.%(Filename)%(Extension)" />
+  </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
@@ -13,7 +16,7 @@
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\Players\**\*.cs;..\..\src\BoardgameTracker.App\Features\Players\**\*.xaml" LogicalName="PlayerFeature.%(Filename)%(Extension)" />
     <Compile Include="..\..\src\BoardgameTracker.App\Features\Players\ListPlayers\PlayerListViewModel.cs" Link="Presentation\PlayerListViewModel.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Features\Players\EditPlayer\EditPlayerViewModel.cs" Link="Presentation\EditPlayerViewModel.cs" />
-    <Compile Include="..\..\src\BoardgameTracker.App\Navigation\IGameHistoryHandler.cs" Link="Presentation\IGameHistoryHandler.cs" />
+    <Compile Include="..\..\src\BoardgameTracker.App\Navigation\IGameSessionNavigationHandler.cs" Link="Presentation\IGameSessionNavigationHandler.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Theming\ThemePalette.cs" Link="Theming\ThemePalette.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Presentation\PlayerColors\PlayerColorPalette.cs" Link="Presentation\PlayerColorPalette.cs" />
   </ItemGroup>

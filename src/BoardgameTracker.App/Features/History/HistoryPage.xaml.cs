@@ -13,14 +13,14 @@ namespace BoardgameTracker.App.Features.History;
 
 public partial class HistoryPage : ContentPage
 {
-    private readonly IHistoryQuery _query;
+    private readonly ICompletedGameSessionsQuery _query;
     private readonly HistoryTransferUseCase _transfer;
     private readonly HistoryExportFlow _exportFlow;
     private Guid[] _visibleIds = [];
     private bool _transferring;
     private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
-    private readonly IEnumerable<IGameHistoryHandler> _historyHandlers;
+    private readonly IEnumerable<IGameSessionNavigationHandler> _navigationHandlers;
     private IReadOnlyList<HistoryGameSession> _all = [];
     private string?[] _games = [];
     private Guid?[] _groups = [];
@@ -31,7 +31,7 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
+    public HistoryPage(ICompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
     {
         InitializeComponent();
         ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);
@@ -40,7 +40,7 @@ public partial class HistoryPage : ContentPage
         _exportFlow = exportFlow;
         _settings = settings;
         _logger = logger;
-        _historyHandlers = historyHandlers;
+        _navigationHandlers = navigationHandlers;
     }
 
     protected override async void OnAppearing()
@@ -91,7 +91,7 @@ public partial class HistoryPage : ContentPage
         }
     }
 
-    private string GameName(string key) => _historyHandlers.FirstOrDefault(handler => handler.GameKey == key)?.DisplayName ?? key;
+    private string GameName(string key) => _navigationHandlers.FirstOrDefault(handler => handler.GameKey == key)?.DisplayName ?? key;
 
     private async void OnGameFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(true);
     private async void OnGroupFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(false);
@@ -165,9 +165,9 @@ public partial class HistoryPage : ContentPage
 
         try
         {
-            IGameHistoryHandler handler = _historyHandlers.FirstOrDefault(handler => handler.GameKey == card.Data.GameKey)
+            IGameSessionNavigationHandler handler = _navigationHandlers.FirstOrDefault(handler => handler.GameKey == card.Data.GameKey)
                 ?? throw new InvalidOperationException("No history handler is registered for this game.");
-            await handler.OpenAsync(card.Data.GameSessionId);
+            await handler.OpenGameSessionAsync(card.Data.GameSessionId);
         }
         catch (Exception exception)
         {

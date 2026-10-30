@@ -12,13 +12,13 @@ public sealed class StartArkNovaGameSessionUseCaseTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public async Task ExecuteAsync_PersistsGameSessionAndArkNovaSnapshots()
+    public async Task StartAsync_PersistsGameSessionAndArkNovaSnapshots()
     {
         Guid groupId = Guid.NewGuid();
         Guid gameId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
         Guid ben = Guid.NewGuid();
-        FakeDataAccess dataAccess = new(new StartArkNovaGameSessionContext(
+        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
             gameId,
             false,
             false,
@@ -27,7 +27,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
         DateTimeOffset startedAt = new(2026, 10, 27, 10, 0, 0, TimeSpan.Zero);
 
-        Guid gameSessionId = await useCase.ExecuteAsync(new StartArkNovaGameSessionCommand(
+        Guid gameSessionId = await useCase.StartAsync(new StartArkNovaGameSessionCommand(
             groupId,
             startedAt,
             [
@@ -46,13 +46,13 @@ public sealed class StartArkNovaGameSessionUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenPlayersDoNotMatchGroup_Throws()
+    public async Task StartAsync_WhenPlayersDoNotMatchGroup_Throws()
     {
         Guid groupId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
         Guid ben = Guid.NewGuid();
         Guid chris = Guid.NewGuid();
-        FakeDataAccess dataAccess = new(new StartArkNovaGameSessionContext(
+        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
             Guid.NewGuid(),
             false,
             false,
@@ -60,7 +60,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             Enumerable.Range(1, 14).ToHashSet()));
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
@@ -71,11 +71,11 @@ public sealed class StartArkNovaGameSessionUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenGroupIsArchived_Throws()
+    public async Task StartAsync_WhenGroupIsArchived_Throws()
     {
         Guid groupId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
-        FakeDataAccess dataAccess = new(new StartArkNovaGameSessionContext(
+        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
             Guid.NewGuid(),
             true,
             false,
@@ -83,7 +83,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             Enumerable.Range(1, 14).ToHashSet()));
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
@@ -91,11 +91,11 @@ public sealed class StartArkNovaGameSessionUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenZooPlanIsUnknown_Throws()
+    public async Task StartAsync_WhenZooPlanIsUnknown_Throws()
     {
         Guid groupId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
-        FakeDataAccess dataAccess = new(new StartArkNovaGameSessionContext(
+        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
             Guid.NewGuid(),
             false,
             false,
@@ -103,7 +103,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             Enumerable.Range(1, 14).ToHashSet()));
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
@@ -111,11 +111,11 @@ public sealed class StartArkNovaGameSessionUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenAnotherGameSessionIsOpen_Throws()
+    public async Task StartAsync_WhenAnotherGameSessionIsOpen_Throws()
     {
         Guid groupId = Guid.NewGuid();
         Guid anna = Guid.NewGuid();
-        FakeDataAccess dataAccess = new(new StartArkNovaGameSessionContext(
+        FakeRunningGameSessionStore dataAccess = new(new StartArkNovaGameSessionContext(
             Guid.NewGuid(),
             false,
             true,
@@ -123,15 +123,15 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             Enumerable.Range(1, 14).ToHashSet()));
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.ExecuteAsync(
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
                 [new(anna, PlayerColor.Blue, 1, 2, 1)]), Token));
     }
 
-    private sealed class FakeDataAccess(StartArkNovaGameSessionContext context)
-        : IStartArkNovaGameSessionDataAccess
+    private sealed class FakeRunningGameSessionStore(StartArkNovaGameSessionContext context)
+        : IStartArkNovaGameSessionStore
     {
         public GameSession? SavedGameSession { get; private set; }
         public IReadOnlyCollection<ArkNovaGameSessionPlayer> SavedArkNovaPlayers { get; private set; } = [];

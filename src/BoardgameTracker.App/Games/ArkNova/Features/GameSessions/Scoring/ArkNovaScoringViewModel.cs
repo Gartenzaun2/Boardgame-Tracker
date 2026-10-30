@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
@@ -19,7 +20,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
-    ArkNovaCorrectionUseCase correction,
+    ArkNovaHistoryCorrectionUseCase correction,
     IArkNovaSettingsStore settingsStore,
     ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
 {
@@ -48,9 +49,15 @@ public partial class ArkNovaScoringViewModel(
     [ObservableProperty] public partial bool IsSpecialCardPickerVisible { get; private set; }
     [ObservableProperty] public partial Guid? SpecialCardTargetPlayerId { get; private set; }
 
-    public ArkNovaCorrectionDraft? Draft { get; private set; }
+    public ArkNovaHistoryCorrectionDraft? Draft { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-    public bool IsHistorical => Draft is not null;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsHistorical))]
+    [NotifyPropertyChangedFor(nameof(IsLiveScoring))]
+    [NotifyPropertyChangedFor(nameof(CompleteText))]
+    [NotifyPropertyChangedFor(nameof(DeleteText))]
+    public partial ArkNovaScoringMode Mode { get; private set; }
+    public bool IsHistorical => Mode == ArkNovaScoringMode.HistoryCorrection;
     public bool IsLiveScoring => !IsHistorical;
     public string CompleteText => IsHistorical ? AppResources.SaveCorrection : AppResources.CompleteScoring;
     public string DeleteText => IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard;
@@ -80,7 +87,7 @@ public partial class ArkNovaScoringViewModel(
         {
             IsBusy = true;
             ErrorMessage = null;
-            ArkNovaScoringGameSessionData? data = await scoringUseCase.LoadAsync(gameSessionId, cancellationToken);
+            ArkNovaGameSessionResultData? data = await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
             if (data is null)
             {
                 ErrorMessage = AppResources.ScoringNotFound;
@@ -93,14 +100,11 @@ public partial class ArkNovaScoringViewModel(
                 {
                     Draft = null;
                 }
-                Draft ??= await correction.BeginAsync(gameSessionId, cancellationToken);
+                Draft ??= await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 Draft.RefreshCardCatalog(data.CardCatalog);
                 data = Draft.Data with { Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() };
             }
-            OnPropertyChanged(nameof(IsHistorical));
-            OnPropertyChanged(nameof(IsLiveScoring));
-            OnPropertyChanged(nameof(CompleteText));
-            OnPropertyChanged(nameof(DeleteText));
+            Mode = data.Status == GameSessionStatus.Completed ? ArkNovaScoringMode.HistoryCorrection : ArkNovaScoringMode.Live;
             ArkNovaSettings settings = settingsStore.Get();
             GameSessionId = data.GameSessionId;
             CompletionSaved = false;
@@ -108,7 +112,7 @@ public partial class ArkNovaScoringViewModel(
             DateText = data.StartedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
             _cardCatalog = data.CardCatalog;
             Players.Clear();
-            foreach (ArkNovaScoringPlayerData player in data.Players)
+            foreach (ArkNovaGameSessionResultPlayerData player in data.Players)
             {
                 Guid[] cards = data.SpecialCards
                     .Where(x => x.PlayerId == player.PlayerId)
@@ -162,9 +166,9 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        if (Draft is not null)
+        if (IsHistorical)
         {
-            Draft.SetCard(playerId, card, true);
+            Draft!.SetCard(playerId, card, true);
         }
         else
         {
@@ -179,9 +183,9 @@ public partial class ArkNovaScoringViewModel(
         CancellationToken cancellationToken = default)
     {
         CloseSpecialCardPicker();
-        if (Draft is not null)
+        if (IsHistorical)
         {
-            Draft.SetCard(playerId, card, false);
+            Draft!.SetCard(playerId, card, false);
         }
         else
         {
@@ -206,13 +210,13 @@ public partial class ArkNovaScoringViewModel(
     public bool IsSpecialCardAssignedToOtherPlayer(Guid playerId, Guid card) =>
         Players.Any(x => x.PlayerId != playerId && x.SpecialCards.Contains(card));
 
-    public async Task<ArkNovaCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
+    public async Task<ArkNovaGameSessionCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
     {
         if (Players.Count == 0 || Players.Any(x => !x.HasRequiredValues))
         {
             return null;
         }
-        return Draft is not null ? correction.Prepare(Draft) : await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
+        return IsHistorical ? correction.CreateCorrectionCompletionPlan(Draft!) : await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
     }
 
     public async Task CompleteWithoutTieAsync(
@@ -222,9 +226,9 @@ public partial class ArkNovaScoringViewModel(
 
     private async Task SaveCompletionAsync(IReadOnlyDictionary<Guid, int> placements, CancellationToken cancellationToken)
     {
-        if (Draft is not null)
+        if (IsHistorical)
         {
-            await correction.SaveAsync(Draft, placements, cancellationToken);
+            await correction.SaveCorrectionAsync(Draft!, placements, cancellationToken);
             Draft = null;
             await LoadAsync(GameSessionId, cancellationToken);
         }
@@ -248,7 +252,7 @@ public partial class ArkNovaScoringViewModel(
             ErrorMessage = null;
             if (IsHistorical)
             {
-                await correction.DeleteAsync(GameSessionId, cancellationToken);
+                await correction.DeleteCompletedGameSessionAsync(GameSessionId, cancellationToken);
             }
             else
             {
@@ -293,7 +297,7 @@ public sealed class ArkNovaScoringPlayerViewModel
     private readonly ArkNovaScoringDisplayMode _displayMode;
 
     public ArkNovaScoringPlayerViewModel(
-        ArkNovaScoringPlayerData data,
+        ArkNovaGameSessionResultPlayerData data,
         IReadOnlyList<Guid> specialCards,
         ArkNovaScoringDisplayMode displayMode,
         bool showReputation)

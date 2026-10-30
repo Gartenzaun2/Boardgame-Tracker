@@ -1,3 +1,6 @@
+using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Results;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
@@ -6,7 +9,6 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
@@ -80,9 +82,9 @@ public sealed class TieResolutionTests
         Assert.Null(viewModel.ValidationMessage);
 
         await viewModel.CompleteAsync(Token);
-        ArkNovaScoringGameSessionData saved = (await database.Scoring.LoadAsync(database.Session.Id, Token))!;
+        ArkNovaGameSessionResultData saved = (await database.Scoring.LoadGameSessionResultAsync(database.Session.Id, Token))!;
         Assert.Equal(new int?[] { 1, 2, 2, 4 }, saved.Players.OrderBy(player => player.Order).Select(player => player.Placement));
-        var history = await new SqliteHistoryQuery(database).ListAsync(cancellationToken: Token);
+        var history = await new SqliteCompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal(new[] { 1, 2, 2, 4 }, Assert.Single(history).Players.Select(player => player.Placement));
     }
 
@@ -106,9 +108,9 @@ public sealed class TieResolutionTests
         Assert.Equal(database.Players[3].Id, Assert.Single(viewModel.PlacementGroups[2].Players).PlayerId);
 
         await viewModel.CompleteAsync(Token);
-        ArkNovaScoringGameSessionData reopened = (await database.Scoring.LoadAsync(database.Session.Id, Token))!;
+        ArkNovaGameSessionResultData reopened = (await database.Scoring.LoadGameSessionResultAsync(database.Session.Id, Token))!;
         Assert.Equal(new int?[] { 2, 1, 4, 3 }, reopened.Players.OrderBy(player => player.Order).Select(player => player.Placement));
-        var history = await new SqliteHistoryQuery(database).ListAsync(cancellationToken: Token);
+        var history = await new SqliteCompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal(new[] { database.Players[1].Id, database.Players[0].Id, database.Players[3].Id, database.Players[2].Id },
             Assert.Single(history).Players.Select(player => player.PlayerId));
     }
@@ -117,7 +119,7 @@ public sealed class TieResolutionTests
     public async Task Completion_RejectsParallelCallWhilePersistenceIsPending()
     {
         await using TieDatabase database = await TieDatabase.CreateAsync();
-        GatedCompletionDataAccess data = new(database.Scoring);
+        GatedCompletionStore data = new(database.Scoring);
         ArkNovaTieResolutionViewModel viewModel = new(new(data), database.Correction);
         await viewModel.LoadAsync(database.Session.Id, Token);
         Task completion = viewModel.CompleteAsync(Token);
@@ -166,11 +168,11 @@ public sealed class TieResolutionTests
         await viewModel.CompleteAsync(Token);
         await viewModel.CompleteAsync(Token); // Repeated completion cannot write again.
         Assert.False(viewModel.CanFinish);
-        ArkNovaScoringGameSessionData saved = (await database.Scoring.LoadAsync(database.Session.Id, Token))!;
+        ArkNovaGameSessionResultData saved = (await database.Scoring.LoadGameSessionResultAsync(database.Session.Id, Token))!;
         Assert.Equal(GameSessionStatus.Completed, saved.Status);
         Assert.Equal(expected.Select(placement => (int?)placement), saved.Players.OrderBy(p => p.Order).Select(p => p.Placement));
         Assert.Equal(new int?[] { 100, 90, 90, 80 }, saved.Players.OrderBy(p => p.Order).Select(p => p.Attractiveness));
-        var history = await new SqliteHistoryQuery(database).ListAsync(cancellationToken: Token);
+        var history = await new SqliteCompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal(database.Players[3 - playerIndex].Id, Assert.Single(history).Players[1].PlayerId);
     }
 
@@ -182,7 +184,7 @@ public sealed class TieResolutionTests
         await initial.LoadAsync(database.Session.Id, Token);
         await initial.CompleteAsync(Token);
 
-        ArkNovaCorrectionDraft draft = await database.Correction.BeginAsync(database.Session.Id, Token);
+        ArkNovaHistoryCorrectionDraft draft = await database.Correction.LoadCorrectionDraftAsync(database.Session.Id, Token);
         draft.SetScore(database.Players[0].Id, 90, 7, null);
         ArkNovaTieResolutionViewModel correction = database.CreateViewModel();
         correction.Draft = draft;
@@ -192,7 +194,7 @@ public sealed class TieResolutionTests
         Assert.True(correction.CanFinish);
         await correction.CompleteAsync(Token);
 
-        ArkNovaCorrectionDraft reopened = await database.Correction.BeginAsync(database.Session.Id, Token);
+        ArkNovaHistoryCorrectionDraft reopened = await database.Correction.LoadCorrectionDraftAsync(database.Session.Id, Token);
         Assert.True(draft.Saved);
         Assert.Equal(GameSessionStatus.Completed, reopened.Data.Status);
         Assert.Equal(new int?[] { 1, 2, 3, 4 }, reopened.Data.Players.Select(p => p.Placement));
@@ -200,12 +202,12 @@ public sealed class TieResolutionTests
         Assert.Equal(database.Players[3].Id, reopened.Data.Players[3].PlayerId);
     }
 
-    private sealed class GatedCompletionDataAccess(IArkNovaScoringDataAccess inner) : IArkNovaScoringDataAccess
+    private sealed class GatedCompletionStore(IArkNovaScoringStore inner) : IArkNovaScoringStore
     {
         public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public int SaveCount { get; private set; }
-        public Task<ArkNovaScoringGameSessionData?> LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => inner.LoadAsync(gameSessionId, cancellationToken);
+        public Task<ArkNovaGameSessionResultData?> LoadGameSessionResultAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => inner.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
         public Task<GameSession?> FindGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => inner.FindGameSessionAsync(gameSessionId, cancellationToken);
         public async Task SaveCompletedGameSessionAsync(GameSession gameSession, CancellationToken cancellationToken = default)
         {
@@ -214,11 +216,11 @@ public sealed class TieResolutionTests
             await Release.Task.WaitAsync(cancellationToken);
             await inner.SaveCompletedGameSessionAsync(gameSession, cancellationToken);
         }
-        public Task<ArkNovaGameSessionPlayer?> FindPlayerAsync(Guid gameSessionId, Guid playerId, CancellationToken cancellationToken = default) => inner.FindPlayerAsync(gameSessionId, playerId, cancellationToken);
-        public Task SavePlayerAsync(ArkNovaGameSessionPlayer player, CancellationToken cancellationToken = default) => inner.SavePlayerAsync(player, cancellationToken);
-        public Task AddSpecialCardAsync(ArkNovaGameSessionSpecialCardAssignment assignment, CancellationToken cancellationToken = default) => inner.AddSpecialCardAsync(assignment, cancellationToken);
+        public Task<ArkNovaGameSessionPlayer?> FindScoringPlayerAsync(Guid gameSessionId, Guid playerId, CancellationToken cancellationToken = default) => inner.FindScoringPlayerAsync(gameSessionId, playerId, cancellationToken);
+        public Task SaveScoringPlayerAsync(ArkNovaGameSessionPlayer player, CancellationToken cancellationToken = default) => inner.SaveScoringPlayerAsync(player, cancellationToken);
+        public Task AssignSpecialCardAsync(ArkNovaGameSessionSpecialCardAssignment assignment, CancellationToken cancellationToken = default) => inner.AssignSpecialCardAsync(assignment, cancellationToken);
         public Task RemoveSpecialCardAsync(Guid gameSessionId, Guid playerId, Guid specialCardId, CancellationToken cancellationToken = default) => inner.RemoveSpecialCardAsync(gameSessionId, playerId, specialCardId, cancellationToken);
-        public Task DeleteGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => inner.DeleteGameSessionAsync(gameSessionId, cancellationToken);
+        public Task DeleteScoringGameSessionAsync(Guid gameSessionId, CancellationToken cancellationToken = default) => inner.DeleteScoringGameSessionAsync(gameSessionId, cancellationToken);
     }
 
     private sealed class TieDatabase : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
@@ -226,8 +228,8 @@ public sealed class TieResolutionTests
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         public Player[] Players { get; } = [new("Anna"), new("Bernd"), new("Clara"), new("Dirk")];
         public GameSession Session { get; private set; } = null!;
-        public SqliteArkNovaScoringDataAccess Scoring => new(this);
-        public ArkNovaCorrectionUseCase Correction => new(Scoring, new SqliteArkNovaCorrectionDataAccess(this));
+        public SqliteArkNovaGameSessionResultStore Scoring => new(this);
+        public ArkNovaHistoryCorrectionUseCase Correction => new(new SqliteArkNovaGameSessionResultStore(this));
         public ArkNovaTieResolutionViewModel CreateViewModel() => new(new(Scoring), Correction);
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseSqlite(_connection).Options);
 

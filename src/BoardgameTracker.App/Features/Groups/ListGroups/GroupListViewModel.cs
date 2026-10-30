@@ -5,7 +5,7 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups.ListGroups;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.App.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +17,8 @@ namespace BoardgameTracker.App.Features.Groups.ListGroups;
 public partial class GroupListViewModel(
     IListGroupsQuery listGroupsQuery,
     IAppNavigationSettingsStore navigationSettingsStore,
-    ILogger<GroupListViewModel> logger) : ObservableObject
+    ILogger<GroupListViewModel> logger,
+    IEnumerable<IGameSessionNavigationHandler> navigationHandlers) : ObservableObject
 {
     private bool _reloadRequested;
 
@@ -99,7 +100,7 @@ public partial class GroupListViewModel(
                 SelectedGameName = GetGameName(gameKey);
 
                 IReadOnlyList<GroupListItem> groups =
-                    await listGroupsQuery.ExecuteAsync(
+                    await listGroupsQuery.ListGroupsAsync(
                         gameKey,
                         IncludeTemporary,
                         IncludeArchived,
@@ -141,11 +142,7 @@ public partial class GroupListViewModel(
         }
     }
 
-    private static string GetGameName(string gameKey) => gameKey switch
-    {
-        ArkNovaGame.Key => AppResources.ArkNova,
-        _ => gameKey
-    };
+    private string GetGameName(string gameKey) => navigationHandlers.FirstOrDefault(handler => handler.GameKey == gameKey)?.DisplayName ?? gameKey;
 }
 
 /// <summary>

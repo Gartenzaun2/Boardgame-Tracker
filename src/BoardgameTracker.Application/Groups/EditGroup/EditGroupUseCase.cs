@@ -6,7 +6,7 @@ namespace BoardgameTracker.Application.Groups.EditGroup;
 /// <summary>
 /// Loads and updates the mutable parts of an existing fixed-membership group through a slice-specific persistence boundary.
 /// </summary>
-public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess, GamePlayerColorCatalog colorCatalog)
+public sealed class EditGroupUseCase(IEditGroupStore store, GamePlayerColorCatalog colorCatalog)
 {
     public Task<EditGroupDetails?> GetAsync(
         Guid groupId,
@@ -14,25 +14,25 @@ public sealed class EditGroupUseCase(IEditGroupDataAccess dataAccess, GamePlayer
         CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
-        return dataAccess.GetDetailsAsync(groupId, gameKey, cancellationToken);
+        return store.GetDetailsAsync(groupId, gameKey, cancellationToken);
     }
 
-    public async Task ExecuteAsync(
+    public async Task UpdateGroupAsync(
         EditGroupCommand command,
         CancellationToken cancellationToken = default)
     {
-        Group group = await PrepareAsync(command, cancellationToken);
-        await dataAccess.SaveAsync(group, command.ColorDefaults, cancellationToken);
+        Group group = await LoadAndApplyGroupChangesAsync(command, cancellationToken);
+        await store.SaveAsync(group, command.ColorDefaults, cancellationToken);
     }
 
-    private async Task<Group> PrepareAsync(EditGroupCommand command, CancellationToken cancellationToken = default)
+    private async Task<Group> LoadAndApplyGroupChangesAsync(EditGroupCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentOutOfRangeException.ThrowIfEqual(command.GroupId, Guid.Empty);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
         ArgumentNullException.ThrowIfNull(command.OrderedPlayerIds);
 
-        Group group = await dataAccess.GetAggregateAsync(command.GroupId, cancellationToken)
+        Group group = await store.GetAggregateAsync(command.GroupId, cancellationToken)
             ?? throw new InvalidOperationException("The group does not exist.");
 
         if (command.ColorDefaults is { } defaults)

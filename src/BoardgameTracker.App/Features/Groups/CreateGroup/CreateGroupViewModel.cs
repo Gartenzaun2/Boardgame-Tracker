@@ -215,7 +215,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupC
             IsBusy = true;
             ErrorMessage = null;
 
-            await createGroup.ExecuteAsync(
+            await createGroup.CreateGroupAsync(
                 new CreateGroupCommand(GroupName, IsTemporary, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest, player.DefaultColor))], ColorSelection.GameKey));
 
             Saved?.Invoke(this, EventArgs.Empty);

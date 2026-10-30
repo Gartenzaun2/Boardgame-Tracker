@@ -10,7 +10,7 @@ namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 /// </summary>
 public interface IArkNovaPreparationQuery
 {
-    Task<ArkNovaPreparationData?> ExecuteAsync(
+    Task<ArkNovaPreparationData?> GetPreparationAsync(
         Guid groupId,
         CancellationToken cancellationToken = default);
 }

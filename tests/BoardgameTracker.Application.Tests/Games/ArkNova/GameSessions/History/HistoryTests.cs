@@ -1,3 +1,5 @@
+using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
+using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.GameSessions.Results;
 using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite.Seeding;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
@@ -7,7 +9,6 @@ using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Groups;
-using BoardgameTracker.Infrastructure.Games.ArkNova.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite;
 using BoardgameTracker.Infrastructure.Persistence.SQLite.GameSessions;
 using Microsoft.Data.Sqlite;
@@ -25,20 +26,20 @@ public sealed class HistoryTests
         var newer = await fixture.AddAsync(GameSessionStatus.Completed, 2, Token);
         await fixture.AddAsync(GameSessionStatus.Running, 3, Token);
         await fixture.AddAsync(GameSessionStatus.Scoring, 4, Token);
-        var rows = await new SqliteHistoryQuery(fixture).ListAsync(cancellationToken: TestContext.Current.CancellationToken);
+        var rows = await new SqliteCompletedGameSessionsQuery(fixture).ListAsync(cancellationToken: TestContext.Current.CancellationToken);
         Assert.Equal(2, rows.Count);
         Assert.Equal(newer.Id, rows[0].GameSessionId);
         Assert.Equal(fixture.B.Id, rows[0].Players[0].PlayerId);
-        Assert.Empty(await new SqliteHistoryQuery(fixture).ListAsync("other", cancellationToken: Token));
-        Assert.Empty(await new SqliteHistoryQuery(fixture).ListAsync(groupId: Guid.NewGuid(), cancellationToken: Token));
-        Assert.Equal(2, (await new SqliteHistoryQuery(fixture).ListAsync(ArkNovaGame.Key, fixture.Group.Id, Token)).Count);
+        Assert.Empty(await new SqliteCompletedGameSessionsQuery(fixture).ListAsync("other", cancellationToken: Token));
+        Assert.Empty(await new SqliteCompletedGameSessionsQuery(fixture).ListAsync(groupId: Guid.NewGuid(), cancellationToken: Token));
+        Assert.Equal(2, (await new SqliteCompletedGameSessionsQuery(fixture).ListAsync(ArkNovaGame.Key, fixture.Group.Id, Token)).Count);
         await using var db = fixture.CreateDbContext();
         var player = await db.Players.SingleAsync(p => p.Id == fixture.B.Id, Token);
         player.SetName("Renamed");
         var group = await db.Groups.SingleAsync(Token);
         group.SetName("Current group");
         await db.SaveChangesAsync(Token);
-        rows = await new SqliteHistoryQuery(fixture).ListAsync(cancellationToken: Token);
+        rows = await new SqliteCompletedGameSessionsQuery(fixture).ListAsync(cancellationToken: Token);
         Assert.Equal("Renamed", rows[0].Players[0].Name);
         Assert.Equal("Current group", rows[0].GroupName);
     }
@@ -46,20 +47,20 @@ public sealed class HistoryTests
     public async Task Correction_IsAtomicPreservesCompletedAndSetupAndRecalculatesTies()
     {
         await using var f = await Fixture.CreateAsync(Token);
-        var useCase = new ArkNovaCorrectionUseCase(new SqliteArkNovaScoringDataAccess(f), new SqliteArkNovaCorrectionDataAccess(f));
-        var draft = await useCase.BeginAsync(f.Completed.Id, Token);
+        var useCase = new ArkNovaHistoryCorrectionUseCase(new SqliteArkNovaGameSessionResultStore(f));
+        var draft = await useCase.LoadCorrectionDraftAsync(f.Completed.Id, Token);
         Assert.Equal(f.B.Id, draft.Data.Players[0].PlayerId);
         draft.SetScore(f.A.Id, 80, 7, 10);
         draft.SetCard(f.B.Id, ArkNovaSpecialCardDefaults.SunBear, true);
         draft.SetCard(f.A.Id, ArkNovaSpecialCardDefaults.AfricanElephant, false);
-        var before = await useCase.BeginAsync(f.Completed.Id, Token);
+        var before = await useCase.LoadCorrectionDraftAsync(f.Completed.Id, Token);
         Assert.Equal(70, before.Data.Players.Single(p => p.PlayerId == f.A.Id).Attractiveness);
         Assert.Contains(before.Data.SpecialCards, c => c.SpecialCardId == ArkNovaSpecialCardDefaults.AfricanElephant);
-        var plan = useCase.Prepare(draft);
+        var plan = useCase.CreateCorrectionCompletionPlan(draft);
         Assert.True(plan.HasTies);
-        await Assert.ThrowsAsync<ArgumentException>(() => useCase.SaveAsync(draft, new Dictionary<Guid, int> { [f.A.Id] = 4, [f.B.Id] = 1 }, Token));
-        await useCase.SaveAsync(draft, new Dictionary<Guid, int> { [f.A.Id] = 1, [f.B.Id] = 2 }, Token);
-        var saved = await useCase.BeginAsync(f.Completed.Id, Token);
+        await Assert.ThrowsAsync<ArgumentException>(() => useCase.SaveCorrectionAsync(draft, new Dictionary<Guid, int> { [f.A.Id] = 4, [f.B.Id] = 1 }, Token));
+        await useCase.SaveCorrectionAsync(draft, new Dictionary<Guid, int> { [f.A.Id] = 1, [f.B.Id] = 2 }, Token);
+        var saved = await useCase.LoadCorrectionDraftAsync(f.Completed.Id, Token);
         Assert.Equal(f.A.Id, saved.Data.Players[0].PlayerId);
         Assert.Equal(GameSessionStatus.Completed, saved.Data.Status);
         Assert.Equal(f.Completed.StartedAt, saved.Data.StartedAt);
@@ -68,24 +69,24 @@ public sealed class HistoryTests
         Assert.DoesNotContain(saved.Data.SpecialCards, c => c.SpecialCardId == ArkNovaSpecialCardDefaults.AfricanElephant);
         Assert.Equal(PlayerColor.Blue, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).Color);
         Assert.Equal(1, saved.Data.Players.Single(p => p.PlayerId == f.A.Id).ZooPlanNumber);
-        Assert.False(useCase.Prepare(saved).HasTies); // Existing resolved tie preserved.
+        Assert.False(useCase.CreateCorrectionCompletionPlan(saved).HasTies); // Existing resolved tie preserved.
         saved.SetScore(f.A.Id, 90, 7, null);
-        var noTie = useCase.Prepare(saved);
+        var noTie = useCase.CreateCorrectionCompletionPlan(saved);
         Assert.False(noTie.HasTies);
         Assert.Equal(1, noTie.DefaultPlacements[f.A.Id]);
-        await useCase.SaveAsync(saved, noTie.DefaultPlacements, Token);
-        var read = new SqliteArkNovaScoringDataAccess(f);
+        await useCase.SaveCorrectionAsync(saved, noTie.DefaultPlacements, Token);
+        var read = new SqliteArkNovaGameSessionResultStore(f);
         await Assert.ThrowsAsync<InvalidOperationException>(() => new ArkNovaScoringUseCase(read).SavePlayerScoreAsync(f.Completed.Id, f.A.Id, 1, 1, null, Token));
     }
     [Fact]
     public async Task Delete_RemovesCompletedDependentsButKeepsPlayersAndGroup_RejectsRunning()
     {
         await using var f = await Fixture.CreateAsync(Token);
-        var useCase = new ArkNovaCorrectionUseCase(new SqliteArkNovaScoringDataAccess(f), new SqliteArkNovaCorrectionDataAccess(f));
+        var useCase = new ArkNovaHistoryCorrectionUseCase(new SqliteArkNovaGameSessionResultStore(f));
         var running = await f.AddAsync(GameSessionStatus.Running, 3, Token);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.DeleteAsync(running.Id, Token));
-        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.BeginAsync(running.Id, Token));
-        await useCase.DeleteAsync(f.Completed.Id, Token);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.DeleteCompletedGameSessionAsync(running.Id, Token));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.LoadCorrectionDraftAsync(running.Id, Token));
+        await useCase.DeleteCompletedGameSessionAsync(f.Completed.Id, Token);
         await using var db = f.CreateDbContext();
         Assert.False(await db.GameSessionPlayers.AnyAsync(p => p.GameSessionId == f.Completed.Id, Token));
         Assert.False(await db.ArkNovaGameSessionPlayers.AnyAsync(p => p.GameSessionId == f.Completed.Id, Token));

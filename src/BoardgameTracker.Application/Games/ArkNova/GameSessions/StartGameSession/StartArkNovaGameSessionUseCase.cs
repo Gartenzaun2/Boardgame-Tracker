@@ -11,9 +11,9 @@ namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSessi
 /// creates the domain gameSession snapshot and persists it atomically.
 /// </summary>
 public sealed class StartArkNovaGameSessionUseCase(
-    IStartArkNovaGameSessionDataAccess dataAccess)
+    IStartArkNovaGameSessionStore store)
 {
-    public async Task<Guid> ExecuteAsync(
+    public async Task<Guid> StartAsync(
         StartArkNovaGameSessionCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,7 @@ public sealed class StartArkNovaGameSessionUseCase(
         ArgumentOutOfRangeException.ThrowIfEqual(command.GroupId, Guid.Empty);
         ArgumentNullException.ThrowIfNull(command.Players);
 
-        StartArkNovaGameSessionContext? context = await dataAccess.LoadContextAsync(
+        StartArkNovaGameSessionContext? context = await store.LoadContextAsync(
             command.GroupId,
             cancellationToken);
 
@@ -88,7 +88,7 @@ public sealed class StartArkNovaGameSessionUseCase(
                 player.SelectedZooPlanNumber.GetValueOrDefault()))
         ];
 
-        await dataAccess.SaveAsync(gameSession, arkNovaPlayers, cancellationToken);
+        await store.SaveAsync(gameSession, arkNovaPlayers, cancellationToken);
 
         return gameSession.Id;
     }
