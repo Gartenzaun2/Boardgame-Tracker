@@ -2,7 +2,7 @@ using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardgameTracker.Application.GameSessions.Resume;
+namespace BoardgameTracker.Application.GameSessions;
 
 /// <summary>
 /// SQLite implementation for retrieving unfinished gameSessions used by navigation restoration.
@@ -32,3 +32,13 @@ public sealed class OpenGameSessionQuery(
             .SingleOrDefaultAsync(cancellationToken);
     }
 }
+
+/// <summary>
+/// Minimal read model for an unfinished gameSession. It intentionally contains
+/// only the data needed to route the user back into that gameSession.
+/// </summary>
+public sealed record OpenGameSession(
+    Guid GameSessionId,
+    string GameKey,
+    GameSessionStatus Status,
+    DateTimeOffset ModifiedAt);

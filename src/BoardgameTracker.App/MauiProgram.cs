@@ -10,21 +10,17 @@ using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Application.Groups.CreateGroup;
-using BoardgameTracker.Application.Groups.ListGroups;
-using BoardgameTracker.Application.Groups.EditGroup;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.App.Features.Groups.Colors;
-using BoardgameTracker.Application.GameSessions.Running;
-using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.GameSessions;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Features.Players.ListPlayers;
 using BoardgameTracker.App.Features.Players.EditPlayer;
-using BoardgameTracker.Application.Players.ListPlayers;
-using BoardgameTracker.Application.Players.EditPlayer;
+using BoardgameTracker.Application.Players;
 
 namespace BoardgameTracker.App;
 

@@ -14,7 +14,7 @@ using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
 using BoardgameTracker.Application.Persistence;
-using BoardgameTracker.Application.GameSessions.Resume;
+using BoardgameTracker.Application.GameSessions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

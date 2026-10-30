@@ -361,3 +361,9 @@ public sealed class ArkNovaSpecialCardOptionViewModel(
         : IsAssignedToOtherPlayer ? AppResources.SpecialCardAlreadyAssigned
         : AppResources.SpecialCardAvailable;
 }
+
+public enum ArkNovaScoringMode
+{
+    Live,
+    HistoryCorrection
+}

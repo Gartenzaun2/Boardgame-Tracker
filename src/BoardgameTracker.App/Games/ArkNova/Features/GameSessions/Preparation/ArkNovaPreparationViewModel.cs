@@ -4,7 +4,7 @@ using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Games.ArkNova;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;

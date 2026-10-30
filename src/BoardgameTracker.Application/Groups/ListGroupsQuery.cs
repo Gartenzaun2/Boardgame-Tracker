@@ -3,7 +3,7 @@ using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Core.Players;
 
-namespace BoardgameTracker.Application.Groups.ListGroups;
+namespace BoardgameTracker.Application.Groups;
 
 /// <summary>
 /// EF Core implementation of the game-context group-overview read projection.
@@ -135,3 +135,17 @@ public sealed class ListGroupsQuery(
         GameSessionStatus Status,
         DateTimeOffset ModifiedAt);
 }
+
+/// <summary>
+/// Screen-oriented Application read model for one group in the group overview.
+/// </summary>
+public sealed record GroupListItem(
+    Guid Id,
+    string Name,
+    bool IsTemporary,
+    bool IsArchived,
+    int PlayerCount,
+    IReadOnlyList<string> PlayerNames,
+    DateTimeOffset? LastPlayedAt,
+    Guid? OpenGameSessionId,
+    GameSessionStatus? OpenGameSessionStatus);

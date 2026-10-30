@@ -4,6 +4,13 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.5
+
+- Datei-/Ordnergranularität der Vertical Slices konsolidiert: kleine slice-eigene Commands, Inputs und Read Models stehen beim jeweiligen Haupttyp; unnötige Mini-Slice-Unterordner in Application und Tests entfernt.
+- Gruppen-, Spieler- und allgemeine Partien-Slices liegen flacher; Ark-Nova-Start/-Running sowie weitere Companion Types zusammengeführt. Umfangreichere Features und gemeinsam verwendete Modelle behalten ihre eigenständige Struktur.
+- Architektur- und Agentenregeln formulieren Companion Types beim Haupttyp als Standard und unterscheiden fachliche Slice-Grenzen von Verzeichnisgrenzen.
+- Direkter EF-Core-Zugriff in Application bleibt bestehen. Keine Änderung von Nutzerverhalten, Datenmodell oder Persistenzsemantik. App-Version 0.10.0.5 / ApplicationVersion 42.
+
 ## 0.10.0.4
 
 - Application-Slices verwenden EF Core direkt; reine EF-Persistenzports und SQLite-Adapter entfernt. Konkrete Queries ersetzen technische Query-Interfaces.

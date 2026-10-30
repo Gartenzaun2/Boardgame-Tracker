@@ -6,7 +6,7 @@ using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Persistence;
 
-namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
+namespace BoardgameTracker.Application.Games.ArkNova.GameSessions;
 
 /// <summary>Validates persisted group/reference data before creating the complete session snapshot.</summary>
 public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
@@ -161,3 +161,26 @@ public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTr
             zooPlanNumbers.ToHashSet());
     }
 }
+
+/// <summary>
+/// Describes the complete user request to turn an already prepared Ark Nova setup
+/// into a persisted running game gameSession. The player setup objects are Core types
+/// because they represent the same domain setup state that Core validates; no
+/// second Application DTO is needed for identical data.
+/// </summary>
+public sealed record StartArkNovaGameSessionCommand(
+    Guid GroupId,
+    DateTimeOffset StartedAt,
+    IReadOnlyList<ArkNovaGameSessionSetupPlayer> Players);
+
+/// <summary>
+/// Minimal persisted context required by the start use case before it may create a
+/// gameSession. This is a use-case read model, not a domain entity and not a database
+/// model.
+/// </summary>
+public sealed record StartArkNovaGameSessionContext(
+    Guid GameId,
+    bool IsArchived,
+    bool HasOpenGameSession,
+    IReadOnlyList<Guid> GroupPlayerIds,
+    IReadOnlySet<int> AvailableZooPlanIds);

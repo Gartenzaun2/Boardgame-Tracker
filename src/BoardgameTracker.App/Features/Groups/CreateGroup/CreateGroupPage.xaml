@@ -4,7 +4,7 @@
     x:Name="Page"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:application="clr-namespace:BoardgameTracker.Application.Groups.CreateGroup;assembly=BoardgameTracker.Application"
+    xmlns:application="clr-namespace:BoardgameTracker.Application.Groups;assembly=BoardgameTracker.Application"
     xmlns:groupColors="clr-namespace:BoardgameTracker.App.Features.Groups.Colors"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.CreateGroup"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"

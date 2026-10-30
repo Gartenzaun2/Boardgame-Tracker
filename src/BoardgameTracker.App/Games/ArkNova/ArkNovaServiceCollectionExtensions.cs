@@ -1,7 +1,7 @@
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
-using BoardgameTracker.Application.Games.ArkNova.Persistence.Groups;
+using BoardgameTracker.Application.Games.ArkNova.Persistence;
 
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.Running;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 
 using BoardgameTracker.Application.History.Transfer;
@@ -18,7 +18,6 @@ using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
 using BoardgameTracker.Application.Games.ArkNova.Settings;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.Games.ArkNova;

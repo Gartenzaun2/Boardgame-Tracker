@@ -4,7 +4,7 @@ using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Persistence;
 
-namespace BoardgameTracker.Application.Groups.CreateGroup;
+namespace BoardgameTracker.Application.Groups;
 
 /// <summary>Creates the fixed-membership group, new players and game defaults atomically.</summary>
 public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerColorCatalog colorCatalog, IEnumerable<IGroupColorPersistence> colorStores)
@@ -139,3 +139,29 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
         return ids.ToHashSet();
     }
 }
+
+/// <summary>
+/// Input for the create-group use case, including all players that must be persisted atomically with the group.
+/// </summary>
+public sealed record CreateGroupCommand(
+    string Name,
+    bool IsTemporary,
+    IReadOnlyList<CreateGroupPlayerInput> Players,
+    string? GameKey = null);
+
+/// <summary>
+/// Describes one existing or newly entered player in a create-group request.
+/// </summary>
+public sealed record CreateGroupPlayerInput(
+    Guid? ExistingPlayerId,
+    string Name,
+    bool IsGuest,
+    PlayerColor? DefaultColor = null);
+
+/// <summary>
+/// Read model for an existing active player that may be selected while creating a group.
+/// </summary>
+public sealed record SelectablePlayer(
+    Guid Id,
+    string Name,
+    bool IsGuest);

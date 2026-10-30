@@ -1,4 +1,4 @@
-using BoardgameTracker.Application.Games.ArkNova.GameSessions.StartGameSession;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Core.GameSessions;

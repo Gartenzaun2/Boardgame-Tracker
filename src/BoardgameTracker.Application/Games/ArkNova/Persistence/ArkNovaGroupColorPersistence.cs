@@ -3,10 +3,10 @@ using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.Groups.Colors;
-using BoardgameTracker.Application.Groups.ListGroups;
+using BoardgameTracker.Application.Groups;
 using Microsoft.EntityFrameworkCore;
 
-namespace BoardgameTracker.Application.Games.ArkNova.Persistence.Groups;
+namespace BoardgameTracker.Application.Games.ArkNova.Persistence;
 
 public sealed class ArkNovaGroupColorPersistence : IGroupColorPersistence
 {

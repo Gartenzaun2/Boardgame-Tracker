@@ -2,11 +2,11 @@ using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Groups.Colors;
-using BoardgameTracker.Application.Groups.CreateGroup;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 
-namespace BoardgameTracker.Application.Tests.Groups.CreateGroup;
+namespace BoardgameTracker.Application.Tests.Groups;
 
 public sealed class CreateGroupUseCaseTests
 {
