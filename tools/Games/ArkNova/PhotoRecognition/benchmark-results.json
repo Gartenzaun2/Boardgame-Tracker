@@ -1,0 +1,2324 @@
+{
+  "schemaVersion": 1,
+  "implementation": "Reconstructed .NET development spike; not the original Python pipeline",
+  "environment": {
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "runtime": "10.0.14",
+    "openCv": "4.13.0",
+    "processors": 16,
+    "peakWorkingSetBytes": 690999296
+  },
+  "preparationMilliseconds": 345.5655,
+  "summary": {
+    "correct": 60,
+    "total": 72,
+    "wrongHigh": 0,
+    "criticalHigh": 0,
+    "blankRejected": true,
+    "partialRejected": true,
+    "emptyBoardHasNoHighScores": true,
+    "accepted": true
+  },
+  "results": {
+    "IMG_4257.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 415,
+        "inliers": 288,
+        "reprojectionP95": 2.418401158289848,
+        "minimumTrackVisibility": 0.9889244682728393,
+        "inlierSpread": 1.6088724811536828,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 69,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.951307786317606,
+              "margin": 0.027759348939381367,
+              "fullColor": 0.5871559633027523,
+              "coreColor": 0.7568067671160454
+            },
+            "conservation": {
+              "value": 21,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9078037429319525,
+              "margin": 0.7614069076472932,
+              "fullColor": 0.27198975234842016,
+              "coreColor": 0.31130876747141045
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9534920049200493,
+              "margin": 0.03980804243901559,
+              "fullColor": 0.6992619926199263,
+              "coreColor": 0.746
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 110,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9323004752684387,
+              "margin": 0.012004656455642637,
+              "fullColor": 0.205,
+              "coreColor": 0.2133867276887872
+            },
+            "conservation": {
+              "value": 17,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9314533876459862,
+              "margin": 0.007734587111524527,
+              "fullColor": 0.35498095810783725,
+              "coreColor": 0.2790490341753343
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9880383195814757,
+              "margin": 0.019632616346940357,
+              "fullColor": 0.7875035991937805,
+              "coreColor": 0.9087574507106831
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9587806785709801,
+              "margin": 0.03632347044222939,
+              "fullColor": 0.6796480059913874,
+              "coreColor": 0.7521367521367521
+            },
+            "conservation": {
+              "value": 25,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9463968352846593,
+              "margin": 0.8149434476386732,
+              "fullColor": 0.40929927963326784,
+              "coreColor": 0.4432520325203252
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.7323890028383784,
+              "margin": 0.5186835693829449,
+              "fullColor": 0.1540462427745665,
+              "coreColor": 0.11889400921658987
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 90,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9460187466995247,
+              "margin": 0.5618870468647721,
+              "fullColor": 0.39499999999999996,
+              "coreColor": 0.4593821510297483
+            },
+            "conservation": {
+              "value": 13,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 12,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9144628181183854,
+              "margin": 0.3427736937568586,
+              "fullColor": 0.2368320610687023,
+              "coreColor": 0.25533661740558294
+            },
+            "reputation": {
+              "value": 3,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9684057032345353,
+              "margin": 0.1399780475568796,
+              "fullColor": 0.49666881581775196,
+              "coreColor": 0.596291476903058
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 13.8666,
+        "registrationMilliseconds": 263.5792,
+        "occupancyMilliseconds": 455.36959999999993,
+        "totalMilliseconds": 732.8158
+      }
+    },
+    "IMG_4258.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 971,
+        "inliers": 707,
+        "reprojectionP95": 2.398075737048108,
+        "minimumTrackVisibility": 0.9644295167539976,
+        "inlierSpread": 1.1039849961059038,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.964472838046355,
+              "margin": 0.43719077431117925,
+              "fullColor": 0.1756967284057469,
+              "coreColor": 0.16545134523510183
+            },
+            "conservation": {
+              "value": 17,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9200437515282508,
+              "margin": 0.008222004674759309,
+              "fullColor": 0.312086590499098,
+              "coreColor": 0.3640416047548291
+            },
+            "reputation": {
+              "value": 11,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9411167180100235,
+              "margin": 0.005569550056498063,
+              "fullColor": 0.45696353855349664,
+              "coreColor": 0.34855769230769235
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9754700876761129,
+              "margin": 0.26433703840413814,
+              "fullColor": 0.5061450579885753,
+              "coreColor": 0.6183052552175007
+            },
+            "conservation": {
+              "value": 27,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9338108731293534,
+              "margin": 0.46075026892901966,
+              "fullColor": 0.4462663416795923,
+              "coreColor": 0.4734060125536835
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9930631043460572,
+              "margin": 0.03457767697470937,
+              "fullColor": 0.6999712064497553,
+              "coreColor": 0.8234754699679047
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9513376725696516,
+              "margin": 0.0014085466898979826,
+              "fullColor": 0.24789365287399365,
+              "coreColor": 0.24941724941724944
+            },
+            "conservation": {
+              "value": 25,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9457482177179336,
+              "margin": 0.8003566477518955,
+              "fullColor": 0.5149530670159354,
+              "coreColor": 0.5642276422764227
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.6108827607741462,
+              "margin": 0.14689927820733029,
+              "fullColor": 0.13497109826589596,
+              "coreColor": 0.08709677419354839
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9513376725696516,
+              "margin": 0.25868229690959166,
+              "fullColor": 0.37184047931099046,
+              "coreColor": 0.42372442372442376
+            },
+            "conservation": {
+              "value": 13,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9158127452086389,
+              "margin": 0.3231018947601385,
+              "fullColor": 0.27423664122137403,
+              "coreColor": 0.2988505747126437
+            },
+            "reputation": {
+              "value": 3,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9584854273713478,
+              "margin": 0.36132077532463613,
+              "fullColor": 0.44594885020416936,
+              "coreColor": 0.549772283669486
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 17.6758,
+        "registrationMilliseconds": 243.2823,
+        "occupancyMilliseconds": 220.9139,
+        "totalMilliseconds": 481.8725
+      }
+    },
+    "IMG_4259.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 1743,
+        "inliers": 1411,
+        "reprojectionP95": 1.7867174466493703,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.244918809813303,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9181244591101582,
+              "margin": 0.5745802277479342,
+              "fullColor": 0.16479141422883847,
+              "coreColor": 0.1516218254966055
+            },
+            "conservation": {
+              "value": 17,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 16,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9290921989744452,
+              "margin": 0.5108967153913704,
+              "fullColor": 0.34115053116857086,
+              "coreColor": 0.3907875185735512
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9595505535055352,
+              "margin": 0.07191495469912734,
+              "fullColor": 0.45141451414514144,
+              "coreColor": 0.456
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9747944657895066,
+              "margin": 0.14112251659672392,
+              "fullColor": 0.4768911199584559,
+              "coreColor": 0.5567010309278351
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 15,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9364164592575468,
+              "margin": 0.38345249962571826,
+              "fullColor": 0.3103262818214414,
+              "coreColor": 0.35187083546899023
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9838643505615403,
+              "margin": 0.06947973517692496,
+              "fullColor": 0.6985315289375179,
+              "coreColor": 0.8775790921595598
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9760797912829368,
+              "margin": 0.02891539624613715,
+              "fullColor": 0.3774574049803408,
+              "coreColor": 0.45325045325045327
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9814030868693466,
+              "margin": 0.8449866276117999,
+              "fullColor": 0.3655087611435598,
+              "coreColor": 0.3780544029506685
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.8836340267973682,
+              "margin": 0.699769676235828,
+              "fullColor": 0.20606936416184973,
+              "coreColor": 0.1857142857142857
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9760797912829368,
+              "margin": 0.0012853254934301894,
+              "fullColor": 0.23048118329900769,
+              "coreColor": 0.24812224812224815
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 8,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9814030868693466,
+              "margin": 0.20427797626289057,
+              "fullColor": 0.3648939440516446,
+              "coreColor": 0.41816505301982476
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9595505535055352,
+              "margin": 0.5275502821719305,
+              "fullColor": 0.2755227552275523,
+              "coreColor": 0.268
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 16.8326,
+        "registrationMilliseconds": 241.3712,
+        "occupancyMilliseconds": 195.47000000000003,
+        "totalMilliseconds": 453.6745
+      }
+    },
+    "IMG_4260.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 754,
+        "inliers": 544,
+        "reprojectionP95": 2.2904633130474097,
+        "minimumTrackVisibility": 0.9583519473050993,
+        "inlierSpread": 1.7733757803433665,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.5893817215708923,
+              "margin": 0.21254512282171262,
+              "fullColor": 0.10022503029253937,
+              "coreColor": 0.0739250691475987
+            },
+            "conservation": {
+              "value": 17,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 16,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9421189678213318,
+              "margin": 0.7630981625413313,
+              "fullColor": 0.3619963920625376,
+              "coreColor": 0.4017830609212481
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9554322878228783,
+              "margin": 0.07720532204702957,
+              "fullColor": 0.52460024600246,
+              "coreColor": 0.5615
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9761603166624223,
+              "margin": 0.1879475022730851,
+              "fullColor": 0.5625757313484507,
+              "coreColor": 0.6396781493588132
+            },
+            "conservation": {
+              "value": 0,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.8637475191955579,
+              "margin": 0.4675173891513869,
+              "fullColor": 0.2594795539033457,
+              "coreColor": 0.2296211251435132
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9833471624226875,
+              "margin": 0.07241279123831634,
+              "fullColor": 0.7771379211056723,
+              "coreColor": 0.9211370930765703
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9713581646740231,
+              "margin": 0.02508349133512955,
+              "fullColor": 0.43568620108593903,
+              "coreColor": 0.5115255115255116
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9790208052800005,
+              "margin": 0.8369018374586688,
+              "fullColor": 0.35167537657546877,
+              "coreColor": 0.3614568925772245
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.8411723848592207,
+              "margin": 0.6578252224365333,
+              "fullColor": 0.17687861271676303,
+              "coreColor": 0.14516129032258066
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9761603166624223,
+              "margin": 0.004802151988399173,
+              "fullColor": 0.2245109918642894,
+              "coreColor": 0.2300729192858939
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 8,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9790208052800005,
+              "margin": 0.1552390682553102,
+              "fullColor": 0.34245312019674146,
+              "coreColor": 0.38681420009220835
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9554322878228783,
+              "margin": 0.35127922175314563,
+              "fullColor": 0.21740467404674046,
+              "coreColor": 0.1875
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 14.5865,
+        "registrationMilliseconds": 233.3823,
+        "occupancyMilliseconds": 191.51850000000002,
+        "totalMilliseconds": 439.4879
+      }
+    },
+    "IMG_4261.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 1510,
+        "inliers": 1191,
+        "reprojectionP95": 1.9847751009233736,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.7634987315000024,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9888611767968747,
+              "margin": 0.5648011921237717,
+              "fullColor": 0.2660550458715596,
+              "coreColor": 0.27533316570279104
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9801520452962038,
+              "margin": 0.05107431500278259,
+              "fullColor": 0.2244532090354966,
+              "coreColor": 0.2462839569451563
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9749728782287823,
+              "margin": 0.04441725885451564,
+              "fullColor": 0.3284132841328413,
+              "coreColor": 0.23500000000000001
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9888611767968747,
+              "margin": 0.45025808409810686,
+              "fullColor": 0.4768911199584559,
+              "coreColor": 0.546894644204174
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9801520452962038,
+              "margin": 0.06948853414165346,
+              "fullColor": 0.3239512370025099,
+              "coreColor": 0.35392106611993845
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Medium",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9731192075423524,
+              "margin": 0.0597941159672607,
+              "fullColor": 0.5358479700547077,
+              "coreColor": 0.6020174232003669
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9721295499801398,
+              "margin": 0.14993694655800416,
+              "fullColor": 0.2145665605691818,
+              "coreColor": 0.24915824915824916
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9513097035512987,
+              "margin": 0.7272253486179239,
+              "fullColor": 0.29080848447586843,
+              "coreColor": 0.3093591516828031
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.8970273833941558,
+              "margin": 0.7220545051653735,
+              "fullColor": 0.296242774566474,
+              "coreColor": 0.28847926267281104
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9888611767968747,
+              "margin": 0.0167316268167349,
+              "fullColor": 0.18469794010732213,
+              "coreColor": 0.16670857430223787
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9801520452962038,
+              "margin": 0.028842341744905076,
+              "fullColor": 0.22409465758336322,
+              "coreColor": 0.29087647360328034
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9749728782287823,
+              "margin": 0.3489120315702541,
+              "fullColor": 0.3911439114391144,
+              "coreColor": 0.48550000000000004
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 13.7892,
+        "registrationMilliseconds": 220.5242,
+        "occupancyMilliseconds": 209.1721,
+        "totalMilliseconds": 443.4863
+      }
+    },
+    "IMG_4262.JPG": {
+      "registration": {
+        "success": true,
+        "matches": 1184,
+        "inliers": 965,
+        "reprojectionP95": 2.1722325371119684,
+        "minimumTrackVisibility": 0.9304334212325222,
+        "inlierSpread": 1.7898136036241423,
+        "failure": null
+      },
+      "colors": {
+        "red": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9893478682970616,
+              "margin": 0.3375235668996137,
+              "fullColor": 0.29098147827592175,
+              "coreColor": 0.30600955494091026
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Uncertain",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9906065676113913,
+              "margin": 0.05516133698961034,
+              "fullColor": 0.3065614915740409,
+              "coreColor": 0.31701691440287033
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9496236316113162,
+              "margin": 0.015870621831586496,
+              "fullColor": 0.26476014760147604,
+              "coreColor": 0.14650000000000002
+            }
+          }
+        },
+        "blue": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9893478682970616,
+              "margin": 0.17130770414590224,
+              "fullColor": 0.4684092089319716,
+              "coreColor": 0.5260246416897159
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": 15,
+              "warning": "conservative_neighbor_evidence",
+              "score": 0.9906065676113913,
+              "margin": 0.38080141110135735,
+              "fullColor": 0.33972750089637865,
+              "coreColor": 0.36135315222962583
+            },
+            "reputation": {
+              "value": 14,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9647611039666317,
+              "margin": 0.04053491349044114,
+              "fullColor": 0.480564353584797,
+              "coreColor": 0.5167354424575883
+            }
+          }
+        },
+        "yellow": {
+          "tracks": {
+            "attractiveness": {
+              "value": 59,
+              "confidence": "Uncertain",
+              "originalConfidence": "Medium",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9788367547214205,
+              "margin": 0.10458215789281045,
+              "fullColor": 0.2199962553828871,
+              "coreColor": 0.24889924889924891
+            },
+            "conservation": {
+              "value": 9,
+              "confidence": "Uncertain",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9549678652481939,
+              "margin": 0.5279633699466393,
+              "fullColor": 0.269289886258838,
+              "coreColor": 0.2849239280774551
+            },
+            "reputation": {
+              "value": 6,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9123578221144882,
+              "margin": 0.7340466905031722,
+              "fullColor": 0.30924855491329484,
+              "coreColor": 0.30599078341013825
+            }
+          }
+        },
+        "black": {
+          "tracks": {
+            "attractiveness": {
+              "value": 74,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9893478682970616,
+              "margin": 0.010511113575641051,
+              "fullColor": 0.23939761121689457,
+              "coreColor": 0.2109630374654262
+            },
+            "conservation": {
+              "value": 16,
+              "confidence": "Uncertain",
+              "originalConfidence": "Uncertain",
+              "alternative": null,
+              "warning": "incomplete_track",
+              "score": 0.9906065676113913,
+              "margin": 0.03563870236319744,
+              "fullColor": 0.3196486195769093,
+              "coreColor": 0.39876986160943106
+            },
+            "reputation": {
+              "value": 10,
+              "confidence": "High",
+              "originalConfidence": "High",
+              "alternative": null,
+              "warning": null,
+              "score": 0.9783111316113162,
+              "margin": 0.3701901873283938,
+              "fullColor": 0.46955719557195574,
+              "coreColor": 0.5675
+            }
+          }
+        }
+      },
+      "timings": {
+        "decodeMilliseconds": 14.4529,
+        "registrationMilliseconds": 236.2744,
+        "occupancyMilliseconds": 199.02519999999998,
+        "totalMilliseconds": 449.7531
+      }
+    }
+  },
+  "predictions": [
+    {
+      "image": "IMG_4257.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 69,
+      "correct": true,
+      "prediction": {
+        "value": 69,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.951307786317606,
+        "margin": 0.027759348939381367,
+        "fullColor": 0.5871559633027523,
+        "coreColor": 0.7568067671160454
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 21,
+      "correct": true,
+      "prediction": {
+        "value": 21,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9078037429319525,
+        "margin": 0.7614069076472932,
+        "fullColor": 0.27198975234842016,
+        "coreColor": 0.31130876747141045
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9534920049200493,
+        "margin": 0.03980804243901559,
+        "fullColor": 0.6992619926199263,
+        "coreColor": 0.746
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 75,
+      "correct": false,
+      "prediction": {
+        "value": 110,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9323004752684387,
+        "margin": 0.012004656455642637,
+        "fullColor": 0.205,
+        "coreColor": 0.2133867276887872
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 27,
+      "correct": false,
+      "prediction": {
+        "value": 17,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9314533876459862,
+        "margin": 0.007734587111524527,
+        "fullColor": 0.35498095810783725,
+        "coreColor": 0.2790490341753343
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9880383195814757,
+        "margin": 0.019632616346940357,
+        "fullColor": 0.7875035991937805,
+        "coreColor": 0.9087574507106831
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9587806785709801,
+        "margin": 0.03632347044222939,
+        "fullColor": 0.6796480059913874,
+        "coreColor": 0.7521367521367521
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 25,
+      "correct": true,
+      "prediction": {
+        "value": 25,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9463968352846593,
+        "margin": 0.8149434476386732,
+        "fullColor": 0.40929927963326784,
+        "coreColor": 0.4432520325203252
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.7323890028383784,
+        "margin": 0.5186835693829449,
+        "fullColor": 0.1540462427745665,
+        "coreColor": 0.11889400921658987
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 90,
+      "correct": true,
+      "prediction": {
+        "value": 90,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9460187466995247,
+        "margin": 0.5618870468647721,
+        "fullColor": 0.39499999999999996,
+        "coreColor": 0.4593821510297483
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 13,
+      "correct": true,
+      "prediction": {
+        "value": 13,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 12,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9144628181183854,
+        "margin": 0.3427736937568586,
+        "fullColor": 0.2368320610687023,
+        "coreColor": 0.25533661740558294
+      }
+    },
+    {
+      "image": "IMG_4257.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 3,
+      "correct": true,
+      "prediction": {
+        "value": 3,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9684057032345353,
+        "margin": 0.1399780475568796,
+        "fullColor": 0.49666881581775196,
+        "coreColor": 0.596291476903058
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.964472838046355,
+        "margin": 0.43719077431117925,
+        "fullColor": 0.1756967284057469,
+        "coreColor": 0.16545134523510183
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 21,
+      "correct": false,
+      "prediction": {
+        "value": 17,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9200437515282508,
+        "margin": 0.008222004674759309,
+        "fullColor": 0.312086590499098,
+        "coreColor": 0.3640416047548291
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": false,
+      "prediction": {
+        "value": 11,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9411167180100235,
+        "margin": 0.005569550056498063,
+        "fullColor": 0.45696353855349664,
+        "coreColor": 0.34855769230769235
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9754700876761129,
+        "margin": 0.26433703840413814,
+        "fullColor": 0.5061450579885753,
+        "coreColor": 0.6183052552175007
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 27,
+      "correct": true,
+      "prediction": {
+        "value": 27,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9338108731293534,
+        "margin": 0.46075026892901966,
+        "fullColor": 0.4462663416795923,
+        "coreColor": 0.4734060125536835
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9930631043460572,
+        "margin": 0.03457767697470937,
+        "fullColor": 0.6999712064497553,
+        "coreColor": 0.8234754699679047
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9513376725696516,
+        "margin": 0.0014085466898979826,
+        "fullColor": 0.24789365287399365,
+        "coreColor": 0.24941724941724944
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 25,
+      "correct": true,
+      "prediction": {
+        "value": 25,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9457482177179336,
+        "margin": 0.8003566477518955,
+        "fullColor": 0.5149530670159354,
+        "coreColor": 0.5642276422764227
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.6108827607741462,
+        "margin": 0.14689927820733029,
+        "fullColor": 0.13497109826589596,
+        "coreColor": 0.08709677419354839
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9513376725696516,
+        "margin": 0.25868229690959166,
+        "fullColor": 0.37184047931099046,
+        "coreColor": 0.42372442372442376
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 13,
+      "correct": true,
+      "prediction": {
+        "value": 13,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9158127452086389,
+        "margin": 0.3231018947601385,
+        "fullColor": 0.27423664122137403,
+        "coreColor": 0.2988505747126437
+      }
+    },
+    {
+      "image": "IMG_4258.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 3,
+      "correct": true,
+      "prediction": {
+        "value": 3,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9584854273713478,
+        "margin": 0.36132077532463613,
+        "fullColor": 0.44594885020416936,
+        "coreColor": 0.549772283669486
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9181244591101582,
+        "margin": 0.5745802277479342,
+        "fullColor": 0.16479141422883847,
+        "coreColor": 0.1516218254966055
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 16,
+      "correct": false,
+      "prediction": {
+        "value": 17,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 16,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9290921989744452,
+        "margin": 0.5108967153913704,
+        "fullColor": 0.34115053116857086,
+        "coreColor": 0.3907875185735512
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9595505535055352,
+        "margin": 0.07191495469912734,
+        "fullColor": 0.45141451414514144,
+        "coreColor": 0.456
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9747944657895066,
+        "margin": 0.14112251659672392,
+        "fullColor": 0.4768911199584559,
+        "coreColor": 0.5567010309278351
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 16,
+      "correct": true,
+      "prediction": {
+        "value": 16,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 15,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9364164592575468,
+        "margin": 0.38345249962571826,
+        "fullColor": 0.3103262818214414,
+        "coreColor": 0.35187083546899023
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9838643505615403,
+        "margin": 0.06947973517692496,
+        "fullColor": 0.6985315289375179,
+        "coreColor": 0.8775790921595598
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9760797912829368,
+        "margin": 0.02891539624613715,
+        "fullColor": 0.3774574049803408,
+        "coreColor": 0.45325045325045327
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9814030868693466,
+        "margin": 0.8449866276117999,
+        "fullColor": 0.3655087611435598,
+        "coreColor": 0.3780544029506685
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.8836340267973682,
+        "margin": 0.699769676235828,
+        "fullColor": 0.20606936416184973,
+        "coreColor": 0.1857142857142857
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9760797912829368,
+        "margin": 0.0012853254934301894,
+        "fullColor": 0.23048118329900769,
+        "coreColor": 0.24812224812224815
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 8,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9814030868693466,
+        "margin": 0.20427797626289057,
+        "fullColor": 0.3648939440516446,
+        "coreColor": 0.41816505301982476
+      }
+    },
+    {
+      "image": "IMG_4259.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9595505535055352,
+        "margin": 0.5275502821719305,
+        "fullColor": 0.2755227552275523,
+        "coreColor": 0.268
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.5893817215708923,
+        "margin": 0.21254512282171262,
+        "fullColor": 0.10022503029253937,
+        "coreColor": 0.0739250691475987
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 16,
+      "correct": false,
+      "prediction": {
+        "value": 17,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 16,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9421189678213318,
+        "margin": 0.7630981625413313,
+        "fullColor": 0.3619963920625376,
+        "coreColor": 0.4017830609212481
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9554322878228783,
+        "margin": 0.07720532204702957,
+        "fullColor": 0.52460024600246,
+        "coreColor": 0.5615
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9761603166624223,
+        "margin": 0.1879475022730851,
+        "fullColor": 0.5625757313484507,
+        "coreColor": 0.6396781493588132
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 16,
+      "correct": false,
+      "prediction": {
+        "value": 0,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.8637475191955579,
+        "margin": 0.4675173891513869,
+        "fullColor": 0.2594795539033457,
+        "coreColor": 0.2296211251435132
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9833471624226875,
+        "margin": 0.07241279123831634,
+        "fullColor": 0.7771379211056723,
+        "coreColor": 0.9211370930765703
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9713581646740231,
+        "margin": 0.02508349133512955,
+        "fullColor": 0.43568620108593903,
+        "coreColor": 0.5115255115255116
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9790208052800005,
+        "margin": 0.8369018374586688,
+        "fullColor": 0.35167537657546877,
+        "coreColor": 0.3614568925772245
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.8411723848592207,
+        "margin": 0.6578252224365333,
+        "fullColor": 0.17687861271676303,
+        "coreColor": 0.14516129032258066
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": false,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9761603166624223,
+        "margin": 0.004802151988399173,
+        "fullColor": 0.2245109918642894,
+        "coreColor": 0.2300729192858939
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 8,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9790208052800005,
+        "margin": 0.1552390682553102,
+        "fullColor": 0.34245312019674146,
+        "coreColor": 0.38681420009220835
+      }
+    },
+    {
+      "image": "IMG_4260.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9554322878228783,
+        "margin": 0.35127922175314563,
+        "fullColor": 0.21740467404674046,
+        "coreColor": 0.1875
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9888611767968747,
+        "margin": 0.5648011921237717,
+        "fullColor": 0.2660550458715596,
+        "coreColor": 0.27533316570279104
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 16,
+      "correct": true,
+      "prediction": {
+        "value": 16,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9801520452962038,
+        "margin": 0.05107431500278259,
+        "fullColor": 0.2244532090354966,
+        "coreColor": 0.2462839569451563
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9749728782287823,
+        "margin": 0.04441725885451564,
+        "fullColor": 0.3284132841328413,
+        "coreColor": 0.23500000000000001
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9888611767968747,
+        "margin": 0.45025808409810686,
+        "fullColor": 0.4768911199584559,
+        "coreColor": 0.546894644204174
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 16,
+      "correct": true,
+      "prediction": {
+        "value": 16,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9801520452962038,
+        "margin": 0.06948853414165346,
+        "fullColor": 0.3239512370025099,
+        "coreColor": 0.35392106611993845
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Medium",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9731192075423524,
+        "margin": 0.0597941159672607,
+        "fullColor": 0.5358479700547077,
+        "coreColor": 0.6020174232003669
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9721295499801398,
+        "margin": 0.14993694655800416,
+        "fullColor": 0.2145665605691818,
+        "coreColor": 0.24915824915824916
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9513097035512987,
+        "margin": 0.7272253486179239,
+        "fullColor": 0.29080848447586843,
+        "coreColor": 0.3093591516828031
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.8970273833941558,
+        "margin": 0.7220545051653735,
+        "fullColor": 0.296242774566474,
+        "coreColor": 0.28847926267281104
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": false,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9888611767968747,
+        "margin": 0.0167316268167349,
+        "fullColor": 0.18469794010732213,
+        "coreColor": 0.16670857430223787
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 9,
+      "correct": false,
+      "prediction": {
+        "value": 16,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9801520452962038,
+        "margin": 0.028842341744905076,
+        "fullColor": 0.22409465758336322,
+        "coreColor": 0.29087647360328034
+      }
+    },
+    {
+      "image": "IMG_4261.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9749728782287823,
+        "margin": 0.3489120315702541,
+        "fullColor": 0.3911439114391144,
+        "coreColor": 0.48550000000000004
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9893478682970616,
+        "margin": 0.3375235668996137,
+        "fullColor": 0.29098147827592175,
+        "coreColor": 0.30600955494091026
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "red",
+      "track": "conservation",
+      "expected": 16,
+      "correct": true,
+      "prediction": {
+        "value": 16,
+        "confidence": "Uncertain",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9906065676113913,
+        "margin": 0.05516133698961034,
+        "fullColor": 0.3065614915740409,
+        "coreColor": 0.31701691440287033
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "red",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9496236316113162,
+        "margin": 0.015870621831586496,
+        "fullColor": 0.26476014760147604,
+        "coreColor": 0.14650000000000002
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 74,
+      "correct": true,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9893478682970616,
+        "margin": 0.17130770414590224,
+        "fullColor": 0.4684092089319716,
+        "coreColor": 0.5260246416897159
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "blue",
+      "track": "conservation",
+      "expected": 16,
+      "correct": true,
+      "prediction": {
+        "value": 16,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 15,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9906065676113913,
+        "margin": 0.38080141110135735,
+        "fullColor": 0.33972750089637865,
+        "coreColor": 0.36135315222962583
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "blue",
+      "track": "reputation",
+      "expected": 14,
+      "correct": true,
+      "prediction": {
+        "value": 14,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9647611039666317,
+        "margin": 0.04053491349044114,
+        "fullColor": 0.480564353584797,
+        "coreColor": 0.5167354424575883
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": true,
+      "prediction": {
+        "value": 59,
+        "confidence": "Uncertain",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9788367547214205,
+        "margin": 0.10458215789281045,
+        "fullColor": 0.2199962553828871,
+        "coreColor": 0.24889924889924891
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 9,
+      "correct": true,
+      "prediction": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9549678652481939,
+        "margin": 0.5279633699466393,
+        "fullColor": 0.269289886258838,
+        "coreColor": 0.2849239280774551
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 6,
+      "correct": true,
+      "prediction": {
+        "value": 6,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9123578221144882,
+        "margin": 0.7340466905031722,
+        "fullColor": 0.30924855491329484,
+        "coreColor": 0.30599078341013825
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 59,
+      "correct": false,
+      "prediction": {
+        "value": 74,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9893478682970616,
+        "margin": 0.010511113575641051,
+        "fullColor": 0.23939761121689457,
+        "coreColor": 0.2109630374654262
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "black",
+      "track": "conservation",
+      "expected": 9,
+      "correct": false,
+      "prediction": {
+        "value": 16,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9906065676113913,
+        "margin": 0.03563870236319744,
+        "fullColor": 0.3196486195769093,
+        "coreColor": 0.39876986160943106
+      }
+    },
+    {
+      "image": "IMG_4262.JPG",
+      "color": "black",
+      "track": "reputation",
+      "expected": 10,
+      "correct": true,
+      "prediction": {
+        "value": 10,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9783111316113162,
+        "margin": 0.3701901873283938,
+        "fullColor": 0.46955719557195574,
+        "coreColor": 0.5675
+      }
+    }
+  ]
+}

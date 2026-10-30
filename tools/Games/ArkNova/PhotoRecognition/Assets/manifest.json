@@ -1,0 +1,41 @@
+{
+  "source": "Vom Benutzer bereitgestelltes Bilderkennung-Paket, 2026-10-30",
+  "files": [
+    {
+      "file": "board_reference_master_clean.png",
+      "sha256": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114"
+    },
+    {
+      "file": "IMG_4257.JPG",
+      "sha256": "baf27fc37a3de49ce2b4545008e71a88092af837c74fa3fa266dbc873c417b09"
+    },
+    {
+      "file": "IMG_4258.JPG",
+      "sha256": "23a0332fc0c1f3d997eb1ee7a6b618d10415600d88ead821a7c0308e4e7f8f12"
+    },
+    {
+      "file": "IMG_4259.JPG",
+      "sha256": "bfb3ed61f332a249ce547be2aea3fa584b5df4f5ce4e98879fd9929ca6e36019"
+    },
+    {
+      "file": "IMG_4260.JPG",
+      "sha256": "e09bf435c9e76b62dfe59ccac046581647ffae287859101ba6914f3b841f613f"
+    },
+    {
+      "file": "IMG_4261.JPG",
+      "sha256": "b60d35f338e6dbbf4344e807f86b305ebe512618667013e06a8790735e3a5ab8"
+    },
+    {
+      "file": "IMG_4262.JPG",
+      "sha256": "821b5feb011d7298fa0d6bbca995d2fa9c89517a2007fd11bd3044ab2967650a"
+    },
+    {
+      "file": "scoring_ground_truth.json",
+      "sha256": "08dd41a1a257a1ee920b99fdf26d7c6370a58b5e9857bff85ad3436ea24d0da3"
+    },
+    {
+      "file": "scoring_regions_v2.json",
+      "sha256": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910"
+    }
+  ]
+}
