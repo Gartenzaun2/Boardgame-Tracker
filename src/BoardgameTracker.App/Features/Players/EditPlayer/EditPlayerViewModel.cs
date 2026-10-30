@@ -30,7 +30,7 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, ILogger<Edit
             Player player = await useCase.GetAsync(playerId, cancellationToken)
                 ?? throw new InvalidOperationException("The player does not exist.");
             Name = player.Name;
-            IsArchived = !player.IsActive;
+            IsArchived = player.IsArchived;
             _playerId = playerId;
         }
         catch (Exception exception)

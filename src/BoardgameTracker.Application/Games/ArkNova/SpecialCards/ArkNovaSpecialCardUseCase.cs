@@ -10,7 +10,7 @@ public sealed class ArkNovaSpecialCardUseCase(IArkNovaSpecialCardDataAccess data
     public async Task<Guid> CreateAsync(string name, ArkNovaCardSymbol? symbol1, ArkNovaCardSymbol? symbol2,
         ArkNovaCardSymbol? symbol3, CancellationToken cancellationToken = default)
     {
-        ArkNovaSpecialCard card = new(Guid.NewGuid(), name, symbol1, symbol2, symbol3);
+        ArkNovaSpecialCard card = new(Guid.CreateVersion7(), name, symbol1, symbol2, symbol3);
         await dataAccess.SaveAsync(card, true, cancellationToken);
         return card.Id;
     }

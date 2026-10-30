@@ -14,6 +14,8 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.ToTable("Players");
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Name).UseCollation("BGT_NAME");
+        builder.HasIndex(x => x.Name).IsUnique();
 
         builder.Property(x => x.Name)
             .HasMaxLength(100)
@@ -22,7 +24,7 @@ internal sealed class PlayerConfiguration : IEntityTypeConfiguration<Player>
         builder.Property(x => x.IsGuest)
             .IsRequired();
 
-        builder.Property(x => x.IsActive)
+        builder.Property(x => x.IsArchived)
             .IsRequired();
         builder.Property(x => x.CreatedAt).IsRequired();
     }

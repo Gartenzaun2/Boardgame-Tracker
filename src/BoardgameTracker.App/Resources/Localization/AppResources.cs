@@ -9,6 +9,21 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string TransferImport => GetString(nameof(TransferImport));
+    public static string TransferExportOne => GetString(nameof(TransferExportOne));
+    public static string TransferExportMany => GetString(nameof(TransferExportMany));
+    public static string TransferExportTitle => GetString(nameof(TransferExportTitle));
+    public static string TransferPickFile => GetString(nameof(TransferPickFile));
+    public static string TransferResolveGroup => GetString(nameof(TransferResolveGroup));
+    public static string TransferMerge => GetString(nameof(TransferMerge));
+    public static string TransferSplit => GetString(nameof(TransferSplit));
+    public static string TransferMapPlayer => GetString(nameof(TransferMapPlayer));
+    public static string TransferPreview => GetString(nameof(TransferPreview));
+    public static string TransferCommit => GetString(nameof(TransferCommit));
+    public static string TransferSuccess => GetString(nameof(TransferSuccess));
+    public static string TransferUpdateRequired => GetString(nameof(TransferUpdateRequired));
+    public static string TransferFailed => GetString(nameof(TransferFailed));
+    public static string TransferPreviewFormat => GetString(nameof(TransferPreviewFormat));
     private static readonly ResourceManager ResourceManager =
         new("BoardgameTracker.App.Resources.Localization.AppResources",
             typeof(AppResources).Assembly);

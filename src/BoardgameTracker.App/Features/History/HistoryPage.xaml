@@ -2,7 +2,7 @@
 <ContentPage x:Class="BoardgameTracker.App.Features.History.HistoryPage"
  xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
  xmlns:local="clr-namespace:BoardgameTracker.App.Features.History" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" Shell.NavBarIsVisible="False">
- <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="8">
+ <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8">
   <VerticalStackLayout Spacing="8">
       <Label Text="{x:Static res:AppResources.History}" FontSize="28" FontAttributes="Bold" />
       <BoxView Style="{StaticResource HeaderDivider}" />
@@ -29,6 +29,10 @@
     </VerticalStackLayout>
    </Border></DataTemplate></CollectionView.ItemTemplate>
   </CollectionView>
-  <Grid x:Name="BusyOverlay" Grid.RowSpan="4" BackgroundColor="{DynamicResource BusyOverlay}" IsVisible="False"><ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" /></Grid>
+  <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="8">
+   <Button Text="{x:Static res:AppResources.TransferImport}" Clicked="OnImportClicked" Style="{StaticResource SecondaryActionButton}" />
+   <Button Grid.Column="1" x:Name="ExportButton" Text="{x:Static res:AppResources.TransferExportMany}" Clicked="OnExportClicked" IsEnabled="False" Style="{StaticResource PrimaryCompactButton}" />
+  </Grid>
+  <Grid x:Name="BusyOverlay" Grid.RowSpan="5" BackgroundColor="{DynamicResource BusyOverlay}" IsVisible="False"><ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" /></Grid>
  </Grid>
 </ContentPage>

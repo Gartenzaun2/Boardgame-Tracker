@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.History.Transfer;
+using BoardgameTracker.Infrastructure.Persistence.SQLite.History;
 using BoardgameTracker.App.Games.ArkNova;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
@@ -62,6 +64,9 @@ public static class MauiProgram
                 $"Data Source={databasePath}"));
 
         builder.Services.AddArkNova();
+        builder.Services.AddSingleton<BgtFormat>();
+        builder.Services.AddTransient<HistoryTransferUseCase>();
+        builder.Services.AddSingleton<IHistoryTransferStore, SqliteHistoryTransferStore>();
         builder.Services.AddSingleton<DatabaseInitializer>();
 
         builder.Services.AddSingleton<IListGroupsQuery, SqliteListGroupsQuery>();

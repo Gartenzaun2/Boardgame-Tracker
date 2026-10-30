@@ -1,3 +1,4 @@
+using BoardgameTracker.Core.Names;
 using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.Groups;
 
@@ -15,11 +16,12 @@ public sealed class Group
     public Group(
         string name,
         bool isTemporary,
-        IReadOnlyList<Guid> playerIds)
+        IReadOnlyList<Guid> playerIds, Guid? id = null)
     {
         ArgumentNullException.ThrowIfNull(playerIds);
 
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.CreateVersion7();
+        ArgumentOutOfRangeException.ThrowIfEqual(Id, Guid.Empty);
         SetName(name);
         IsTemporary = isTemporary;
         SetInitialPlayers(playerIds);
@@ -38,7 +40,7 @@ public sealed class Group
     public void SetName(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        Name = name.Trim();
+        Name = EntityName.Normalize(name);
     }
 
     public void MakePermanent() => IsTemporary = false;

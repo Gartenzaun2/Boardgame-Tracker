@@ -31,7 +31,7 @@ public sealed class PlayerManagementTests
         IReadOnlyList<PlayerListItem> rows = await database.Query.ExecuteAsync(guests, archived, Token);
         Assert.Equal(expectedCount, rows.Count);
         Assert.Contains(rows, player => player.PlayerId == database.Players[0].Id);
-        Assert.All(rows, player => Assert.True((guests || !player.IsGuest) && (archived || player.IsActive)));
+        Assert.All(rows, player => Assert.True((guests || !player.IsGuest) && (archived || !player.IsArchived)));
         Assert.Equal(guests && archived, rows.Any(player => player.PlayerId == database.Players[4].Id));
     }
 
@@ -63,7 +63,7 @@ public sealed class PlayerManagementTests
         await database.Edit.ExecuteAsync(id, "  New name  ", true, Token);
         Player player = (await database.Edit.GetAsync(id, Token))!;
         Assert.Equal("New name", player.Name);
-        Assert.False(player.IsActive);
+        Assert.True(player.IsArchived);
         Assert.False(player.IsGuest);
         Assert.Equal(createdAt, player.CreatedAt);
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
@@ -72,7 +72,7 @@ public sealed class PlayerManagementTests
         var history = await new SqliteHistoryQuery(database).ListAsync(cancellationToken: Token);
         Assert.Equal("New name", Assert.Single(history).Players.Single(member => member.PlayerId == id).Name);
         await database.Edit.ExecuteAsync(id, player.Name, false, Token);
-        Assert.True((await database.Edit.GetAsync(id, Token))!.IsActive);
+        Assert.False((await database.Edit.GetAsync(id, Token))!.IsArchived);
     }
 
     [Theory]
@@ -85,7 +85,7 @@ public sealed class PlayerManagementTests
         await Assert.ThrowsAsync<ArgumentException>(() => database.Edit.ExecuteAsync(id, name, true, Token));
         Player player = (await database.Edit.GetAsync(id, Token))!;
         Assert.Equal("Anna", player.Name);
-        Assert.True(player.IsActive);
+        Assert.False(player.IsArchived);
     }
 
     [Fact]
@@ -97,10 +97,10 @@ public sealed class PlayerManagementTests
         await editor.LoadAsync(id, Token);
         editor.Name = "Changed";
         editor.IsArchived = true;
-        Assert.True((await database.Edit.GetAsync(id, Token))!.IsActive);
+        Assert.False((await database.Edit.GetAsync(id, Token))!.IsArchived);
         Assert.Equal("Anna", (await database.Edit.GetAsync(id, Token))!.Name);
         Assert.True(await editor.SaveAsync(Token));
-        Assert.False((await database.Edit.GetAsync(id, Token))!.IsActive);
+        Assert.True((await database.Edit.GetAsync(id, Token))!.IsArchived);
         Assert.Equal("Changed", (await database.Edit.GetAsync(id, Token))!.Name);
     }
 
@@ -142,6 +142,7 @@ public sealed class PlayerManagementTests
     private sealed class HistoryHandler(string key) : IGameHistoryHandler
     {
         public string GameKey => key;
+        public string DisplayName => key;
         public List<Guid> Opened { get; } = [];
         public Task OpenAsync(Guid gameSessionId)
         {
@@ -165,8 +166,8 @@ public sealed class PlayerManagementTests
             await database._connection.OpenAsync(Token);
             await using BoardgameTrackerDbContext db = database.CreateDbContext();
             await db.Database.EnsureCreatedAsync(Token);
-            database.Players[3].SetActiveStatus(false);
-            database.Players[4].SetActiveStatus(false);
+            database.Players[3].SetArchived(true);
+            database.Players[4].SetArchived(true);
             Game game = new("test-game");
             Group group = new("Group", false, database.Players.Select(player => player.Id).ToArray());
             db.AddRange(database.Players);

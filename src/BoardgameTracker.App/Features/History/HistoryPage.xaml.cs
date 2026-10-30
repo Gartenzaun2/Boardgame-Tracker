@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.App.Presentation.Controls;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
@@ -5,13 +6,16 @@ using BoardgameTracker.Application.History;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Core.Games.ArkNova;
+
 
 namespace BoardgameTracker.App.Features.History;
 
 public partial class HistoryPage : ContentPage
 {
     private readonly IHistoryQuery _query;
+    private readonly HistoryTransferUseCase _transfer;
+    private Guid[] _visibleIds = [];
+    private bool _transferring;
     private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
     private readonly IEnumerable<IGameHistoryHandler> _historyHandlers;
@@ -25,10 +29,12 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers)
+    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers, HistoryTransferUseCase transfer)
     {
         InitializeComponent();
+        ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);
         _query = query;
+        _transfer = transfer;
         _settings = settings;
         _logger = logger;
         _historyHandlers = historyHandlers;
@@ -37,7 +43,12 @@ public partial class HistoryPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (AppDialogPage.IsOpen(this))
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        if (_transferring || AppDialogPage.IsOpen(this))
             return;
         if (_loading)
         {
@@ -77,14 +88,14 @@ public partial class HistoryPage : ContentPage
         }
     }
 
-    private static string GameName(string key) => key == ArkNovaGame.Key ? AppResources.ArkNova : key;
+    private string GameName(string key) => _historyHandlers.FirstOrDefault(handler => handler.GameKey == key)?.DisplayName ?? key;
 
     private async void OnGameFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(true);
     private async void OnGroupFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(false);
 
     private async Task ChooseFilterAsync(bool gameFilter)
     {
-        if (_loading || _choosing || _games.Length == 0 || _groups.Length == 0)
+        if (_transferring || _loading || _choosing || _games.Length == 0 || _groups.Length == 0)
             return;
 
         _choosing = true;
@@ -128,7 +139,11 @@ public partial class HistoryPage : ContentPage
         IEnumerable<HistoryCard> cards = _all
             .Where(session => (game is null || session.GameKey == game) && (group is null || session.GroupId == group))
             .Select(session => new HistoryCard(session, GameName(session.GameKey)));
-        var months = cards.GroupBy(card => (card.Data.StartedAt.ToLocalTime().Year, card.Data.StartedAt.ToLocalTime().Month));
+        HistoryCard[] visible = cards.ToArray();
+        _visibleIds = visible.Select(card => card.Data.GameSessionId).ToArray();
+        ExportButton.Text = string.Format(_visibleIds.Length == 1 ? AppResources.TransferExportOne : AppResources.TransferExportMany, _visibleIds.Length);
+        ExportButton.IsEnabled = _visibleIds.Length > 0;
+        var months = visible.GroupBy(card => (card.Data.StartedAt.ToLocalTime().Year, card.Data.StartedAt.ToLocalTime().Month));
 
         Sessions.ItemsSource = months.Select(month => new HistoryMonth(
             new DateTime(month.Key.Year, month.Key.Month, 1).ToString("MMMM yyyy", CultureInfo.CurrentCulture),
@@ -137,7 +152,7 @@ public partial class HistoryPage : ContentPage
 
     private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e)
     {
-        if (_navigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card)
+        if (_transferring || _loading || _navigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card)
         {
             return;
         }

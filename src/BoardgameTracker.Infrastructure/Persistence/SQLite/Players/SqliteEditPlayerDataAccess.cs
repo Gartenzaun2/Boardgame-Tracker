@@ -17,7 +17,7 @@ public sealed class SqliteEditPlayerDataAccess(IDbContextFactory<BoardgameTracke
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         db.Attach(player);
         db.Entry(player).Property(value => value.Name).IsModified = true;
-        db.Entry(player).Property(value => value.IsActive).IsModified = true;
+        db.Entry(player).Property(value => value.IsArchived).IsModified = true;
         await db.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,3 +1,4 @@
+using BoardgameTracker.Core.Names;
 namespace BoardgameTracker.Core.Players;
 
 /// <summary>
@@ -9,13 +10,14 @@ public sealed class Player
     {
     }
 
-    public Player(string name, bool isGuest = false)
+    public Player(string name, bool isGuest = false, Guid? id = null, DateTimeOffset? createdAt = null)
     {
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.CreateVersion7();
+        ArgumentOutOfRangeException.ThrowIfEqual(Id, Guid.Empty);
         SetName(name);
         IsGuest = isGuest;
-        IsActive = true;
-        CreatedAt = DateTimeOffset.UtcNow;
+        IsArchived = false;
+        CreatedAt = createdAt ?? DateTimeOffset.UtcNow;
     }
 
     public Guid Id { get; private set; }
@@ -24,17 +26,17 @@ public sealed class Player
 
     public bool IsGuest { get; private set; }
 
-    public bool IsActive { get; private set; }
+    public bool IsArchived { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
 
     public void SetName(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        Name = name.Trim();
+        Name = EntityName.Normalize(name);
     }
 
     public void SetGuestStatus(bool isGuest) => IsGuest = isGuest;
 
-    public void SetActiveStatus(bool isActive) => IsActive = isActive;
+    public void SetArchived(bool isArchived) => IsArchived = isArchived;
 }

@@ -21,7 +21,7 @@ public sealed class EditPlayerUseCase(IEditPlayerDataAccess dataAccess)
         Player player = await GetAsync(playerId, cancellationToken)
             ?? throw new InvalidOperationException("The player does not exist.");
         player.SetName(name);
-        player.SetActiveStatus(!isArchived);
+        player.SetArchived(isArchived);
         await dataAccess.SaveAsync(player, cancellationToken);
     }
 }

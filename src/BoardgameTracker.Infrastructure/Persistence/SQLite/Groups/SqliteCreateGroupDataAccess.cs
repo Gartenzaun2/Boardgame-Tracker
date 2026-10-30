@@ -22,7 +22,7 @@ public sealed class SqliteCreateGroupDataAccess(
 
         return await dbContext.Players
             .AsNoTracking()
-            .Where(player => player.IsActive)
+            .Where(player => !player.IsArchived)
             .OrderBy(player => player.Name)
             .Select(player => new SelectablePlayer(
                 player.Id,
@@ -47,7 +47,7 @@ public sealed class SqliteCreateGroupDataAccess(
 
         Guid[] ids = await dbContext.Players
             .AsNoTracking()
-            .Where(player => player.IsActive && requestedIds.Contains(player.Id))
+            .Where(player => !player.IsArchived && requestedIds.Contains(player.Id))
             .Select(player => player.Id)
             .ToArrayAsync(cancellationToken);
 

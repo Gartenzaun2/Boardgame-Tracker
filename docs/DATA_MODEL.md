@@ -24,7 +24,7 @@ Player
 - Id
 - Name
 - IsGuest
-- IsActive
+- IsArchived
 - CreatedAt (DateTimeOffset, UTC-Anlagezeitpunkt)
 ```
 
@@ -33,10 +33,10 @@ Regeln:
 - Gast und reguläre Spieler verwenden denselben Datentyp.
 - Ein Spieler kann später von Gast zu regulär wechseln, ohne seine ID
   oder Historie zu verlieren.
-- `IsActive` ist ein boolescher Zustand.
+- `IsArchived` ist ein boolescher Zustand.
 - `CreatedAt` wird beim Erzeugen eines Spielers gesetzt und durch Bearbeiten,
   Archivieren oder Reaktivieren nicht verändert. Kein abgeleitetes Datum.
-- Namen müssen nicht global eindeutig sein.
+- Player- und Group-Namen sind global eindeutig nach `Trim()` und `StringComparer.OrdinalIgnoreCase`.
 
 ### Group
 
@@ -491,3 +491,24 @@ Games/
 ```
 
 Der allgemeine Kern bleibt frei von Arche-Nova-Sonderfällen.
+
+## Identität und Namenseindeutigkeit
+
+Neue reguläre Entities erhalten ihre ID in C# über `Guid.CreateVersion7()`.
+Bestehende IDs bleiben gültig; Import übernimmt jede gültige, nichtleere GUID
+unverändert. Deterministische IDs fester Referenzdaten bleiben unverändert.
+Player.IsArchived ist false für aktive und true für archivierte Spieler; es gibt
+keine inverse Aktivitätsproperty. Die feste Group-Zusammensetzung bleibt erhalten.
+
+Player- und Group-Namen sind einschließlich archivierter Datensätze global eindeutig.
+Create, Rename und Import verwenden Trim + OrdinalIgnoreCase. SQLite erzwingt dies
+auch über eindeutige Namensindizes mit derselben Collation. Keine Fuzzy-, Akzent-,
+Satzzeichen- oder innere-Leerzeichen-Normalisierung.
+
+Bekannte Spiele behalten Game.Key als sprachneutrale technische Identität und
+lokalisierte Anzeigenamen. Aktuell gibt es nur Arche Nova. Custom Games und damit
+benutzerdefinierte Game-Namen/-Ergebnisfelder sind noch nicht implementiert und
+werden vom Import abgelehnt. Ihre spätere Namensprüfung muss auch die lokalisierten
+Namen bekannter Spiele reservieren; Anzeigenamen werden dadurch keine Identität.
+
+Austauschmodell und Referenzintegrität stehen in IMPORT_EXPORT.md.
