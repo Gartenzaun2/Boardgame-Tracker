@@ -64,7 +64,7 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         PreparationMilliseconds = timer.Elapsed.TotalMilliseconds;
     }
 
-    public RecognitionResult Analyze(string imagePath)
+    public RecognitionResult Analyze(string imagePath, ArkNovaBlackDiagnostics? diagnostics = null)
     {
         Stopwatch timer = Stopwatch.StartNew();
         using Mat image = ReadImage(imagePath); // OpenCV normalizes EXIF orientation by default.
@@ -126,12 +126,14 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
             return new(registration, [], new(decode, registered - decode, 0, timer.Elapsed.TotalMilliseconds));
         using Mat warped = new();
         Cv2.WarpPerspective(small, warped, transform, _reference.Size());
-        Dictionary<string, ColorScores> colors = AnalyzeFields(warped, validity, trackVisibility);
+        diagnostics?.RecordRegistration(registration, projected, target, inlierMask, AnalysisScale / _referenceRegistrationScale);
+        Dictionary<string, ColorScores> colors = AnalyzeFields(warped, validity, trackVisibility, diagnostics);
         return new(registration, colors, new(decode, registered - decode,
             timer.Elapsed.TotalMilliseconds - registered, timer.Elapsed.TotalMilliseconds));
     }
 
-    private Dictionary<string, ColorScores> AnalyzeFields(Mat warped, Mat validity, Dictionary<string, double> trackVisibility)
+    private Dictionary<string, ColorScores> AnalyzeFields(Mat warped, Mat validity, Dictionary<string, double> trackVisibility,
+        ArkNovaBlackDiagnostics? diagnostics)
     {
         using Mat currentRegion = new(warped, _scoringBounds);
         using Mat referenceRegion = new(_reference, _scoringBounds);
@@ -204,6 +206,11 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         for (int color = 0; color < names.Length; color++)
         {
             using Mat grown = GrowMask(masks[color], relaxed[color]);
+            if (color == 3 && diagnostics is not null)
+                diagnostics.Capture(new(warped, _reference, hsv, lab, referenceLab, currentSmooth, referenceSmooth,
+                    difference, masks[color], relaxed[color], grown, validity, _scoringBounds.Location),
+                    _fields.Where(field => field.Track == "conservation").Select(field =>
+                        new ArkNovaBlackDiagnostics.DiagnosticField(field.Value, field.Bounds, field.Mask, field.Core)).ToArray());
             Dictionary<string, FieldPrediction> tracks = [];
             foreach (string track in new[] { "attractiveness", "conservation", "reputation" })
             {

@@ -1,0 +1,17 @@
+{
+  "neighborhood": {
+    "top": 229,
+    "bottom": 366,
+    "left": 1862,
+    "right": 2024,
+    "location": {},
+    "size": {},
+    "topLeft": {},
+    "bottomRight": {}
+  },
+  "count": 0,
+  "dx": null,
+  "dy": null,
+  "magnitude": null,
+  "residuals": []
+}

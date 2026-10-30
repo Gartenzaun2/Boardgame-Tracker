@@ -1,0 +1,174 @@
+{
+  "image": "IMG_4267",
+  "registration": {
+    "success": true,
+    "matches": 807,
+    "inliers": 472,
+    "reprojectionP95": 2.4727855524019526,
+    "minimumTrackVisibility": 0.9863981356525217,
+    "inlierSpread": 1.5367704695439721,
+    "failure": null
+  },
+  "rawBlack": {
+    "tracks": {
+      "attractiveness": {
+        "value": 113,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9104082321187585,
+        "margin": 0.14520910248548569,
+        "fullColor": 0.16038461538461538,
+        "coreColor": 0.19279176201372997,
+        "trackVisibility": 0.9863981356525217,
+        "fieldVisibility": 1,
+        "grownFraction": 0.19192307692307692,
+        "neighbors": [
+          {
+            "value": 112,
+            "grownFraction": 0.13838612368024134,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 112,
+        "runnerUpScore": 0.7651991296332729,
+        "runnerUpFullColor": 0.12368024132730016,
+        "runnerUpCoreColor": 0.1435340022296544
+      },
+      "conservation": {
+        "value": 0,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": 1,
+        "warning": "conservative_neighbor_evidence",
+        "score": 0.9811355575567972,
+        "margin": 0.44144064611570033,
+        "fullColor": 0.20892193308550183,
+        "coreColor": 0.21526980482204364,
+        "trackVisibility": 0.9929571065067249,
+        "fieldVisibility": 1,
+        "grownFraction": 0.24126394052044609,
+        "neighbors": [
+          {
+            "value": 1,
+            "grownFraction": 0.14069767441860465,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 20,
+        "runnerUpScore": 0.5396949114410968,
+        "runnerUpFullColor": 0.08461376552304778,
+        "runnerUpCoreColor": 0.10234741784037557
+      },
+      "reputation": {
+        "value": 11,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9769136799393077,
+        "margin": 0.40626824940460704,
+        "fullColor": 0.4303646144650328,
+        "coreColor": 0.5182692307692307,
+        "trackVisibility": 1,
+        "fieldVisibility": 0.9999999999999999,
+        "grownFraction": 0.4811715481171548,
+        "neighbors": [
+          {
+            "value": 10,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 12,
+            "grownFraction": 0.07885196374622357,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.5706454305347006,
+        "runnerUpFullColor": 0.07287093942054433,
+        "runnerUpCoreColor": 0.11028037383177572
+      }
+    }
+  },
+  "measurements": [
+    {
+      "value": 0,
+      "fullColor": 0.20892193308550183,
+      "coreColor": 0.21526980482204364,
+      "fullDifference": 0.8951672862453531,
+      "coreDifference": 0.9161882893226176,
+      "score": 0.9811355575567972,
+      "grownFraction": 0.24126394052044609,
+      "fieldVisibility": 1,
+      "polygonPixelArea": 2690,
+      "corePixelArea": 1742,
+      "fullColorContribution": 0.46,
+      "coreColorContribution": 0.34,
+      "fullDifferenceContribution": 0.08951672862453532,
+      "coreDifferenceContribution": 0.09161882893226177,
+      "relaxedFraction": 0.254275092936803
+    },
+    {
+      "value": 19,
+      "fullColor": 0,
+      "coreColor": 0,
+      "fullDifference": 0.386833855799373,
+      "coreDifference": 0.31189810500155324,
+      "score": 0.06987319608009263,
+      "grownFraction": 0,
+      "fieldVisibility": 1,
+      "polygonPixelArea": 4785,
+      "corePixelArea": 3219,
+      "fullColorContribution": 0,
+      "coreColorContribution": 0,
+      "fullDifferenceContribution": 0.03868338557993731,
+      "coreDifferenceContribution": 0.031189810500155325,
+      "relaxedFraction": 0.0041797283176593526
+    },
+    {
+      "value": 20,
+      "fullColor": 0.08461376552304778,
+      "coreColor": 0.10234741784037557,
+      "fullDifference": 0.5586192380551462,
+      "coreDifference": 0.5010954616588419,
+      "score": 0.5396949114410968,
+      "grownFraction": 0.1309198063565565,
+      "fieldVisibility": 1,
+      "polygonPixelArea": 4751,
+      "corePixelArea": 3195,
+      "fullColorContribution": 0.2162351785588999,
+      "coreColorContribution": 0.2174882629107981,
+      "fullDifferenceContribution": 0.05586192380551463,
+      "coreDifferenceContribution": 0.05010954616588419,
+      "relaxedFraction": 0.13512944643233002
+    },
+    {
+      "value": 21,
+      "fullColor": 0,
+      "coreColor": 0,
+      "fullDifference": 0.4436379163108454,
+      "coreDifference": 0.3757941550190598,
+      "score": 0.08194320713299053,
+      "grownFraction": 0,
+      "fieldVisibility": 1,
+      "polygonPixelArea": 4684,
+      "corePixelArea": 3148,
+      "fullColorContribution": 0,
+      "coreColorContribution": 0,
+      "fullDifferenceContribution": 0.044363791631084545,
+      "coreDifferenceContribution": 0.03757941550190598,
+      "relaxedFraction": 0.0006404782237403928
+    }
+  ],
+  "contrasts": {
+    "score20Minus21": 0.4577517043081063,
+    "fullColor20Minus21": 0.08461376552304778,
+    "coreColor20Minus21": 0.10234741784037557,
+    "fullDifference20Minus21": 0.11498132174430081,
+    "coreDifference20Minus21": 0.12530130663978212,
+    "differenceContribution20Minus21": 0.02402826283840829
+  }
+}

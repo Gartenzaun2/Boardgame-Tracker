@@ -3,13 +3,16 @@ using System.Text.Json;
 using OpenCvSharp;
 using BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
+if (args.Length == 4 && args[0] == "diagnose-black")
+    return ArkNovaBlackDiagnostics.Run(args[1], args[2], args[3]);
+
 if (args.Length == 5 && args[0] == "confidence")
     return ArkNovaConfidenceBenchmark.Run(args[1], args[2], args[3], args[4]);
 
 // Explicit paths keep research input separate from the production app.
 if (args.Length < 3 || args[0] is not ("analyze" or "benchmark"))
 {
-    Console.Error.WriteLine("Usage: analyze <asset-directory> <photo> [report.json] | benchmark <asset-directory> <report.json> | confidence <asset-directory> <dataset-directory> <calibration|holdout> <report.json>");
+    Console.Error.WriteLine("Usage: analyze <asset-directory> <photo> [report.json] | benchmark <asset-directory> <report.json> | confidence <asset-directory> <dataset-directory> <calibration|holdout> <report.json> | diagnose-black <asset-directory> <dataset-directory> <output-directory>");
     return 2;
 }
 JsonSerializerOptions jsonOptions = new() { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

@@ -8,6 +8,11 @@ Aktueller Confidence-V2-Stand: **38,3 % Coverage bei 23/23 richtigen akzeptierte
 Holdout-Werten**. Das 75-%-Coverage-Ziel wird nicht erreicht. Alle Ergebnisse,
 Ablationen, Fehlertypen und Perspektiven stehen in [CONFIDENCE_V2.md](CONFIDENCE_V2.md).
 
+Die reine [Schwarz-/Artenschutz-Diagnose](Reports/BlackConservationDiagnosis/README.md)
+für IMG_4265–4268 enthält Masken, Heatmaps, Referenz-/Core-Vergleiche, Pixelstatistiken
+und lokale Feature-Residuen. Ground Truth 20 und Polygon 20 sind bestätigt.
+Die Messung findet Feld 0 als Fehlgewinner; Feld 21 enthält keine strengen Schwarzpixel.
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:
@@ -17,6 +22,7 @@ dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- benchmar
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- analyze tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/IMG_4257.JPG artifacts/ark-nova-photo.json
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 calibration artifacts/confidence-v2-calibration.json
 dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- confidence tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 holdout artifacts/confidence-v2-holdout.json
+dotnet run --project tools/Games/ArkNova/PhotoRecognition -c Release -- diagnose-black tools/Games/ArkNova/PhotoRecognition/Assets tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2 tools/Games/ArkNova/PhotoRecognition/Reports/BlackConservationDiagnosis
 ```
 
 `benchmark` prüft die unveränderte **Baseline A** auf allen sechs alten Fotos und zusätzlich ein leeres
@@ -40,6 +46,13 @@ separate boolesche Ergebnisse im Bericht; Exitcode 0 bestätigt keine Produktion
 Die Accuracy zählt akzeptierte Phantomfarben als Fehler. Alle Details zu Rohkandidat,
 Enthaltung, Sichtbarkeit und beiden Nachbarn bleiben in den Confidence-Berichten.
 Aufruf ohne gültige Argumente: Exitcode 2.
+
+`diagnose-black` beobachtet die unveränderten Zwischenmatrizen der vier ausdrücklich
+untersuchten Fotos. Alle Bildoperationen des Exports schreiben auf Kopien. Er exportiert
+PNG-Vergleiche, kontinuierliche Float-TIFF-Differenzdaten und JSON-/Markdown-Messwerte;
+die Diagnose verändert keine Erkennungsregel. Die manuellen Innenproben in
+`manual-stone-samples.json` sind ausschließlich Diagnoseannotationen und beeinflussen
+keine Feldentscheidung. Diagnosezeiten enthalten Dateiausgabe und sind keine Benchmarks.
 
 Ergebnisse sind technische Diagnostik. Der Analyzer kennt weder Spielernamen noch
 Partie-IDs und persistiert keine Wertung. Ein fehlender Kandidat ist `null`, kein

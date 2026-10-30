@@ -4,6 +4,12 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.10
+
+- Reine Schwarz-/Artenschutz-Diagnose für IMG_4265–4268: optionaler Observer exportiert unveränderte Warp-, Strict-/Relaxed-/Grown-Masken, kontinuierliche LAB-Differenz, Core-Vergleiche und lokale Feature-Residuen unter dem PhotoRecognition-Tool.
+- Feldmessungen und Pixelverteilungen für 19/20/21 sowie den tatsächlichen Fehlgewinner 0 dokumentiert. Feld 21 gewinnt in keinem Bild und enthält keine strengen Schwarzpixel; Feld 0 gewinnt mit dunklem Boarddruck/Referenzabweichung. Blickwinkelabhängige Untererfassung auf Feld 20 und Score-Sättigung aufgeschlüsselt.
+- Ground Truth, Polygongeometrie, Erkennungsschwellen, Occupancy-Gewichte und Confidence-Regeln unverändert. Verbesserungsvorschläge nur beschrieben; keine Benchmark-Optimierung. App-Version 0.10.0.10 / ApplicationVersion 47.
+
 ## 0.10.0.9
 
 - Confidence-V2-Benchmark mit 25 unverändert übernommenen 2000-px-Fotos, SHA-256-Prüfung und festem Calibration-/Holdout-Split (17/8). Alle 300 Entscheidungen einschließlich 117 absichtlich abwesender Farb-/Track-Kombinationen werden berücksichtigt.
