@@ -381,6 +381,15 @@ vorsorgliche Abstraktion.
 
 ## Historien-Slice
 
+Die allgemeine Spielerverwaltung liegt unter `Players/ListPlayers` und
+`Players/EditPlayer` in Application sowie den zugehörigen App-Features und
+SQLite-Adaptern. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
+das Bearbeiten speichert ausschließlich Name und Aktivstatus des Player-Aggregats.
+`App/Navigation/IGameHistoryHandler` ist die gemeinsame Navigation von Historie
+und Spielerverwaltung zu einer Partie. Jedes Spiel registriert seinen Handler
+im Modul; dieser entscheidet anhand des Session-Status über die konkrete Seite.
+Das allgemeine Player-Feature enthält keine Spielmodul-Abhängigkeiten.
+
 Allgemeine Completed-Leseprojektion unter `Application/History`, SQLite-Adapter in Infrastructure, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case und Persistenzport für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
 
 ## Gemeinsame Spielerfarben und Spielregeln

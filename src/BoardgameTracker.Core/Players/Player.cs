@@ -15,6 +15,7 @@ public sealed class Player
         SetName(name);
         IsGuest = isGuest;
         IsActive = true;
+        CreatedAt = DateTimeOffset.UtcNow;
     }
 
     public Guid Id { get; private set; }
@@ -24,6 +25,8 @@ public sealed class Player
     public bool IsGuest { get; private set; }
 
     public bool IsActive { get; private set; }
+
+    public DateTimeOffset CreatedAt { get; private set; }
 
     public void SetName(string name)
     {

@@ -4,6 +4,18 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.9.0.11
+
+- Einstellungen: „Spieler“ steht nach Darstellung und Standardspiel direkt vor den spielspezifischen Einstellungen.
+- App-Version 0.9.0.11 / ApplicationVersion 37.
+
+## 0.9.0.10
+
+- Allgemeine Spielerverwaltung in Einstellungen mit Gäste-/Archivfiltern, echten Erstellungsdaten, letzter Partie und getrenntem Edit-Flow für Name/Archivstatus.
+- Historie und Spielerbereich verwenden gemeinsame Spiel-History-Handler; laufende Partien öffnen den passenden Statusflow. Beziehungen und historische Daten bleiben beim Archivieren erhalten.
+- `Player.CreatedAt` ergänzt das Schema. Ältere Entwicklungsdatenbanken benötigen Neuinstallation/Neuaufbau mit Verlust lokaler Daten; kein Upgradepfad.
+- App-Version 0.9.0.10 / ApplicationVersion 36.
+
 ## 0.9.0.9
 
 - Gleichstandsansicht nach neutralen Platzgruppen gegliedert, einschließlich leerer Zielplätze. Kompakte Spielerzeilen behalten ihre Spielerfarbe und passende Textfarbe aus der bestehenden Palette; Platz-Chips bleiben neutral.

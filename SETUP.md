@@ -79,7 +79,10 @@ lokale Entwicklungsdaten verloren gehen. App-Daten nicht ungefragt löschen.
 
 Installationen mit dem alten Integer-Spezialkartenschema (vor Version 0.9)
 benötigen eine Neuinstallation; ihre lokalen Daten werden nicht übernommen.
-Datenbanken mit dem aktuellen GUID-Schema können weiterverwendet werden.
+Ab Version 0.9.0.10 benötigt `Player.CreatedAt` eine neue Entwicklungsdatenbank
+bzw. Neuinstallation. Ältere Datenbanken besitzen diese erforderliche Spalte nicht;
+lokale Entwicklungsdaten gehen beim Neuaufbau verloren. Es gibt keine Übernahme
+oder automatische Löschung bestehender Daten durch die App.
 Es gibt keine EF-Migrationswerkzeuge oder versionsgebundenen Upgrade-Skripte.
 Vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
 

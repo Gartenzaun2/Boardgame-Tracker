@@ -29,6 +29,7 @@ public static class ArkNovaServiceCollectionExtensions
 {
     public static IServiceCollection AddArkNova(this IServiceCollection services)
     {
+        services.AddTransient<IGameHistoryHandler, ArkNovaGameHistoryHandler>();
         services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         services.AddSingleton(ArkNovaPlayerColors.Rules);
         services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();

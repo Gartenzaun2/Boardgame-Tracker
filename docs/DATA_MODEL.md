@@ -25,6 +25,7 @@ Player
 - Name
 - IsGuest
 - IsActive
+- CreatedAt (DateTimeOffset, UTC-Anlagezeitpunkt)
 ```
 
 Regeln:
@@ -33,6 +34,8 @@ Regeln:
 - Ein Spieler kann später von Gast zu regulär wechseln, ohne seine ID
   oder Historie zu verlieren.
 - `IsActive` ist ein boolescher Zustand.
+- `CreatedAt` wird beim Erzeugen eines Spielers gesetzt und durch Bearbeiten,
+  Archivieren oder Reaktivieren nicht verändert. Kein abgeleitetes Datum.
 - Namen müssen nicht global eindeutig sein.
 
 ### Group

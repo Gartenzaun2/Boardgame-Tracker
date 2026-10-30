@@ -7,6 +7,8 @@ namespace BoardgameTracker.Application.Tests.Groups.CreateGroup;
 
 public sealed class CreateGroupUseCaseTests
 {
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task ExecuteAsync_CreatesGroupWithExistingAndNewPlayersInRequestedOrder()
     {
@@ -20,7 +22,7 @@ public sealed class CreateGroupUseCaseTests
             [
                 new CreateGroupPlayerInput(existingPlayerId, "Anna", false),
                 new CreateGroupPlayerInput(null, "Ben", true)
-            ]));
+            ]), Token);
 
         Assert.NotEqual(Guid.Empty, groupId);
         Assert.NotNull(dataAccess.SavedGroup);
@@ -45,7 +47,7 @@ public sealed class CreateGroupUseCaseTests
             useCase.ExecuteAsync(new CreateGroupCommand(
                 "Freitagabend",
                 false,
-                [new CreateGroupPlayerInput(playerId, "Anna", false)])));
+                [new CreateGroupPlayerInput(playerId, "Anna", false)]), Token));
     }
 
     private sealed class FakeCreateGroupDataAccess(IReadOnlySet<Guid> activeIds)

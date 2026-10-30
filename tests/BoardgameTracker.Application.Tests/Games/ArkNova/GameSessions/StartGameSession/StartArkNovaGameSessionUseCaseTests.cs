@@ -9,6 +9,8 @@ namespace BoardgameTracker.Application.Tests.Games.ArkNova.GameSessions.StartGam
 
 public sealed class StartArkNovaGameSessionUseCaseTests
 {
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
     [Fact]
     public async Task ExecuteAsync_PersistsGameSessionAndArkNovaSnapshots()
     {
@@ -31,7 +33,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             [
                 new(anna, PlayerColor.Blue, 1, 2, 1),
                 new(ben, PlayerColor.Red, 3, 4, 4)
-            ]));
+            ]), Token);
 
         Assert.NotEqual(Guid.Empty, gameSessionId);
         Assert.NotNull(dataAccess.SavedGameSession);
@@ -65,7 +67,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
                 [
                     new(anna, PlayerColor.Blue, 1, 2, 1),
                     new(chris, PlayerColor.Red, 3, 4, 3)
-                ])));
+                ]), Token));
     }
 
     [Fact]
@@ -85,7 +87,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 2, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 2, 1)]), Token));
     }
 
     [Fact]
@@ -105,7 +107,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 99, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 99, 1)]), Token));
     }
 
     [Fact]
@@ -125,7 +127,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             new StartArkNovaGameSessionCommand(
                 groupId,
                 DateTimeOffset.UtcNow,
-                [new(anna, PlayerColor.Blue, 1, 2, 1)])));
+                [new(anna, PlayerColor.Blue, 1, 2, 1)]), Token));
     }
 
     private sealed class FakeDataAccess(StartArkNovaGameSessionContext context)

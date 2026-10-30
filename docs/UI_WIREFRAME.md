@@ -225,6 +225,17 @@ und erfordert Bestätigung. Statistik und deren eigene Filter folgen separat.
 
 ## Einstellungen und Spezialkartenverwaltung
 
+Die allgemeinen Einstellungen zeigen `Darstellung`, `Standardspiel`, `Spieler`
+und anschließend die spielspezifischen Einstellungen. Die Spielerübersicht
+verwendet Header mit Zurück/Info, Gäste-/Archiv-Switchfilter (anfangs beide aus) und
+kompakte Surface-Karten. Name und Edit-Icon stehen oben, darunter klein `Erstellt …`.
+Ein eigener Secondary-Button `Zuletzt gespielt …` öffnet die letzte Partie,
+einschließlich laufender Partien. Ohne Partie steht dort ein neutraler, nicht
+klickbarer Bereich `Noch keine Partie`. Gast-/Archiv-Chips folgen nur bei Bedarf.
+Die übrige Karte besitzt keine Bearbeitungsgeste. Der Editor enthält Name,
+Archiv-Switch und Speichern; Änderungen bleiben bis Speichern ein Entwurf.
+Hilfetext liegt ausschließlich hinter dem Info-Icon.
+
 Allgemeine Einstellungen enthalten Standardspiel und „Darstellung“ mit Deep
 Forest, Königsblau und Dunkel. Struktur bleibt über alle Themes gleich. Farbe,
 Shell-TabBar und aktive Auswahl richten sich nach dem Design Guide.
