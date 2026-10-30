@@ -862,4 +862,5 @@ Gruppen: {6} zusammengeführt, {7} neu
 Referenzdaten: {8} vorhanden, {9} neu
 Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   </data>
+  <data name="TransferShare" xml:space="preserve"><value>Teilen</value></data>
 </root>

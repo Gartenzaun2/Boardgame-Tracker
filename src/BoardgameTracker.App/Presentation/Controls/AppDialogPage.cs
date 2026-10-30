@@ -104,8 +104,8 @@ public sealed class AppDialogPage : ContentPage
         return await PresentAsync(owner, dialog) == 0;
     }
 
-    public static Task<int> ChooseAsync(Page owner, string title, IReadOnlyList<string> options, int selectedIndex) =>
-        PresentAsync(owner, new AppDialogPage(title, null, AppResources.Close, null, false, options, selectedIndex));
+    public static Task<int> ChooseAsync(Page owner, string title, IReadOnlyList<string> options, int selectedIndex, string? cancelText = null) =>
+        PresentAsync(owner, new AppDialogPage(title, null, cancelText ?? AppResources.Close, null, false, options, selectedIndex));
 
     private static async Task<int> PresentAsync(Page owner, AppDialogPage dialog)
     {

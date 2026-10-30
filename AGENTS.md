@@ -222,6 +222,10 @@ Dokumentation nur bei geändertem gültigem Projektstand aktualisieren; Versions
 
 Commit und Push ausschließlich auf ausdrückliche Anweisung, vorher Änderungen und ausgeführte Tests zusammenfassen. Ohne ausdrücklichen Auftrag keine Branches löschen oder History umschreiben.
 
+## Versionsprüfung vor Abschluss
+
+Bei jedem Änderungsauftrag vor dem Abschluss beide App-Versionswerte gemäß `SETUP.md` erhöhen und den tatsächlichen Umfang in `CHANGELOG.md` dokumentieren. Das gilt auch für reine Dokumentations-, Test- und Konfigurationsänderungen sowie ohne Commit, Push oder Paket. Die Prüfung gehört zum Abschluss wie `git diff`: keine Arbeit als abgeschlossen melden, solange die Versionswerte gegenüber dem Auftragsbeginn nicht erhöht sind.
+
 ## Abschlussbericht
 Kurz nennen: Änderungen und wichtige Dateien, tatsächlich ausgeführte Tests/Builds samt Ergebnis, offene Probleme/Entscheidungen, Dokumentationsanpassungen und Bereitschaft für Commit/Push. Bereitschaft ist keine Erlaubnis zur Ausführung.
 

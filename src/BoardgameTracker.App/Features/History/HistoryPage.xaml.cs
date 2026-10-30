@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.App.Presentation.Controls;
 using System.Globalization;
@@ -14,6 +15,7 @@ public partial class HistoryPage : ContentPage
 {
     private readonly IHistoryQuery _query;
     private readonly HistoryTransferUseCase _transfer;
+    private readonly HistoryExportFlow _exportFlow;
     private Guid[] _visibleIds = [];
     private bool _transferring;
     private readonly ILogger<HistoryPage> _logger;
@@ -29,12 +31,13 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers, HistoryTransferUseCase transfer)
+    public HistoryPage(IHistoryQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameHistoryHandler> historyHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
     {
         InitializeComponent();
         ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);
         _query = query;
         _transfer = transfer;
+        _exportFlow = exportFlow;
         _settings = settings;
         _logger = logger;
         _historyHandlers = historyHandlers;
@@ -142,7 +145,7 @@ public partial class HistoryPage : ContentPage
         HistoryCard[] visible = cards.ToArray();
         _visibleIds = visible.Select(card => card.Data.GameSessionId).ToArray();
         ExportButton.Text = string.Format(_visibleIds.Length == 1 ? AppResources.TransferExportOne : AppResources.TransferExportMany, _visibleIds.Length);
-        ExportButton.IsEnabled = _visibleIds.Length > 0;
+        ExportButton.IsEnabled = HistoryExportFlow.CanExport(_visibleIds);
         var months = visible.GroupBy(card => (card.Data.StartedAt.ToLocalTime().Year, card.Data.StartedAt.ToLocalTime().Month));
 
         Sessions.ItemsSource = months.Select(month => new HistoryMonth(

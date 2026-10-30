@@ -313,7 +313,19 @@ Feste untere Aktionsleiste außerhalb der scrollenden Partienliste:
 ```
 
 Bei null Ergebnissen ist Export deaktiviert. Import öffnet die native Dateiauswahl,
-Export die native Teilen-Funktion. Busy-Overlay und Aufrufschutz sichern den Flow.
+Export erzeugt zuerst einmal den validierten Inhalt und öffnet dann den App-Dialog:
+
+```text
+Exportieren
+[Speichern]
+[Teilen]
+[Abbrechen]
+```
+
+Speichern öffnet den nativen Dokument-Picker mit vorgeschlagenem .bgt-Dateinamen und
+Speicherortwahl; Teilen öffnet den nativen Share-Sheet. Die Auswahl verändert die
+exportierte Partiemenge nicht. Jeder Abbruch beendet den Flow ohne Fehler oder zweite
+Ausgabeaktion. Busy-Overlay und Aufrufschutz sichern den Flow.
 Es gibt keinen zusätzlichen Einstieg unter Einstellungen.
 
 Resolve verwendet App-Auswahldialoge: importierte Gruppe mit sicheren Zuordnungen,

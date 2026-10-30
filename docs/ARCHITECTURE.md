@@ -432,3 +432,10 @@ und IGameTransferPersistence (Projektion, Referenzmatching und Persistenz auf de
 Context). Arche Nova besitzt seine DTOs und Adapter unter Games/ArkNova; allgemeiner
 Transfercode kennt keine Arche-Nova-Felder. Custom Games sind noch nicht unterstützt.
 Format, Matching und Limits: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
+
+Die Application erzeugt BgtExportContent genau einmal vor der Ausgabeauswahl; das
+versionierte Austauschformat kennt keinen Transport. App/Features/History/Export
+orchestriert über HistoryExportFlow und registrierte IHistoryExportTarget-Ausgabeziele
+Speichern oder Teilen. Native Dokument-Picker liegen unter Platforms/Android und
+Platforms/iOS; Share verwendet MAUI. Weitere Transportziele ändern weder das
+Austauschmodell noch die Importpipeline. Details stehen in IMPORT_EXPORT.md.

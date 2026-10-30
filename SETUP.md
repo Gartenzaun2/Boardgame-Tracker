@@ -91,13 +91,15 @@ Vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
 In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
 
 ```xml
-<ApplicationDisplayVersion>x.y.z</ApplicationDisplayVersion>
+<ApplicationDisplayVersion>x.y.z.r</ApplicationDisplayVersion>
 <ApplicationVersion>n</ApplicationVersion>
 ```
 
-- `ApplicationDisplayVersion` entspricht exakt der ausgelieferten Version.
-- `ApplicationVersion` steigt bei jedem installierbaren Entwicklungsupdate.
-- Vor dem Verpacken werden beide Werte geprüft.
+- Jeder abgeschlossene Änderungsauftrag erhöht `ApplicationDisplayVersion` und `ApplicationVersion`, auch bei reinen Dokumentations-, Test- oder Konfigurationsänderungen.
+- Die Erhöhung erfolgt vor Abschluss der Arbeit, unabhängig von Commit, Push, Verpackung oder Installation. Mehrere Dateien und Korrekturschritte innerhalb desselben Auftrags benötigen keine getrennten Erhöhungen.
+- Ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte Komponente von `ApplicationDisplayVersion` um eins; `ApplicationVersion` steigt ebenfalls um eins. Beide Werte müssen gegenüber dem Auftragsbeginn erhöht sein.
+- `ApplicationDisplayVersion` entspricht dem aktuellen Entwicklungsstand und bei Auslieferung exakt der ausgelieferten Version.
+- Vor jedem Abschluss werden beide Werte und der zugehörige Changelog-Eintrag geprüft; vor dem Verpacken werden sie erneut geprüft.
 - Versionshistorie steht ausschließlich in `CHANGELOG.md`.
 
 ## Lieferregel für Entwicklungs-Updates

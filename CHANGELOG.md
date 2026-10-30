@@ -4,7 +4,12 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
-## Unveröffentlicht
+## 0.10.0.1
+
+- App-Version 0.10.0.1 / ApplicationVersion 38; fehlende Versionserhöhung für den aktuellen Entwicklungsstand nachgeholt.
+- Versionsregel und Abschlussprüfung gelten für jeden Änderungsauftrag, einschließlich Dokumentation und Konfiguration, unabhängig von Commit oder Verpackung.
+
+- History-Export: Speichern/Teilen/Abbrechen nach einmaliger Exporterzeugung; native Dokument-Picker für Android und iOS, getrennte erweiterbare Ausgabeziele ohne Doppelaktion.
 
 - Lokaler .bgt-Import/Export abgeschlossener Arche-Nova-Partien aus der Historie mit Resolve, Vorschau und atomarem Commit.
 - Globale 1:1-Spielerzuordnungen, lokale Stammdatenpriorität, Gruppentrennung und Spezialkartenmatching.
