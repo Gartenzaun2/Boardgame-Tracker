@@ -51,6 +51,18 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e) =>
         await Shell.Current.GoToAsync("..");
 
+    private void OnMoveUpClicked(object? sender, EventArgs e)
+    {
+        if (sender is ImageButton { CommandParameter: ArkNovaPreparationPlayerViewModel player })
+            _viewModel.MovePlayer(player, -1);
+    }
+
+    private void OnMoveDownClicked(object? sender, EventArgs e)
+    {
+        if (sender is ImageButton { CommandParameter: ArkNovaPreparationPlayerViewModel player })
+            _viewModel.MovePlayer(player, 1);
+    }
+
     private void OnDrawZooPlansClicked(object? sender, EventArgs e) =>
         _viewModel.DrawZooPlans();
 

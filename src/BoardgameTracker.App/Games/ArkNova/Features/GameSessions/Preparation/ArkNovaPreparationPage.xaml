@@ -76,7 +76,7 @@
                                 BackgroundColor="{Binding ColorBrush}"
                                 Style="{StaticResource CardBorder}">
                                 <VerticalStackLayout Spacing="9">
-                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
                                         <Border
                                             HeightRequest="32"
                                             Stroke="#66FFFFFF"
@@ -94,6 +94,20 @@
                                         </VerticalStackLayout>
                                         <ImageButton
                                             Grid.Column="2"
+                                            Clicked="OnMoveUpClicked" CommandParameter="{Binding .}"
+                                            Source="icon_up.png" IsEnabled="{Binding CanMoveUp}"
+                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
+                                            Style="{StaticResource IconButton}"
+                                            SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
+                                        <ImageButton
+                                            Grid.Column="3"
+                                            Clicked="OnMoveDownClicked" CommandParameter="{Binding .}"
+                                            Source="icon_down.png" IsEnabled="{Binding CanMoveDown}"
+                                            presentation:IconTint.Color="{Binding PlayerTextColor}"
+                                            Style="{StaticResource IconButton}"
+                                            SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
+                                        <ImageButton
+                                            Grid.Column="4"
                                             Clicked="OnColorClicked"
                                             Source="icon_palette.png"
                                             presentation:IconTint.Color="{Binding PlayerTextColor}"

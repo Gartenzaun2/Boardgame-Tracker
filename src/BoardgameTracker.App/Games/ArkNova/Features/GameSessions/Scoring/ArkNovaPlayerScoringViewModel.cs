@@ -7,12 +7,14 @@ using BoardgameTracker.Core.Games.ArkNova;
 using CommunityToolkit.Mvvm.ComponentModel;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Players;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 public partial class ArkNovaPlayerScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
-    IArkNovaSettingsStore settingsStore) : ObservableObject
+    IArkNovaSettingsStore settingsStore,
+    ILogger<ArkNovaPlayerScoringViewModel> logger) : ObservableObject
 {
     // MAUI Slider bounds require double values, including when supplied through x:Static.
     public const double ReputationMinimum = ArkNovaScoringRules.MinimumReputation;
@@ -20,7 +22,13 @@ public partial class ArkNovaPlayerScoringViewModel(
 
     public ArkNovaCorrectionDraft? Draft { get; set; }
     private CancellationTokenSource? _autosaveCts;
+    private readonly SemaphoreSlim _saveGate = new(1, 1);
     private bool _loading;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    public partial bool IsBusy { get; private set; }
+    public bool IsIdle => !IsBusy;
 
     [ObservableProperty] public partial Guid GameSessionId { get; private set; }
     [ObservableProperty] public partial Guid PlayerId { get; private set; }
@@ -135,16 +143,37 @@ public partial class ArkNovaPlayerScoringViewModel(
     public async Task FlushAsync(CancellationToken cancellationToken = default)
     {
         _autosaveCts?.Cancel();
-        if (TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
+        IsBusy = true;
+        try
         {
+            await SaveValuesAsync(cancellationToken, cancellationToken);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task SaveValuesAsync(CancellationToken waitToken, CancellationToken saveToken)
+    {
+        await _saveGate.WaitAsync(waitToken);
+        try
+        {
+            if (!TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
+                return;
+
             if (Draft is not null)
             {
                 Draft.SetScore(PlayerId, attractiveness, conservation, reputation);
             }
             else
             {
-                await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cancellationToken);
+                await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, saveToken);
             }
+        }
+        finally
+        {
+            _saveGate.Release();
         }
     }
 
@@ -170,13 +199,15 @@ public partial class ArkNovaPlayerScoringViewModel(
         try
         {
             await Task.Delay(450, cts.Token);
-            if (!TryReadValues(out int? attractiveness, out int? conservation, out int? reputation))
-            {
-                return;
-            }
-            await scoringUseCase.SavePlayerScoreAsync(GameSessionId, PlayerId, attractiveness, conservation, reputation, cts.Token);
+            // Cancel queued/debounced work, but let an active write finish before the final flush.
+            await SaveValuesAsync(cts.Token, CancellationToken.None);
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested) { }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not autosave Ark Nova player scoring.");
+            ValidationMessage = AppResources.CorrectionFailed;
+        }
         finally
         {
             if (ReferenceEquals(_autosaveCts, cts))

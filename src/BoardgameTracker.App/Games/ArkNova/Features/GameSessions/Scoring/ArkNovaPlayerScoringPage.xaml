@@ -19,7 +19,7 @@
             </Style.Triggers>
         </Style>
     </ContentPage.Resources>
-    <Grid Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="18">
+    <Grid x:Name="ScoringInput" Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="18" IsEnabled="{Binding IsIdle}">
         <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
                 <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />

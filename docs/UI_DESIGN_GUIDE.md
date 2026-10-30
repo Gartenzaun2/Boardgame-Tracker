@@ -14,7 +14,8 @@ Der Nutzer kann zwischen drei Themes wählen:
 
 Die Theme-Auswahl gehört in die allgemeinen App-Einstellungen und wird dauerhaft gespeichert.
 
-**Deep Forest ist das Standard-Theme.**
+**Dunkel ist ohne gespeicherte Auswahl das Standard-Theme.** Eine gespeicherte
+Nutzerwahl bleibt erhalten und wird vor dem Aufbau der ersten App-Ansicht angewendet.
 
 Spielbezogene Farben und Grafiken bleiben vom App-Theme getrennt. Insbesondere werden nicht verändert:
 
@@ -424,6 +425,17 @@ Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: A
 
 ## Dialogabdeckung
 
+Die Gleichstandsansicht verwendet neutrale Platzüberschriften mit HeaderDivider;
+auch leere Zielgruppen bleiben sichtbar. Darunter stehen kompakte Spielerzeilen
+mit Name, Platz-Chips und rechtsbündigen Punkten in einer horizontalen Reihe.
+Die Zeile übernimmt Hintergrund und Textkontrast aus der bestehenden Spielerpalette,
+ohne Farbe Surface/TextPrimary. Gruppenüberschriften und Buttons bleiben neutral.
+Namen dürfen bei Platzmangel gekürzt werden; keine redundante Rangnummer am Namen.
+Die 32-dp-Platz-Chips zeigen nur die Zahl. Surface/Outline kennzeichnen verfügbare
+Plätze, SelectedSurface/SelectedBorder und eine stärkere Kontur die eigene Auswahl.
+Ein Info-Icon öffnet die lokalisierte Erklärung über `AppDialogPage`; permanenter
+Hilfetext, Pfeile und Drag & Drop entfallen hier.
+
 Die appinternen Auswahlen verwenden zentral `SelectionDialog` und `TextActionButton`
 zum Schließen. Informationen, Fehler und Sicherheitsabfragen sowie die Auswahl von
 Historienfiltern, Theme und Standardspiel werden über `AppDialogPage` dargestellt.
@@ -438,7 +450,7 @@ Der aktuelle Dialogbestand steht in `UI_WIREFRAME.md`; die Anleitung für expliz
 
 ## Splashscreen und App-Start
 
-Die native Startfläche verwendet unabhängig von der gespeicherten Darstellung fest den dunklen AppBackground `#141A17`, damit beim Öffnen keine unerwartet helle Startfläche erscheint. Das vorhandene Splash-Logo bleibt erhalten. Der Betriebssystem-Splash wird vor dem Auslesen der App-Einstellungen erzeugt und verwendet keine MAUI-DynamicResources. Die anschließende Ladeansicht und App verwenden sofort die gespeicherte Darstellung; bei fehlender Auswahl bleibt Deep Forest das Standard-Theme.
+Die native Startfläche verwendet unabhängig von der gespeicherten Darstellung fest den dunklen AppBackground `#141A17`, damit beim Öffnen keine unerwartet helle Startfläche erscheint. Das vorhandene Splash-Logo bleibt erhalten. Der Betriebssystem-Splash wird vor dem Auslesen der App-Einstellungen erzeugt und verwendet keine MAUI-DynamicResources. Die anschließende Ladeansicht und App verwenden sofort die gespeicherte Darstellung; bei fehlender Auswahl ist Dunkel das Standard-Theme.
 
 ## Farbauswahl in Gruppenformularen
 

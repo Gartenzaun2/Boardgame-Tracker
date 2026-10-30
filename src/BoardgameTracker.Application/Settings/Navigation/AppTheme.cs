@@ -9,6 +9,6 @@ public enum AppTheme
 
 public static class AppThemeSelection
 {
-    public static AppTheme FromStoredValue(int value) => Enum.IsDefined(typeof(AppTheme), value)
-        ? (AppTheme)value : AppTheme.DeepForest;
+    public static AppTheme FromStoredValue(int? value) => value is int stored && Enum.IsDefined(typeof(AppTheme), stored)
+        ? (AppTheme)stored : AppTheme.Dark;
 }

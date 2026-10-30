@@ -30,7 +30,18 @@ public partial class ArkNovaScoringViewModel(
     [ObservableProperty] public partial Guid GameSessionId { get; private set; }
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string DateText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial bool IsBusy { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(CanComplete))]
+    public partial bool IsBusy { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(CanComplete))]
+    public partial bool IsSaving { get; set; }
+    public bool IsIdle => !IsBusy && !IsSaving;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanComplete))]
+    public partial bool CompletionSaved { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
@@ -43,7 +54,7 @@ public partial class ArkNovaScoringViewModel(
     public bool IsLiveScoring => !IsHistorical;
     public string CompleteText => IsHistorical ? AppResources.SaveCorrection : AppResources.CompleteScoring;
     public string DeleteText => IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard;
-    public bool CanComplete => Players.Count > 0 && Players.All(x => x.HasRequiredValues);
+    public bool CanComplete => IsIdle && !CompletionSaved && Players.Count > 0 && Players.All(x => x.HasRequiredValues);
 
     public string SpecialCardPickerTitle
     {
@@ -92,6 +103,7 @@ public partial class ArkNovaScoringViewModel(
             OnPropertyChanged(nameof(DeleteText));
             ArkNovaSettings settings = settingsStore.Get();
             GameSessionId = data.GameSessionId;
+            CompletionSaved = false;
             GroupName = data.GroupName;
             DateText = data.StartedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
             _cardCatalog = data.CardCatalog;
@@ -196,7 +208,7 @@ public partial class ArkNovaScoringViewModel(
 
     public async Task<ArkNovaCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
     {
-        if (!CanComplete)
+        if (Players.Count == 0 || Players.Any(x => !x.HasRequiredValues))
         {
             return null;
         }
@@ -219,6 +231,7 @@ public partial class ArkNovaScoringViewModel(
         else
         {
             await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+            CompletionSaved = true;
         }
     }
 

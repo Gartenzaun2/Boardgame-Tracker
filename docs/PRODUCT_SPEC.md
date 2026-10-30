@@ -217,8 +217,11 @@ diese Vorbereitung; die relative Reihenfolge bleibt erhalten.
 
 ### Reihenfolge ändern
 
-Die relative Reihenfolge soll erhalten bleiben. Ein Durchrotieren
-verschiebt lediglich den ersten Spieler nach hinten.
+„Reihenfolge rotieren“ verschiebt den ersten Spieler nach hinten und erhält
+die relative Reihenfolge. Zusätzlich verschieben Hoch-/Runter-Pfeile einzelne
+Spieler sofort um eine Position. An den Listenenden ist die jeweilige Richtung
+deaktiviert. Diese Änderungen gelten nur für die konkrete Partie und überschreiben
+nicht die Default-Reihenfolge der Gruppe.
 
 ### Startspieler auslosen
 
@@ -391,26 +394,42 @@ selbst bleibt ein späterer Slice.
 
 ## Gleichstand
 
-Bei Punktgleichstand öffnet `Wertung abschließen` einen eigenen Screen
-`Gleichstände bearbeiten`. Alle Platzierungsrahmen bleiben sichtbar; nur die
-Spieler eines tatsächlichen Punktegleichstands sind innerhalb ihres
-ursprünglichen Rangbereichs verschiebbar. Nicht punktgleiche Spieler bleiben
-fest.
+Bei Punktgleichstand öffnet `Wertung abschließen` den Screen
+`Gleichstände bearbeiten`. Jede Gruppe mit gleicher fachlicher Punktzahl bildet
+einen unabhängigen Gleichstandsblock. Sein Platzbereich beginnt hinter allen
+besser bewerteten Spielern und enthält genau einen aufeinanderfolgenden Platz
+je beteiligtem Spieler. Mehrere Blöcke dürfen sich nicht überschneiden.
 
-Bleiben punktgleiche Spieler im selben Rahmen, bleibt der tatsächliche
-Gleichstand bestehen. Competition Ranking wird verwendet, z. B.:
+Platzgruppen sind die primäre Struktur: Jeder Platz von `1..n` erhält eine neutrale
+Überschrift mit Divider. Darunter stehen die aktuell zugeordneten Spieler. Auch
+leere mögliche Zielgruppen bleiben sichtbar. Ein Klick auf einen Platz-Chip
+verschiebt ausschließlich diesen Spieler sofort in die entsprechende Gruppe.
+Mehrere Spieler dürfen dieselbe Gruppe belegen; es gibt keine exklusive
+Platzreservierung, keinen Tausch und keine automatische Neuverteilung.
 
-- `1, 1, 3`
-- `1, 2, 2, 4`
+Jede Spielerzeile enthält Name, kompakte Platz-Chips und rechtsbündige Punkte
+vertikal mittig in einer einzigen Reihe. Der Rang wird nur in der Gruppenüberschrift
+angezeigt. Nur Teilnehmer eines Gleichstandsblocks erhalten dessen Platz-Chips.
+Die Spielerzeile verwendet ihre bestehende Spielerfarbe mit zugehörigem Textkontrast;
+Gruppen und Chips bleiben neutral bzw. verwenden Surface-/Selected-Ressourcen.
+Ohne Spielerfarbe gilt die neutrale Darstellung. Erklärungen stehen hinter dem Info-Icon.
 
-Bei einem Dreifachgleichstand sind auch Aufteilungen wie `2,2,2`, `2,2,4`,
-`2,3,3` oder `2,3,4` möglich, sofern sie dem Competition Ranking entsprechen.
-Die Anzahl unterstützter Artenschutzprojekte wird nicht gespeichert.
+Geteilte Plätze bleiben beim Öffnen erhalten und sind innerhalb des eigenen
+Tie-Blocks beliebig speicherbar, auch `1,3,3,4`. Ranglücken werden nicht automatisch
+geschlossen. Die automatische Ausgangsplatzierung folgt weiterhin Competition
+Ranking. Nicht punktgleiche Spieler und die Grenzen anderer Blöcke bleiben unverändert.
+Pfeile und Drag & Drop werden hier nicht verwendet.
 
-Nach der gegebenenfalls nötigen Gleichstandsauflösung werden die finalen
-`Placement`-Werte gespeichert und die `GameSession` auf `Completed` gesetzt. Der
-Ergebnis-Screen bleibt anschließend sichtbar, bis der Nutzer explizit `Fertig`
-wählt.
+Beispiel: Bei Punkten `120,120,110,100,100,90` erhält der erste Block ausschließlich
+Plätze `1,2`, der zweite ausschließlich `4,5`. Die übrigen Spieler bleiben auf
+`3` und `6`. Die Score-Berechnung wird durch die Platzwahl nicht verändert.
+Bedienhinweise stehen ausschließlich hinter dem Info-Icon im Kopf.
+
+Nach der Auflösung werden die finalen `Placement`-Werte gespeichert und die
+`GameSession` auf `Completed` gesetzt. Dieselben Platzierungen erscheinen beim
+erneuten Öffnen und in der Historie. Der Ergebnis-Screen bleibt sichtbar, bis
+der Nutzer explizit `Fertig` wählt. Die Anzahl unterstützter Artenschutzprojekte
+wird nicht gespeichert.
 
 ## Historie
 

@@ -148,7 +148,7 @@
     <value>Zoopläne auslosen</value>
   </data>
   <data name="RotateOrder" xml:space="preserve">
-    <value>Reihenfolge durchrotieren</value>
+    <value>Reihenfolge rotieren</value>
   </data>
   <data name="ChooseColor" xml:space="preserve">
     <value>Farbe wählen</value>
@@ -410,7 +410,6 @@
 <data name="PlaceFormat" xml:space="preserve"><value>Platz {0}</value></data>
 <data name="PointsFormat" xml:space="preserve"><value>{0} Punkte</value></data>
 <data name="TieInvalid" xml:space="preserve"><value>Die aktuelle Aufteilung ist noch keine gültige Rangfolge.</value></data>
-<data name="DragHere" xml:space="preserve"><value>Hierher ziehen</value></data>
 <data name="CalculatedPoints" xml:space="preserve"><value>Berechnete Punkte</value></data>
 <data name="OptionalValue" xml:space="preserve"><value>optional</value></data>
 <data name="OptionalReputation" xml:space="preserve"><value>optional · 1–15</value></data>
@@ -421,7 +420,7 @@
 <data name="Attractiveness" xml:space="preserve"><value>Attraktivität</value></data>
 <data name="Conservation" xml:space="preserve"><value>Artenschutz</value></data>
 <data name="ResolveTies" xml:space="preserve"><value>Gleichstände bearbeiten</value></data>
-<data name="ResolveTiesHint" xml:space="preserve"><value>Nur punktgleiche Spieler können innerhalb ihres Bereichs verschoben werden.</value></data>
+<data name="ResolveTiesHint" xml:space="preserve"><value>Bei Gleichstand kannst du die beteiligten Spieler zwischen den verfügbaren Platzgruppen verschieben. Mehrere Spieler dürfen weiterhin denselben Platz belegen. Die Auswahl ändert nur diesen Spieler; andere Gleichstände bleiben unverändert.</value></data>
 <data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
 <data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
 <data name="ThemeDeepForest" xml:space="preserve"><value>Deep Forest</value></data>
@@ -494,4 +493,5 @@
     <value>Ruf nicht erfasst</value>
   </data>
   <data name="SpecialCardUsageHint" xml:space="preserve"><value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value></data>
+  <data name="NavigationAfterSaveFailed" xml:space="preserve"><value>Die Wertung wurde gespeichert. Die nächste Ansicht konnte nicht geöffnet werden. Bitte zurückgehen und die Partie erneut öffnen.</value></data>
 </root>

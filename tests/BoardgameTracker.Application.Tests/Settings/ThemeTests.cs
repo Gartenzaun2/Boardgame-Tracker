@@ -5,21 +5,22 @@ namespace BoardgameTracker.Application.Tests.Settings;
 public sealed class ThemeTests
 {
     [Theory]
-    [InlineData(-1, AppTheme.DeepForest)]
+    [InlineData(null, AppTheme.Dark)]
+    [InlineData(-1, AppTheme.Dark)]
     [InlineData(0, AppTheme.DeepForest)]
     [InlineData(1, AppTheme.RoyalBlue)]
     [InlineData(2, AppTheme.Dark)]
-    [InlineData(99, AppTheme.DeepForest)]
-    public void StoredSelection_UsesDefaultForUnknownValues(int stored, AppTheme expected)
+    [InlineData(99, AppTheme.Dark)]
+    public void StoredSelection_UsesDefaultForUnknownValues(int? stored, AppTheme expected)
         => Assert.Equal(expected, AppThemeSelection.FromStoredValue(stored));
 
     [Fact]
     public void NavigationUpdates_PreserveAppearance()
     {
-        Assert.Equal(AppTheme.DeepForest, AppNavigationSettings.Default.Theme);
-        var settings = AppNavigationSettings.Default with { Theme = AppTheme.Dark };
+        Assert.Equal(AppTheme.Dark, AppNavigationSettings.Default.Theme);
+        var settings = AppNavigationSettings.Default with { Theme = AppTheme.DeepForest };
         var updated = settings with { LastMainSection = AppMainSection.History, SelectedGameKey = "ark-nova" };
-        Assert.Equal(AppTheme.Dark, updated.Theme);
+        Assert.Equal(AppTheme.DeepForest, updated.Theme);
     }
 
     [Theory]

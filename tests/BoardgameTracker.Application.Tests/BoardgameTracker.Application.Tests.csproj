@@ -15,6 +15,7 @@
     <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\ArkNovaCardSymbolPresentation.cs" Link="Presentation\ArkNovaCardSymbolPresentation.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Presentation\Controls\NumberWheelRange.cs" Link="Presentation\NumberWheelRange.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\Features\GameSessions\Scoring\ArkNovaPlayerScoringViewModel.cs" Link="Presentation\ArkNovaPlayerScoringViewModel.cs" />
+    <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\Features\GameSessions\Scoring\ArkNovaTieResolutionViewModel.cs" Link="Presentation\ArkNovaTieResolutionViewModel.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Resources\Localization\AppResources.cs" Link="Presentation\AppResources.cs" />
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Resources\Localization\AppResources.resx" LogicalName="BoardgameTracker.App.Resources.Localization.AppResources.resources" />
   </ItemGroup>

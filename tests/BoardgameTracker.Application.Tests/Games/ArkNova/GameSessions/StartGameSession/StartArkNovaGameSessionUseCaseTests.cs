@@ -20,7 +20,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
             gameId,
             false,
             false,
-            [anna, ben],
+            [ben, anna],
             Enumerable.Range(1, 14).ToHashSet()));
         StartArkNovaGameSessionUseCase useCase = new(dataAccess);
         DateTimeOffset startedAt = new(2026, 10, 27, 10, 0, 0, TimeSpan.Zero);
