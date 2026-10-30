@@ -11,145 +11,165 @@
     x:DataType="local:CreateGroupViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,Auto,*">
-        <Grid
-            Padding="8,8,12,8"
-            ColumnDefinitions="Auto,*,Auto"
-            ColumnSpacing="4">
-            <ImageButton
-                Clicked="OnBackClicked"
-                Source="icon_back.png"
-                Style="{StaticResource IconButton}"
-                SemanticProperties.Description="{x:Static res:AppResources.Back}"
-                ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
-
-            <HorizontalStackLayout
-                Grid.Column="1"
-                Spacing="2"
-                VerticalOptions="Center">
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="21"
-                    Text="{x:Static res:AppResources.CreateGroup}"
-                    VerticalOptions="Center" />
+    <Grid>
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*" IsEnabled="False">
+            <Grid.Triggers>
+                <MultiTrigger TargetType="Grid">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
+                        <BindingCondition Binding="{Binding ColorSelection.IsVisible}" Value="False" />
+                        <BindingCondition Binding="{Binding IsVisible, Source={x:Reference ExistingPlayerOverlay}, x:DataType=Grid}" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Grid.Triggers>
+            <Grid
+                Padding="8,8,12,8"
+                ColumnDefinitions="Auto,*,Auto"
+                ColumnSpacing="4">
                 <ImageButton
-                    Clicked="OnInfoClicked"
-                    Source="icon_info.png"
+                    Clicked="OnBackClicked"
+                    Source="icon_back.png"
                     Style="{StaticResource IconButton}"
-                    SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
-                    ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
-            </HorizontalStackLayout>
+                    SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                    ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
 
-            <Button
-                Grid.Column="2"
-                Command="{Binding SaveCommand}"
-                Style="{StaticResource PrimaryCompactButton}"
-                Text="{x:Static res:AppResources.Save}"
-                VerticalOptions="Center" />
+                <HorizontalStackLayout
+                    Grid.Column="1"
+                    Spacing="2"
+                    VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="21"
+                        Text="{x:Static res:AppResources.CreateGroup}"
+                        VerticalOptions="Center" />
+                    <ImageButton
+                        Clicked="OnInfoClicked"
+                        Source="icon_info.png"
+                        Style="{StaticResource IconButton}"
+                        SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
+                        ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
+                </HorizontalStackLayout>
+
+                <Button
+                    Grid.Column="2"
+                    Command="{Binding SaveCommand}"
+                    Style="{StaticResource PrimaryCompactButton}"
+                    Text="{x:Static res:AppResources.Save}"
+                    VerticalOptions="Center" />
+            </Grid>
+
+            <BoxView Grid.Row="1" Style="{StaticResource HeaderDivider}" />
+            <ScrollView Grid.Row="2">
+                <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                            <Label
+                                FontAttributes="Bold"
+                                Text="{x:Static res:AppResources.GroupName}"
+                                VerticalOptions="Center" />
+                            <Entry
+                                Grid.Column="1"
+                                Style="{StaticResource InlineFormEntry}"
+                                Placeholder="{x:Static res:AppResources.GroupNameExample}"
+                                Text="{Binding GroupName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <Label
+                                Text="{x:Static res:AppResources.TemporaryGroup}"
+                                VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="2">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="{x:Static res:AppResources.GroupPlayers}"
+                                VerticalOptions="Center" />
+                            <ImageButton
+                                Clicked="OnPlayersInfoClicked"
+                                Source="icon_info.png"
+                                Style="{StaticResource IconButton}"
+                                SemanticProperties.Description="{x:Static res:AppResources.DefaultOrderHint}"
+                                ToolTipProperties.Text="{x:Static res:AppResources.DefaultOrderHint}" />
+                        </HorizontalStackLayout>
+
+                        <Label
+                            IsVisible="{Binding HasNoPlayers}"
+                            Text="{x:Static res:AppResources.NoPlayersYet}"
+                            TextColor="{DynamicResource TextPrimary}" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="groupColors:GroupPlayerItemViewModel">
+                                    <Border Margin="0,4" Padding="12" Style="{StaticResource GroupPlayerCard}">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label Style="{StaticResource GroupPlayerText}" FontAttributes="Bold" Text="{Binding Name}" />
+                                                <Label Style="{StaticResource GroupPlayerText}" Text="{Binding ColorName}" FontSize="12"
+                                                    IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}" />
+                                                <Label Style="{StaticResource GroupPlayerText}"
+                                                    FontSize="12"
+                                                    IsVisible="{Binding IsGuest}"
+                                                    Text="{x:Static res:AppResources.Guest}" />
+                                            </VerticalStackLayout>
+                                            <ImageButton Grid.Column="1" Source="icon_palette.png" Style="{StaticResource GroupPlayerPalette}"
+                                                IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}"
+                                                Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenColorPickerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" />
+                                            <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
+                                            <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                            <Button Style="{StaticResource GroupPlayerRemoveAction}" Grid.Column="4" Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemovePlayerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Button Text="{x:Static res:AppResources.AddExistingPlayerAction}"
+                                Style="{StaticResource SecondaryActionButton}" Clicked="OnChooseExistingPlayerClicked"
+                                IsVisible="{Binding HasAvailablePlayers}" HorizontalOptions="Start"
+                                SemanticProperties.Description="{x:Static res:AppResources.SelectExistingPlayerTitle}" />
+                        <Label Text="{x:Static res:AppResources.NoAvailablePlayers}" IsVisible="{Binding HasNoAvailablePlayers}" FontSize="13" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="12">
+                        <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayerInline}" />
+                        <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
+                            <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" VerticalOptions="Center" />
+                            <Entry Grid.Column="1" Style="{StaticResource InlineFormEntry}" Placeholder="{x:Static res:AppResources.PlayerNameExample}" Text="{Binding NewPlayerName}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                            <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
+                        </Grid>
+                        <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
+                    </VerticalStackLayout>
+
+                    <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </VerticalStackLayout>
+            </ScrollView>
         </Grid>
 
-        <BoxView Grid.Row="1" Style="{StaticResource HeaderDivider}" />
-        <ScrollView Grid.Row="2">
-            <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
-                <VerticalStackLayout Spacing="16">
-                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
-                        <Label
-                            FontAttributes="Bold"
-                            Text="{x:Static res:AppResources.GroupName}"
-                            VerticalOptions="Center" />
-                        <Entry
-                            Grid.Column="1"
-                            Style="{StaticResource InlineFormEntry}"
-                            Placeholder="{x:Static res:AppResources.GroupNameExample}"
-                            Text="{Binding GroupName}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                        <Label
-                            Text="{x:Static res:AppResources.TemporaryGroup}"
-                            VerticalOptions="Center" />
-                        <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
-                    </Grid>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="10">
-                    <HorizontalStackLayout Spacing="2">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            Text="{x:Static res:AppResources.GroupPlayers}"
-                            VerticalOptions="Center" />
-                        <ImageButton
-                            Clicked="OnPlayersInfoClicked"
-                            Source="icon_info.png"
-                            Style="{StaticResource IconButton}"
-                            SemanticProperties.Description="{x:Static res:AppResources.DefaultOrderHint}"
-                            ToolTipProperties.Text="{x:Static res:AppResources.DefaultOrderHint}" />
-                    </HorizontalStackLayout>
-
-                    <Label
-                        IsVisible="{Binding HasNoPlayers}"
-                        Text="{x:Static res:AppResources.NoPlayersYet}"
-                        TextColor="{DynamicResource TextPrimary}" />
-
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="groupColors:GroupPlayerItemViewModel">
-                                <Border Margin="0,4" Padding="12" Style="{StaticResource GroupPlayerCard}">
-                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="6">
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Style="{StaticResource GroupPlayerText}" FontAttributes="Bold" Text="{Binding Name}" />
-                                            <Label Style="{StaticResource GroupPlayerText}" Text="{Binding ColorName}" FontSize="12"
-                                                IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}" />
-                                            <Label Style="{StaticResource GroupPlayerText}"
-                                                FontSize="12"
-                                                IsVisible="{Binding IsGuest}"
-                                                Text="{x:Static res:AppResources.Guest}" />
-                                        </VerticalStackLayout>
-                                        <ImageButton Grid.Column="1" Source="icon_palette.png" Style="{StaticResource GroupPlayerPalette}"
-                                            IsVisible="{Binding Source={x:Reference Page}, Path=ViewModel.ColorSelection.HasColors, x:DataType=local:CreateGroupPage}"
-                                            Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenColorPickerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}"
-                                            SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" />
-                                        <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                        <Button Style="{StaticResource GroupPlayerAction}" Grid.Column="3" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
-                                        <Button Style="{StaticResource GroupPlayerRemoveAction}" Grid.Column="4" Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemovePlayerCommand, x:DataType=local:CreateGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.Remove}" Text="×" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="8">
-                    <Button Text="{x:Static res:AppResources.AddExistingPlayerAction}"
-                            Style="{StaticResource SecondaryActionButton}" Clicked="OnChooseExistingPlayerClicked"
-                            IsVisible="{Binding HasAvailablePlayers}" HorizontalOptions="Start"
-                            SemanticProperties.Description="{x:Static res:AppResources.SelectExistingPlayerTitle}" />
-                    <Label Text="{x:Static res:AppResources.NoAvailablePlayers}" IsVisible="{Binding HasNoAvailablePlayers}" FontSize="13" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Spacing="12">
-                    <Label FontAttributes="Bold" FontSize="17" Text="{x:Static res:AppResources.NewPlayerInline}" />
-                    <Grid ColumnDefinitions="110,*" ColumnSpacing="12">
-                        <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" VerticalOptions="Center" />
-                        <Entry Grid.Column="1" Style="{StaticResource InlineFormEntry}" Placeholder="{x:Static res:AppResources.PlayerNameExample}" Text="{Binding NewPlayerName}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                        <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
-                        <Switch Grid.Column="1" IsToggled="{Binding NewPlayerIsGuest}" />
-                    </Grid>
-                    <Button Command="{Binding AddNewPlayerCommand}" HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddPlayer}" />
-                </VerticalStackLayout>
-
-                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <Grid x:Name="ExistingPlayerOverlay" Grid.RowSpan="3" IsVisible="False" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+        <Grid x:Name="ExistingPlayerOverlay" IsVisible="False" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+            <Grid.Triggers>
+                <DataTrigger TargetType="Grid" Binding="{Binding IsBusy}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Grid.Triggers>
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                        <Label Text="{x:Static res:AppResources.SelectExistingPlayerTitle}" FontAttributes="Bold" FontSize="19" VerticalOptions="Center" LineBreakMode="WordWrap" />
-                        <Button Grid.Column="1" Text="{x:Static res:AppResources.Close}" Style="{StaticResource TextActionButton}" Clicked="OnCloseExistingPlayerClicked" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCloseExistingPlayerClicked"
+                                     SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                                     ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.SelectExistingPlayerTitle}" FontAttributes="Bold" FontSize="19" VerticalOptions="Center" LineBreakMode="WordWrap" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding AvailablePlayers}" SelectionMode="None" HeightRequest="300" BackgroundColor="{DynamicResource AppBackground}">
                         <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="7" /></CollectionView.ItemsLayout>
@@ -169,12 +189,18 @@
             </Border>
         </Grid>
 
-        <groupColors:GroupColorPickerView Grid.RowSpan="3"
+        <groupColors:GroupColorPickerView
             BindingContext="{Binding ColorSelection, x:DataType=local:CreateGroupViewModel}"
-            IsVisible="{Binding IsVisible, x:DataType=groupColors:GroupColorSelectionViewModel}" />
+            IsVisible="{Binding IsVisible, x:DataType=groupColors:GroupColorSelectionViewModel}" >
+            <groupColors:GroupColorPickerView.Triggers>
+                <DataTrigger TargetType="groupColors:GroupColorPickerView"
+                    Binding="{Binding Source={x:Reference Page}, Path=ViewModel.IsBusy, x:DataType=local:CreateGroupPage}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </groupColors:GroupColorPickerView.Triggers>
+        </groupColors:GroupColorPickerView>
 
         <Grid
-            Grid.RowSpan="3"
             BackgroundColor="{DynamicResource BusyOverlay}"
             InputTransparent="False"
             IsVisible="{Binding IsBusy}">

@@ -84,7 +84,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private async void OnSpecialCardOptionTapped(object? sender, TappedEventArgs e)
     {
-        if (_saving) return;
+        if (_saving || !_viewModel.IsIdle) return;
         _saving = true;
         _viewModel.IsSaving = true;
         try
@@ -183,7 +183,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {
-        if (_saving) return;
+        if (_saving || !_viewModel.IsScoringContentEnabled) return;
         _saving = true;
         _viewModel.IsSaving = true;
         try
@@ -207,18 +207,27 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
     }
 
-    private async void OnCameraClicked(object? sender, EventArgs e) =>
-        await AppDialogPage.ShowAsync(this, AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
+    private async void OnCameraClicked(object? sender, EventArgs e)
+    {
+        if (_viewModel.IsScoringContentEnabled)
+            await AppDialogPage.ShowAsync(this, AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
+    }
 
-    private async void OnSettingsClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+    private async void OnSettingsClicked(object? sender, EventArgs e)
+    {
+        if (_viewModel.IsScoringContentEnabled)
+            await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+    }
 
-    private async void OnBackClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        if (_viewModel.IsScoringContentEnabled)
+            await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
+    }
 
     protected override bool OnBackButtonPressed()
     {
-        if (_saving)
+        if (_saving || !_viewModel.IsIdle)
             return true;
         if (_viewModel.IsSpecialCardPickerVisible)
         {

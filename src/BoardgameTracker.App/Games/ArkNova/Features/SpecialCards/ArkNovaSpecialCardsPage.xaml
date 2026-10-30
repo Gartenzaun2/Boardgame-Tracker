@@ -6,43 +6,55 @@
     xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:DataType="vm:ArkNovaSpecialCardsViewModel" Shell.NavBarIsVisible="False">
-    <Grid Padding="18" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" />
-                <Label Grid.Column="1" Text="{x:Static res:AppResources.SpecialCardManagementTitle}" FontSize="23" FontAttributes="Bold" VerticalOptions="Center" />
-                <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked"
-                             SemanticProperties.Description="{x:Static res:AppResources.SpecialCardManagementTitle}" />
+    <Grid Padding="18">
+        <!-- Keep modal and busy layers outside the content they disable. -->
+        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
+            <Grid.Triggers>
+                <MultiTrigger TargetType="Grid">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="True" />
+                </MultiTrigger>
+            </Grid.Triggers>
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" />
+                    <Label Grid.Column="1" Text="{x:Static res:AppResources.SpecialCardManagementTitle}" FontSize="23" FontAttributes="Bold" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked"
+                                 SemanticProperties.Description="{x:Static res:AppResources.SpecialCardManagementTitle}" />
+                </Grid>
+                <BoxView Style="{StaticResource HeaderDivider}" />
+            </VerticalStackLayout>
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                <Label Text="{x:Static res:AppResources.ShowArchivedCards}" VerticalOptions="Center" />
+                <Switch Grid.Column="1" IsToggled="{Binding ShowArchived}" IsEnabled="{Binding IsIdle}" />
             </Grid>
-            <BoxView Style="{StaticResource HeaderDivider}" />
-        </VerticalStackLayout>
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
-            <Label Text="{x:Static res:AppResources.ShowArchivedCards}" VerticalOptions="Center" />
-            <Switch Grid.Column="1" IsToggled="{Binding ShowArchived}" IsEnabled="{Binding IsIdle}" />
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Cards}" SelectionMode="None">
+                <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.NoSpecialCards}" /></CollectionView.EmptyView>
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ArkNovaSpecialCardListItem">
+                        <Border Style="{StaticResource CardBorder}" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                    <ark:ArkNovaSpecialCardView Card="{Binding Card}" />
+                                    <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" FontAttributes="Italic" />
+                                </VerticalStackLayout>
+                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding Card}"
+                                        VerticalOptions="Center" SemanticProperties.Description="{x:Static res:AppResources.EditSpecialCardAction}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <VerticalStackLayout Grid.Row="3" Spacing="8">
+                <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+                <Button Text="{x:Static res:AppResources.NewSpecialCard}" Clicked="OnNewClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+            </VerticalStackLayout>
         </Grid>
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Cards}" SelectionMode="None">
-            <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.NoSpecialCards}" /></CollectionView.EmptyView>
-            <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="vm:ArkNovaSpecialCardListItem">
-                    <Border Style="{StaticResource CardBorder}" Padding="12">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                <ark:ArkNovaSpecialCardView Card="{Binding Card}" />
-                                <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" FontAttributes="Italic" />
-                            </VerticalStackLayout>
-                                <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding Card}"
-                                    VerticalOptions="Center" SemanticProperties.Description="{x:Static res:AppResources.EditSpecialCardAction}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-        <VerticalStackLayout Grid.Row="3" Spacing="8">
-            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
-            <Button Text="{x:Static res:AppResources.NewSpecialCard}" Clicked="OnNewClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
-        </VerticalStackLayout>
-        <Grid Grid.RowSpan="4" IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>
     </Grid>

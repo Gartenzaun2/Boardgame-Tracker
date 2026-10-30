@@ -21,16 +21,21 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(IsEditorContentEnabled))]
     public partial bool IsBusy { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-    [ObservableProperty] public partial bool IsSymbolPickerVisible { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEditorContentEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
+    public partial bool IsSymbolPickerVisible { get; private set; }
     public bool IsIdle => !IsBusy;
+    public bool IsEditorContentEnabled => IsIdle && !IsSymbolPickerVisible;
     public bool IsEditing => _id.HasValue;
     [ObservableProperty] public partial bool IsArchived { get; set; }
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-    public bool CanSave => IsIdle && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaSpecialCard.MaximumNameLength;
+    public bool CanSave => IsEditorContentEnabled && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaSpecialCard.MaximumNameLength;
     public string Title => _id.HasValue ? AppResources.EditSpecialCard : AppResources.NewSpecialCard;
     public ArkNovaSpecialCardData Preview => new(_id ?? Guid.Empty, string.IsNullOrWhiteSpace(NameText) ? AppResources.NewSpecialCard : NameText,
         _symbols.Count > 0 ? _symbols[0] : null, _symbols.Count > 1 ? _symbols[1] : null, _symbols.Count > 2 ? _symbols[2] : null, false);
@@ -75,7 +80,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     }
     public void OpenSymbolPicker(int position)
     {
-        if (position < 0 || position > _symbols.Count || position > 2 || IsBusy)
+        if (position < 0 || position > _symbols.Count || position > 2 || !IsEditorContentEnabled)
             return;
         _position = position;
         ArkNovaCardSymbol? selected = position < _symbols.Count ? _symbols[position] : null;
@@ -88,7 +93,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     public void CloseSymbolPicker() => IsSymbolPickerVisible = false;
     public void SelectSymbol(ArkNovaCardSymbol? symbol)
     {
-        if (!IsSymbolPickerVisible)
+        if (!IsSymbolPickerVisible || !IsIdle)
             return;
         if (symbol.HasValue)
         {
@@ -104,6 +109,8 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     }
     public async Task<bool> SaveAsync()
     {
+        if (!IsEditorContentEnabled)
+            return false;
         if (!CanSave)
         {
             ErrorMessage = AppResources.SpecialCardNameValidation;

@@ -29,7 +29,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     }
     private async void OnSaveClicked(object? sender, EventArgs e)
     {
-        if (_leaving || _viewModel.IsBusy)
+        if (_leaving || !_viewModel.IsEditorContentEnabled)
             return;
         _leaving = true;
         try
@@ -44,7 +44,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     }
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (_leaving || _viewModel.IsBusy)
+        if (_leaving || !_viewModel.IsEditorContentEnabled)
             return;
         _leaving = true;
         try
@@ -69,6 +69,8 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     private void OnCloseSymbolPickerClicked(object? sender, EventArgs e) => _viewModel.CloseSymbolPicker();
     protected override bool OnBackButtonPressed()
     {
+        if (_leaving || _viewModel.IsBusy)
+            return true;
         if (!_viewModel.IsSymbolPickerVisible)
             return base.OnBackButtonPressed();
         _viewModel.CloseSymbolPicker();

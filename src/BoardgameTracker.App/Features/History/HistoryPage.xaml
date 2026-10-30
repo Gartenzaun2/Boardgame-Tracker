@@ -2,37 +2,49 @@
 <ContentPage x:Class="BoardgameTracker.App.Features.History.HistoryPage"
  xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
  xmlns:local="clr-namespace:BoardgameTracker.App.Features.History" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" Shell.NavBarIsVisible="False">
- <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8">
-  <VerticalStackLayout Spacing="8">
-      <Label Text="{x:Static res:AppResources.History}" FontSize="28" FontAttributes="Bold" />
-      <BoxView Style="{StaticResource HeaderDivider}" />
-  </VerticalStackLayout>
-  <VerticalStackLayout Grid.Row="1" Spacing="0">
-   <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Start">
-    <Button x:Name="GameChip" Style="{StaticResource FilterChip}" Clicked="OnGameFilterClicked" Margin="0,0,8,4" />
-    <Button x:Name="GroupChip" Style="{StaticResource FilterChip}" Clicked="OnGroupFilterClicked" Margin="0,0,0,4" />
-   </FlexLayout>
-  </VerticalStackLayout>
-  <Label Grid.Row="2" x:Name="ErrorLabel" IsVisible="False" TextColor="{DynamicResource Danger}" />
-  <CollectionView Grid.Row="3" x:Name="Sessions" IsGrouped="True" SelectionMode="Single" SelectionChanged="OnSessionSelected">
-   <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.HistoryEmpty}" Margin="0,20" /></CollectionView.EmptyView>
-   <CollectionView.GroupHeaderTemplate>
-    <DataTemplate x:DataType="local:HistoryMonth">
-     <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="17" Margin="0,8,0,4" />
-    </DataTemplate>
-   </CollectionView.GroupHeaderTemplate>
-   <CollectionView.ItemTemplate><DataTemplate x:DataType="local:HistoryCard"><Border Padding="12,9" Margin="0,4" Style="{StaticResource CardBorder}">
-    <VerticalStackLayout Spacing="3">
-     <Label Text="{Binding Header}" FontSize="13" />
-     <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
-     <Label Text="{Binding Placements}" FontSize="13" LineBreakMode="WordWrap" />
-    </VerticalStackLayout>
-   </Border></DataTemplate></CollectionView.ItemTemplate>
-  </CollectionView>
-  <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="8">
-   <Button Text="{x:Static res:AppResources.TransferImport}" Clicked="OnImportClicked" Style="{StaticResource SecondaryActionButton}" />
-   <Button Grid.Column="1" x:Name="ExportButton" Text="{x:Static res:AppResources.TransferExportMany}" Clicked="OnExportClicked" IsEnabled="False" Style="{StaticResource PrimaryCompactButton}" />
-  </Grid>
-  <Grid x:Name="BusyOverlay" Grid.RowSpan="5" BackgroundColor="{DynamicResource BusyOverlay}" IsVisible="False"><ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" /></Grid>
+ <Grid Padding="16">
+     <!-- Keep modal and busy layers outside the content they disable. -->
+     <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8" IsEnabled="False">
+         <Grid.Triggers>
+             <MultiTrigger TargetType="Grid">
+                 <MultiTrigger.Conditions>
+                     <BindingCondition Binding="{Binding IsVisible, Source={x:Reference BusyOverlay}, x:DataType=Grid}" Value="False" />
+                 </MultiTrigger.Conditions>
+                 <Setter Property="IsEnabled" Value="True" />
+             </MultiTrigger>
+         </Grid.Triggers>
+      <VerticalStackLayout Spacing="8">
+          <Label Text="{x:Static res:AppResources.History}" FontSize="28" FontAttributes="Bold" />
+          <BoxView Style="{StaticResource HeaderDivider}" />
+      </VerticalStackLayout>
+      <VerticalStackLayout Grid.Row="1" Spacing="0">
+       <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Start">
+        <Button x:Name="GameChip" Style="{StaticResource FilterChip}" Clicked="OnGameFilterClicked" Margin="0,0,8,4" />
+        <Button x:Name="GroupChip" Style="{StaticResource FilterChip}" Clicked="OnGroupFilterClicked" Margin="0,0,0,4" />
+       </FlexLayout>
+      </VerticalStackLayout>
+      <Label Grid.Row="2" x:Name="ErrorLabel" IsVisible="False" TextColor="{DynamicResource Danger}" />
+      <CollectionView Grid.Row="3" x:Name="Sessions" IsGrouped="True" SelectionMode="Single" SelectionChanged="OnSessionSelected">
+       <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.HistoryEmpty}" Margin="0,20" /></CollectionView.EmptyView>
+       <CollectionView.GroupHeaderTemplate>
+        <DataTemplate x:DataType="local:HistoryMonth">
+         <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="17" Margin="0,8,0,4" />
+        </DataTemplate>
+       </CollectionView.GroupHeaderTemplate>
+       <CollectionView.ItemTemplate><DataTemplate x:DataType="local:HistoryCard"><Border Padding="12,9" Margin="0,4" Style="{StaticResource CardBorder}">
+        <VerticalStackLayout Spacing="3">
+         <Label Text="{Binding Header}" FontSize="13" />
+         <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
+         <Label Text="{Binding Placements}" FontSize="13" LineBreakMode="WordWrap" />
+        </VerticalStackLayout>
+       </Border></DataTemplate></CollectionView.ItemTemplate>
+      </CollectionView>
+      <Grid Grid.Row="4" ColumnDefinitions="*,*" ColumnSpacing="8">
+       <Button Text="{x:Static res:AppResources.TransferImport}" Clicked="OnImportClicked" Style="{StaticResource SecondaryActionButton}" />
+       <Button Grid.Column="1" x:Name="ExportButton" Text="{x:Static res:AppResources.TransferExportMany}" Clicked="OnExportClicked" IsEnabled="False" Style="{StaticResource PrimaryCompactButton}" />
+      </Grid>
+     </Grid>
+
+  <Grid x:Name="BusyOverlay" BackgroundColor="{DynamicResource BusyOverlay}" IsVisible="False"><ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" /></Grid>
  </Grid>
 </ContentPage>

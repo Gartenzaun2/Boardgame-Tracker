@@ -261,12 +261,18 @@ bei vorhandenem Text sichtbar.
 
 ## Dialogübersicht
 
+Page-interne Auswahlen (besondere Karten, Kartensymbole, vorhandene Spieler und
+Gruppenfarben) deaktivieren während ihrer Anzeige den gesamten darunterliegenden
+Page-Inhalt einschließlich Header und Aktionen. Nur die Auswahl bleibt bedienbar;
+die globale Shell-/Bottom-Navigation bleibt erreichbar. System-Zurück schließt
+zunächst die Auswahl. Die gemeinsame Modalitätsregel steht im UI Design Guide.
+
 | Dialog / Auswahl | Ort | Stand / verbleibende Anpassung |
 |---|---|---|
-| Vorhandenen Spieler auswählen | Gruppe anlegen | App-Dialog mit SelectionDialog, Surface-Einträgen und Text-Schließen; umgesetzt. |
+| Vorhandenen Spieler auswählen | Gruppe anlegen | Page-interner SelectionDialog mit Zurück-Pfeil links im Header und Surface-Einträgen; umgesetzt. |
 | Besondere Karten auswählen | Wertungsübersicht, einschließlich Historie | SelectionDialog mit Zurück-Pfeil; kompakte Karten ohne sichtbare Statuszeile. Gestrichelter Danger-Rahmen nur bei Zuordnung zu mindestens einem anderen Spieler, SelectedSurface bei Zuordnung zum aktuell ausgewählten Spieler. Bei Zuordnung zu beiden gelten beide Markierungen; ausschließlich eigene Zuordnung erhält keinen gestrichelten Rahmen. |
-| Spezialkarten-Symbol wählen | Spezialkarten-Editor | App-SelectionDialog mit Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
-| Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer App-Dialog „Farbe für {Spiel} festlegen“ mit Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
+| Spezialkarten-Symbol wählen | Spezialkarten-Editor | Page-interner SelectionDialog mit Zurück-Pfeil links im Header, Grafiken, Namen und sichtbarer aktueller Auswahl; umgesetzt. |
+| Gruppen-Spielerfarbe wählen | Gruppe anlegen / bearbeiten | Gemeinsamer Page-Dialog mit Zurück-Pfeil links im Header, „Farbe für {Spiel} festlegen“, Spielername, erlaubten Farben und „Keine Farbe“; entfällt bei Spielen ohne Farben. |
 | Partiefarbe wählen | Vorbereitung | Bestehende Inline-Auswahl für diese Partie; verwendet dieselben semantischen Farben und die Arche-Nova-Teilmenge. |
 | Spiel-/Gruppenfilter | Historie | Chips öffnen AppDialogPage mit aktueller Auswahl und Text-Schließen. |
 | Darstellung / Standardspiel | Allgemeine Einstellungen | AppDialogPage mit aktuellem Wert, Auswahlmarkierung und Text-Schließen. |

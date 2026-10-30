@@ -66,6 +66,8 @@ public partial class CreateGroupPage : ContentPage
     }
     protected override bool OnBackButtonPressed()
     {
+        if (_viewModel.IsBusy)
+            return true;
         if (_viewModel.ColorSelection.IsVisible) { _viewModel.ColorSelection.Close(); return true; }
         if (!ExistingPlayerOverlay.IsVisible) return base.OnBackButtonPressed();
         ExistingPlayerOverlay.IsVisible = false;

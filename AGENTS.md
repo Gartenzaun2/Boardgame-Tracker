@@ -93,6 +93,8 @@ Keine generischen Repositories, kein MediatR, keine unnötigen Manager-/Service-
 Navigationsparameter ausschließlich über gemeinsame Konstanten aus `App/Navigation/NavigationParameters.cs` senden und in `ApplyQueryAttributes` auslesen; keine String-Literale für Schlüssel. Details: `docs/ARCHITECTURE.md`.
 
 ## MAUI, XAML und ViewModels
+Sichtbare page-interne modale Overlays deaktivieren den darunterliegenden Page-Inhalt explizit; rein visuelles Überlagern reicht nicht. Dialog und Busy-Layer liegen außerhalb dieses deaktivierten Containers. Details einschließlich Shell-Navigation: `docs/UI_DESIGN_GUIDE.md`.
+
 Neue oder geänderte XAML-Bindings grundsätzlich als compiled bindings implementieren.
 
 - `x:DataType` auf dem Scope setzen, auf dem der jeweilige `BindingContext` gilt.

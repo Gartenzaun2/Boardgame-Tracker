@@ -25,6 +25,75 @@ public sealed class SpecialCardTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
+    public async Task Editor_SymbolPickerDisablesContentAndSave_ThenRestoresBoth()
+    {
+        await using SpecialCardDatabase database = await SpecialCardDatabase.CreateAsync();
+        ArkNovaSpecialCardEditorViewModel editor = new(database.Cards, NullLogger<ArkNovaSpecialCardEditorViewModel>.Instance);
+        await editor.LoadAsync(null);
+        editor.NameText = "Modaler Entwurf";
+        List<string?> notifications = [];
+        editor.PropertyChanged += (_, args) => notifications.Add(args.PropertyName);
+        Assert.True(editor.IsEditorContentEnabled);
+        Assert.True(editor.CanSave);
+
+        editor.OpenSymbolPicker(0);
+        Assert.True(editor.IsSymbolPickerVisible);
+        Assert.True(editor.IsIdle);
+        Assert.False(editor.IsBusy);
+        Assert.False(editor.IsEditorContentEnabled);
+        Assert.False(editor.CanSave);
+        Assert.Contains(nameof(editor.IsEditorContentEnabled), notifications);
+        Assert.Contains(nameof(editor.CanSave), notifications);
+        Assert.False(await editor.SaveAsync());
+        Assert.DoesNotContain(await database.Cards.ListAsync(cancellationToken: Token), card => card.Name == editor.NameText);
+
+        notifications.Clear();
+        editor.CloseSymbolPicker();
+        Assert.True(editor.IsEditorContentEnabled);
+        Assert.True(editor.CanSave);
+        Assert.Contains(nameof(editor.IsEditorContentEnabled), notifications);
+        Assert.Contains(nameof(editor.CanSave), notifications);
+
+        editor.OpenSymbolPicker(0);
+        editor.OpenSymbolPicker(1); // Background actions must not retarget an open picker.
+        editor.SelectSymbol(ArkNovaCardSymbol.Science);
+        Assert.False(editor.IsSymbolPickerVisible);
+        Assert.True(editor.IsEditorContentEnabled);
+        Assert.Equal(ArkNovaCardSymbol.Science, editor.Preview.Symbol1);
+        Assert.Null(editor.Preview.Symbol2);
+    }
+
+    [Fact]
+    public async Task Editor_SaveDisablesContentWithoutOpeningModalPicker()
+    {
+        await using SpecialCardDatabase database = await SpecialCardDatabase.CreateAsync();
+        ArkNovaSpecialCardEditorViewModel editor = new(database.Cards, NullLogger<ArkNovaSpecialCardEditorViewModel>.Instance);
+        await editor.LoadAsync(null);
+        editor.NameText = "Speichernder Entwurf";
+        SaveProbe probe = new() { BlockFirstSave = true };
+        database.SaveInterceptor = probe;
+        Task<bool> save = editor.SaveAsync();
+        try
+        {
+            await probe.FirstSaveStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), Token);
+            Assert.True(editor.IsBusy);
+            Assert.False(editor.IsIdle);
+            Assert.False(editor.IsEditorContentEnabled);
+            Assert.False(editor.CanSave);
+            editor.OpenSymbolPicker(0);
+            Assert.False(editor.IsSymbolPickerVisible);
+        }
+        finally
+        {
+            probe.ReleaseFirstSave.TrySetResult();
+        }
+        Assert.True(await save);
+        Assert.False(editor.IsBusy);
+        Assert.True(editor.IsEditorContentEnabled);
+        Assert.True(editor.CanSave);
+    }
+
+    [Fact]
     public async Task Editor_AllowsRepeatedSymbolsAndCompactsClearedPositions()
     {
         await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
@@ -242,6 +311,7 @@ public sealed class SpecialCardTests
 
 internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
 {
+    public SaveProbe? SaveInterceptor { get; set; }
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
     public Player A { get; } = new("Anna");
     public Player B { get; } = new("Ben");
@@ -250,7 +320,14 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
     public ArkNovaGameSessionResultQuery Scoring => new(this);
     public ArkNovaSpecialCardUseCase Cards => new(this);
     private static CancellationToken Token => TestContext.Current.CancellationToken;
-    public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
+    public BoardgameTrackerDbContext CreateDbContext()
+    {
+        DbContextOptionsBuilder<BoardgameTrackerDbContext> options = new();
+        options.UseTestSqlite(_connection);
+        if (SaveInterceptor is not null)
+            options.AddInterceptors(SaveInterceptor);
+        return new(options.Options);
+    }
     public static async Task<SpecialCardDatabase> CreateAsync()
     {
         SpecialCardDatabase f = new();

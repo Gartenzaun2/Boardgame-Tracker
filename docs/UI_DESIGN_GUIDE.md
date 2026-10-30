@@ -270,9 +270,9 @@ Ob Monatsüberschriften später beim Scrollen sticky werden, ist keine Vorausset
 
 - **PrimaryCompactButton:** wichtigste Seitenaktion, gefüllt mit Primary und PrimaryForeground, Pressed über PrimaryPressed. „Neue Gruppe“, „Speichern“ und „Starten“ sind Primary-Aktionen.
 - **SecondaryActionButton:** echte nachgeordnete Aktion mit leichter SurfaceSecondary-Fläche, SelectedBorder-Kontur und kontrastreichem TextPrimary. Dazu gehören „Zoopläne auslosen“, „Reihenfolge rotieren“, „Vorhandenen Spieler hinzufügen“ und „Spieler hinzufügen“. Die Aktionsfläche unterscheidet sich von weißen Inhaltskarten.
-- **TextActionButton:** kleine kontextuelle Aktion ohne starke Fläche, transparent ohne Kontur, z. B. Schließen oder Abbrechen einer Auswahl.
+- **TextActionButton:** kleine kontextuelle Aktion ohne starke Fläche, transparent ohne Kontur, z. B. Schließen eines Hinweisdialogs oder Abbrechen einer Entscheidung. Page-interne Auswahl-Picker verwenden zum Verlassen den Zurück-Pfeil im IconButton-Stil.
 
-Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Normale Buttons verwenden standardmäßig SecondaryActionButton; kontextuelle Reihenfolgeaktionen und Schließen verwenden TextActionButton. CompactActionButton dient nur als gemeinsame Stilbasis, nicht als zusätzliche Aktionsrolle. Destruktive Aktionen bleiben sekundär und verwenden Danger.
+Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Normale Buttons verwenden standardmäßig SecondaryActionButton; kontextuelle Reihenfolgeaktionen und textuelle Schließen-Aktionen allgemeiner Dialoge verwenden TextActionButton. CompactActionButton dient nur als gemeinsame Stilbasis, nicht als zusätzliche Aktionsrolle. Destruktive Aktionen bleiben sekundär und verwenden Danger.
 
 ---
 
@@ -425,6 +425,18 @@ Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: A
 
 ## Dialogabdeckung
 
+Page-interne Auswahl- und Dialog-Overlays sind modal gegenüber dem Inhalt ihrer Page.
+Während ein solches Overlay sichtbar ist, wird der gesamte darunterliegende Page-Inhalt
+einschließlich Header, Eingaben und Aktionen explizit deaktiviert. Das Overlay selbst
+bleibt interaktiv; globale Shell-/Bottom-Navigation bleibt davon unberührt.
+Nicht allein auf visuelles Überdecken oder das Hit-Test-Verhalten eines Overlay-Grids verlassen.
+Die Struktur ist: Root mit getrennten Geschwistern für Page-Inhalt, modales Overlay
+und abschließenden Busy-Layer. Der deaktivierte Inhalt darf seine Dialoge nicht enthalten.
+Busy und offene Auswahl bleiben getrennte Zustände: Eine laufende Operation sperrt auch
+Dialogaktionen; eine offene Auswahl setzt nicht IsBusy. System-Zurück schließt zuerst
+die offene Auswahl und verlässt dabei nicht die Page. Die explizite Deaktivierung gilt
+auch für Tastaturfokus und Accessibility-Aktionen auf Hintergrundcontrols.
+
 Die Gleichstandsansicht verwendet neutrale Platzüberschriften mit HeaderDivider;
 auch leere Zielgruppen bleiben sichtbar. Darunter stehen kompakte Spielerzeilen
 mit Name, Platz-Chips und rechtsbündigen Punkten in einer horizontalen Reihe.
@@ -436,8 +448,16 @@ Plätze, SelectedSurface/SelectedBorder und eine stärkere Kontur die eigene Aus
 Ein Info-Icon öffnet die lokalisierte Erklärung über `AppDialogPage`; permanenter
 Hilfetext, Pfeile und Drag & Drop entfallen hier.
 
-Die appinternen Auswahlen verwenden zentral `SelectionDialog` und `TextActionButton`
-zum Schließen. Informationen, Fehler und Sicherheitsabfragen sowie die Auswahl von
+Page-interne modale Auswahl-Picker verwenden zentral `SelectionDialog` und den
+standardisierten Zurück-Pfeil (`icon_back.png`, `IconButton`) links im Dialog-Header.
+Textuelle „Schließen“-Buttons oder ein zusätzliches X werden für diesen Picker-Typ
+nicht verwendet. Der Pfeil schließt nur die aktuelle Auswahl; Eingaben und die
+darunterliegende Page bleiben erhalten. System-/Android-Zurück führt dieselbe Aktion aus.
+Der Pfeil erhält die lokalisierte semantische Beschreibung und den Tooltip „Zurück“.
+Bestätigungs-, Hinweis- und Entscheidungsdialoge dürfen weiterhin explizite
+Textaktionen wie „Abbrechen“ oder „Schließen“ verwenden.
+
+Informationen, Fehler und Sicherheitsabfragen sowie die Auswahl von
 Historienfiltern, Theme und Standardspiel werden über `AppDialogPage` dargestellt.
 Die modale Fläche verwendet AppBackground, Outline und TextPrimary; Einträge liegen
 auf Surface, die aktuelle Auswahl erhält SelectedSurface, SelectedBorder und ein
