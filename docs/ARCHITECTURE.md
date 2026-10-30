@@ -539,6 +539,39 @@ maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini
 
 ## Bewusste technische Entscheidungen
 
+### Arche-Nova-Fotoanalyseprototyp
+
+`tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
+für Phase 1A, kein viertes Produktionsprojekt. Es rekonstruiert die Bildpipeline aus
+dem Forschungs-Handoff; die früheren Python-Implementierungen lagen nicht vor.
+OpenCvSharp4 und die native Slim-Windows-Runtime werden ausschließlich dort
+referenziert. Core, Application und App enthalten keine CV-Paketreferenzen.
+Die reinen experimentellen Feld-/Confidence-Regeln liegen im Arche-Nova-Scoring-Slice
+in Application. Das Werkzeug liefert Diagnostik-JSON und schreibt keine Partiewerte.
+
+Die Referenztafel und Testfotos sind ausschließlich Entwicklungsassets im Werkzeug.
+Ein Analyzer berechnet Referenzfeatures einmal beim Aufbau und verwendet sie für
+weitere Fotos wieder. Ein serialisierter Featurecache und mobile Paketierung fehlen
+noch. Benchmark, Grenzen und Aufruf stehen im README des Werkzeugs.
+
+Die Registrierung verlangt ausreichende Matches/Inlier, begrenzten Projektionsfehler,
+räumlich verteilte Inlier, eine plausible konvexe Bildprojektion und mindestens 75 %
+mittlere Feldsichtbarkeit je Track. Kandidaten müssen mindestens 97 % sichtbar sein;
+unvollständige Tracks erhalten konservativ Uncertain. Diese experimentellen Grenzen
+sind keine produktiv validierten Schwellen. Außerhalb des Fotos liegende schwarze
+Warp-Ränder dürfen keine Farbevidenz liefern. Schlechte Registrierung liefert keine Werte.
+
+Wegen fehlender Originalimplementierung ist die Konfliktschicht konservativer:
+zusätzlich zu den Handoff-Regeln senkt bereits mindestens 6 % erweiterte Farbmaske im
+direkten Artenschutz-Nachbarfeld High auf Uncertain. Werte werden dabei nie umgeschrieben.
+Die nicht rekonstruierte Richtungsheuristik ist im Analyzer deaktiviert; das reine
+Handoff-Prädikat bleibt für eine spätere kalibrierte Richtungsinformation testbar.
+
+Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
+Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
+Kamera-Handler bleibt ein Platzhalter; eine spätere Anbindung verwendet denselben
+Scoring-Entwurf und dieselben manuellen Wertungsfelder. Es gibt keine neue Persistenz.
+
 SQLite kann die verwendeten DateTimeOffset-Sortierungen nicht zuverlässig übersetzen.
 Die lokalen Listen projizieren deshalb nur benötigte Partiemetadaten und sortieren sie
 anschließend im Speicher. Für die derzeit kleine lokale Datenmenge bleibt das bewusst

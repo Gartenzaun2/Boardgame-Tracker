@@ -1,0 +1,6860 @@
+{
+  "schema_version": "1.1",
+  "reference": {
+    "image": "board_reference_master_clean.png",
+    "width_px": 4000,
+    "height_px": 2800,
+    "coordinate_origin": "top-left",
+    "x_axis": "right",
+    "y_axis": "down",
+    "units": "pixels"
+  },
+  "purpose": "Scoring-region geometry for marker-position recognition on the Arche Nova playmat.",
+  "geometry_method": {
+    "attractiveness": "Cell centers detected from the original high-resolution scoring imagery; cell boundaries are midpoints between adjacent printed scoring cells. Regions are quadrilaterals.",
+    "conservation": "Pentagonal regions derived from the original green scoring fields and their exact spans over attractiveness cells. Values 16-11 span 3 attractiveness cells, 10-1 span 2, value 0 is the terminal field.",
+    "reputation": "Six/eight-vertex polygons traced from the original reputation-track field geometry. Field 1 has 6 vertices; fields 2-15 have 8.",
+    "marked_reference_usage": "Markiert(1).jpg was used only for validation of the example values, not to derive the polygon coordinates."
+  },
+  "classification": {
+    "primary_point": "detected marker center",
+    "rule": "point_in_polygon",
+    "tie_breaker": "nearest polygon centroid if numerical/registration tolerance causes more than one match",
+    "outside_policy": "return null and confidence 0 rather than snapping to a field"
+  },
+  "counts": {
+    "attractiveness": 114,
+    "conservation": 42,
+    "reputation": 15,
+    "total": 171
+  },
+  "tracks": {
+    "attractiveness": {
+      "value_min": 0,
+      "value_max": 113,
+      "expected_vertex_count": 4,
+      "fields": [
+        {
+          "id": "attractiveness_0",
+          "value": 0,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              34,
+              1225
+            ],
+            [
+              136,
+              1225
+            ],
+            [
+              136,
+              1438
+            ],
+            [
+              34,
+              1438
+            ]
+          ],
+          "centroid": [
+            85.0,
+            1331.5
+          ],
+          "bbox": [
+            34,
+            1225,
+            103,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": null,
+          "next_value": 1
+        },
+        {
+          "id": "attractiveness_1",
+          "value": 1,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              136,
+              1225
+            ],
+            [
+              240,
+              1225
+            ],
+            [
+              240,
+              1438
+            ],
+            [
+              136,
+              1438
+            ]
+          ],
+          "centroid": [
+            188.12,
+            1331.5
+          ],
+          "bbox": [
+            136,
+            1225,
+            103,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 0,
+          "next_value": 2
+        },
+        {
+          "id": "attractiveness_2",
+          "value": 2,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              240,
+              1225
+            ],
+            [
+              342,
+              1225
+            ],
+            [
+              342,
+              1438
+            ],
+            [
+              240,
+              1438
+            ]
+          ],
+          "centroid": [
+            290.62,
+            1331.5
+          ],
+          "bbox": [
+            240,
+            1225,
+            102,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 1,
+          "next_value": 3
+        },
+        {
+          "id": "attractiveness_3",
+          "value": 3,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              342,
+              1225
+            ],
+            [
+              442,
+              1225
+            ],
+            [
+              442,
+              1438
+            ],
+            [
+              342,
+              1438
+            ]
+          ],
+          "centroid": [
+            391.88,
+            1331.5
+          ],
+          "bbox": [
+            342,
+            1225,
+            101,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 2,
+          "next_value": 4
+        },
+        {
+          "id": "attractiveness_4",
+          "value": 4,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              442,
+              1225
+            ],
+            [
+              543,
+              1225
+            ],
+            [
+              543,
+              1438
+            ],
+            [
+              442,
+              1438
+            ]
+          ],
+          "centroid": [
+            492.44,
+            1331.5
+          ],
+          "bbox": [
+            442,
+            1225,
+            100,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 3,
+          "next_value": 5
+        },
+        {
+          "id": "attractiveness_5",
+          "value": 5,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              543,
+              1225
+            ],
+            [
+              642,
+              1225
+            ],
+            [
+              642,
+              1438
+            ],
+            [
+              543,
+              1438
+            ]
+          ],
+          "centroid": [
+            592.25,
+            1331.5
+          ],
+          "bbox": [
+            543,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 4,
+          "next_value": 6
+        },
+        {
+          "id": "attractiveness_6",
+          "value": 6,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              642,
+              1225
+            ],
+            [
+              741,
+              1225
+            ],
+            [
+              741,
+              1438
+            ],
+            [
+              642,
+              1438
+            ]
+          ],
+          "centroid": [
+            691.56,
+            1331.5
+          ],
+          "bbox": [
+            642,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 5,
+          "next_value": 7
+        },
+        {
+          "id": "attractiveness_7",
+          "value": 7,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              741,
+              1225
+            ],
+            [
+              840,
+              1225
+            ],
+            [
+              840,
+              1438
+            ],
+            [
+              741,
+              1438
+            ]
+          ],
+          "centroid": [
+            790.88,
+            1331.5
+          ],
+          "bbox": [
+            741,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 6,
+          "next_value": 8
+        },
+        {
+          "id": "attractiveness_8",
+          "value": 8,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              840,
+              1225
+            ],
+            [
+              940,
+              1225
+            ],
+            [
+              940,
+              1438
+            ],
+            [
+              840,
+              1438
+            ]
+          ],
+          "centroid": [
+            890.12,
+            1331.5
+          ],
+          "bbox": [
+            840,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 7,
+          "next_value": 9
+        },
+        {
+          "id": "attractiveness_9",
+          "value": 9,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              940,
+              1225
+            ],
+            [
+              1039,
+              1225
+            ],
+            [
+              1039,
+              1438
+            ],
+            [
+              940,
+              1438
+            ]
+          ],
+          "centroid": [
+            989.38,
+            1331.5
+          ],
+          "bbox": [
+            940,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 8,
+          "next_value": 10
+        },
+        {
+          "id": "attractiveness_10",
+          "value": 10,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1039,
+              1225
+            ],
+            [
+              1138,
+              1225
+            ],
+            [
+              1138,
+              1438
+            ],
+            [
+              1039,
+              1438
+            ]
+          ],
+          "centroid": [
+            1088.5,
+            1331.5
+          ],
+          "bbox": [
+            1039,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 9,
+          "next_value": 11
+        },
+        {
+          "id": "attractiveness_11",
+          "value": 11,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1138,
+              1225
+            ],
+            [
+              1237,
+              1225
+            ],
+            [
+              1237,
+              1438
+            ],
+            [
+              1138,
+              1438
+            ]
+          ],
+          "centroid": [
+            1187.38,
+            1331.5
+          ],
+          "bbox": [
+            1138,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 10,
+          "next_value": 12
+        },
+        {
+          "id": "attractiveness_12",
+          "value": 12,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1237,
+              1225
+            ],
+            [
+              1335,
+              1225
+            ],
+            [
+              1335,
+              1438
+            ],
+            [
+              1237,
+              1438
+            ]
+          ],
+          "centroid": [
+            1286.0,
+            1331.5
+          ],
+          "bbox": [
+            1237,
+            1225,
+            98,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 11,
+          "next_value": 13
+        },
+        {
+          "id": "attractiveness_13",
+          "value": 13,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1335,
+              1225
+            ],
+            [
+              1434,
+              1225
+            ],
+            [
+              1434,
+              1438
+            ],
+            [
+              1335,
+              1438
+            ]
+          ],
+          "centroid": [
+            1384.38,
+            1331.5
+          ],
+          "bbox": [
+            1335,
+            1225,
+            98,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 12,
+          "next_value": 14
+        },
+        {
+          "id": "attractiveness_14",
+          "value": 14,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1434,
+              1225
+            ],
+            [
+              1531,
+              1225
+            ],
+            [
+              1531,
+              1438
+            ],
+            [
+              1434,
+              1438
+            ]
+          ],
+          "centroid": [
+            1482.38,
+            1331.5
+          ],
+          "bbox": [
+            1434,
+            1225,
+            98,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 13,
+          "next_value": 15
+        },
+        {
+          "id": "attractiveness_15",
+          "value": 15,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1531,
+              1225
+            ],
+            [
+              1628,
+              1225
+            ],
+            [
+              1628,
+              1438
+            ],
+            [
+              1531,
+              1438
+            ]
+          ],
+          "centroid": [
+            1579.75,
+            1331.5
+          ],
+          "bbox": [
+            1531,
+            1225,
+            97,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 14,
+          "next_value": 16
+        },
+        {
+          "id": "attractiveness_16",
+          "value": 16,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1628,
+              1225
+            ],
+            [
+              1724,
+              1225
+            ],
+            [
+              1724,
+              1438
+            ],
+            [
+              1628,
+              1438
+            ]
+          ],
+          "centroid": [
+            1676.38,
+            1331.5
+          ],
+          "bbox": [
+            1628,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 15,
+          "next_value": 17
+        },
+        {
+          "id": "attractiveness_17",
+          "value": 17,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1724,
+              1225
+            ],
+            [
+              1820,
+              1225
+            ],
+            [
+              1820,
+              1438
+            ],
+            [
+              1724,
+              1438
+            ]
+          ],
+          "centroid": [
+            1772.38,
+            1331.5
+          ],
+          "bbox": [
+            1724,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 16,
+          "next_value": 18
+        },
+        {
+          "id": "attractiveness_18",
+          "value": 18,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1820,
+              1225
+            ],
+            [
+              1916,
+              1225
+            ],
+            [
+              1916,
+              1438
+            ],
+            [
+              1820,
+              1438
+            ]
+          ],
+          "centroid": [
+            1867.88,
+            1331.5
+          ],
+          "bbox": [
+            1820,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 17,
+          "next_value": 19
+        },
+        {
+          "id": "attractiveness_19",
+          "value": 19,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              1916,
+              1225
+            ],
+            [
+              2010,
+              1225
+            ],
+            [
+              2010,
+              1438
+            ],
+            [
+              1916,
+              1438
+            ]
+          ],
+          "centroid": [
+            1962.75,
+            1331.5
+          ],
+          "bbox": [
+            1916,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 18,
+          "next_value": 20
+        },
+        {
+          "id": "attractiveness_20",
+          "value": 20,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2010,
+              1225
+            ],
+            [
+              2105,
+              1225
+            ],
+            [
+              2105,
+              1438
+            ],
+            [
+              2010,
+              1438
+            ]
+          ],
+          "centroid": [
+            2057.38,
+            1331.5
+          ],
+          "bbox": [
+            2010,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 19,
+          "next_value": 21
+        },
+        {
+          "id": "attractiveness_21",
+          "value": 21,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2105,
+              1225
+            ],
+            [
+              2200,
+              1225
+            ],
+            [
+              2200,
+              1438
+            ],
+            [
+              2105,
+              1438
+            ]
+          ],
+          "centroid": [
+            2152.5,
+            1331.5
+          ],
+          "bbox": [
+            2105,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 20,
+          "next_value": 22
+        },
+        {
+          "id": "attractiveness_22",
+          "value": 22,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2200,
+              1225
+            ],
+            [
+              2295,
+              1225
+            ],
+            [
+              2295,
+              1438
+            ],
+            [
+              2200,
+              1438
+            ]
+          ],
+          "centroid": [
+            2247.75,
+            1331.5
+          ],
+          "bbox": [
+            2200,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 21,
+          "next_value": 23
+        },
+        {
+          "id": "attractiveness_23",
+          "value": 23,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2295,
+              1225
+            ],
+            [
+              2390,
+              1225
+            ],
+            [
+              2390,
+              1438
+            ],
+            [
+              2295,
+              1438
+            ]
+          ],
+          "centroid": [
+            2342.62,
+            1331.5
+          ],
+          "bbox": [
+            2295,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 22,
+          "next_value": 24
+        },
+        {
+          "id": "attractiveness_24",
+          "value": 24,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2390,
+              1225
+            ],
+            [
+              2484,
+              1225
+            ],
+            [
+              2484,
+              1438
+            ],
+            [
+              2390,
+              1438
+            ]
+          ],
+          "centroid": [
+            2437.25,
+            1331.5
+          ],
+          "bbox": [
+            2390,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 23,
+          "next_value": 25
+        },
+        {
+          "id": "attractiveness_25",
+          "value": 25,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2484,
+              1225
+            ],
+            [
+              2578,
+              1225
+            ],
+            [
+              2578,
+              1438
+            ],
+            [
+              2484,
+              1438
+            ]
+          ],
+          "centroid": [
+            2531.5,
+            1331.5
+          ],
+          "bbox": [
+            2484,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 24,
+          "next_value": 26
+        },
+        {
+          "id": "attractiveness_26",
+          "value": 26,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2578,
+              1225
+            ],
+            [
+              2673,
+              1225
+            ],
+            [
+              2673,
+              1438
+            ],
+            [
+              2578,
+              1438
+            ]
+          ],
+          "centroid": [
+            2625.88,
+            1331.5
+          ],
+          "bbox": [
+            2578,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 25,
+          "next_value": 27
+        },
+        {
+          "id": "attractiveness_27",
+          "value": 27,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2673,
+              1225
+            ],
+            [
+              2768,
+              1225
+            ],
+            [
+              2768,
+              1438
+            ],
+            [
+              2673,
+              1438
+            ]
+          ],
+          "centroid": [
+            2720.5,
+            1331.5
+          ],
+          "bbox": [
+            2673,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 26,
+          "next_value": 28
+        },
+        {
+          "id": "attractiveness_28",
+          "value": 28,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2768,
+              1225
+            ],
+            [
+              2862,
+              1225
+            ],
+            [
+              2862,
+              1438
+            ],
+            [
+              2768,
+              1438
+            ]
+          ],
+          "centroid": [
+            2814.88,
+            1331.5
+          ],
+          "bbox": [
+            2768,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 27,
+          "next_value": 29
+        },
+        {
+          "id": "attractiveness_29",
+          "value": 29,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2862,
+              1225
+            ],
+            [
+              2958,
+              1225
+            ],
+            [
+              2958,
+              1438
+            ],
+            [
+              2862,
+              1438
+            ]
+          ],
+          "centroid": [
+            2909.75,
+            1331.5
+          ],
+          "bbox": [
+            2862,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 28,
+          "next_value": 30
+        },
+        {
+          "id": "attractiveness_30",
+          "value": 30,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              2958,
+              1225
+            ],
+            [
+              3052,
+              1225
+            ],
+            [
+              3052,
+              1438
+            ],
+            [
+              2958,
+              1438
+            ]
+          ],
+          "centroid": [
+            3004.62,
+            1331.5
+          ],
+          "bbox": [
+            2958,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 29,
+          "next_value": 31
+        },
+        {
+          "id": "attractiveness_31",
+          "value": 31,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3052,
+              1225
+            ],
+            [
+              3145,
+              1225
+            ],
+            [
+              3145,
+              1438
+            ],
+            [
+              3052,
+              1438
+            ]
+          ],
+          "centroid": [
+            3098.38,
+            1331.5
+          ],
+          "bbox": [
+            3052,
+            1225,
+            93,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 30,
+          "next_value": 32
+        },
+        {
+          "id": "attractiveness_32",
+          "value": 32,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3145,
+              1225
+            ],
+            [
+              3240,
+              1225
+            ],
+            [
+              3240,
+              1438
+            ],
+            [
+              3145,
+              1438
+            ]
+          ],
+          "centroid": [
+            3192.75,
+            1331.5
+          ],
+          "bbox": [
+            3145,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 31,
+          "next_value": 33
+        },
+        {
+          "id": "attractiveness_33",
+          "value": 33,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3240,
+              1225
+            ],
+            [
+              3336,
+              1225
+            ],
+            [
+              3336,
+              1438
+            ],
+            [
+              3240,
+              1438
+            ]
+          ],
+          "centroid": [
+            3288.12,
+            1331.5
+          ],
+          "bbox": [
+            3240,
+            1225,
+            95,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 32,
+          "next_value": 34
+        },
+        {
+          "id": "attractiveness_34",
+          "value": 34,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3336,
+              1225
+            ],
+            [
+              3426,
+              1225
+            ],
+            [
+              3426,
+              1438
+            ],
+            [
+              3336,
+              1438
+            ]
+          ],
+          "centroid": [
+            3381.0,
+            1331.5
+          ],
+          "bbox": [
+            3336,
+            1225,
+            90,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 33,
+          "next_value": 35
+        },
+        {
+          "id": "attractiveness_35",
+          "value": 35,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3426,
+              1225
+            ],
+            [
+              3521,
+              1225
+            ],
+            [
+              3521,
+              1438
+            ],
+            [
+              3426,
+              1438
+            ]
+          ],
+          "centroid": [
+            3473.5,
+            1331.5
+          ],
+          "bbox": [
+            3426,
+            1225,
+            94,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 34,
+          "next_value": 36
+        },
+        {
+          "id": "attractiveness_36",
+          "value": 36,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3521,
+              1225
+            ],
+            [
+              3619,
+              1225
+            ],
+            [
+              3619,
+              1438
+            ],
+            [
+              3521,
+              1438
+            ]
+          ],
+          "centroid": [
+            3570.0,
+            1331.5
+          ],
+          "bbox": [
+            3521,
+            1225,
+            98,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 35,
+          "next_value": 37
+        },
+        {
+          "id": "attractiveness_37",
+          "value": 37,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3619,
+              1225
+            ],
+            [
+              3715,
+              1225
+            ],
+            [
+              3715,
+              1438
+            ],
+            [
+              3619,
+              1438
+            ]
+          ],
+          "centroid": [
+            3667.25,
+            1331.5
+          ],
+          "bbox": [
+            3619,
+            1225,
+            96,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 36,
+          "next_value": 38
+        },
+        {
+          "id": "attractiveness_38",
+          "value": 38,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3715,
+              1225
+            ],
+            [
+              3814,
+              1225
+            ],
+            [
+              3814,
+              1438
+            ],
+            [
+              3715,
+              1438
+            ]
+          ],
+          "centroid": [
+            3764.62,
+            1331.5
+          ],
+          "bbox": [
+            3715,
+            1225,
+            99,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 37,
+          "next_value": 39
+        },
+        {
+          "id": "attractiveness_39",
+          "value": 39,
+          "row": "bottom_0_39",
+          "polygon": [
+            [
+              3814,
+              1225
+            ],
+            [
+              3915,
+              1225
+            ],
+            [
+              3915,
+              1438
+            ],
+            [
+              3814,
+              1438
+            ]
+          ],
+          "centroid": [
+            3864.5,
+            1331.5
+          ],
+          "bbox": [
+            3814,
+            1225,
+            101,
+            213
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 38,
+          "next_value": 40
+        },
+        {
+          "id": "attractiveness_40",
+          "value": 40,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3662,
+              934
+            ],
+            [
+              3758,
+              934
+            ],
+            [
+              3758,
+              1150
+            ],
+            [
+              3662,
+              1150
+            ]
+          ],
+          "centroid": [
+            3710.0,
+            1042.0
+          ],
+          "bbox": [
+            3662,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 39,
+          "next_value": 41
+        },
+        {
+          "id": "attractiveness_41",
+          "value": 41,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3566,
+              934
+            ],
+            [
+              3662,
+              934
+            ],
+            [
+              3662,
+              1150
+            ],
+            [
+              3566,
+              1150
+            ]
+          ],
+          "centroid": [
+            3614.0,
+            1042.0
+          ],
+          "bbox": [
+            3566,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 40,
+          "next_value": 42
+        },
+        {
+          "id": "attractiveness_42",
+          "value": 42,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3469,
+              934
+            ],
+            [
+              3566,
+              934
+            ],
+            [
+              3566,
+              1150
+            ],
+            [
+              3469,
+              1150
+            ]
+          ],
+          "centroid": [
+            3517.38,
+            1042.0
+          ],
+          "bbox": [
+            3469,
+            934,
+            97,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 41,
+          "next_value": 43
+        },
+        {
+          "id": "attractiveness_43",
+          "value": 43,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3372,
+              934
+            ],
+            [
+              3469,
+              934
+            ],
+            [
+              3469,
+              1150
+            ],
+            [
+              3372,
+              1150
+            ]
+          ],
+          "centroid": [
+            3420.62,
+            1042.0
+          ],
+          "bbox": [
+            3372,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 42,
+          "next_value": 44
+        },
+        {
+          "id": "attractiveness_44",
+          "value": 44,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3280,
+              934
+            ],
+            [
+              3372,
+              934
+            ],
+            [
+              3372,
+              1150
+            ],
+            [
+              3280,
+              1150
+            ]
+          ],
+          "centroid": [
+            3326.12,
+            1042.0
+          ],
+          "bbox": [
+            3280,
+            934,
+            93,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 43,
+          "next_value": 45
+        },
+        {
+          "id": "attractiveness_45",
+          "value": 45,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3188,
+              934
+            ],
+            [
+              3280,
+              934
+            ],
+            [
+              3280,
+              1150
+            ],
+            [
+              3188,
+              1150
+            ]
+          ],
+          "centroid": [
+            3234.12,
+            1042.0
+          ],
+          "bbox": [
+            3188,
+            934,
+            91,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 44,
+          "next_value": 46
+        },
+        {
+          "id": "attractiveness_46",
+          "value": 46,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3096,
+              934
+            ],
+            [
+              3188,
+              934
+            ],
+            [
+              3188,
+              1150
+            ],
+            [
+              3096,
+              1150
+            ]
+          ],
+          "centroid": [
+            3142.0,
+            1042.0
+          ],
+          "bbox": [
+            3096,
+            934,
+            93,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 45,
+          "next_value": 47
+        },
+        {
+          "id": "attractiveness_47",
+          "value": 47,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              3001,
+              934
+            ],
+            [
+              3096,
+              934
+            ],
+            [
+              3096,
+              1150
+            ],
+            [
+              3001,
+              1150
+            ]
+          ],
+          "centroid": [
+            3048.25,
+            1042.0
+          ],
+          "bbox": [
+            3001,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 46,
+          "next_value": 48
+        },
+        {
+          "id": "attractiveness_48",
+          "value": 48,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2908,
+              934
+            ],
+            [
+              3001,
+              934
+            ],
+            [
+              3001,
+              1150
+            ],
+            [
+              2908,
+              1150
+            ]
+          ],
+          "centroid": [
+            2954.38,
+            1042.0
+          ],
+          "bbox": [
+            2908,
+            934,
+            93,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 47,
+          "next_value": 49
+        },
+        {
+          "id": "attractiveness_49",
+          "value": 49,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2814,
+              934
+            ],
+            [
+              2908,
+              934
+            ],
+            [
+              2908,
+              1150
+            ],
+            [
+              2814,
+              1150
+            ]
+          ],
+          "centroid": [
+            2860.88,
+            1042.0
+          ],
+          "bbox": [
+            2814,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 48,
+          "next_value": 50
+        },
+        {
+          "id": "attractiveness_50",
+          "value": 50,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2718,
+              934
+            ],
+            [
+              2814,
+              934
+            ],
+            [
+              2814,
+              1150
+            ],
+            [
+              2718,
+              1150
+            ]
+          ],
+          "centroid": [
+            2766.12,
+            1042.0
+          ],
+          "bbox": [
+            2718,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 49,
+          "next_value": 51
+        },
+        {
+          "id": "attractiveness_51",
+          "value": 51,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2623,
+              934
+            ],
+            [
+              2718,
+              934
+            ],
+            [
+              2718,
+              1150
+            ],
+            [
+              2623,
+              1150
+            ]
+          ],
+          "centroid": [
+            2670.75,
+            1042.0
+          ],
+          "bbox": [
+            2623,
+            934,
+            95,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 50,
+          "next_value": 52
+        },
+        {
+          "id": "attractiveness_52",
+          "value": 52,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2529,
+              934
+            ],
+            [
+              2623,
+              934
+            ],
+            [
+              2623,
+              1150
+            ],
+            [
+              2529,
+              1150
+            ]
+          ],
+          "centroid": [
+            2576.12,
+            1042.0
+          ],
+          "bbox": [
+            2529,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 51,
+          "next_value": 53
+        },
+        {
+          "id": "attractiveness_53",
+          "value": 53,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2435,
+              934
+            ],
+            [
+              2529,
+              934
+            ],
+            [
+              2529,
+              1150
+            ],
+            [
+              2435,
+              1150
+            ]
+          ],
+          "centroid": [
+            2482.12,
+            1042.0
+          ],
+          "bbox": [
+            2435,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 52,
+          "next_value": 54
+        },
+        {
+          "id": "attractiveness_54",
+          "value": 54,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2341,
+              934
+            ],
+            [
+              2435,
+              934
+            ],
+            [
+              2435,
+              1150
+            ],
+            [
+              2341,
+              1150
+            ]
+          ],
+          "centroid": [
+            2388.12,
+            1042.0
+          ],
+          "bbox": [
+            2341,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 53,
+          "next_value": 55
+        },
+        {
+          "id": "attractiveness_55",
+          "value": 55,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2246,
+              934
+            ],
+            [
+              2341,
+              934
+            ],
+            [
+              2341,
+              1150
+            ],
+            [
+              2246,
+              1150
+            ]
+          ],
+          "centroid": [
+            2293.38,
+            1042.0
+          ],
+          "bbox": [
+            2246,
+            934,
+            95,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 54,
+          "next_value": 56
+        },
+        {
+          "id": "attractiveness_56",
+          "value": 56,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2151,
+              934
+            ],
+            [
+              2246,
+              934
+            ],
+            [
+              2246,
+              1150
+            ],
+            [
+              2151,
+              1150
+            ]
+          ],
+          "centroid": [
+            2198.5,
+            1042.0
+          ],
+          "bbox": [
+            2151,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 55,
+          "next_value": 57
+        },
+        {
+          "id": "attractiveness_57",
+          "value": 57,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              2057,
+              934
+            ],
+            [
+              2151,
+              934
+            ],
+            [
+              2151,
+              1150
+            ],
+            [
+              2057,
+              1150
+            ]
+          ],
+          "centroid": [
+            2104.12,
+            1042.0
+          ],
+          "bbox": [
+            2057,
+            934,
+            94,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 56,
+          "next_value": 58
+        },
+        {
+          "id": "attractiveness_58",
+          "value": 58,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1962,
+              934
+            ],
+            [
+              2057,
+              934
+            ],
+            [
+              2057,
+              1150
+            ],
+            [
+              1962,
+              1150
+            ]
+          ],
+          "centroid": [
+            2009.5,
+            1042.0
+          ],
+          "bbox": [
+            1962,
+            934,
+            95,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 57,
+          "next_value": 59
+        },
+        {
+          "id": "attractiveness_59",
+          "value": 59,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1866,
+              934
+            ],
+            [
+              1962,
+              934
+            ],
+            [
+              1962,
+              1150
+            ],
+            [
+              1866,
+              1150
+            ]
+          ],
+          "centroid": [
+            1914.25,
+            1042.0
+          ],
+          "bbox": [
+            1866,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 58,
+          "next_value": 60
+        },
+        {
+          "id": "attractiveness_60",
+          "value": 60,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1771,
+              934
+            ],
+            [
+              1866,
+              934
+            ],
+            [
+              1866,
+              1150
+            ],
+            [
+              1771,
+              1150
+            ]
+          ],
+          "centroid": [
+            1818.75,
+            1042.0
+          ],
+          "bbox": [
+            1771,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 59,
+          "next_value": 61
+        },
+        {
+          "id": "attractiveness_61",
+          "value": 61,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1675,
+              934
+            ],
+            [
+              1771,
+              934
+            ],
+            [
+              1771,
+              1150
+            ],
+            [
+              1675,
+              1150
+            ]
+          ],
+          "centroid": [
+            1723.0,
+            1042.0
+          ],
+          "bbox": [
+            1675,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 60,
+          "next_value": 62
+        },
+        {
+          "id": "attractiveness_62",
+          "value": 62,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1579,
+              934
+            ],
+            [
+              1675,
+              934
+            ],
+            [
+              1675,
+              1150
+            ],
+            [
+              1579,
+              1150
+            ]
+          ],
+          "centroid": [
+            1627.12,
+            1042.0
+          ],
+          "bbox": [
+            1579,
+            934,
+            96,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 61,
+          "next_value": 63
+        },
+        {
+          "id": "attractiveness_63",
+          "value": 63,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1482,
+              934
+            ],
+            [
+              1579,
+              934
+            ],
+            [
+              1579,
+              1150
+            ],
+            [
+              1482,
+              1150
+            ]
+          ],
+          "centroid": [
+            1530.75,
+            1042.0
+          ],
+          "bbox": [
+            1482,
+            934,
+            97,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 62,
+          "next_value": 64
+        },
+        {
+          "id": "attractiveness_64",
+          "value": 64,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1384,
+              934
+            ],
+            [
+              1482,
+              934
+            ],
+            [
+              1482,
+              1150
+            ],
+            [
+              1384,
+              1150
+            ]
+          ],
+          "centroid": [
+            1433.25,
+            1042.0
+          ],
+          "bbox": [
+            1384,
+            934,
+            98,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 63,
+          "next_value": 65
+        },
+        {
+          "id": "attractiveness_65",
+          "value": 65,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1287,
+              934
+            ],
+            [
+              1384,
+              934
+            ],
+            [
+              1384,
+              1150
+            ],
+            [
+              1287,
+              1150
+            ]
+          ],
+          "centroid": [
+            1335.5,
+            1042.0
+          ],
+          "bbox": [
+            1287,
+            934,
+            98,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 64,
+          "next_value": 66
+        },
+        {
+          "id": "attractiveness_66",
+          "value": 66,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1189,
+              934
+            ],
+            [
+              1287,
+              934
+            ],
+            [
+              1287,
+              1150
+            ],
+            [
+              1189,
+              1150
+            ]
+          ],
+          "centroid": [
+            1237.75,
+            1042.0
+          ],
+          "bbox": [
+            1189,
+            934,
+            98,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 65,
+          "next_value": 67
+        },
+        {
+          "id": "attractiveness_67",
+          "value": 67,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              1090,
+              934
+            ],
+            [
+              1189,
+              934
+            ],
+            [
+              1189,
+              1150
+            ],
+            [
+              1090,
+              1150
+            ]
+          ],
+          "centroid": [
+            1139.38,
+            1042.0
+          ],
+          "bbox": [
+            1090,
+            934,
+            99,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 66,
+          "next_value": 68
+        },
+        {
+          "id": "attractiveness_68",
+          "value": 68,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              991,
+              934
+            ],
+            [
+              1090,
+              934
+            ],
+            [
+              1090,
+              1150
+            ],
+            [
+              991,
+              1150
+            ]
+          ],
+          "centroid": [
+            1040.62,
+            1042.0
+          ],
+          "bbox": [
+            991,
+            934,
+            99,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 67,
+          "next_value": 69
+        },
+        {
+          "id": "attractiveness_69",
+          "value": 69,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              892,
+              934
+            ],
+            [
+              991,
+              934
+            ],
+            [
+              991,
+              1150
+            ],
+            [
+              892,
+              1150
+            ]
+          ],
+          "centroid": [
+            941.88,
+            1042.0
+          ],
+          "bbox": [
+            892,
+            934,
+            99,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 68,
+          "next_value": 70
+        },
+        {
+          "id": "attractiveness_70",
+          "value": 70,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              794,
+              934
+            ],
+            [
+              892,
+              934
+            ],
+            [
+              892,
+              1150
+            ],
+            [
+              794,
+              1150
+            ]
+          ],
+          "centroid": [
+            843.12,
+            1042.0
+          ],
+          "bbox": [
+            794,
+            934,
+            99,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 69,
+          "next_value": 71
+        },
+        {
+          "id": "attractiveness_71",
+          "value": 71,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              696,
+              934
+            ],
+            [
+              794,
+              934
+            ],
+            [
+              794,
+              1150
+            ],
+            [
+              696,
+              1150
+            ]
+          ],
+          "centroid": [
+            744.62,
+            1042.0
+          ],
+          "bbox": [
+            696,
+            934,
+            98,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 70,
+          "next_value": 72
+        },
+        {
+          "id": "attractiveness_72",
+          "value": 72,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              598,
+              934
+            ],
+            [
+              696,
+              934
+            ],
+            [
+              696,
+              1150
+            ],
+            [
+              598,
+              1150
+            ]
+          ],
+          "centroid": [
+            646.5,
+            1042.0
+          ],
+          "bbox": [
+            598,
+            934,
+            98,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 71,
+          "next_value": 73
+        },
+        {
+          "id": "attractiveness_73",
+          "value": 73,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              496,
+              934
+            ],
+            [
+              598,
+              934
+            ],
+            [
+              598,
+              1150
+            ],
+            [
+              496,
+              1150
+            ]
+          ],
+          "centroid": [
+            547.0,
+            1042.0
+          ],
+          "bbox": [
+            496,
+            934,
+            101,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 72,
+          "next_value": 74
+        },
+        {
+          "id": "attractiveness_74",
+          "value": 74,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              393,
+              934
+            ],
+            [
+              496,
+              934
+            ],
+            [
+              496,
+              1150
+            ],
+            [
+              393,
+              1150
+            ]
+          ],
+          "centroid": [
+            444.75,
+            1042.0
+          ],
+          "bbox": [
+            393,
+            934,
+            104,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 73,
+          "next_value": 75
+        },
+        {
+          "id": "attractiveness_75",
+          "value": 75,
+          "row": "middle_40_75",
+          "polygon": [
+            [
+              290,
+              934
+            ],
+            [
+              393,
+              934
+            ],
+            [
+              393,
+              1150
+            ],
+            [
+              290,
+              1150
+            ]
+          ],
+          "centroid": [
+            341.5,
+            1042.0
+          ],
+          "bbox": [
+            290,
+            934,
+            103,
+            216
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 74,
+          "next_value": 76
+        },
+        {
+          "id": "attractiveness_76",
+          "value": 76,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              136,
+              635
+            ],
+            [
+              238,
+              635
+            ],
+            [
+              238,
+              842
+            ],
+            [
+              136,
+              842
+            ]
+          ],
+          "centroid": [
+            187.0,
+            738.5
+          ],
+          "bbox": [
+            136,
+            635,
+            101,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 75,
+          "next_value": 77
+        },
+        {
+          "id": "attractiveness_77",
+          "value": 77,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              238,
+              635
+            ],
+            [
+              340,
+              635
+            ],
+            [
+              340,
+              842
+            ],
+            [
+              238,
+              842
+            ]
+          ],
+          "centroid": [
+            288.5,
+            738.5
+          ],
+          "bbox": [
+            238,
+            635,
+            102,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 76,
+          "next_value": 78
+        },
+        {
+          "id": "attractiveness_78",
+          "value": 78,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              340,
+              635
+            ],
+            [
+              449,
+              635
+            ],
+            [
+              449,
+              842
+            ],
+            [
+              340,
+              842
+            ]
+          ],
+          "centroid": [
+            394.12,
+            738.5
+          ],
+          "bbox": [
+            340,
+            635,
+            109,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 77,
+          "next_value": 79
+        },
+        {
+          "id": "attractiveness_79",
+          "value": 79,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              449,
+              635
+            ],
+            [
+              554,
+              635
+            ],
+            [
+              554,
+              842
+            ],
+            [
+              449,
+              842
+            ]
+          ],
+          "centroid": [
+            501.5,
+            738.5
+          ],
+          "bbox": [
+            449,
+            635,
+            106,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 78,
+          "next_value": 80
+        },
+        {
+          "id": "attractiveness_80",
+          "value": 80,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              554,
+              635
+            ],
+            [
+              649,
+              635
+            ],
+            [
+              649,
+              842
+            ],
+            [
+              554,
+              842
+            ]
+          ],
+          "centroid": [
+            601.75,
+            738.5
+          ],
+          "bbox": [
+            554,
+            635,
+            95,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 79,
+          "next_value": 81
+        },
+        {
+          "id": "attractiveness_81",
+          "value": 81,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              649,
+              635
+            ],
+            [
+              745,
+              635
+            ],
+            [
+              745,
+              842
+            ],
+            [
+              649,
+              842
+            ]
+          ],
+          "centroid": [
+            697.0,
+            738.5
+          ],
+          "bbox": [
+            649,
+            635,
+            96,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 80,
+          "next_value": 82
+        },
+        {
+          "id": "attractiveness_82",
+          "value": 82,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              745,
+              635
+            ],
+            [
+              842,
+              635
+            ],
+            [
+              842,
+              842
+            ],
+            [
+              745,
+              842
+            ]
+          ],
+          "centroid": [
+            793.12,
+            738.5
+          ],
+          "bbox": [
+            745,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 81,
+          "next_value": 83
+        },
+        {
+          "id": "attractiveness_83",
+          "value": 83,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              842,
+              635
+            ],
+            [
+              939,
+              635
+            ],
+            [
+              939,
+              842
+            ],
+            [
+              842,
+              842
+            ]
+          ],
+          "centroid": [
+            890.38,
+            738.5
+          ],
+          "bbox": [
+            842,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 82,
+          "next_value": 84
+        },
+        {
+          "id": "attractiveness_84",
+          "value": 84,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              939,
+              635
+            ],
+            [
+              1037,
+              635
+            ],
+            [
+              1037,
+              842
+            ],
+            [
+              939,
+              842
+            ]
+          ],
+          "centroid": [
+            988.12,
+            738.5
+          ],
+          "bbox": [
+            939,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 83,
+          "next_value": 85
+        },
+        {
+          "id": "attractiveness_85",
+          "value": 85,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1037,
+              635
+            ],
+            [
+              1134,
+              635
+            ],
+            [
+              1134,
+              842
+            ],
+            [
+              1037,
+              842
+            ]
+          ],
+          "centroid": [
+            1085.75,
+            738.5
+          ],
+          "bbox": [
+            1037,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 84,
+          "next_value": 86
+        },
+        {
+          "id": "attractiveness_86",
+          "value": 86,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1134,
+              635
+            ],
+            [
+              1232,
+              635
+            ],
+            [
+              1232,
+              842
+            ],
+            [
+              1134,
+              842
+            ]
+          ],
+          "centroid": [
+            1183.5,
+            738.5
+          ],
+          "bbox": [
+            1134,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 85,
+          "next_value": 87
+        },
+        {
+          "id": "attractiveness_87",
+          "value": 87,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1232,
+              635
+            ],
+            [
+              1330,
+              635
+            ],
+            [
+              1330,
+              842
+            ],
+            [
+              1232,
+              842
+            ]
+          ],
+          "centroid": [
+            1281.38,
+            738.5
+          ],
+          "bbox": [
+            1232,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 86,
+          "next_value": 88
+        },
+        {
+          "id": "attractiveness_88",
+          "value": 88,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1330,
+              635
+            ],
+            [
+              1428,
+              635
+            ],
+            [
+              1428,
+              842
+            ],
+            [
+              1330,
+              842
+            ]
+          ],
+          "centroid": [
+            1379.12,
+            738.5
+          ],
+          "bbox": [
+            1330,
+            635,
+            98,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 87,
+          "next_value": 89
+        },
+        {
+          "id": "attractiveness_89",
+          "value": 89,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1428,
+              635
+            ],
+            [
+              1525,
+              635
+            ],
+            [
+              1525,
+              842
+            ],
+            [
+              1428,
+              842
+            ]
+          ],
+          "centroid": [
+            1476.5,
+            738.5
+          ],
+          "bbox": [
+            1428,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 88,
+          "next_value": 90
+        },
+        {
+          "id": "attractiveness_90",
+          "value": 90,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1525,
+              635
+            ],
+            [
+              1622,
+              635
+            ],
+            [
+              1622,
+              842
+            ],
+            [
+              1525,
+              842
+            ]
+          ],
+          "centroid": [
+            1573.38,
+            738.5
+          ],
+          "bbox": [
+            1525,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 89,
+          "next_value": 91
+        },
+        {
+          "id": "attractiveness_91",
+          "value": 91,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1622,
+              635
+            ],
+            [
+              1718,
+              635
+            ],
+            [
+              1718,
+              842
+            ],
+            [
+              1622,
+              842
+            ]
+          ],
+          "centroid": [
+            1670.12,
+            738.5
+          ],
+          "bbox": [
+            1622,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 90,
+          "next_value": 92
+        },
+        {
+          "id": "attractiveness_92",
+          "value": 92,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1718,
+              635
+            ],
+            [
+              1815,
+              635
+            ],
+            [
+              1815,
+              842
+            ],
+            [
+              1718,
+              842
+            ]
+          ],
+          "centroid": [
+            1766.62,
+            738.5
+          ],
+          "bbox": [
+            1718,
+            635,
+            96,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 91,
+          "next_value": 93
+        },
+        {
+          "id": "attractiveness_93",
+          "value": 93,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1815,
+              635
+            ],
+            [
+              1910,
+              635
+            ],
+            [
+              1910,
+              842
+            ],
+            [
+              1815,
+              842
+            ]
+          ],
+          "centroid": [
+            1862.25,
+            738.5
+          ],
+          "bbox": [
+            1815,
+            635,
+            95,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 92,
+          "next_value": 94
+        },
+        {
+          "id": "attractiveness_94",
+          "value": 94,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              1910,
+              635
+            ],
+            [
+              2005,
+              635
+            ],
+            [
+              2005,
+              842
+            ],
+            [
+              1910,
+              842
+            ]
+          ],
+          "centroid": [
+            1957.5,
+            738.5
+          ],
+          "bbox": [
+            1910,
+            635,
+            96,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 93,
+          "next_value": 95
+        },
+        {
+          "id": "attractiveness_95",
+          "value": 95,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2005,
+              635
+            ],
+            [
+              2101,
+              635
+            ],
+            [
+              2101,
+              842
+            ],
+            [
+              2005,
+              842
+            ]
+          ],
+          "centroid": [
+            2053.0,
+            738.5
+          ],
+          "bbox": [
+            2005,
+            635,
+            96,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 94,
+          "next_value": 96
+        },
+        {
+          "id": "attractiveness_96",
+          "value": 96,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2101,
+              635
+            ],
+            [
+              2194,
+              635
+            ],
+            [
+              2194,
+              842
+            ],
+            [
+              2101,
+              842
+            ]
+          ],
+          "centroid": [
+            2147.38,
+            738.5
+          ],
+          "bbox": [
+            2101,
+            635,
+            93,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 95,
+          "next_value": 97
+        },
+        {
+          "id": "attractiveness_97",
+          "value": 97,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2194,
+              635
+            ],
+            [
+              2288,
+              635
+            ],
+            [
+              2288,
+              842
+            ],
+            [
+              2194,
+              842
+            ]
+          ],
+          "centroid": [
+            2241.25,
+            738.5
+          ],
+          "bbox": [
+            2194,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 96,
+          "next_value": 98
+        },
+        {
+          "id": "attractiveness_98",
+          "value": 98,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2288,
+              635
+            ],
+            [
+              2384,
+              635
+            ],
+            [
+              2384,
+              842
+            ],
+            [
+              2288,
+              842
+            ]
+          ],
+          "centroid": [
+            2336.25,
+            738.5
+          ],
+          "bbox": [
+            2288,
+            635,
+            96,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 97,
+          "next_value": 99
+        },
+        {
+          "id": "attractiveness_99",
+          "value": 99,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2384,
+              635
+            ],
+            [
+              2479,
+              635
+            ],
+            [
+              2479,
+              842
+            ],
+            [
+              2384,
+              842
+            ]
+          ],
+          "centroid": [
+            2431.38,
+            738.5
+          ],
+          "bbox": [
+            2384,
+            635,
+            95,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 98,
+          "next_value": 100
+        },
+        {
+          "id": "attractiveness_100",
+          "value": 100,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2479,
+              635
+            ],
+            [
+              2572,
+              635
+            ],
+            [
+              2572,
+              842
+            ],
+            [
+              2479,
+              842
+            ]
+          ],
+          "centroid": [
+            2525.62,
+            738.5
+          ],
+          "bbox": [
+            2479,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 99,
+          "next_value": 101
+        },
+        {
+          "id": "attractiveness_101",
+          "value": 101,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2572,
+              635
+            ],
+            [
+              2668,
+              635
+            ],
+            [
+              2668,
+              842
+            ],
+            [
+              2572,
+              842
+            ]
+          ],
+          "centroid": [
+            2620.0,
+            738.5
+          ],
+          "bbox": [
+            2572,
+            635,
+            95,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 100,
+          "next_value": 102
+        },
+        {
+          "id": "attractiveness_102",
+          "value": 102,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2668,
+              635
+            ],
+            [
+              2762,
+              635
+            ],
+            [
+              2762,
+              842
+            ],
+            [
+              2668,
+              842
+            ]
+          ],
+          "centroid": [
+            2714.75,
+            738.5
+          ],
+          "bbox": [
+            2668,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 101,
+          "next_value": 103
+        },
+        {
+          "id": "attractiveness_103",
+          "value": 103,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2762,
+              635
+            ],
+            [
+              2856,
+              635
+            ],
+            [
+              2856,
+              842
+            ],
+            [
+              2762,
+              842
+            ]
+          ],
+          "centroid": [
+            2809.0,
+            738.5
+          ],
+          "bbox": [
+            2762,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 102,
+          "next_value": 104
+        },
+        {
+          "id": "attractiveness_104",
+          "value": 104,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2856,
+              635
+            ],
+            [
+              2950,
+              635
+            ],
+            [
+              2950,
+              842
+            ],
+            [
+              2856,
+              842
+            ]
+          ],
+          "centroid": [
+            2903.12,
+            738.5
+          ],
+          "bbox": [
+            2856,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 103,
+          "next_value": 105
+        },
+        {
+          "id": "attractiveness_105",
+          "value": 105,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              2950,
+              635
+            ],
+            [
+              3044,
+              635
+            ],
+            [
+              3044,
+              842
+            ],
+            [
+              2950,
+              842
+            ]
+          ],
+          "centroid": [
+            2997.12,
+            738.5
+          ],
+          "bbox": [
+            2950,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 104,
+          "next_value": 106
+        },
+        {
+          "id": "attractiveness_106",
+          "value": 106,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3044,
+              635
+            ],
+            [
+              3138,
+              635
+            ],
+            [
+              3138,
+              842
+            ],
+            [
+              3044,
+              842
+            ]
+          ],
+          "centroid": [
+            3091.0,
+            738.5
+          ],
+          "bbox": [
+            3044,
+            635,
+            94,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 105,
+          "next_value": 107
+        },
+        {
+          "id": "attractiveness_107",
+          "value": 107,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3138,
+              635
+            ],
+            [
+              3230,
+              635
+            ],
+            [
+              3230,
+              842
+            ],
+            [
+              3138,
+              842
+            ]
+          ],
+          "centroid": [
+            3184.0,
+            738.5
+          ],
+          "bbox": [
+            3138,
+            635,
+            92,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 106,
+          "next_value": 108
+        },
+        {
+          "id": "attractiveness_108",
+          "value": 108,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3230,
+              635
+            ],
+            [
+              3322,
+              635
+            ],
+            [
+              3322,
+              842
+            ],
+            [
+              3230,
+              842
+            ]
+          ],
+          "centroid": [
+            3275.75,
+            738.5
+          ],
+          "bbox": [
+            3230,
+            635,
+            92,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 107,
+          "next_value": 109
+        },
+        {
+          "id": "attractiveness_109",
+          "value": 109,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3322,
+              635
+            ],
+            [
+              3413,
+              635
+            ],
+            [
+              3413,
+              842
+            ],
+            [
+              3322,
+              842
+            ]
+          ],
+          "centroid": [
+            3367.12,
+            738.5
+          ],
+          "bbox": [
+            3322,
+            635,
+            91,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 108,
+          "next_value": 110
+        },
+        {
+          "id": "attractiveness_110",
+          "value": 110,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3413,
+              635
+            ],
+            [
+              3510,
+              635
+            ],
+            [
+              3510,
+              842
+            ],
+            [
+              3413,
+              842
+            ]
+          ],
+          "centroid": [
+            3461.12,
+            738.5
+          ],
+          "bbox": [
+            3413,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 109,
+          "next_value": 111
+        },
+        {
+          "id": "attractiveness_111",
+          "value": 111,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3510,
+              635
+            ],
+            [
+              3612,
+              635
+            ],
+            [
+              3612,
+              842
+            ],
+            [
+              3510,
+              842
+            ]
+          ],
+          "centroid": [
+            3561.0,
+            738.5
+          ],
+          "bbox": [
+            3510,
+            635,
+            103,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 110,
+          "next_value": 112
+        },
+        {
+          "id": "attractiveness_112",
+          "value": 112,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3612,
+              635
+            ],
+            [
+              3712,
+              635
+            ],
+            [
+              3712,
+              842
+            ],
+            [
+              3612,
+              842
+            ]
+          ],
+          "centroid": [
+            3662.5,
+            738.5
+          ],
+          "bbox": [
+            3612,
+            635,
+            100,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 111,
+          "next_value": 113
+        },
+        {
+          "id": "attractiveness_113",
+          "value": 113,
+          "row": "top_76_113",
+          "polygon": [
+            [
+              3712,
+              635
+            ],
+            [
+              3810,
+              635
+            ],
+            [
+              3810,
+              842
+            ],
+            [
+              3712,
+              842
+            ]
+          ],
+          "centroid": [
+            3761.0,
+            738.5
+          ],
+          "bbox": [
+            3712,
+            635,
+            97,
+            207
+          ],
+          "vertex_count": 4,
+          "confidence": "high",
+          "previous_value": 112,
+          "next_value": null
+        }
+      ]
+    },
+    "conservation": {
+      "value_min": 0,
+      "value_max": 41,
+      "expected_vertex_count": 5,
+      "fields": [
+        {
+          "id": "conservation_0",
+          "value": 0,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              3814,
+              640
+            ],
+            [
+              3814,
+              586
+            ],
+            [
+              3886,
+              548
+            ],
+            [
+              3957,
+              586
+            ],
+            [
+              3957,
+              640
+            ]
+          ],
+          "centroid": [
+            3885.75,
+            602.68
+          ],
+          "bbox": [
+            3814,
+            548,
+            142,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "medium",
+          "previous_value": null,
+          "next_value": 1
+        },
+        {
+          "id": "conservation_1",
+          "value": 1,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              3620,
+              640
+            ],
+            [
+              3620,
+              586
+            ],
+            [
+              3711,
+              548
+            ],
+            [
+              3802,
+              586
+            ],
+            [
+              3802,
+              640
+            ]
+          ],
+          "centroid": [
+            3711.0,
+            602.68
+          ],
+          "bbox": [
+            3620,
+            548,
+            181,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 0,
+          "next_value": 2
+        },
+        {
+          "id": "conservation_2",
+          "value": 2,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              3421,
+              640
+            ],
+            [
+              3421,
+              586
+            ],
+            [
+              3513,
+              548
+            ],
+            [
+              3604,
+              586
+            ],
+            [
+              3604,
+              640
+            ]
+          ],
+          "centroid": [
+            3512.62,
+            602.68
+          ],
+          "bbox": [
+            3421,
+            548,
+            184,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 1,
+          "next_value": 3
+        },
+        {
+          "id": "conservation_3",
+          "value": 3,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              3238,
+              640
+            ],
+            [
+              3238,
+              586
+            ],
+            [
+              3321,
+              548
+            ],
+            [
+              3405,
+              586
+            ],
+            [
+              3405,
+              640
+            ]
+          ],
+          "centroid": [
+            3321.38,
+            602.68
+          ],
+          "bbox": [
+            3238,
+            548,
+            167,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 2,
+          "next_value": 4
+        },
+        {
+          "id": "conservation_4",
+          "value": 4,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              3052,
+              640
+            ],
+            [
+              3052,
+              586
+            ],
+            [
+              3137,
+              548
+            ],
+            [
+              3222,
+              586
+            ],
+            [
+              3222,
+              640
+            ]
+          ],
+          "centroid": [
+            3137.0,
+            602.68
+          ],
+          "bbox": [
+            3052,
+            548,
+            170,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 3,
+          "next_value": 5
+        },
+        {
+          "id": "conservation_5",
+          "value": 5,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              2864,
+              640
+            ],
+            [
+              2864,
+              586
+            ],
+            [
+              2950,
+              548
+            ],
+            [
+              3036,
+              586
+            ],
+            [
+              3036,
+              640
+            ]
+          ],
+          "centroid": [
+            2950.0,
+            602.68
+          ],
+          "bbox": [
+            2864,
+            548,
+            172,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 4,
+          "next_value": 6
+        },
+        {
+          "id": "conservation_6",
+          "value": 6,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              2676,
+              640
+            ],
+            [
+              2676,
+              586
+            ],
+            [
+              2762,
+              548
+            ],
+            [
+              2848,
+              586
+            ],
+            [
+              2848,
+              640
+            ]
+          ],
+          "centroid": [
+            2761.75,
+            602.68
+          ],
+          "bbox": [
+            2676,
+            548,
+            172,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 5,
+          "next_value": 7
+        },
+        {
+          "id": "conservation_7",
+          "value": 7,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              2487,
+              640
+            ],
+            [
+              2487,
+              586
+            ],
+            [
+              2573,
+              548
+            ],
+            [
+              2660,
+              586
+            ],
+            [
+              2660,
+              640
+            ]
+          ],
+          "centroid": [
+            2573.12,
+            602.68
+          ],
+          "bbox": [
+            2487,
+            548,
+            173,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 6,
+          "next_value": 8
+        },
+        {
+          "id": "conservation_8",
+          "value": 8,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              2296,
+              640
+            ],
+            [
+              2296,
+              586
+            ],
+            [
+              2384,
+              548
+            ],
+            [
+              2471,
+              586
+            ],
+            [
+              2471,
+              640
+            ]
+          ],
+          "centroid": [
+            2383.62,
+            602.68
+          ],
+          "bbox": [
+            2296,
+            548,
+            174,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 7,
+          "next_value": 9
+        },
+        {
+          "id": "conservation_9",
+          "value": 9,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              2109,
+              640
+            ],
+            [
+              2109,
+              586
+            ],
+            [
+              2195,
+              548
+            ],
+            [
+              2280,
+              586
+            ],
+            [
+              2280,
+              640
+            ]
+          ],
+          "centroid": [
+            2194.62,
+            602.68
+          ],
+          "bbox": [
+            2109,
+            548,
+            172,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 8,
+          "next_value": 10
+        },
+        {
+          "id": "conservation_10",
+          "value": 10,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              1918,
+              640
+            ],
+            [
+              1918,
+              586
+            ],
+            [
+              2005,
+              548
+            ],
+            [
+              2093,
+              586
+            ],
+            [
+              2093,
+              640
+            ]
+          ],
+          "centroid": [
+            2005.25,
+            602.68
+          ],
+          "bbox": [
+            1918,
+            548,
+            175,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 9,
+          "next_value": 11
+        },
+        {
+          "id": "conservation_11",
+          "value": 11,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              1630,
+              640
+            ],
+            [
+              1630,
+              586
+            ],
+            [
+              1766,
+              548
+            ],
+            [
+              1902,
+              586
+            ],
+            [
+              1902,
+              640
+            ]
+          ],
+          "centroid": [
+            1765.75,
+            602.68
+          ],
+          "bbox": [
+            1630,
+            548,
+            272,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 10,
+          "next_value": 12
+        },
+        {
+          "id": "conservation_12",
+          "value": 12,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              1338,
+              640
+            ],
+            [
+              1338,
+              586
+            ],
+            [
+              1476,
+              548
+            ],
+            [
+              1614,
+              586
+            ],
+            [
+              1614,
+              640
+            ]
+          ],
+          "centroid": [
+            1476.0,
+            602.68
+          ],
+          "bbox": [
+            1338,
+            548,
+            276,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 11,
+          "next_value": 13
+        },
+        {
+          "id": "conservation_13",
+          "value": 13,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              1045,
+              640
+            ],
+            [
+              1045,
+              586
+            ],
+            [
+              1184,
+              548
+            ],
+            [
+              1322,
+              586
+            ],
+            [
+              1322,
+              640
+            ]
+          ],
+          "centroid": [
+            1183.62,
+            602.68
+          ],
+          "bbox": [
+            1045,
+            548,
+            277,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 12,
+          "next_value": 14
+        },
+        {
+          "id": "conservation_14",
+          "value": 14,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              753,
+              640
+            ],
+            [
+              753,
+              586
+            ],
+            [
+              891,
+              548
+            ],
+            [
+              1029,
+              586
+            ],
+            [
+              1029,
+              640
+            ]
+          ],
+          "centroid": [
+            890.88,
+            602.68
+          ],
+          "bbox": [
+            753,
+            548,
+            276,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 13,
+          "next_value": 15
+        },
+        {
+          "id": "conservation_15",
+          "value": 15,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              457,
+              640
+            ],
+            [
+              457,
+              586
+            ],
+            [
+              597,
+              548
+            ],
+            [
+              737,
+              586
+            ],
+            [
+              737,
+              640
+            ]
+          ],
+          "centroid": [
+            596.75,
+            602.68
+          ],
+          "bbox": [
+            457,
+            548,
+            280,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 14,
+          "next_value": 16
+        },
+        {
+          "id": "conservation_16",
+          "value": 16,
+          "row": "top_16_0",
+          "polygon": [
+            [
+              144,
+              640
+            ],
+            [
+              144,
+              586
+            ],
+            [
+              293,
+              548
+            ],
+            [
+              441,
+              586
+            ],
+            [
+              441,
+              640
+            ]
+          ],
+          "centroid": [
+            292.62,
+            602.68
+          ],
+          "bbox": [
+            144,
+            548,
+            296,
+            92
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 15,
+          "next_value": 17
+        },
+        {
+          "id": "conservation_17",
+          "value": 17,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              298,
+              936
+            ],
+            [
+              298,
+              888
+            ],
+            [
+              444,
+              852
+            ],
+            [
+              590,
+              888
+            ],
+            [
+              590,
+              936
+            ]
+          ],
+          "centroid": [
+            443.75,
+            902.18
+          ],
+          "bbox": [
+            298,
+            852,
+            292,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 16,
+          "next_value": 18
+        },
+        {
+          "id": "conservation_18",
+          "value": 18,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              606,
+              936
+            ],
+            [
+              606,
+              888
+            ],
+            [
+              745,
+              852
+            ],
+            [
+              884,
+              888
+            ],
+            [
+              884,
+              936
+            ]
+          ],
+          "centroid": [
+            745.0,
+            902.18
+          ],
+          "bbox": [
+            606,
+            852,
+            279,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 17,
+          "next_value": 19
+        },
+        {
+          "id": "conservation_19",
+          "value": 19,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              900,
+              936
+            ],
+            [
+              900,
+              888
+            ],
+            [
+              1041,
+              852
+            ],
+            [
+              1181,
+              888
+            ],
+            [
+              1181,
+              936
+            ]
+          ],
+          "centroid": [
+            1040.62,
+            902.18
+          ],
+          "bbox": [
+            900,
+            852,
+            280,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 18,
+          "next_value": 20
+        },
+        {
+          "id": "conservation_20",
+          "value": 20,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              1197,
+              936
+            ],
+            [
+              1197,
+              888
+            ],
+            [
+              1336,
+              852
+            ],
+            [
+              1474,
+              888
+            ],
+            [
+              1474,
+              936
+            ]
+          ],
+          "centroid": [
+            1335.5,
+            902.18
+          ],
+          "bbox": [
+            1197,
+            852,
+            278,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 19,
+          "next_value": 21
+        },
+        {
+          "id": "conservation_21",
+          "value": 21,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              1490,
+              936
+            ],
+            [
+              1490,
+              888
+            ],
+            [
+              1627,
+              852
+            ],
+            [
+              1763,
+              888
+            ],
+            [
+              1763,
+              936
+            ]
+          ],
+          "centroid": [
+            1626.62,
+            902.18
+          ],
+          "bbox": [
+            1490,
+            852,
+            273,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 20,
+          "next_value": 22
+        },
+        {
+          "id": "conservation_22",
+          "value": 22,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              1779,
+              936
+            ],
+            [
+              1779,
+              888
+            ],
+            [
+              1914,
+              852
+            ],
+            [
+              2049,
+              888
+            ],
+            [
+              2049,
+              936
+            ]
+          ],
+          "centroid": [
+            1914.0,
+            902.18
+          ],
+          "bbox": [
+            1779,
+            852,
+            270,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 21,
+          "next_value": 23
+        },
+        {
+          "id": "conservation_23",
+          "value": 23,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              2065,
+              936
+            ],
+            [
+              2065,
+              888
+            ],
+            [
+              2199,
+              852
+            ],
+            [
+              2333,
+              888
+            ],
+            [
+              2333,
+              936
+            ]
+          ],
+          "centroid": [
+            2199.0,
+            902.18
+          ],
+          "bbox": [
+            2065,
+            852,
+            268,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 22,
+          "next_value": 24
+        },
+        {
+          "id": "conservation_24",
+          "value": 24,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              2349,
+              936
+            ],
+            [
+              2349,
+              888
+            ],
+            [
+              2482,
+              852
+            ],
+            [
+              2615,
+              888
+            ],
+            [
+              2615,
+              936
+            ]
+          ],
+          "centroid": [
+            2482.12,
+            902.18
+          ],
+          "bbox": [
+            2349,
+            852,
+            266,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 23,
+          "next_value": 25
+        },
+        {
+          "id": "conservation_25",
+          "value": 25,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              2631,
+              936
+            ],
+            [
+              2631,
+              888
+            ],
+            [
+              2766,
+              852
+            ],
+            [
+              2900,
+              888
+            ],
+            [
+              2900,
+              936
+            ]
+          ],
+          "centroid": [
+            2765.5,
+            902.18
+          ],
+          "bbox": [
+            2631,
+            852,
+            268,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 24,
+          "next_value": 26
+        },
+        {
+          "id": "conservation_26",
+          "value": 26,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              2916,
+              936
+            ],
+            [
+              2916,
+              888
+            ],
+            [
+              3048,
+              852
+            ],
+            [
+              3180,
+              888
+            ],
+            [
+              3180,
+              936
+            ]
+          ],
+          "centroid": [
+            3048.12,
+            902.18
+          ],
+          "bbox": [
+            2916,
+            852,
+            265,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 25,
+          "next_value": 27
+        },
+        {
+          "id": "conservation_27",
+          "value": 27,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              3196,
+              936
+            ],
+            [
+              3196,
+              888
+            ],
+            [
+              3329,
+              852
+            ],
+            [
+              3461,
+              888
+            ],
+            [
+              3461,
+              936
+            ]
+          ],
+          "centroid": [
+            3328.62,
+            902.18
+          ],
+          "bbox": [
+            3196,
+            852,
+            264,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 26,
+          "next_value": 28
+        },
+        {
+          "id": "conservation_28",
+          "value": 28,
+          "row": "middle_17_28",
+          "polygon": [
+            [
+              3477,
+              936
+            ],
+            [
+              3477,
+              888
+            ],
+            [
+              3613,
+              852
+            ],
+            [
+              3750,
+              888
+            ],
+            [
+              3750,
+              936
+            ]
+          ],
+          "centroid": [
+            3613.38,
+            902.18
+          ],
+          "bbox": [
+            3477,
+            852,
+            273,
+            84
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 27,
+          "next_value": 29
+        },
+        {
+          "id": "conservation_29",
+          "value": 29,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              3627,
+              1225
+            ],
+            [
+              3627,
+              1174
+            ],
+            [
+              3767,
+              1143
+            ],
+            [
+              3907,
+              1174
+            ],
+            [
+              3907,
+              1225
+            ]
+          ],
+          "centroid": [
+            3767.12,
+            1191.15
+          ],
+          "bbox": [
+            3627,
+            1143,
+            280,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 28,
+          "next_value": 30
+        },
+        {
+          "id": "conservation_30",
+          "value": 30,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              3344,
+              1225
+            ],
+            [
+              3344,
+              1174
+            ],
+            [
+              3478,
+              1143
+            ],
+            [
+              3611,
+              1174
+            ],
+            [
+              3611,
+              1225
+            ]
+          ],
+          "centroid": [
+            3477.5,
+            1191.15
+          ],
+          "bbox": [
+            3344,
+            1143,
+            268,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 29,
+          "next_value": 31
+        },
+        {
+          "id": "conservation_31",
+          "value": 31,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              3060,
+              1225
+            ],
+            [
+              3060,
+              1174
+            ],
+            [
+              3194,
+              1143
+            ],
+            [
+              3328,
+              1174
+            ],
+            [
+              3328,
+              1225
+            ]
+          ],
+          "centroid": [
+            3193.75,
+            1191.15
+          ],
+          "bbox": [
+            3060,
+            1143,
+            268,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 30,
+          "next_value": 32
+        },
+        {
+          "id": "conservation_32",
+          "value": 32,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              2776,
+              1225
+            ],
+            [
+              2776,
+              1174
+            ],
+            [
+              2910,
+              1143
+            ],
+            [
+              3044,
+              1174
+            ],
+            [
+              3044,
+              1225
+            ]
+          ],
+          "centroid": [
+            2909.75,
+            1191.15
+          ],
+          "bbox": [
+            2776,
+            1143,
+            268,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 31,
+          "next_value": 33
+        },
+        {
+          "id": "conservation_33",
+          "value": 33,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              2492,
+              1225
+            ],
+            [
+              2492,
+              1174
+            ],
+            [
+              2626,
+              1143
+            ],
+            [
+              2760,
+              1174
+            ],
+            [
+              2760,
+              1225
+            ]
+          ],
+          "centroid": [
+            2626.12,
+            1191.15
+          ],
+          "bbox": [
+            2492,
+            1143,
+            267,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 32,
+          "next_value": 34
+        },
+        {
+          "id": "conservation_34",
+          "value": 34,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              2208,
+              1225
+            ],
+            [
+              2208,
+              1174
+            ],
+            [
+              2342,
+              1143
+            ],
+            [
+              2476,
+              1174
+            ],
+            [
+              2476,
+              1225
+            ]
+          ],
+          "centroid": [
+            2342.38,
+            1191.15
+          ],
+          "bbox": [
+            2208,
+            1143,
+            268,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 33,
+          "next_value": 35
+        },
+        {
+          "id": "conservation_35",
+          "value": 35,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              1924,
+              1225
+            ],
+            [
+              1924,
+              1174
+            ],
+            [
+              2058,
+              1143
+            ],
+            [
+              2192,
+              1174
+            ],
+            [
+              2192,
+              1225
+            ]
+          ],
+          "centroid": [
+            2057.88,
+            1191.15
+          ],
+          "bbox": [
+            1924,
+            1143,
+            269,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 34,
+          "next_value": 36
+        },
+        {
+          "id": "conservation_36",
+          "value": 36,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              1636,
+              1225
+            ],
+            [
+              1636,
+              1174
+            ],
+            [
+              1772,
+              1143
+            ],
+            [
+              1908,
+              1174
+            ],
+            [
+              1908,
+              1225
+            ]
+          ],
+          "centroid": [
+            1771.88,
+            1191.15
+          ],
+          "bbox": [
+            1636,
+            1143,
+            271,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 35,
+          "next_value": 37
+        },
+        {
+          "id": "conservation_37",
+          "value": 37,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              1343,
+              1225
+            ],
+            [
+              1343,
+              1174
+            ],
+            [
+              1482,
+              1143
+            ],
+            [
+              1620,
+              1174
+            ],
+            [
+              1620,
+              1225
+            ]
+          ],
+          "centroid": [
+            1481.75,
+            1191.15
+          ],
+          "bbox": [
+            1343,
+            1143,
+            277,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 36,
+          "next_value": 38
+        },
+        {
+          "id": "conservation_38",
+          "value": 38,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              1047,
+              1225
+            ],
+            [
+              1047,
+              1174
+            ],
+            [
+              1187,
+              1143
+            ],
+            [
+              1327,
+              1174
+            ],
+            [
+              1327,
+              1225
+            ]
+          ],
+          "centroid": [
+            1187.12,
+            1191.15
+          ],
+          "bbox": [
+            1047,
+            1143,
+            280,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 37,
+          "next_value": 39
+        },
+        {
+          "id": "conservation_39",
+          "value": 39,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              749,
+              1225
+            ],
+            [
+              749,
+              1174
+            ],
+            [
+              890,
+              1143
+            ],
+            [
+              1031,
+              1174
+            ],
+            [
+              1031,
+              1225
+            ]
+          ],
+          "centroid": [
+            890.12,
+            1191.15
+          ],
+          "bbox": [
+            749,
+            1143,
+            282,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 38,
+          "next_value": 40
+        },
+        {
+          "id": "conservation_40",
+          "value": 40,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              450,
+              1225
+            ],
+            [
+              450,
+              1174
+            ],
+            [
+              592,
+              1143
+            ],
+            [
+              733,
+              1174
+            ],
+            [
+              733,
+              1225
+            ]
+          ],
+          "centroid": [
+            591.75,
+            1191.15
+          ],
+          "bbox": [
+            450,
+            1143,
+            283,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 39,
+          "next_value": 41
+        },
+        {
+          "id": "conservation_41",
+          "value": 41,
+          "row": "bottom_41_29",
+          "polygon": [
+            [
+              144,
+              1225
+            ],
+            [
+              144,
+              1174
+            ],
+            [
+              289,
+              1143
+            ],
+            [
+              434,
+              1174
+            ],
+            [
+              434,
+              1225
+            ]
+          ],
+          "centroid": [
+            289.38,
+            1191.15
+          ],
+          "bbox": [
+            144,
+            1143,
+            290,
+            82
+          ],
+          "vertex_count": 5,
+          "confidence": "high",
+          "previous_value": 40,
+          "next_value": null
+        }
+      ]
+    },
+    "reputation": {
+      "value_min": 1,
+      "value_max": 15,
+      "vertex_count_rule": {
+        "1": 6,
+        "2-15": 8
+      },
+      "fields": [
+        {
+          "id": "reputation_1",
+          "value": 1,
+          "row": "single_row",
+          "polygon": [
+            [
+              580,
+              1477
+            ],
+            [
+              988,
+              1467
+            ],
+            [
+              1012,
+              1495
+            ],
+            [
+              1012,
+              1547
+            ],
+            [
+              982,
+              1571
+            ],
+            [
+              580,
+              1571
+            ]
+          ],
+          "centroid": [
+            796.45,
+            1521.46
+          ],
+          "bbox": [
+            580,
+            1467,
+            432,
+            104
+          ],
+          "vertex_count": 6,
+          "confidence": "high",
+          "previous_value": null,
+          "next_value": 2,
+          "geometry_source": "v1_preserved"
+        },
+        {
+          "id": "reputation_2",
+          "value": 2,
+          "row": "single_row",
+          "polygon": [
+            [
+              1094,
+              1473
+            ],
+            [
+              1112,
+              1485
+            ],
+            [
+              1112,
+              1547
+            ],
+            [
+              1100,
+              1567
+            ],
+            [
+              1289,
+              1567
+            ],
+            [
+              1309,
+              1545
+            ],
+            [
+              1309,
+              1485
+            ],
+            [
+              1289,
+              1463
+            ]
+          ],
+          "centroid": [
+            1208.8,
+            1516.82
+          ],
+          "bbox": [
+            1094,
+            1463,
+            215,
+            104
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 1,
+          "next_value": 3,
+          "geometry_source": "v1_preserved"
+        },
+        {
+          "id": "reputation_3",
+          "value": 3,
+          "row": "single_row",
+          "polygon": [
+            [
+              1309,
+              1471
+            ],
+            [
+              1327,
+              1483
+            ],
+            [
+              1327,
+              1544
+            ],
+            [
+              1315,
+              1564
+            ],
+            [
+              1492,
+              1564
+            ],
+            [
+              1512,
+              1542
+            ],
+            [
+              1512,
+              1483
+            ],
+            [
+              1492,
+              1461
+            ]
+          ],
+          "centroid": [
+            1417.69,
+            1514.53
+          ],
+          "bbox": [
+            1309,
+            1461,
+            203,
+            103
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 2,
+          "next_value": 4,
+          "geometry_source": "v1_preserved"
+        },
+        {
+          "id": "reputation_4",
+          "value": 4,
+          "row": "single_row",
+          "polygon": [
+            [
+              1570,
+              1469
+            ],
+            [
+              1588,
+              1481
+            ],
+            [
+              1588,
+              1541
+            ],
+            [
+              1576,
+              1563
+            ],
+            [
+              1711,
+              1563
+            ],
+            [
+              1731,
+              1541
+            ],
+            [
+              1731,
+              1481
+            ],
+            [
+              1711,
+              1459
+            ]
+          ],
+          "centroid": [
+            1657.28,
+            1512.95
+          ],
+          "bbox": [
+            1570,
+            1459,
+            161,
+            104
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 3,
+          "next_value": 5,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_5",
+          "value": 5,
+          "row": "single_row",
+          "polygon": [
+            [
+              1709,
+              1468
+            ],
+            [
+              1727,
+              1480
+            ],
+            [
+              1727,
+              1539
+            ],
+            [
+              1715,
+              1561
+            ],
+            [
+              1846,
+              1561
+            ],
+            [
+              1866,
+              1539
+            ],
+            [
+              1866,
+              1480
+            ],
+            [
+              1846,
+              1458
+            ]
+          ],
+          "centroid": [
+            1794.22,
+            1511.44
+          ],
+          "bbox": [
+            1709,
+            1458,
+            157,
+            103
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 4,
+          "next_value": 6,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_6",
+          "value": 6,
+          "row": "single_row",
+          "polygon": [
+            [
+              1844,
+              1465
+            ],
+            [
+              1862,
+              1477
+            ],
+            [
+              1862,
+              1537
+            ],
+            [
+              1850,
+              1559
+            ],
+            [
+              1975,
+              1559
+            ],
+            [
+              1995,
+              1537
+            ],
+            [
+              1995,
+              1477
+            ],
+            [
+              1975,
+              1455
+            ]
+          ],
+          "centroid": [
+            1926.2,
+            1508.92
+          ],
+          "bbox": [
+            1844,
+            1455,
+            151,
+            104
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 5,
+          "next_value": 7,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_7",
+          "value": 7,
+          "row": "single_row",
+          "polygon": [
+            [
+              2044,
+              1463
+            ],
+            [
+              2062,
+              1475
+            ],
+            [
+              2062,
+              1534
+            ],
+            [
+              2050,
+              1556
+            ],
+            [
+              2183,
+              1556
+            ],
+            [
+              2203,
+              1534
+            ],
+            [
+              2203,
+              1475
+            ],
+            [
+              2183,
+              1453
+            ]
+          ],
+          "centroid": [
+            2130.24,
+            1506.45
+          ],
+          "bbox": [
+            2044,
+            1453,
+            159,
+            103
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 6,
+          "next_value": 8,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_8",
+          "value": 8,
+          "row": "single_row",
+          "polygon": [
+            [
+              2188,
+              1462
+            ],
+            [
+              2206,
+              1474
+            ],
+            [
+              2206,
+              1534
+            ],
+            [
+              2194,
+              1554
+            ],
+            [
+              2322,
+              1554
+            ],
+            [
+              2342,
+              1532
+            ],
+            [
+              2342,
+              1474
+            ],
+            [
+              2322,
+              1452
+            ]
+          ],
+          "centroid": [
+            2271.74,
+            1505.12
+          ],
+          "bbox": [
+            2188,
+            1452,
+            154,
+            102
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 7,
+          "next_value": 9,
+          "geometry_source": "v1_preserved"
+        },
+        {
+          "id": "reputation_9",
+          "value": 9,
+          "row": "single_row",
+          "polygon": [
+            [
+              2320,
+              1460
+            ],
+            [
+              2338,
+              1472
+            ],
+            [
+              2338,
+              1531
+            ],
+            [
+              2326,
+              1553
+            ],
+            [
+              2456,
+              1553
+            ],
+            [
+              2476,
+              1531
+            ],
+            [
+              2476,
+              1472
+            ],
+            [
+              2456,
+              1450
+            ]
+          ],
+          "centroid": [
+            2404.72,
+            1503.44
+          ],
+          "bbox": [
+            2320,
+            1450,
+            156,
+            103
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 8,
+          "next_value": 10,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_10",
+          "value": 10,
+          "row": "single_row",
+          "polygon": [
+            [
+              2533,
+              1460
+            ],
+            [
+              2551,
+              1471
+            ],
+            [
+              2551,
+              1529
+            ],
+            [
+              2539,
+              1550
+            ],
+            [
+              2665,
+              1550
+            ],
+            [
+              2685,
+              1529
+            ],
+            [
+              2685,
+              1471
+            ],
+            [
+              2665,
+              1450
+            ]
+          ],
+          "centroid": [
+            2615.79,
+            1501.93
+          ],
+          "bbox": [
+            2533,
+            1450,
+            152,
+            100
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 9,
+          "next_value": 11,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_11",
+          "value": 11,
+          "row": "single_row",
+          "polygon": [
+            [
+              2664,
+              1458
+            ],
+            [
+              2682,
+              1469
+            ],
+            [
+              2682,
+              1527
+            ],
+            [
+              2670,
+              1548
+            ],
+            [
+              2798,
+              1548
+            ],
+            [
+              2818,
+              1527
+            ],
+            [
+              2818,
+              1469
+            ],
+            [
+              2798,
+              1448
+            ]
+          ],
+          "centroid": [
+            2747.81,
+            1499.93
+          ],
+          "bbox": [
+            2664,
+            1448,
+            154,
+            100
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 10,
+          "next_value": 12,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_12",
+          "value": 12,
+          "row": "single_row",
+          "polygon": [
+            [
+              2797,
+              1456
+            ],
+            [
+              2815,
+              1468
+            ],
+            [
+              2815,
+              1527
+            ],
+            [
+              2803,
+              1547
+            ],
+            [
+              2929,
+              1547
+            ],
+            [
+              2949,
+              1525
+            ],
+            [
+              2949,
+              1468
+            ],
+            [
+              2929,
+              1446
+            ]
+          ],
+          "centroid": [
+            2879.71,
+            1498.52
+          ],
+          "bbox": [
+            2797,
+            1446,
+            152,
+            101
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 11,
+          "next_value": 13,
+          "geometry_source": "v1_preserved"
+        },
+        {
+          "id": "reputation_13",
+          "value": 13,
+          "row": "single_row",
+          "polygon": [
+            [
+              3007,
+              1452
+            ],
+            [
+              3025,
+              1463
+            ],
+            [
+              3025,
+              1523
+            ],
+            [
+              3013,
+              1544
+            ],
+            [
+              3140,
+              1544
+            ],
+            [
+              3160,
+              1523
+            ],
+            [
+              3160,
+              1463
+            ],
+            [
+              3140,
+              1442
+            ]
+          ],
+          "centroid": [
+            3090.34,
+            1494.93
+          ],
+          "bbox": [
+            3007,
+            1442,
+            153,
+            102
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 12,
+          "next_value": 14,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_14",
+          "value": 14,
+          "row": "single_row",
+          "polygon": [
+            [
+              3139,
+              1450
+            ],
+            [
+              3157,
+              1462
+            ],
+            [
+              3157,
+              1521
+            ],
+            [
+              3145,
+              1543
+            ],
+            [
+              3273,
+              1543
+            ],
+            [
+              3293,
+              1521
+            ],
+            [
+              3293,
+              1462
+            ],
+            [
+              3273,
+              1440
+            ]
+          ],
+          "centroid": [
+            3222.7,
+            1493.43
+          ],
+          "bbox": [
+            3139,
+            1440,
+            154,
+            103
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 13,
+          "next_value": 15,
+          "geometry_source": "local_visible_contour_v2"
+        },
+        {
+          "id": "reputation_15",
+          "value": 15,
+          "row": "single_row",
+          "polygon": [
+            [
+              3272,
+              1447
+            ],
+            [
+              3290,
+              1459
+            ],
+            [
+              3290,
+              1520
+            ],
+            [
+              3278,
+              1542
+            ],
+            [
+              3402,
+              1542
+            ],
+            [
+              3422,
+              1520
+            ],
+            [
+              3422,
+              1459
+            ],
+            [
+              3402,
+              1437
+            ]
+          ],
+          "centroid": [
+            3353.71,
+            1491.41
+          ],
+          "bbox": [
+            3272,
+            1437,
+            150,
+            105
+          ],
+          "vertex_count": 8,
+          "confidence": "high",
+          "previous_value": 14,
+          "next_value": null,
+          "geometry_source": "local_visible_contour_v2"
+        }
+      ]
+    }
+  },
+  "validation": {
+    "ground_truth_source": "Markiert(1).jpg",
+    "annotation_color": "#FF0043",
+    "examples": {
+      "reputation": [
+        1,
+        2,
+        3,
+        8,
+        12
+      ],
+      "attractiveness": [
+        22,
+        61
+      ],
+      "conservation": [
+        6,
+        17,
+        34
+      ]
+    },
+    "result": "All nine example regions align with the independently derived field geometry in the master coordinate system.",
+    "notes": [
+      "Attractiveness 61 independently resolves to x≈1675..1771 px; the annotation lies at x≈1674..1777 px.",
+      "Conservation 6 independently resolves to x≈2668..2856 px; the annotation lies at x≈2670..2849 px.",
+      "Conservation 17 independently resolves to x≈290..598 px; the annotation lies inside that field at x≈306..588 px.",
+      "Reputation fields 1, 8 and 12 visually match the annotated outlines after mapping the marked image into master coordinates."
+    ]
+  },
+  "revision": {
+    "base": "scoring_regions_v1.json",
+    "revision_id": "reputation-contours-v2",
+    "changed_tracks": [
+      "reputation"
+    ],
+    "unchanged_tracks": [
+      "attractiveness",
+      "conservation"
+    ],
+    "changed_reputation_values": [
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      13,
+      14,
+      15
+    ],
+    "preserved_ground_truth_reputation_values": [
+      1,
+      2,
+      3,
+      8,
+      12
+    ],
+    "regular_spacing_assumption_for_reputation": false,
+    "method": "Each changed reputation field was measured locally from its visible printed boundary in the master reference. No equal-width or equal-spacing model was used. The explicitly marked example fields 1,2,3,8,12 remain byte-for-byte geometrically equivalent to their v1 definitions."
+  }
+}

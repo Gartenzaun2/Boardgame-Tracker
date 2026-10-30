@@ -4,6 +4,13 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.8
+
+- Technischer Arche-Nova-Fotoanalyseprototyp (Phase 1A) als separates .NET-Entwicklungswerkzeug unter `tools/Games/ArkNova/PhotoRecognition`: SIFT/RANSAC-Registrierung, Sichtbarkeitsprüfung, Farb-/Referenzdifferenz, Field Occupancy und konservative Nachbarfeld-Konflikte.
+- Bereitgestellte Referenztafel, Polygongeometrie und sechs Ground-Truth-Fotos als Entwicklungsassets übernommen. Reproduzierbarer Benchmark mit JSON-Diagnostik, Pipelinezeiten und Negativprüfungen; 60/72 Rohwerte korrekt, keine falschen High-Ergebnisse auf diesem Entwicklungsset.
+- Bildbibliotheksfreie Occupancy-/Confidence-Regeln in Application mit automatisierten Tests. OpenCvSharp und Windows-Runtime ausschließlich im Entwicklungswerkzeug; die drei Produktionsprojekte erhalten keine CV-Paketabhängigkeit.
+- Mobile Bibliotheksauswahl, Gerätebenchmarks und Kamera-/Scoring-Anbindung bleiben offen. Der bestehende Kamera-Platzhalter bleibt bis zu diesen nachfolgenden Phasen bestehen. App-Version 0.10.0.8 / ApplicationVersion 45.
+
 ## 0.10.0.7
 
 - Page-interne modale Auswahl-Picker verwenden einheitlich den vorhandenen Zurück-Pfeil links im Header: Gruppenfarben, Kartensymbole und vorhandene Spieler folgen der Spezialkarten-Auswahl.

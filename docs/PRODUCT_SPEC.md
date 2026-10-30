@@ -348,6 +348,13 @@ Unterstützte Wertungstafeln werden perspektivisch in den
 Arche-Nova-Einstellungen ausgewählt, z. B. Original oder Custom kompakt. Die
 eigentliche Fotoerkennung ist ein eigener nachfolgender Implementierungsslice.
 
+Ein separates Windows-Entwicklungswerkzeug erprobt inzwischen die lokale Bildanalyse
+gegen eine bekannte Referenztafel und sechs Entwicklungsfotos (Phase 1A).
+Dieser technische Prototyp ist noch keine App-Funktion. Mobile Bibliotheksauswahl,
+Geräteperformance und Anbindung an den vorhandenen Kamera-Einstieg stehen aus.
+Unsichere Nachbarfeldbelegung reduziert die Confidence, ohne den erkannten Wert
+automatisch auf ein anderes Feld zu verschieben.
+
 ## Punkteanzeige
 
 Dauerhaft gespeichert werden die Rohwerte Attraktivität und Artenschutz, nicht

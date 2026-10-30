@@ -12,6 +12,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardgameTracker.Core.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoardgameTracker.Application.Tests", "tests\BoardgameTracker.Application.Tests\BoardgameTracker.Application.Tests.csproj", "{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E-EAC7-C090-1BA3-A61EC2A24D84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{7DCD2993-E4E0-1E04-6BF0-098B18EF9984}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArkNova", "ArkNova", "{989E0867-DDFC-A95C-6FCE-6F217FA7B77B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkNova.PhotoRecognition", "tools\Games\ArkNova\PhotoRecognition\ArkNova.PhotoRecognition.csproj", "{AB524388-55DB-44E2-9F4D-472ED867D5F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,8 +47,17 @@ Global
 		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C69FBEA2-7414-4CD4-B103-4E0BA647BE5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB524388-55DB-44E2-9F4D-472ED867D5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB524388-55DB-44E2-9F4D-472ED867D5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB524388-55DB-44E2-9F4D-472ED867D5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB524388-55DB-44E2-9F4D-472ED867D5F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7DCD2993-E4E0-1E04-6BF0-098B18EF9984} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{989E0867-DDFC-A95C-6FCE-6F217FA7B77B} = {7DCD2993-E4E0-1E04-6BF0-098B18EF9984}
+		{AB524388-55DB-44E2-9F4D-472ED867D5F1} = {989E0867-DDFC-A95C-6FCE-6F217FA7B77B}
 	EndGlobalSection
 EndGlobal

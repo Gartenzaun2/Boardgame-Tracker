@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "value_order": [
+    "attractiveness",
+    "conservation",
+    "reputation"
+  ],
+  "images": {
+    "IMG_4257.JPG": {
+      "red": {
+        "attractiveness": 69,
+        "conservation": 21,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 75,
+        "conservation": 27,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 25,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 90,
+        "conservation": 13,
+        "reputation": 3
+      }
+    },
+    "IMG_4258.JPG": {
+      "red": {
+        "attractiveness": 74,
+        "conservation": 21,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 74,
+        "conservation": 27,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 25,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 59,
+        "conservation": 13,
+        "reputation": 3
+      }
+    },
+    "IMG_4259.JPG": {
+      "red": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 10
+      }
+    },
+    "IMG_4260.JPG": {
+      "red": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 10
+      }
+    },
+    "IMG_4261.JPG": {
+      "red": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 10
+      }
+    },
+    "IMG_4262.JPG": {
+      "red": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 10
+      },
+      "blue": {
+        "attractiveness": 74,
+        "conservation": 16,
+        "reputation": 14
+      },
+      "yellow": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 6
+      },
+      "black": {
+        "attractiveness": 59,
+        "conservation": 9,
+        "reputation": 10
+      }
+    }
+  }
+}
