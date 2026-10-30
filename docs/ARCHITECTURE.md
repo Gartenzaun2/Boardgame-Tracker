@@ -544,7 +544,7 @@ maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini
 `tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
 für Phase 1A, kein viertes Produktionsprojekt. Es rekonstruiert die Bildpipeline aus
 dem Forschungs-Handoff; die früheren Python-Implementierungen lagen nicht vor.
-OpenCvSharp4 und die native Slim-Windows-Runtime werden ausschließlich dort
+OpenCvSharp4 und die native Slim-Windows-Runtime werden ausschließlich in den CV-Entwicklungswerkzeugen
 referenziert. Core, Application und App enthalten keine CV-Paketreferenzen.
 Die reinen experimentellen Feld-/Confidence-Regeln liegen im Arche-Nova-Scoring-Slice
 in Application. Das Werkzeug liefert Diagnostik-JSON und schreibt keine Partiewerte.
@@ -624,6 +624,21 @@ Policy bleibt auf Holdout bei 38,3 % Coverage. Berichte und Vorher-/Nachher-Bild
 liegen unter `PhotoRecognition/Reports/RankingExperiment`. Frühere `benchmark`-,
 `confidence`- und `diagnose-black`-Aufrufe behalten ihre dokumentierte historische
 Baseline für Regression/Vergleich; sie sind keine aktuelle CV-Eingabefunktion.
+
+`tools/Games/ArkNova/StructureResearch` ist ein weiteres ausschließliches
+Entwicklungswerkzeug. Es kompiliert die kanonischen Analyzer-/Rankingquellen
+als verlinkte Dateien und benutzt lesende Frame-Observer derselben Registrierung.
+Der farbunabhängige Strukturweg erhält Graustufen-/Gradientenreferenzen aus
+Empty-Fotos und zählt nur Komponentenpixel innerhalb von Polygon und Core als
+Kontakt. Er verändert keine A-Erkennungsregel. Quellen, Config, Normalcaches und
+Inputs werden vor Fall-Auswertung gehasht; ein Run-Latch verhindert wiederholtes
+Auswerten. Ein technischer A-Zahlenfehler erforderte eine dokumentierte
+Wiederaufnahme mit identischen Detektor-/Modellhashes und expliziter Fehlerzählung.
+Ergebnisse, Grenzen der Near-Object-Diagnose und DINOv3-Verfügbarkeit stehen unter
+`PhotoRecognition/Reports/ResearchV3`. Die sehr geringe Struktur-Recall rechtfertigt
+keine Fusion. Historische Freeze-Dateien werden auch bei Änderungen ausschließlich
+an Observer-Plumbing nicht umgeschrieben; ihre Quellcodeprüfung kann dadurch
+erwartungsgemäß spätere historische Holdout-Aufrufe ablehnen.
 
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende

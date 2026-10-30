@@ -4,6 +4,15 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.12
+
+- Ark-Nova-Research-Batch V3 mit zehn Empty-Referenzen und 13 frischen belegten Holdout-Fotos ausgeführt. Bestehendes Color/Occupancy-A einschließlich CV-0-Ausschluss, Mindest-Evidenz und Confidence unverändert; alte Calibration 94/123 und alter Holdout 45/60 reproduziert.
+- Separates Struktur-Forschungswerkzeug mit Graustufen-/Gradientenreferenzen, zwei eingefrorenen Referenzvarianten, kompakten Komponenten und explizitem Polygon-/Core-Contact-Gate. Thresholds ausschließlich aus Empty-LOO, Methodenvergleich ausschließlich auf alter Calibration. Freeze-/Hashnachweise, Top-1/2/3, Farb-/Track-/View-Metriken, Komplementarität, Oracle und begrenzte Kontext-/Heatmap-Exporte ergänzt.
+- Ursprünglicher V3-Lauf bei Fall3Senkrecht durch A-Grenzprüfung von coreDifference=1.0000000000000002 abgebrochen. Rein lesende Observer und Fehlerzählung erlauben dokumentierte technische Wiederaufnahme; A-Algorithmus und eingefrorene Detektorparameter unverändert, zwölf Ausfallwerte zählen als Fehler. Original-Freeze und Abbruch erhalten; erste zehn A-Ergebnisse identisch reproduziert.
+- V3: A 103/156, B1_pool 2/156, Top1-Oracle 104/156; kein Ensemble empfohlen. B1_view ohne Treffer, kein Vorteil senkrechter Fotos im Fall1/Fall2-Vergleich. A-Confidence akzeptiert 61 richtige und 14 falsche Werte; keine automatische Übernahme. Near-Object-Gate synthetisch geprüft, reale Zuverlässigkeit bei hinreichender Stein-Recall nicht nachgewiesen.
+- DINOv3 ohne Gewichte im Repository/autorisierten Archiv nicht ausführbar; kein Ersatzmodell als DINO ausgegeben. B3 bereits vor V3 wegen schwacher B1-Calibration ausgelassen. Historische Auswahlhashes nicht überschrieben; Capture-Observer ändert den Quellhash und blockiert erneute historische Holdout-Aufrufe erwartungsgemäß.
+- Solution-Build ohne Warnungen/Fehler, 75 Core- und 175 Application-Tests sowie fünf native Forschungschecks bestanden. Keine Fusion, neue Registrierung, Kamera-/Mobile-/Persistenzintegration oder neue Paketversion. App-Version 0.10.0.12 / ApplicationVersion 49.
+
 ## 0.10.0.11
 
 - Rohe Foto-Feldrangfolge mit acht A/B/C-Kombinationen ausschließlich auf Calibration untersucht: CV-Ausschluss von 0 mit Mindest-Evidenz/Enthaltung, relative Schwarz-Evidenz und Kernrangfolge bei gesättigten Farbtermen.

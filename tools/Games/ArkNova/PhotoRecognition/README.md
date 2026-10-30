@@ -19,6 +19,18 @@ Die Holdout-Rohgenauigkeit steigt von 42/60 auf 45/60, Schwarz-Artenschutz von
 2/5 auf 5/5. Die Confidence-Policy bleibt unverändert. `analyze` verwendet diese
 ausgewählte Rangfolge; historische Vergleichs-/Diagnosebefehle behalten ihre Baseline.
 
+Der [Research Batch V3](Reports/ResearchV3/README.md) vergleicht das unveränderte A
+mit zwei farbunabhängigen Struktur-/Empty-Referenzvarianten. Ergebnis: A 103/156,
+B1_pool 2/156, Oracle 104/156; kein Ensemble empfohlen. Die Confidence akzeptiert
+auf V3 14 falsche Werte unter 75 akzeptierten. Ein numerischer A-Ausfall zählt als
+Fehler. Original-Freeze, technischer Abbruch und Wiederaufnahme ohne Parameteränderung
+sind offengelegt. DINOv3 war ohne bereitgestellte Gewichte innerhalb der autorisierten
+Datengrenze nicht ausführbar; B3 wurde vor V3 wegen schwacher B1-Calibration ausgelassen.
+Das separate Entwicklungsprojekt `../StructureResearch` enthält Forschungsbefehle
+und Kontakt-Gate-Tests. Die historischen Rankingsiegel bleiben unverändert;
+der neue lesende Frame-Observer verändert den Capture-Dateihash, sodass ihr alter
+Holdout-Befehl unter diesem Arbeitsstand die erneute Auswertung verweigert.
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:
