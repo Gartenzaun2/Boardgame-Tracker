@@ -1,0 +1,11 @@
+{
+  "tolerance": 1E-12,
+  "unchangedSuccessfulDecisions": 564,
+  "formerlyFailedImages": [
+    "Fall3Senkrecht.jpg"
+  ],
+  "nowAllImagesRegisterAndAnalyze": true,
+  "sameFrameCount": 48,
+  "gtMetricsNotUsed": true,
+  "description": "Only near-bound floating-point fractions clamped. All shared warps identical; old successful selected values/scores and confidence values preserved. No scoring/threshold change."
+}

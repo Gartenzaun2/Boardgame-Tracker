@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="..\..\tools\Games\ArkNova\PhotoRecognition\ArkNovaConfidencePolicy.cs" Link="Games\ArkNova\ArkNovaConfidencePolicy.cs" />
     <Compile Include="..\..\tools\Games\ArkNova\PhotoRecognition\ArkNovaRankingRules.cs" Link="Games\ArkNova\ArkNovaRankingRules.cs" />
+    <Compile Include="..\..\tools\Games\ArkNova\PhotoRecognition\ArkNovaMaskFraction.cs" Link="Games\ArkNova\ArkNovaMaskFraction.cs" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="xunit.v3.mtp-v2" />

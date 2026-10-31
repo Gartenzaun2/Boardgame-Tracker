@@ -40,6 +40,15 @@ wird verworfen. C3 bleibt ein Forschungskandidat, keine produktive Fusion.
 Alle Vergleichssätze sind ausdrücklich wiederverwendet. A und historische Freezes
 bleiben gegenüber diesem Auftragsbeginn unverändert.
 
+Der begrenzte [C3-Abschlussversuch V5](Reports/C3RefinementV5/README.md) testet nur
+Feld-Floors, lokalen Sparse-Farbreadout und zwei feste Fusionen. Feld-Floors helfen
+moderat; lokaler Readout verbessert Schwarz, erzeugt auf Calibration aber zusätzliche
+Phantome und bleibt nicht ausgewählt. F2 erreicht auf wiederverwendetem V3 104/156
+bei 85,2 % Ausgabe-Accuracy und ist nicht zur automatischen Übernahme geeignet.
+Separat behebt eine auf 1e−12 begrenzte Maskenanteil-Rundungshärtung den A-Ausfall:
+A erreicht nun 113 statt 103/156 Rohwerte. Masken, Scoringformeln und Confidence
+bleiben gleich; alte Reports und Quell-Freeze-Dateien werden nicht umgeschrieben.
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:
