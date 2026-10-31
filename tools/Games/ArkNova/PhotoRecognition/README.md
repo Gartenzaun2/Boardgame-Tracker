@@ -31,6 +31,15 @@ und Kontakt-Gate-Tests. Die historischen Rankingsiegel bleiben unverändert;
 der neue lesende Frame-Observer verändert den Capture-Dateihash, sodass ihr alter
 Holdout-Befehl unter diesem Arbeitsstand die erneute Auswertung verweigert.
 
+Der nachfolgende [klassische CV-Research-Batch V4](Reports/ClassicCvResearchV4/README.md)
+vergleicht geometrisches Directional Chamfer, Census ohne/mit lokaler Track-ECC
+und eine approximative Low-Rank/Sparse-Projektion. C3 liefert auf wiederverwendetem
+V3 78,4 % physische Recall bei 64,4 % Precision und zwölf komplementäre farbige
+Treffer; Oracle 115 statt 103/156. Die getestete A+C3-Regel erreicht nur 96/156 und
+wird verworfen. C3 bleibt ein Forschungskandidat, keine produktive Fusion.
+Alle Vergleichssätze sind ausdrücklich wiederverwendet. A und historische Freezes
+bleiben gegenüber diesem Auftragsbeginn unverändert.
+
 ## Ausführen
 
 Vom Solution-Root in PowerShell:

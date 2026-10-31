@@ -1,0 +1,272 @@
+[
+  {
+    "track": "attractiveness",
+    "dx": -0.11593755334615707,
+    "dy": -0.11785431206226349,
+    "before": 0.7454350933905728,
+    "after": 0.7475463963751707,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": -0.41701269149780273,
+    "dy": -0.032217837870121,
+    "before": 0.8359115599518765,
+    "after": 0.8385998607356541,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.006910397671163082,
+    "dy": -0.8005064725875854,
+    "before": 0.8076987385948193,
+    "after": 0.8286916674412385,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": 1.0912494659423828,
+    "dy": -0.4510717988014221,
+    "before": 0.6998876859136997,
+    "after": 0.7105810691348375,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": 0.4138900339603424,
+    "dy": -0.16128963232040405,
+    "before": 0.8146824390794043,
+    "after": 0.8182213435348751,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.2504172623157501,
+    "dy": -1.3864405155181885,
+    "before": 0.736592596870015,
+    "after": 0.780941471929979,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.3764995336532593,
+    "dy": 0.43304717540740967,
+    "before": 0.7416383282825157,
+    "after": 0.7416383282825157,
+    "applied": false,
+    "failure": "correlation_degraded"
+  },
+  {
+    "track": "conservation",
+    "dx": 0.04362356290221214,
+    "dy": 0.7130939364433289,
+    "before": 0.8308947683514947,
+    "after": 0.8382266098765079,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.35683321952819824,
+    "dy": 0.7344070076942444,
+    "before": 0.8019764069934449,
+    "after": 0.824942736504351,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.008486330509185791,
+    "dy": 0.833253800868988,
+    "before": 0.6726405882506542,
+    "after": 0.6811214813053794,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": 0.2559431493282318,
+    "dy": 0.7685157060623169,
+    "before": 0.7691718885563457,
+    "after": 0.7771426849883488,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.6485899686813354,
+    "dy": 1.422218918800354,
+    "before": 0.7574999164945356,
+    "after": 0.7952695520639713,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.2834357023239136,
+    "dy": -0.4904749393463135,
+    "before": 0.6346680641193924,
+    "after": 0.6384782284874214,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": -0.22050510346889496,
+    "dy": -0.45866304636001587,
+    "before": 0.7798531763779332,
+    "after": 0.7820095249587098,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": -1.31379234790802,
+    "dy": -4.101494312286377,
+    "before": 0.5561422636411628,
+    "after": 0.5561422636411628,
+    "applied": false,
+    "failure": "translation_out_of_bounds"
+  },
+  {
+    "track": "attractiveness",
+    "dx": 0.0658564567565918,
+    "dy": 0.013656649738550186,
+    "before": 0.6623587782368514,
+    "after": 0.6623587782368514,
+    "applied": false,
+    "failure": "correlation_degraded"
+  },
+  {
+    "track": "conservation",
+    "dx": -0.6018601059913635,
+    "dy": 0.07578541338443756,
+    "before": 0.7687486724402944,
+    "after": 0.7704088288929737,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": -0.570846676826477,
+    "dy": -1.0584945678710938,
+    "before": 0.7232063672354142,
+    "after": 0.7495951580036193,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": 0,
+    "dy": 0,
+    "before": 0.2247117923058579,
+    "after": 0.2247117923058579,
+    "applied": false,
+    "failure": "ecc_failed: The algorithm stopped before its convergence. The correlation is going to be minimized. Images may be uncorrelated or non-overlapped"
+  },
+  {
+    "track": "conservation",
+    "dx": 0.8155949711799622,
+    "dy": -3.5265843868255615,
+    "before": 0.38922118138052864,
+    "after": 0.38922118138052864,
+    "applied": false,
+    "failure": "correlation_degraded"
+  },
+  {
+    "track": "reputation",
+    "dx": -1.687957763671875,
+    "dy": 0.05357939004898071,
+    "before": 0.5537144499226672,
+    "after": 0.5572052036463717,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.08529245853424072,
+    "dy": 0.6770631074905396,
+    "before": 0.7309479741884094,
+    "after": 0.738186151224676,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": 0.21859630942344666,
+    "dy": 0.670632541179657,
+    "before": 0.834164121163617,
+    "after": 0.8412687541302577,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.6667686104774475,
+    "dy": 1.0046006441116333,
+    "before": 0.8268343889769411,
+    "after": 0.862642692959629,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.41981518268585205,
+    "dy": -0.04326659440994263,
+    "before": 0.6023127068563051,
+    "after": 0.6023127068563051,
+    "applied": false,
+    "failure": "correlation_degraded"
+  },
+  {
+    "track": "conservation",
+    "dx": 0.16192200779914856,
+    "dy": 0.07361109554767609,
+    "before": 0.7429920834834034,
+    "after": 0.7433808276128704,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": 0.35781148076057434,
+    "dy": 0.6448248028755188,
+    "before": 0.8005518674025364,
+    "after": 0.8092014957364733,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "attractiveness",
+    "dx": -0.38138705492019653,
+    "dy": -0.7139265537261963,
+    "before": 0.6569559755980798,
+    "after": 0.6649813789055319,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "conservation",
+    "dx": -0.34948042035102844,
+    "dy": -0.8236841559410095,
+    "before": 0.7646106065991572,
+    "after": 0.7706680028403937,
+    "applied": true,
+    "failure": null
+  },
+  {
+    "track": "reputation",
+    "dx": -1.3086615800857544,
+    "dy": -4.108476161956787,
+    "before": 0.5432980053409149,
+    "after": 0.5432980053409149,
+    "applied": false,
+    "failure": "translation_out_of_bounds"
+  }
+]

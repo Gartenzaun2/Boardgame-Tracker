@@ -1,0 +1,844 @@
+[
+  {
+    "color": "red",
+    "track": "attractiveness",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.29508976928611524,
+      "margin": 0.028593363340696176,
+      "fullColor": 0.037625418060200665,
+      "coreColor": 0.05319148936170212,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.09364548494983277,
+      "neighbors": [
+        {
+          "value": 108,
+          "grownFraction": 0.0830605564648118,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 110,
+          "grownFraction": 0.07980769230769232,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 38,
+      "runnerUpScore": 0.26649640594541907,
+      "runnerUpFullColor": 0.02333333333333333,
+      "runnerUpCoreColor": 0.03453947368421052
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          21,
+          20
+        ],
+        "occupied": [
+          21,
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "red",
+    "track": "conservation",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.18728484383927047,
+      "margin": 0.0043129962848357795,
+      "fullColor": 0,
+      "coreColor": 0,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0,
+      "neighbors": [
+        {
+          "value": 40,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 16,
+      "runnerUpScore": 0.18297184755443469,
+      "runnerUpFullColor": 0,
+      "runnerUpCoreColor": 0
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          20
+        ],
+        "occupied": [
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "red",
+    "track": "reputation",
+    "expected": null,
+    "a": 14,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.9538010984851636,
+      "margin": 0.011253036157986895,
+      "fullColor": 0.37604376619637203,
+      "coreColor": 0.31040806969280144,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.6803915922833286,
+      "neighbors": [
+        {
+          "value": 13,
+          "grownFraction": 0.6884908984145625,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 15,
+          "grownFraction": 0.6210125841381329,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 15,
+      "runnerUpScore": 0.9425480623271767,
+      "runnerUpFullColor": 0.36025753585016096,
+      "runnerUpCoreColor": 0.37990654205607477
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          11
+        ],
+        "occupied": [
+          11
+        ]
+      }
+    }
+  },
+  {
+    "color": "blue",
+    "track": "attractiveness",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "High",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.7362068445314973,
+      "margin": 0.29310943650474136,
+      "fullColor": 0.1582977207977208,
+      "coreColor": 0.090625,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.281517094017094,
+      "neighbors": [
+        {
+          "value": 38,
+          "grownFraction": 0.07518518518518517,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 40,
+          "grownFraction": 0.10110466204830558,
+          "fieldVisibility": 1.0000000000000002
+        }
+      ],
+      "runnerUpValue": 113,
+      "runnerUpScore": 0.44309740802675596,
+      "runnerUpFullColor": 0.08307692307692308,
+      "runnerUpCoreColor": 0.06092677345537758
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          21,
+          20
+        ],
+        "occupied": [
+          21,
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "blue",
+    "track": "conservation",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Medium",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.4696057815849157,
+      "margin": 0.2503757895415231,
+      "fullColor": 0.09299467431380583,
+      "coreColor": 0.021020179372197308,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.1833265055305203,
+      "neighbors": [
+        {
+          "value": 40,
+          "grownFraction": 0.1007996632996633,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 40,
+      "runnerUpScore": 0.2192299920433926,
+      "runnerUpFullColor": 0.03219696969696969,
+      "runnerUpCoreColor": 0.0005763688760806917
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          20
+        ],
+        "occupied": [
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "blue",
+    "track": "reputation",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.18345481401443745,
+      "margin": 0.01398254917043315,
+      "fullColor": 0,
+      "coreColor": 0,
+      "trackVisibility": 1,
+      "fieldVisibility": 0.9999999999999999,
+      "grownFraction": 0,
+      "neighbors": [
+        {
+          "value": 10,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 12,
+          "grownFraction": 0.004833836858006042,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 15,
+      "runnerUpScore": 0.1694722648440043,
+      "runnerUpFullColor": 0.010535557506584725,
+      "runnerUpCoreColor": 0
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          11
+        ],
+        "occupied": [
+          11
+        ]
+      }
+    }
+  },
+  {
+    "color": "yellow",
+    "track": "attractiveness",
+    "expected": null,
+    "a": 5,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "High",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.9217955653021442,
+      "margin": 0.40340331053402134,
+      "fullColor": 0.2918518518518518,
+      "coreColor": 0.3237390350877193,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.4572222222222222,
+      "neighbors": [
+        {
+          "value": 4,
+          "grownFraction": 0.2601495726495726,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 6,
+          "grownFraction": 0.17222222222222222,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 4,
+      "runnerUpScore": 0.5183922547681229,
+      "runnerUpFullColor": 0.10505698005698005,
+      "runnerUpCoreColor": 0.058854166666666666
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          21,
+          20
+        ],
+        "occupied": [
+          21,
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "yellow",
+    "track": "conservation",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.18763978177062668,
+      "margin": 0.000354937931356214,
+      "fullColor": 0.0016134815346002154,
+      "coreColor": 0.00025627883136852895,
+      "trackVisibility": 1,
+      "fieldVisibility": 1.0000000000000002,
+      "grownFraction": 0.04284689852993905,
+      "neighbors": [
+        {
+          "value": 15,
+          "grownFraction": 0.0325881015536188,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 17,
+          "grownFraction": 0.054119061936259774,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 41,
+      "runnerUpScore": 0.18728484383927047,
+      "runnerUpFullColor": 0,
+      "runnerUpCoreColor": 0
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          20
+        ],
+        "occupied": [
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "yellow",
+    "track": "reputation",
+    "expected": null,
+    "a": null,
+    "confidence": {
+      "value": null,
+      "confidence": "Uncertain",
+      "originalConfidence": "Uncertain",
+      "alternative": null,
+      "warning": "insufficient_color_support",
+      "score": 0.18421857837652816,
+      "margin": 0.02699716213607689,
+      "fullColor": 0.00029886431560071725,
+      "coreColor": 0,
+      "trackVisibility": 1,
+      "fieldVisibility": 0.9999999999999999,
+      "grownFraction": 0.03974895397489539,
+      "neighbors": [
+        {
+          "value": 10,
+          "grownFraction": 0.04089790897908979,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 12,
+          "grownFraction": 0.028398791540785496,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 14,
+      "runnerUpScore": 0.15722141624045127,
+      "runnerUpFullColor": 0.0005758710048949035,
+      "runnerUpCoreColor": 0.0009170105456212746
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          11
+        ],
+        "occupied": [
+          11
+        ]
+      }
+    }
+  },
+  {
+    "color": "black",
+    "track": "attractiveness",
+    "expected": 21,
+    "a": 21,
+    "confidence": {
+      "value": 21,
+      "confidence": "Uncertain",
+      "originalConfidence": "High",
+      "alternative": null,
+      "warning": "weak_or_ambiguous_core",
+      "score": 0.8370592605513241,
+      "margin": 0.4656998652225699,
+      "fullColor": 0.12490551776266062,
+      "coreColor": 0.1708529565672423,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.27872260015117156,
+      "neighbors": [
+        {
+          "value": 20,
+          "grownFraction": 0.016010802469135804,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 22,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 1,
+      "runnerUpScore": 0.37135939532875417,
+      "runnerUpFullColor": 0.053983228511530396,
+      "runnerUpCoreColor": 0.04573170731707317
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": 21,
+        "strong": true,
+        "top3": [
+          21
+        ],
+        "physicalTop3": [
+          21,
+          20
+        ],
+        "occupied": [
+          21,
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "black",
+    "track": "conservation",
+    "expected": 20,
+    "a": 20,
+    "confidence": {
+      "value": 20,
+      "confidence": "Uncertain",
+      "originalConfidence": "High",
+      "alternative": null,
+      "warning": "unvalidated_conservation_evidence",
+      "score": 0.9139566565180743,
+      "margin": 0.6623944375888341,
+      "fullColor": 0.18606609134918964,
+      "coreColor": 0.20469483568075114,
+      "trackVisibility": 1,
+      "fieldVisibility": 1,
+      "grownFraction": 0.21300778783414015,
+      "neighbors": [
+        {
+          "value": 19,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 21,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 2,
+      "runnerUpScore": 0.25156221892924024,
+      "runnerUpFullColor": 0.024439332949971245,
+      "runnerUpCoreColor": 0.027777777777777776
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": 20,
+        "strong": true,
+        "top3": [
+          20
+        ],
+        "physicalTop3": [
+          20
+        ],
+        "occupied": [
+          20
+        ]
+      }
+    }
+  },
+  {
+    "color": "black",
+    "track": "reputation",
+    "expected": 11,
+    "a": 11,
+    "confidence": {
+      "value": 11,
+      "confidence": "Uncertain",
+      "originalConfidence": "Medium",
+      "alternative": null,
+      "warning": "weak_or_ambiguous_core",
+      "score": 0.5443041993310037,
+      "margin": 0.39050310084584017,
+      "fullColor": 0.06724447101016139,
+      "coreColor": 0.0889423076923077,
+      "trackVisibility": 1,
+      "fieldVisibility": 0.9999999999999999,
+      "grownFraction": 0.09414225941422594,
+      "neighbors": [
+        {
+          "value": 10,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        },
+        {
+          "value": 12,
+          "grownFraction": 0,
+          "fieldVisibility": 1
+        }
+      ],
+      "runnerUpValue": 14,
+      "runnerUpScore": 0.15380109848516355,
+      "runnerUpFullColor": 0,
+      "runnerUpCoreColor": 0
+    },
+    "new": {
+      "C1": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2a": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C2b": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [],
+        "occupied": []
+      },
+      "C3": {
+        "value": null,
+        "strong": false,
+        "top3": [],
+        "physicalTop3": [
+          11
+        ],
+        "occupied": [
+          11
+        ]
+      }
+    }
+  }
+]

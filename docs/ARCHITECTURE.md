@@ -640,6 +640,18 @@ keine Fusion. Historische Freeze-Dateien werden auch bei Änderungen ausschließ
 an Observer-Plumbing nicht umgeschrieben; ihre Quellcodeprüfung kann dadurch
 erwartungsgemäß spätere historische Holdout-Aufrufe ablehnen.
 
+`tools/Games/ArkNova/ClassicCvResearch` untersucht als separates Entwicklungswerkzeug
+geometrisches Directional Chamfer, 5×5-Census mit/ohne begrenzte Track-Translation-ECC
+und eine klassische approximative Low-Rank/Sparse-Projektion aus Empty-Daten.
+Es nutzt die vorhandenen Frame-Observer ohne Änderungen an A oder der globalen
+Registrierung. Lokale ECC bleibt auf vier Pixel pro Achse begrenzt und verändert
+ausschließlich Forschungsframes. C3 zeigt zusätzliche Occupancy, besonders bei
+Artenschutz; die getestete einfache A+C3-Regel ist nicht für Übernahme geeignet.
+Alle belegten Vergleichsdaten sind wiederverwendete Forschungsdaten, kein neuer
+unabhängiger Holdout. Auswahl erfolgt auf alter Calibration, mit neuen Quellen-/
+Inputhashes vor dem Vergleich. Ergebnisse und Entscheidungsgrenzen stehen unter
+`PhotoRecognition/Reports/ClassicCvResearchV4`; historische Freezes bleiben erhalten.
+
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
 Kamera-Handler bleibt ein Platzhalter; eine spätere Anbindung verwendet denselben
