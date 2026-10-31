@@ -19,18 +19,20 @@
                     <Label Grid.Column="1" Text="{x:Static res:AppResources.Players}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
                     <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Players}" />
                 </Grid>
+
                 <BoxView Style="{StaticResource HeaderDivider}" />
+
+                <HorizontalStackLayout Spacing="20">
+                    <HorizontalStackLayout Spacing="6">
+                        <Switch IsToggled="{Binding IncludeTemporary}" />
+                        <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <Switch IsToggled="{Binding IncludeArchived}" />
+                        <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
-            <FlexLayout Grid.Row="1" Wrap="Wrap" AlignItems="Center" IsEnabled="{Binding IsIdle}">
-                <HorizontalStackLayout Spacing="6" Margin="0,0,14,0">
-                    <Switch IsToggled="{Binding IncludeGuests}" Toggled="OnGuestsChanged" />
-                    <Label Text="{x:Static res:AppResources.ShowGuests}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout Spacing="6">
-                    <Switch IsToggled="{Binding IncludeArchived}" Toggled="OnArchivedChanged" />
-                    <Label Text="{x:Static res:AppResources.PlayersShowArchived}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-            </FlexLayout>
             <CollectionView Grid.Row="2" ItemsSource="{Binding Players}" SelectionMode="None" IsEnabled="{Binding IsIdle}">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>

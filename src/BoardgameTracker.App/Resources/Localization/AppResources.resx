@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -747,28 +747,54 @@
   <data name="CardSymbolScience" xml:space="preserve">
     <value>Forschung</value>
   </data>
-  <data name="SpecialCardManagementTitle" xml:space="preserve"><value>Spezialkarten</value></data>
+  <data name="SpecialCardManagementTitle" xml:space="preserve">
+    <value>Spezialkarten</value>
+  </data>
   <data name="ResultReputationFormat" xml:space="preserve">
     <value>Ruf {0}</value>
   </data>
   <data name="ResultReputationNotCaptured" xml:space="preserve">
     <value>Ruf nicht erfasst</value>
   </data>
-  <data name="SpecialCardUsageHint" xml:space="preserve"><value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value></data>
-  <data name="NavigationAfterSaveFailed" xml:space="preserve"><value>Die Wertung wurde gespeichert. Die nächste Ansicht konnte nicht geöffnet werden. Bitte zurückgehen und die Partie erneut öffnen.</value></data>
-  <data name="Players" xml:space="preserve"><value>Spieler</value></data>
-  <data name="ShowGuests" xml:space="preserve"><value>Gäste anzeigen</value></data>
-  <data name="PlayersShowArchived" xml:space="preserve"><value>Archivierte anzeigen</value></data>
-  <data name="EditPlayer" xml:space="preserve"><value>Spieler bearbeiten</value></data>
-  <data name="PlayerCreatedFormat" xml:space="preserve"><value>Erstellt {0}</value></data>
-  <data name="PlayerLastPlayedFormat" xml:space="preserve"><value>Zuletzt gespielt {0}</value></data>
-  <data name="PlayerNoGameSession" xml:space="preserve"><value>Noch keine Partie</value></data>
-  <data name="PlayersEmpty" xml:space="preserve"><value>Keine Spieler für diese Auswahl.</value></data>
-  <data name="PlayersLoadFailed" xml:space="preserve"><value>Spieler konnten nicht geladen werden.</value></data>
-  <data name="PlayerSaveFailed" xml:space="preserve"><value>Spieler konnte nicht gespeichert werden.</value></data>
-  <data name="PlayerNameRequired" xml:space="preserve"><value>Bitte einen Spielernamen eingeben.</value></data>
-  <data name="PlayersInfo" xml:space="preserve"><value>Spieler können umbenannt oder archiviert werden. Archivierte Spieler bleiben in bestehenden Partien und Auswertungen erhalten.</value></data>
-  <data name="PlayerNavigationFailed" xml:space="preserve"><value>Die Ansicht konnte nicht geöffnet werden.</value></data>
+  <data name="SpecialCardUsageHint" xml:space="preserve">
+    <value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value>
+  </data>
+  <data name="NavigationAfterSaveFailed" xml:space="preserve">
+    <value>Die Wertung wurde gespeichert. Die nächste Ansicht konnte nicht geöffnet werden. Bitte zurückgehen und die Partie erneut öffnen.</value>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>Spieler</value>
+  </data>
+  <data name="EditPlayer" xml:space="preserve">
+    <value>Spieler bearbeiten</value>
+  </data>
+  <data name="PlayerCreatedFormat" xml:space="preserve">
+    <value>Erstellt {0}</value>
+  </data>
+  <data name="PlayerLastPlayedFormat" xml:space="preserve">
+    <value>Zuletzt gespielt {0}</value>
+  </data>
+  <data name="PlayerNoGameSession" xml:space="preserve">
+    <value>Noch keine Partie</value>
+  </data>
+  <data name="PlayersEmpty" xml:space="preserve">
+    <value>Keine Spieler für diese Auswahl.</value>
+  </data>
+  <data name="PlayersLoadFailed" xml:space="preserve">
+    <value>Spieler konnten nicht geladen werden.</value>
+  </data>
+  <data name="PlayerSaveFailed" xml:space="preserve">
+    <value>Spieler konnte nicht gespeichert werden.</value>
+  </data>
+  <data name="PlayerNameRequired" xml:space="preserve">
+    <value>Bitte einen Spielernamen eingeben.</value>
+  </data>
+  <data name="PlayersInfo" xml:space="preserve">
+    <value>Spieler können umbenannt oder archiviert werden. Archivierte Spieler bleiben in bestehenden Partien und Auswertungen erhalten.</value>
+  </data>
+  <data name="PlayerNavigationFailed" xml:space="preserve">
+    <value>Die Ansicht konnte nicht geöffnet werden.</value>
+  </data>
   <data name="TransferImport" xml:space="preserve">
     <value>Importieren</value>
   </data>
@@ -820,7 +846,9 @@ Gruppen: {6} zusammengeführt, {7} neu
 Referenzdaten: {8} vorhanden, {9} neu
 Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   </data>
-  <data name="TransferShare" xml:space="preserve"><value>Teilen</value></data>
+  <data name="TransferShare" xml:space="preserve">
+    <value>Teilen</value>
+  </data>
   <data name="GameMaterial" xml:space="preserve">
     <value>Spielmaterial</value>
   </data>

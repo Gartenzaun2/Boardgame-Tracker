@@ -431,8 +431,7 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
         ?? throw new InvalidOperationException(
             $"Localization resource '{key}' was not found.");
     public static string Players => GetString(nameof(Players));
-    public static string ShowGuests => GetString(nameof(ShowGuests));
-    public static string PlayersShowArchived => GetString(nameof(PlayersShowArchived));
+    public static string Guests => GetString(nameof(Guests));
     public static string EditPlayer => GetString(nameof(EditPlayer));
     public static string PlayerCreatedFormat => GetString(nameof(PlayerCreatedFormat));
     public static string PlayerLastPlayedFormat => GetString(nameof(PlayerLastPlayedFormat));
