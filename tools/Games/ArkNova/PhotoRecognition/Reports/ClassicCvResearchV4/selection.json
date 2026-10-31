@@ -1,0 +1,14 @@
+{
+  "methods": [
+    "C1",
+    "C2a",
+    "C2b",
+    "C3"
+  ],
+  "k1": false,
+  "k2": false,
+  "k3": false,
+  "ensembleMethod": "C3",
+  "calibrationEccGain": 0.01022304765486427,
+  "discipline": "All gates use old calibration only. V2 comparison and V3 are reused research comparisons, not fresh holdouts."
+}

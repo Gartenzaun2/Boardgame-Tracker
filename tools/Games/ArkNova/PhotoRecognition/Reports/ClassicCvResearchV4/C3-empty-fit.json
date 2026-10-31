@@ -1,0 +1,19 @@
+{
+  "thresholds": {
+    "attractiveness": {
+      "pixel": 0.06159215047955513,
+      "occupancy": 0.06876780626780626
+    },
+    "conservation": {
+      "pixel": 0.06966929882764816,
+      "occupancy": 0.06753022702343695
+    },
+    "reputation": {
+      "pixel": 0.04587242752313614,
+      "occupancy": 0.08210848527838979
+    }
+  },
+  "finalCandidates": 10,
+  "fieldObservations": 1710,
+  "description": "Normal leave-one-image-out fit, not independent specificity validation."
+}

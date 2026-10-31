@@ -1,0 +1,39 @@
+{
+  "baseCommit": "e7d34f44de6ae05e7ea21e92ce4b4aa96dd3accd",
+  "branch": "master",
+  "solutionBuild": {
+    "command": "dotnet build BoardgameTracker.sln --no-restore",
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0
+  },
+  "coreTests": {
+    "passed": 75,
+    "failed": 0,
+    "skipped": 0
+  },
+  "applicationTests": {
+    "passed": 175,
+    "failed": 0,
+    "skipped": 0
+  },
+  "researchChecks": {
+    "passed": 6,
+    "names": [
+      "Census monotone brightness invariance",
+      "Sparse localization",
+      "Unsupported zero/invisible/empty candidates",
+      "Outside-only contact exclusion",
+      "Chamfer known rectangle versus edge-free negative",
+      "ECC known bounded translation"
+    ]
+  },
+  "frozenHashesVerified": 173,
+  "unchangedProtectedSourcesAndHistoricalReports": true,
+  "pngCount": 44,
+  "applicationDisplayVersion": "0.10.0.13",
+  "applicationVersion": 50,
+  "stagedFiles": [],
+  "committed": false,
+  "pushed": false
+}

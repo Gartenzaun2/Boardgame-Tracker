@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.13
+
+- Separater klassischer Ark-Nova-CV-Research-Batch V4: geometrisches Directional Chamfer, 5×5-Census ohne/mit auf vier Pixel begrenzter Track-ECC sowie approximative Low-Rank/Sparse-Projektion über Empty-SVD. Keine neuronalen Modelle, externen Gewichte oder Änderungen an Algorithmus A, Produktionslogik, Geometrie und globaler Registrierung.
+- Feste Parameter und Empty-LOO-Schwellen; Kombinationen ausschließlich auf alter Calibration gewählt, anschließend 173 Quellen-/Inputhashes versiegelt. Alte V2- und V3-Daten ausdrücklich als wiederverwendete Vergleiche behandelt. Historische Forschungsquellen und Freeze-/Holdout-Dateien unverändert.
+- C1/C2 bleiben ohne belegte Feldtreffer; keine Hough-Erweiterung und kein K1/K2/K3-Ausbau. ECC verbessert das Hintergrundmaß, nicht die Occupancy. C3 auf V3: 116 TP/64 FP/32 FN, 78,4 % Recall und 64,4 % Precision; Artenschutz 84,8 % Precision/81,3 % Recall.
+- Farbiger C3-Readout korrigiert zwölf V3-A-Fehler, davon sieben außerhalb des bekannten numerischen A-Ausfalls. Oracle 115 statt 103/156. Einfache vorab gewählte K4-Regel A+C3 mit 96/156 richtigen Werten verworfen; C3 bleibt Kandidat für spätere Forschung. Keine produktive Fusion oder automatische Übernahme.
+- Einzel-/Kombinationsmetriken, Phantomzählung, Farb-/Track-/View-Gruppen, Laufzeiten, sechs synthetische Methodenchecks und 44 Diagnose-PNGs samt Quell-/Inputnachweis ergänzt. App-Versionsmetadaten gemäß Repositorypflicht auf 0.10.0.13 / ApplicationVersion 50 erhöht; keine App-/Kamera-/Persistenz-/Scoringintegration.
+
 ## 0.10.0.12
 
 - Ark-Nova-Research-Batch V3 mit zehn Empty-Referenzen und 13 frischen belegten Holdout-Fotos ausgeführt. Bestehendes Color/Occupancy-A einschließlich CV-0-Ausschluss, Mindest-Evidenz und Confidence unverändert; alte Calibration 94/123 und alter Holdout 45/60 reproduziert.

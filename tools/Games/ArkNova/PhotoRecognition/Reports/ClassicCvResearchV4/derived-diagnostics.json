@@ -1,0 +1,227 @@
+{
+  "frozenHashesVerified": 173,
+  "partitions": {
+    "calibration": {
+      "aAccepted": 61,
+      "aAcceptedCorrect": 61,
+      "aAcceptedAccuracy": 1,
+      "k4OutputCount": 93,
+      "k4OutputAccuracy": 0.9247311827956989,
+      "c3Complementary": [
+        {
+          "image": "IMG_4266.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 20,
+          "a": null,
+          "c3": 20,
+          "aPipelineError": false
+        },
+        {
+          "image": "IMG_4267.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 21,
+          "a": 113,
+          "c3": 21,
+          "aPipelineError": false
+        },
+        {
+          "image": "IMG_4280.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 21,
+          "a": 41,
+          "c3": 21,
+          "aPipelineError": false
+        },
+        {
+          "image": "IMG_4283.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 23,
+          "a": null,
+          "c3": 23,
+          "aPipelineError": false
+        },
+        {
+          "image": "IMG_4284.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 22,
+          "a": null,
+          "c3": 22,
+          "aPipelineError": false
+        },
+        {
+          "image": "IMG_4285.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 22,
+          "a": 41,
+          "c3": 22,
+          "aPipelineError": false
+        }
+      ],
+      "nonErrorTotal": 123,
+      "nonErrorC3Complementary": 6,
+      "nonErrorOracle": 100,
+      "eccAttempts": 51,
+      "eccApplied": 46,
+      "eccRejectedOutOfBounds": 1,
+      "eccMeanCorrelationGain": 0.01022304765486427,
+      "c1MaximumObservedScore": 0.5905022598304328
+    },
+    "old_holdout_reused": {
+      "aAccepted": 23,
+      "aAcceptedCorrect": 23,
+      "aAcceptedAccuracy": 1,
+      "k4OutputCount": 34,
+      "k4OutputAccuracy": 0.9117647058823529,
+      "c3Complementary": [
+        {
+          "image": "IMG_4287.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 56,
+          "a": 39,
+          "c3": 56,
+          "aPipelineError": false
+        }
+      ],
+      "nonErrorTotal": 60,
+      "nonErrorC3Complementary": 1,
+      "nonErrorOracle": 46,
+      "eccAttempts": 24,
+      "eccApplied": 21,
+      "eccRejectedOutOfBounds": 0,
+      "eccMeanCorrelationGain": 0.008246075905529707,
+      "c1MaximumObservedScore": 0.5592431605163817
+    },
+    "v3_reused": {
+      "aAccepted": 75,
+      "aAcceptedCorrect": 61,
+      "aAcceptedAccuracy": 0.8133333333333334,
+      "k4OutputCount": 115,
+      "k4OutputAccuracy": 0.8347826086956521,
+      "c3Complementary": [
+        {
+          "image": "Fall1Gegenueber.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 8,
+          "a": 41,
+          "c3": 8,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall2Gegenueber.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 22,
+          "a": 41,
+          "c3": 22,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "red",
+          "track": "reputation",
+          "expected": 5,
+          "a": 4,
+          "c3": 5,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 58,
+          "a": 59,
+          "c3": 58,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 6,
+          "a": 5,
+          "c3": 6,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall2Unten.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 23,
+          "a": null,
+          "c3": 23,
+          "aPipelineError": false
+        },
+        {
+          "image": "Fall3Senkrecht.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 60,
+          "a": null,
+          "c3": 60,
+          "aPipelineError": true
+        },
+        {
+          "image": "Fall3Senkrecht.jpg",
+          "color": "red",
+          "track": "reputation",
+          "expected": 3,
+          "a": null,
+          "c3": 3,
+          "aPipelineError": true
+        },
+        {
+          "image": "Fall3Senkrecht.jpg",
+          "color": "blue",
+          "track": "reputation",
+          "expected": 7,
+          "a": null,
+          "c3": 7,
+          "aPipelineError": true
+        },
+        {
+          "image": "Fall3Senkrecht.jpg",
+          "color": "yellow",
+          "track": "attractiveness",
+          "expected": 61,
+          "a": null,
+          "c3": 61,
+          "aPipelineError": true
+        },
+        {
+          "image": "Fall3Senkrecht.jpg",
+          "color": "yellow",
+          "track": "conservation",
+          "expected": 12,
+          "a": null,
+          "c3": 12,
+          "aPipelineError": true
+        },
+        {
+          "image": "Fall4Senkrecht.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 21,
+          "a": 24,
+          "c3": 21,
+          "aPipelineError": false
+        }
+      ],
+      "nonErrorTotal": 144,
+      "nonErrorC3Complementary": 7,
+      "nonErrorOracle": 110,
+      "eccAttempts": 39,
+      "eccApplied": 35,
+      "eccRejectedOutOfBounds": 1,
+      "eccMeanCorrelationGain": 0.01255706862094942,
+      "c1MaximumObservedScore": 0.621727864096789
+    }
+  }
+}
