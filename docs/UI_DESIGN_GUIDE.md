@@ -2,12 +2,13 @@
 
 ## 1. Geltungsbereich
 
-Diese Datei definiert die spielübergreifende visuelle Sprache und
-Interaktionskonventionen. Spielergänzungen stehen unter
+Diese Datei definiert die spielübergreifende **visuelle Sprache, wiederverwendbare
+Interaktionsmuster und Accessibility-Regeln**. Spielergänzungen stehen unter
 `docs/Games/<GameName>/UI_DESIGN_GUIDE.md`.
 
 Konkrete Screenstruktur/Maße: [UI_WIREFRAME.md](UI_WIREFRAME.md).
 Fachverhalten: [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+XAML-/Binding-/ViewModel-Regeln: [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
 
 > Das Theme bildet den neutralen App-Rahmen. Fachliche Spielvisuals behalten ihre
 > eigene Semantik.
@@ -47,15 +48,14 @@ BusyOverlay IconSurface GameGraphicText BusyIndicator
 RecognitionHigh RecognitionMedium
 ```
 
-Featurecode entscheidet nicht mit `if Forest/Blue/Dark`.
-
-Zusätzliche semantische Statusrollen werden nur für einen realen fachlichen Zustand
-eingeführt und zentral bereitgestellt; Features definieren keine ad-hoc-Farben.
+Featurecode entscheidet nicht nach konkreten Theme-Namen. Zusätzliche semantische
+Statusrollen entstehen nur für einen realen Zustand und werden zentral bereitgestellt;
+Features definieren keine ad-hoc-Farben.
 
 `DisabledSurface`/`DisabledText` kennzeichnen deaktivierte Aktionen,
-`BusyOverlay`/`BusyIndicator` den blockierenden Busy-Zustand. `IconSurface` ist nur
-für eingebettete Grafik-/Farbwahlfelder gedacht; `GameGraphicText` ist der feste
-dunkle Textton auf hellen fachlichen Grafikbadges.
+`BusyOverlay`/`BusyIndicator` den blockierenden Busy-Zustand. `IconSurface` ist für
+eingebettete Grafik-/Farbwahlfelder gedacht; `GameGraphicText` ist der feste dunkle
+Textton auf hellen fachlichen Grafikbadges.
 
 ## 3. Paletten
 
@@ -93,14 +93,10 @@ schwarzen Flächen oder rein weißen Konturen.
 
 ## 4. Flächen und Formulare
 
-Die Inhaltsflächen sind:
-
-- `AppBackground`: Screen-Grundfläche;
-- `Surface`: eigenständige Inhalts-/Interaktionseinheit;
+- `AppBackground`: Screen-Grundfläche.
+- `Surface`: eigenständige Inhalts-/Interaktionseinheit.
 - `SelectedSurface`: tatsächlich ausgewählter Zustand.
-
-`SurfaceSecondary` ist nur die leichte Fläche sekundärer Aktionen, keine weitere
-Kartenebene.
+- `SurfaceSecondary`: leichte Fläche sekundärer Aktionen, keine weitere Kartenebene.
 
 > Karten sind Inhalt, Buttons sind Aktionen, Formulare bleiben flach,
 > Metainformation benötigt keine Karte.
@@ -134,6 +130,7 @@ aktiven Tab mit `NavigationSelectedSurface` + `NavigationSelectedText` hinter Ic
 und Beschriftung. Aktivität wird nie nur über Textfarbe vermittelt.
 
 Kurze Filter sind kompakte Chips:
+
 - normal `Surface` + `Outline`;
 - ausgewählt `SelectedSurface` + `SelectedBorder` + sichtbare Markierung.
 
@@ -154,9 +151,9 @@ Root
 ```
 
 Hintergrundinhalt ist auch für Fokus/Accessibility deaktiviert. Globale
-Shell-Navigation bleibt unberührt. Eine offene Auswahl setzt **nicht** `IsBusy`;
-Busy bleibt ein separater Zustand und sperrt gegebenenfalls auch Dialogaktionen.
-System-Zurück schließt zuerst die Auswahl.
+Shell-Navigation bleibt unberührt. Eine offene Auswahl ist kein Busy-Zustand; Busy
+bleibt separat und sperrt gegebenenfalls auch Dialogaktionen. System-Zurück schließt
+zuerst die Auswahl.
 
 Darstellung: `AppBackground` außen, `Surface`-Einträge, ausgewählt
 `SelectedSurface` + `SelectedBorder` + sichtbare Markierung.
@@ -178,11 +175,12 @@ Dialoge verändern keine ungespeicherten Entwürfe der darunterliegenden Page.
 Längere Sektionserklärungen liegen hinter dem gemeinsamen Info-Icon statt als
 dauerhafte Infokarten oder wiederholte Hilfetexte.
 
-Asynchrone Navigation/Speicherung wird gegen Mehrfachtaps geschützt. Busy blockiert
-den betroffenen Inhalt und offene Dialogaktionen über `BusyOverlay` +
-`BusyIndicator`.
+Busy blockiert den betroffenen Inhalt und offene Dialogaktionen über
+`BusyOverlay` + `BusyIndicator`. Fehler werden nur angezeigt, wenn tatsächlich
+Fehlertext vorhanden ist.
 
-Fehler werden nur angezeigt, wenn tatsächlich Fehlertext vorhanden ist.
+Technische Mehrfachaufruf-/Async-Regeln stehen in
+[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
 
 ## 9. PlayerColor-Darstellung
 
@@ -213,14 +211,17 @@ Farbe ist nie die einzige Identifikation; Name/Reihenfolge/Farbname bleibt sicht
 ### Gruppenfarbauswahl
 
 Wenn ein Spiel `PlayerColor` verwendet:
+
 - nur seine erlaubte Teilmenge anbieten;
-- optional „Keine Farbe“;
+- optional **Keine Farbe**;
 - Spiel + Spieler im Dialog nennen;
-- Änderungen zunächst nur im Formularentwurf;
-- belegte Farbe tauschen statt duplizieren;
-- erst Speichern persistiert atomar;
-- Kachel aktualisiert Farbe/Text sofort;
-- ohne Farbunterstützung entfallen Farbstatus und Palettenaktion.
+- Änderungen im Formularentwurf sofort sichtbar machen;
+- bei Auswahl einer bereits belegten Farbe die sichtbaren Zuordnungen tauschen
+  statt eine doppelte Zuordnung darzustellen;
+- ohne Farbunterstützung Farbstatus und Palettenaktion ausblenden.
+
+Speicher-/Validierungsregeln: [PRODUCT_SPEC.md](PRODUCT_SPEC.md) und
+[DATA_MODEL.md](DATA_MODEL.md).
 
 ## 10. Erkennungsstatus
 
@@ -237,37 +238,18 @@ nur durch Farbe. Die fachliche Bedeutung definiert das jeweilige Feature/Spielmo
 - `TextSecondary` ist für `Surface`-Flächen gedacht; kleine Texte direkt auf
   `AppBackground` verwenden `TextPrimary`, weil `TextSecondary` in den hellen
   Paletten dort den 4,5:1-Kontrast nicht erreicht.
-- Zielbaseline: 6,1 Zoll, Hochformat, 1170 × 2532 px Referenzauflösung; konkrete
-  Screenmaße stehen im Wireframe.
+- Zielbaseline: 6,1 Zoll, Hochformat, **1170 × 2532 px** Referenzauflösung;
+  konkrete Screenmaße stehen im Wireframe.
 - Bevorzugte Abstände: `4/8/12/16/20/24/32 dp`.
 - Moderate Rundungen, keine starken Standardschatten.
 - Große Schrift/Tastatur dürfen Kernaktionen nicht verdecken; betroffene Inhalte
-  scrollbar.
+  sind scrollbar.
 - Android/iOS teilen Informationsarchitektur, respektieren native Bedienerwartungen.
 - Alle sichtbaren App-Texte laufen über Lokalisierung.
-- Deutsch verwendet sichtbar konsequent „Spieler“; technische Typen bleiben `Player`.
+- Deutsch verwendet sichtbar konsequent **Spieler**; technische Typen bleiben
+  `Player`.
 
-## 12. XAML und ViewModels
-
-Neue/geänderte Bindings werden als compiled bindings umgesetzt:
-
-- passendes `x:DataType` pro BindingContext/DataTemplate;
-- bei BindingContext-Wechsel neu typisieren;
-- `x:Reference` über typisierte Page-/VM-Properties;
-- String-Bindings nur wenn technisch nötig;
-- Strict-XAML-Warnungen nicht mit `x:Object`, `x:Null`, `NoWarn` oder deaktivierten
-  Compileroptionen umgehen;
-- keine EF-Entities/Navigation Properties direkt an UI binden.
-
-Aktiv sind `MauiStrictXamlCompilation`,
-`MauiEnableXamlCBindingWithSourceCompilation` und XC0022–XC0025 als Buildfehler.
-
-ViewModel-Konstruktoren laden nicht asynchron, navigieren nicht und greifen nicht
-auf die Datenbank zu.
-
-Async-/C#-Regeln: [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
-
-## 13. Gemeinsame Styles
+## 12. Gemeinsame Styles
 
 Vorhandene semantische Styles wiederverwenden, insbesondere:
 
