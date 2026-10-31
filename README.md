@@ -35,7 +35,9 @@ statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzwe
 - Drei unmittelbar umschaltbare App-Themes: Deep Forest (Standard), Königsblau und Dunkel; Historie mit kompakten Filtern und Monatsgruppen.
 - Lokale Navigations- und Arche-Nova-Einstellungen werden über MAUI Preferences
   gespeichert.
-- Fotoerkennung und Statistik sind geplante spätere Slices.
+- Ark-Nova-CV-Forschung ist eingefroren; mobile Fotoerkennung bleibt bis zum
+  erfolgreichen nativen Backend-Spike offen. [Status](docs/ARK_NOVA_CV_STATUS.md).
+- Statistik ist ein geplanter späterer Slice.
 
 ## Architektur
 

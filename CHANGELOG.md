@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.15
+
+- Ark-Nova-Erkennungsforschung ausdrücklich abgeschlossen/eingefroren: gehärtetes A behalten, C1/C2 verworfen, C3 nur diagnostische Forschung, keine F1/F2-Fusion oder C3-Warnregel. Historische Reports/Freezes bleiben unverändert.
+- Letztes Original-Stressfoto vor Auswertung mit Hash/GT manifestiert und genau einmal analysiert: Registrierung erfolgreich, 5/6 richtige Vorschläge, Schwarz-Artenschutz 2 statt 24 als unsicher. Keine CV-/Confidence-Änderung; kompakte Abschlussmetriken aus gespeicherten V5-Berichten.
+- Auf ausdrückliche Folgeanweisung zunächst separater gemeinsamer OpenCV-C++-Build-Spike mit C-ABI, geklärtem Speicherbesitz und source-generiertem IArkNovaVisionEngine-Interop. Android-ARM64-/x64-Release-Builds und getrimmte Test-APKs; Laufzeit-/ABI-Checks im Android-x64-Emulator. Numerische Parität zur Windows-Referenz scheitert; keine Toleranz-/Erkennungsoptimierung und noch kein vollständiger A-Port.
+- iOS-ARM64-CMake-/NativeReference-Buildpfad dokumentarisch abgeglichen; echter Apple-Build auf Benutzerwunsch übersprungen. Kamera-/Picker-/Confidence-UI-/Bestätigungsintegration und deren Tests bleiben ausdrücklich offen, bis der Backend-Spike erfolgreich ist. Produktworkflow und diese Sperre kanonisch dokumentiert.
+- App-Versionsmetadaten 0.10.0.15 / ApplicationVersion 52. Keine Schemaänderung, kein Commit oder Push.
+
 ## 0.10.0.14
 
 - Begrenzter C3-Abschlussversuch V5 ohne neue Detektorfamilien: Attraktivitäts-Feld-Floors aus Empty-LOO, lokaler Sparse-Farbreadout mit bestehender A-Maskenevidenz/seeded Schwarz und unabhängiger Mehrfarbzuordnung sowie zwei feste Track-Fusionsregeln.

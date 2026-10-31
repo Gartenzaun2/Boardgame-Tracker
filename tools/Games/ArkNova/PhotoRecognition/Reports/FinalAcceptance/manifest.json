@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "fileName": "IMG_4263.jpeg",
+  "sha256": "c38a74770bd2847ff19cb9fba7f11ac9bcadda8319086076775526c10cf717ec",
+  "purpose": "FinalAcceptance / StressTest",
+  "batch": "FinalAcceptance",
+  "report": "result.json",
+  "repositoryBase": "35f33031288064c9e9bac41165d7a1ec577a219e",
+  "groundTruth": {
+    "yellow": {
+      "reputation": 11,
+      "conservation": 22,
+      "attractiveness": 63
+    },
+    "black": {
+      "reputation": 15,
+      "conservation": 24,
+      "attractiveness": 59
+    }
+  },
+  "protocol": "Original bytes. One A_NoZero / Confidence E evaluation, hardened A. No tuning. Additional stress test, not statistically sufficient independent holdout.",
+  "rawImageVersioned": false,
+  "c3": "Not evaluated; research-only, excluded from product path"
+}

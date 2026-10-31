@@ -3,6 +3,9 @@ using System.Text.Json;
 using OpenCvSharp;
 using BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
+if (args.Length == 3 && args[0] == "native-reference")
+    return ArkNovaNativeReference.Export(args[1], args[2]);
+
 if (args.Length == 5 && args[0] == "ranking")
     return ArkNovaRankingExperiment.Run(args[1], args[2], args[3], args[4]);
 if (args.Length == 4 && args[0] == "ranking-debug")

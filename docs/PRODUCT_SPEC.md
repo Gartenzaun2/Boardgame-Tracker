@@ -333,38 +333,36 @@ erfasst“ dargestellt.
 
 ### Fotoerkennung
 
-Der Kamera-Button erhält bereits im Wertungsscreen seinen endgültigen
-prominenten Platz. Die spätere Bildauswertung soll über Spielerfarben:
+Die Erkennungsforschung ist **ABGESCHLOSSEN / FROZEN**. Maßgeblich sind
+[CV-Status und Integrationsstand](ARK_NOVA_CV_STATUS.md) sowie der dort verlinkte
+Abschlussreport. Gehärtetes A bleibt Basis; C1/C2 verworfen, C3 nur Forschung,
+keine produktive Fusion. V2/V3 werden nicht weiter optimiert.
 
-- Attraktivität,
-- Artenschutz,
-- Ruf
+Über Spielerfarben sollen Attraktivität, Artenschutz und Ruf in exakt dieselben
+Wertungsfelder wie bei manueller Eingabe vorausgefüllt werden. Kein separater
+fachlicher Kamera-Wertungspfad. Unterstützte Wertungstafeln sollen perspektivisch
+in den Arche-Nova-Einstellungen auswählbar sein, z. B. Original oder Custom kompakt.
 
-erkennen und in exakt dieselben Wertungsfelder wie die manuelle Eingabe
-vorausfüllen. Alle erkannten Werte bleiben manuell korrigierbar. Es gibt keinen
-separaten fachlichen Kamera-Wertungspfad.
+Verbindlicher Zielablauf: Foto aufnehmen **oder** vorhandenes Foto auswählen →
+gemeinsame Orientierung/Analyse → Werte vorausfüllen → Grün/Gelb/Rot mit Text/Icon
+→ Benutzer prüft/korrigiert → bestätigt → erst danach speichern. Auch Grün ist
+keine Korrektheitsgarantie. Unbestätigte Fotovorschläge sind vom manuellen Autosave
+ausgenommen. Fehler erhalten bestehende Werte; Systempicker-Abbruch ist kein Fehler.
 
-Unterstützte Wertungstafeln werden perspektivisch in den
-Arche-Nova-Einstellungen ausgewählt, z. B. Original oder Custom kompakt. Die
-eigentliche Fotoerkennung ist ein eigener nachfolgender Implementierungsslice.
+Native Systempicker verwenden, wenn möglich eingebettet, andernfalls normale
+Systemauswahl. Keine eigene Galerie und keine unnötige Vollbibliotheksberechtigung.
+Info-Icon im Wertungsheader erklärt Sicher/Prüfen/Unsicher und Bestätigungspflicht
+im vorhandenen App-Dialog. Ruf bleibt gemäß globaler Einstellung optional.
+CV liefert für Attraktivität/Artenschutz 0 weiterhin keinen Kandidaten; manuelle
+0-Eingabe bleibt gültig. Keine automatischen Nachbarwertkorrekturen.
 
-Ein separates Windows-Entwicklungswerkzeug erprobt inzwischen die lokale Bildanalyse
-gegen eine bekannte Referenztafel, sechs Entwicklungsfotos und einen zusätzlichen
-25-Foto-Datensatz mit festem Calibration-/Holdout-Split (Phase 1A).
-Dieser technische Prototyp ist noch keine App-Funktion. Mobile Bibliotheksauswahl,
-Geräteperformance und Anbindung an den vorhandenen Kamera-Einstieg stehen aus.
-Ein zusätzlicher Forschungsbatch mit zehn leeren Referenzfotos und 13 neuen
-belegten Fotos hat keinen ausreichend robusten klassischen Struktur-Signalweg
-für ein Ensemble nachgewiesen. DINOv3 blieb mangels autorisiert bereitgestellter
-Gewichte offen. Die bisherige Confidence liefert auf diesen neuen Fotos auch
-falsch akzeptierte Werte; daraus folgt keine Freigabe zur automatischen Übernahme.
-Die angestrebte Kombination aus mindestens 75 % automatisch akzeptierten Werten
-und mindestens 98 % Accuracy wird im unabhängigen Holdout noch nicht erreicht.
-Für die aktuelle technische Fotoanalyse werden Werte 0 nicht als CV-Kandidaten
-angeboten; schwache Feld-Evidenz führt zu Enthaltung und manueller Eingabe.
-Attraktivität 0 und Artenschutz 0 bleiben manuell uneingeschränkt gültig.
-Unsichere Nachbarfeldbelegung reduziert die Confidence, ohne den erkannten Wert
-automatisch auf ein anderes Feld zu verschieben.
+**Noch keine mobile Produktintegration:** Auf ausdrückliche Folgeanweisung geht
+zuerst der gemeinsame native OpenCV-C++-Spike vor. Android ARM64 baut, Android-x64-
+Interop läuft, numerische Parität zur Windows-Referenz ist aber nicht nachgewiesen.
+iOS ist vorerst nur dokumentarisch geprüft. Daher bleiben Kamera-/Picker-/Review-
+Anbindung und deren UI-/Persistenztests offen. Der bestehende Kameraeinstieg ist
+weiterhin ein Platzhalter; der gewünschte Produktablauf wird nicht als fertig
+implementiert ausgegeben.
 
 ## Punkteanzeige
 

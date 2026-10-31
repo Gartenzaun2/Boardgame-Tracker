@@ -5,6 +5,13 @@
 [Bb]in/
 [Oo]bj/
 artifacts/
+# Native CV spike comparison buffers and local dependency/build output.
+tools/Games/ArkNova/NativeVisionSpike/**/*.bgr
+tools/Games/ArkNova/NativeVisionSpike/third_party/
+tools/Games/ArkNova/NativeVisionSpike/build/
+# New generated research caches/warps belong in artifacts, never new fixtures.
+tools/Games/ArkNova/**/FeatureCache/
+tools/Games/ArkNova/**/Warps/
 TestResults/
 ios-build.log
 
