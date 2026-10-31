@@ -9,12 +9,11 @@ public sealed class ArkNovaSpecialCardTests
     public void Card_PreservesIdentityOrderedRepeatedSymbolsAndArchiveState()
     {
         Guid id = Guid.NewGuid();
-        ArkNovaSpecialCard card = new(id, "  Elefant  ", ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Herbivore);
-        Assert.Equal("Elefant", card.Name);
+        ArkNovaSpecialCard card = new(id, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Herbivore);
         Assert.Equal(ArkNovaCardSymbol.Africa, card.Symbol1);
         Assert.Equal(ArkNovaCardSymbol.Africa, card.Symbol2);
         card.SetArchived(true);
-        card.Update("Neu", ArkNovaCardSymbol.Predator, null, null);
+        card.UpdateSymbols(ArkNovaCardSymbol.Predator, null, null);
         Assert.Equal(id, card.Id);
         Assert.True(card.IsArchived);
         Assert.Null(card.Symbol2);
@@ -22,9 +21,9 @@ public sealed class ArkNovaSpecialCardTests
         Assert.False(card.IsArchived);
     }
     [Fact]
-    public void Card_AllowsZeroSymbolsAndMaximumLength()
+    public void Card_RequiresNoNameAndAllowsZeroSymbols()
     {
-        ArkNovaSpecialCard card = new(Guid.NewGuid(), new string('x', ArkNovaSpecialCard.MaximumNameLength));
+        ArkNovaSpecialCard card = new(Guid.NewGuid());
         Assert.Null(card.Symbol1);
         Assert.Null(card.Symbol2);
         Assert.Null(card.Symbol3);
@@ -32,7 +31,7 @@ public sealed class ArkNovaSpecialCardTests
     [Fact]
     public void Science_IsTheFourteenthStableSymbol()
     {
-        ArkNovaSpecialCard card = new(Guid.NewGuid(), "Forschung", ArkNovaCardSymbol.Science);
+        ArkNovaSpecialCard card = new(Guid.NewGuid(), ArkNovaCardSymbol.Science);
         Assert.Equal(14, (int)card.Symbol1!.Value);
     }
     [Theory]
@@ -43,20 +42,15 @@ public sealed class ArkNovaSpecialCardTests
     [InlineData(-1, 0, 0)]
     public void InvalidSymbolSequences_AreRejected(int first, int second, int third)
     {
-        Assert.ThrowsAny<ArgumentException>(() => new ArkNovaSpecialCard(Guid.NewGuid(), "Card",
+        Assert.ThrowsAny<ArgumentException>(() => new ArkNovaSpecialCard(Guid.NewGuid(),
             first == 0 ? null : (ArkNovaCardSymbol)first,
             second == 0 ? null : (ArkNovaCardSymbol)second,
             third == 0 ? null : (ArkNovaCardSymbol)third));
     }
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void EmptyName_IsRejected(string name) => Assert.ThrowsAny<ArgumentException>(() => new ArkNovaSpecialCard(Guid.NewGuid(), name));
     [Fact]
-    public void InvalidIdAndOverlongName_AreRejected()
+    public void InvalidIds_AreRejected()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaSpecialCard(Guid.Empty, "Card"));
-        Assert.Throws<ArgumentException>(() => new ArkNovaSpecialCard(Guid.NewGuid(), new string('x', ArkNovaSpecialCard.MaximumNameLength + 1)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaSpecialCard(Guid.Empty));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGameSessionSpecialCardAssignment(Guid.NewGuid(), Guid.NewGuid(), Guid.Empty));
     }
 }

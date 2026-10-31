@@ -252,48 +252,6 @@
   <data name="Remove" xml:space="preserve">
     <value>Entfernen</value>
   </data>
-  <data name="ArkNovaZooPlan01Name" xml:space="preserve">
-    <value>Aussichtsplattform</value>
-  </data>
-  <data name="ArkNovaZooPlan02Name" xml:space="preserve">
-    <value>Freilaufflächen</value>
-  </data>
-  <data name="ArkNovaZooPlan03Name" xml:space="preserve">
-    <value>Silbersee</value>
-  </data>
-  <data name="ArkNovaZooPlan04Name" xml:space="preserve">
-    <value>Handelshafen</value>
-  </data>
-  <data name="ArkNovaZooPlan05Name" xml:space="preserve">
-    <value>Parkrestaurant</value>
-  </data>
-  <data name="ArkNovaZooPlan06Name" xml:space="preserve">
-    <value>Forschungsinstitut</value>
-  </data>
-  <data name="ArkNovaZooPlan07Name" xml:space="preserve">
-    <value>Eisdielen</value>
-  </data>
-  <data name="ArkNovaZooPlan08Name" xml:space="preserve">
-    <value>Hollywood Hills</value>
-  </data>
-  <data name="ArkNovaZooPlan09Name" xml:space="preserve">
-    <value>Geozoo</value>
-  </data>
-  <data name="ArkNovaZooPlan10Name" xml:space="preserve">
-    <value>Auffangstation</value>
-  </data>
-  <data name="ArkNovaZooPlan11Name" xml:space="preserve">
-    <value>Höhlen</value>
-  </data>
-  <data name="ArkNovaZooPlan12Name" xml:space="preserve">
-    <value>Künstliche Intelligenz</value>
-  </data>
-  <data name="ArkNovaZooPlan13Name" xml:space="preserve">
-    <value>Reißbrett</value>
-  </data>
-  <data name="ArkNovaZooPlan14Name" xml:space="preserve">
-    <value>Lagune</value>
-  </data>
   <data name="Games" xml:space="preserve">
     <value>Spiele</value>
   </data>
@@ -559,4 +517,16 @@ Referenzdaten: {8} vorhanden, {9} neu
 Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   </data>
   <data name="TransferShare" xml:space="preserve"><value>Teilen</value></data>
+  <data name="GameMaterial" xml:space="preserve">
+    <value>Spielmaterial</value>
+  </data>
+  <data name="ContentLanguage" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="ContentLanguageGerman" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="GameMaterialHint" xml:space="preserve">
+    <value>Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.</value>
+  </data>
 </root>

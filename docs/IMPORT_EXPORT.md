@@ -15,12 +15,12 @@ Zuordnungen gelten ausschließlich innerhalb eines Importvorgangs.
 ## Format v1
 
 UTF-8-JSON ohne BOM, Dateiendung `.bgt`, kein ZIP und keine Anhänge. Der Export schreibt
-immer die aktuell unterstützte Version. `formatVersion = 1`, Arche-Nova-`schemaVersion = 1`.
+immer die aktuell unterstützte Version. `formatVersion = 1`, Arche-Nova-`schemaVersion = 2`.
 Versionen sind positive Integer. `appVersion` und `exportedAtUtc` sind reine Metadaten.
 Format- und Spielversionen sind unabhängig; Spieländerungen ändern nicht automatisch das
 Envelope. Es existiert noch keine veröffentlichte ältere Version und daher kein älterer
 Migrationsschritt. Künftige unterstützte Altversionen werden vor Matching schrittweise in
-DTOs migriert; Quelldateien bleiben unverändert. Höhere/unbekannte Versionen sowie unbekannte
+DTOs migriert; Quelldateien bleiben unverändert. Nicht unterstützte Versionen sowie unbekannte
 Known-Game-Keys erfordern ein App-Update und werden vollständig abgelehnt. Kein Best Effort.
 
 Envelope (camelCase; alle aufgeführten Konstruktorfelder sind Pflicht):
@@ -43,7 +43,7 @@ Alle IDs sind GUIDs ungleich Guid.Empty; UUIDv7 ist keine Importvoraussetzung.
 Arche-Nova-Game.data:
 
 ```text
-specialCards: [{ id, name, symbol1, symbol2, symbol3, isArchived }]
+specialCards: [{ id, userName, symbol1, symbol2, symbol3, isArchived }]
 ```
 
 Arche-Nova-GameSession.data:
@@ -54,8 +54,16 @@ players: [{ playerId, color, zooPlanOption1Number, zooPlanOption2Number,
             specialCardIds }]
 ```
 
+userName ist ein Pflichtfeld mit nullable Wert: null bedeutet keine Nutzerressource.
+Bei selbst erstellten Karten ist ein Nutzername erforderlich. Mitgelieferte Namen
+und Sprachvarianten aus content.json werden nicht exportiert; ebenso wenig die
+lokale Materialsprach-Preference. Ein importierter Name wird ausschließlich als
+Nutzerressource behandelt, niemals als Änderung einer mitgelieferten Übersetzung.
+Das frühere Ark-Nova-Schema 1 mit name wird im Pre-Alpha-Stand vollständig abgelehnt;
+keine dauerhafte Altkompatibilität. Das allgemeine Format bleibt Version 1.
+
 Farben und Kartensymbole verwenden die numerischen Domain-Enumwerte. Nullable Symbole und
-Ruf werden explizit als null geschrieben. Berechnete Punkte werden nicht transportiert.
+Ruf und fehlende Nutzernamen werden explizit als null geschrieben. Berechnete Punkte werden nicht transportiert.
 
 ## Export und Abhängigkeiten
 
@@ -131,11 +139,15 @@ Zusammensetzung, importierte Reihenfolge und Flags.
 ## Spezialkarten
 
 Nur referenzierte Karten der tatsächlich neu importierten Partien werden verarbeitet.
-Gleiche ID → lokale Karte. Sonst genau ein normalisierter Namensmatch → lokale Karte.
-Mehrere lokale Namensmatches ohne ID-Match → vollständiger Importfehler schon vor Commit.
-Kein Match → neue Karte mit importierter ID, Namen, Symbolen und Archivstatus.
-Lokale Kartenwerte werden niemals überschrieben. Mehrere auf dieselbe lokale Karte
-aufgelöste Zuordnungen desselben Spielers werden als eine Zuordnung gespeichert.
+Gleiche GUID → lokale Karte; sonst neue Karte mit importierter GUID, Symbolen und
+Archivstatus. Es gibt kein Namensmatching, auch nicht über Nutzernamen. Anzeigenamen
+und aktuelle App-/Materialsprachen beeinflussen niemals die Identität.
+Lokale Symbole und Archivzustände werden niemals überschrieben. Vorhandene lokale
+Nutzernamen gewinnen; ein mittransportierter Nutzername wird bei noch fehlender
+Nutzerressource übernommen, auch für eine bereits lokal angelegte Built-in-Karte.
+Ein Built-in-Datensatz ist selbst keine Nutzerressource. Der Snapshotvergleich
+berücksichtigt neben Kartenfeldern auch persistente Nutzernamen. Alle übernommenen
+Karten und Nutzernamen werden gemeinsam mit Partien atomar gespeichert.
 
 ## Preview und Commit
 

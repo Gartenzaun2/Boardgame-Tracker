@@ -242,15 +242,24 @@ Shell-TabBar und aktive Auswahl richten sich nach dem Design Guide.
 Ohne gespeicherte Auswahl ist Dunkel voreingestellt; eine gespeicherte Wahl bleibt erhalten.
 
 Arche-Nova-Einstellungen enthalten „Ruf erfassen“, alte/neue Punkteanzeige und
-„Spezialkarten“. Dort: Header mit Zurück und Info-Icon, „Archivierte anzeigen“, scrollbare
+„Spezialkarten“. Ein eigener Abschnitt „Spielmaterial“ bietet den Sprachselektor
+„Sprache“ (aktuell ausschließlich Deutsch). Die Auswahl wird sofort als allgemeine
+Game-Preference gespeichert, unabhängig von den Ark-Nova-Wertungseinstellungen.
+„Nutzer“ ist keine Auswahloption. Das Info-Icon im Sektionsheader erklärt knapp:
+„Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.“
+Vorhandene Einstellungskarten, Theme-Ressourcen und compiled bindings bleiben maßgeblich.
+
+Unter „Spezialkarten“: Header mit Zurück und Info-Icon, „Archivierte anzeigen“, scrollbare
 Kartenliste und „Neue Spezialkarte“ unten. Zeilen zeigen 0–3 Symbole in gespeicherter
 Reihenfolge vor dem Namen und das Bearbeiten-Icon direkt daneben ohne eigene
 Aktionszeile. Archiviert wird zusätzlich ausgeschrieben; keine Löschaktion oder
 Archivierungssteuerung in der Liste. Das Info-Icon öffnet den lokalisierten
 App-Hinweis zur Zuordnung von Karten zu Spielern/Partien und späteren Auswertung.
 
-Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe, Symbol-/Namensvorschau,
-drei nummerierte Symbolpositionen, Speichern. Nur beim Bearbeiten einer bestehenden
+Gemeinsamer Create-/Edit-Screen: Kopf, Namenseingabe mit aktuell aufgelöstem Namen, Symbol-/Namensvorschau,
+drei nummerierte Symbolpositionen, Speichern. Neue oder geänderte Namen werden als
+Nutzerressource der Karten-GUID gespeichert; reine Symboländerungen erzeugen keine
+Nutzerressource. Es gibt keinen vollständigen Kartenreset. Nur beim Bearbeiten einer bestehenden
 Karte erscheint zusätzlich „Archiviert“ mit Switch; Speichern übernimmt den Status,
 Zurück verwirft ungespeicherte Änderungen. Folgepositionen werden lückenlos
 angeboten; Leeren rückt nachfolgende Symbole nach links. Der Symbolwähler zeigt

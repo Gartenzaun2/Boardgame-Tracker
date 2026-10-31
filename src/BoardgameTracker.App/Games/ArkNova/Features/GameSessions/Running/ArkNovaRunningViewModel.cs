@@ -78,7 +78,7 @@ public partial class ArkNovaRunningViewModel(
                     player.Name,
                     player.Order,
                     player.Color,
-                    player.ZooPlanNumber));
+                    player.ZooPlanNumber, player.ZooPlanName));
             }
 
             RefreshDuration(DateTimeOffset.UtcNow);
@@ -188,13 +188,13 @@ public sealed class ArkNovaRunningPlayerViewModel
         string name,
         int position,
         PlayerColor color,
-        int zooPlanNumber)
+        int zooPlanNumber, string zooPlanName)
     {
         Name = name;
         Position = position;
         _color = color;
         ZooPlanNumber = zooPlanNumber;
-        ZooPlanText = ArkNovaZooPlanPresentation.GetName(zooPlanNumber);
+        ZooPlanText = zooPlanName;
         ZooPlanIconSource = ArkNovaZooPlanPresentation.GetIconSource(zooPlanNumber);
     }
 

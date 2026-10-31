@@ -4,6 +4,16 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.16
+
+- App-Lokalisierung und Spielmaterial-Content getrennt: eine eingebettete Ark-Nova-JSON-Datei mit bestehenden deutschen Spezialkarten-/Zooplannamen; nur verifiziertes de unterstützt, zugleich Default. Allgemeine lokale Materialsprache pro Game.Key über MAUI Preferences, unabhängig von CurrentUICulture und ArkNovaSettings.
+- Einheitliche Auflösung Nutzer → Materialsprache → unterstützte App-Sprache → Default → deterministischer Missing-Marker. Kleine persistente ArkNovaUserContent-Namensabbildung; keine Translation-Tabellen, generische Engine oder zusätzlichen Domain-Content-Keys.
+- ArkNovaSpecialCard.Name aus Domain/EF/Seeding entfernt. Neue und geänderte Nutzernamen werden atomar mit den jeweiligen Kartenänderungen gespeichert; reine Symboländerungen erzeugen keinen Override. Stabile GUIDs, ZooPlan.Number, Archivstatus und historische Referenzen bleiben erhalten.
+- Materialabschnitt in den Arche-Nova-Einstellungen; Zooplannamen aus .resx in Content verschoben, UI-/Accessibility-Texte bleiben AppResources. Bestehende sprachneutrale Skizzen bleiben unverändert.
+- Ark-Nova-Transferschema 2 mit nullable userName, allgemeines Format weiter 1. Kartenmatching ausschließlich über GUID; lokale Fachwerte/Nutzernamen gewinnen, fehlende Nutzerressourcen können übernommen werden. Built-in-Sprachcontent und Preferences werden nicht transportiert.
+- Content-, Preference-, relationale Karten- und Transferregressionstests ergänzt bzw. angepasst. Kanonische Produkt-, Architektur-, Datenmodell-, Transfer- und Wireframe-Dokumentation sowie Setup aktualisiert. Schemawechsel erfordert bewussten Neuaufbau der Entwicklungsdatenbank; keine Migration oder automatische Datenlöschung.
+- Solution-Build erfolgreich ohne Warnungen/Fehler; 73 Core- und 198 Application-Tests bestanden. Keine manuelle Geräte-/UI-Prüfung. App-Versionsmetadaten 0.10.0.16 / ApplicationVersion 53.
+
 ## 0.10.0.15
 
 - Ark-Nova-Erkennungsforschung ausdrücklich abgeschlossen/eingefroren: gehärtetes A behalten, C1/C2 verworfen, C3 nur diagnostische Forschung, keine F1/F2-Fusion oder C3-Warnregel. Historische Reports/Freezes bleiben unverändert.

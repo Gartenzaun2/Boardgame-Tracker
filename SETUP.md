@@ -90,6 +90,12 @@ Ab Version 0.9.0.10 benötigt `Player.CreatedAt` eine neue Entwicklungsdatenbank
 bzw. Neuinstallation. Ältere Datenbanken besitzen diese erforderliche Spalte nicht;
 lokale Entwicklungsdaten gehen beim Neuaufbau verloren. Es gibt keine Übernahme
 oder automatische Löschung bestehender Daten durch die App.
+Der aktuelle Content-Slice entfernt ArkNovaSpecialCard.Name und ergänzt
+ArkNovaUserContent. Auch dafür ist eine frische Entwicklungsdatenbank bzw.
+Neuinstallation erforderlich: EnsureCreated aktualisiert bestehende Tabellen nicht.
+Beim bewussten Neuaufbau gehen lokale Entwicklungsdaten verloren. Bestehende Daten
+werden weder automatisch gelöscht noch migriert. Alte .bgt-Dateien mit Ark-Nova-
+Schema 1 werden nicht übernommen; das aktuelle Spielschema ist 2.
 Es gibt keine EF-Migrationswerkzeuge oder versionsgebundenen Upgrade-Skripte.
 Vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
 

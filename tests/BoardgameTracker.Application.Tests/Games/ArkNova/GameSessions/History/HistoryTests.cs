@@ -51,7 +51,7 @@ public sealed class HistoryTests
     public async Task Correction_IsAtomicPreservesCompletedAndSetupAndRecalculatesTies()
     {
         await using var f = await Fixture.CreateAsync(Token);
-        var useCase = new ArkNovaHistoryCorrectionUseCase(f, new(f));
+        var useCase = new ArkNovaHistoryCorrectionUseCase(f, new(f, TestGameContent.Create()));
         var draft = await useCase.LoadCorrectionDraftAsync(f.Completed.Id, Token);
         Assert.Equal(f.B.Id, draft.Data.Players[0].PlayerId);
         draft.SetScore(f.A.Id, 80, 7, 10);
@@ -79,14 +79,14 @@ public sealed class HistoryTests
         Assert.False(noTie.HasTies);
         Assert.Equal(1, noTie.DefaultPlacements[f.A.Id]);
         await useCase.SaveCorrectionAsync(saved, noTie.DefaultPlacements, Token);
-        var read = new ArkNovaGameSessionResultQuery(f);
+        var read = new ArkNovaGameSessionResultQuery(f, TestGameContent.Create());
         await Assert.ThrowsAsync<InvalidOperationException>(() => new ArkNovaScoringUseCase(f, read).SavePlayerScoreAsync(f.Completed.Id, f.A.Id, 1, 1, null, Token));
     }
     [Fact]
     public async Task Delete_RemovesCompletedDependentsButKeepsPlayersAndGroup_RejectsRunning()
     {
         await using var f = await Fixture.CreateAsync(Token);
-        var useCase = new ArkNovaHistoryCorrectionUseCase(f, new(f));
+        var useCase = new ArkNovaHistoryCorrectionUseCase(f, new(f, TestGameContent.Create()));
         var running = await f.AddAsync(GameSessionStatus.Running, 3, Token);
         await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.DeleteCompletedGameSessionAsync(running.Id, Token));
         await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.LoadCorrectionDraftAsync(running.Id, Token));

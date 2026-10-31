@@ -214,7 +214,7 @@ public sealed class SpecialCardTests
         }
         await f.Cards.SetArchivedAsync(card, true, Token);
         await f.Cards.UpdateAsync(card, "Bär", ArkNovaCardSymbol.Bear, ArkNovaCardSymbol.Bear, null, Token);
-        ArkNovaHistoryCorrectionUseCase correction = new(f, new(f));
+        ArkNovaHistoryCorrectionUseCase correction = new(f, new(f, TestGameContent.Create()));
         ArkNovaHistoryCorrectionDraft draft = await correction.LoadCorrectionDraftAsync(session.Id, Token);
         Assert.Contains(draft.Data.SpecialCards, c => c.SpecialCardId == card);
         ArkNovaSpecialCardData current = draft.Data.CardCatalog.Single(c => c.Id == card);
@@ -237,7 +237,7 @@ public sealed class SpecialCardTests
     {
         await using SpecialCardDatabase f = await SpecialCardDatabase.CreateAsync();
         GameSession session = await f.AddSessionAsync(true);
-        ArkNovaHistoryCorrectionUseCase correction = new(f, new(f));
+        ArkNovaHistoryCorrectionUseCase correction = new(f, new(f, TestGameContent.Create()));
         ArkNovaHistoryCorrectionDraft draft = await correction.LoadCorrectionDraftAsync(session.Id, Token);
         draft.SetCard(f.A.Id, ArkNovaSpecialCardDefaults.SunBear, true);
         await f.Cards.SetArchivedAsync(ArkNovaSpecialCardDefaults.SunBear, true, Token);
@@ -259,7 +259,7 @@ public sealed class SpecialCardTests
             db.Remove(card);
             await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync(Token));
         }
-        await new ArkNovaHistoryCorrectionUseCase(f, new(f)).DeleteCompletedGameSessionAsync(session.Id, Token);
+        await new ArkNovaHistoryCorrectionUseCase(f, new(f, TestGameContent.Create())).DeleteCompletedGameSessionAsync(session.Id, Token);
         await using BoardgameTrackerDbContext check = f.CreateDbContext();
         Assert.Empty(await check.ArkNovaGameSessionSpecialCardAssignments.ToListAsync(Token));
         Assert.Equal(5, await check.ArkNovaSpecialCards.CountAsync(Token));
@@ -317,8 +317,8 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
     public Player B { get; } = new("Ben");
     public Group Group { get; private set; } = null!;
     private Guid _gameId;
-    public ArkNovaGameSessionResultQuery Scoring => new(this);
-    public ArkNovaSpecialCardUseCase Cards => new(this);
+    public ArkNovaGameSessionResultQuery Scoring => new(this, TestGameContent.Create());
+    public ArkNovaSpecialCardUseCase Cards => new(this, TestGameContent.Create());
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     public BoardgameTrackerDbContext CreateDbContext()
     {
