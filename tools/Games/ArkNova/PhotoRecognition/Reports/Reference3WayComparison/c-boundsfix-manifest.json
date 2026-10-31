@@ -1,0 +1,26 @@
+{
+  "max_polygon_y": 1512,
+  "reference_height": 1544,
+  "files": [
+    {
+      "file": "board_reference_rectified_scoringonly_4000_v2_overlay.png",
+      "bytes": 11574480,
+      "sha256": "88a1be43205e76dca481bdc4a7db8a5f461aec5e039333cf0b8deef8e700c20e"
+    },
+    {
+      "file": "scoring_regions_v3_rectified_candidate5_scoringonly_v2.json",
+      "bytes": 145886,
+      "sha256": "b4b7775d2fc894ad4f1312f7bb428e634f70d016e355558c2402dbb228833dd3"
+    },
+    {
+      "file": "README.txt",
+      "bytes": 502,
+      "sha256": "3d38bfcaebdf3105bed6fadcaaca436fb5b45feb59a298b34616afa172bde0bc"
+    },
+    {
+      "file": "board_reference_rectified_scoringonly_4000_v2.png",
+      "bytes": 12944561,
+      "sha256": "e5664996b0adbec9ca37a7f4e511f5431262735ad22c279bc037205457e0cc0c"
+    }
+  ]
+}

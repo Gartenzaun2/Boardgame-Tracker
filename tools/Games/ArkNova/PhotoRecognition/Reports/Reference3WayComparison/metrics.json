@@ -1,0 +1,3798 @@
+[
+  {
+    "variant": "A_current",
+    "referenceImage": "board_reference_master_clean.png",
+    "geometryFile": "scoring_regions_v2.json",
+    "referenceWidth": 4000,
+    "referenceHeight": 2800,
+    "analysisScale": 0.5,
+    "registrationEdge": 1600,
+    "summaries": [
+      {
+        "batch": "calibration",
+        "metrics": {
+          "images": 17,
+          "registered": 17,
+          "failed": 0,
+          "overall": {
+            "total": 123,
+            "absent": 81,
+            "raw": {
+              "correct": 94,
+              "wrong": 12,
+              "nulls": 17,
+              "top1": 0.7642276422764228,
+              "phantoms": 21
+            },
+            "evaluated": {
+              "correct": 87,
+              "wrong": 9,
+              "nulls": 27,
+              "top1": 0.7073170731707317,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 62,
+                "correct": 26,
+                "wrong": 9,
+                "nulls": 27
+              },
+              "High": {
+                "count": 38,
+                "correct": 38,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "Medium": {
+                "count": 23,
+                "correct": 23,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 34,
+                "wrong": 3,
+                "nulls": 4,
+                "top1": 0.8292682926829268,
+                "phantoms": 12
+              },
+              "evaluated": {
+                "correct": 32,
+                "wrong": 1,
+                "nulls": 8,
+                "top1": 0.7804878048780488,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 3,
+                  "wrong": 1,
+                  "nulls": 8
+                },
+                "High": {
+                  "count": 15,
+                  "correct": 15,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 14,
+                  "correct": 14,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 24,
+                "wrong": 8,
+                "nulls": 9,
+                "top1": 0.5853658536585366,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 21,
+                "wrong": 7,
+                "nulls": 13,
+                "top1": 0.5121951219512195,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 41,
+                  "correct": 21,
+                  "wrong": 7,
+                  "nulls": 13
+                }
+              }
+            },
+            "reputation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 36,
+                "wrong": 1,
+                "nulls": 4,
+                "top1": 0.8780487804878049,
+                "phantoms": 7
+              },
+              "evaluated": {
+                "correct": 34,
+                "wrong": 1,
+                "nulls": 6,
+                "top1": 0.8292682926829268,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 23,
+                  "correct": 23,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 9,
+                  "correct": 2,
+                  "wrong": 1,
+                  "nulls": 6
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 30,
+              "absent": 21,
+              "raw": {
+                "correct": 28,
+                "wrong": 2,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 7
+              },
+              "evaluated": {
+                "correct": 28,
+                "wrong": 2,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 11,
+                  "correct": 9,
+                  "wrong": 2,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 10,
+                  "correct": 10,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 27,
+              "absent": 24,
+              "raw": {
+                "correct": 15,
+                "wrong": 3,
+                "nulls": 9,
+                "top1": 0.5555555555555556,
+                "phantoms": 6
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 2,
+                "nulls": 11,
+                "top1": 0.5185185185185185,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 11,
+                  "correct": 11,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 13,
+                  "correct": 0,
+                  "wrong": 2,
+                  "nulls": 11
+                },
+                "Medium": {
+                  "count": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 30,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.9090909090909091,
+                "phantoms": 5
+              },
+              "evaluated": {
+                "correct": 30,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.9090909090909091,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 10,
+                  "correct": 10,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 11,
+                  "correct": 8,
+                  "wrong": 3,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 12,
+                  "correct": 12,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 21,
+                "wrong": 4,
+                "nulls": 8,
+                "top1": 0.6363636363636364,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 15,
+                "wrong": 2,
+                "nulls": 16,
+                "top1": 0.45454545454545453,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 27,
+                  "correct": 9,
+                  "wrong": 2,
+                  "nulls": 16
+                },
+                "High": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "holdout",
+        "metrics": {
+          "images": 8,
+          "registered": 8,
+          "failed": 0,
+          "overall": {
+            "total": 60,
+            "absent": 36,
+            "raw": {
+              "correct": 45,
+              "wrong": 8,
+              "nulls": 7,
+              "top1": 0.75,
+              "phantoms": 10
+            },
+            "evaluated": {
+              "correct": 41,
+              "wrong": 5,
+              "nulls": 14,
+              "top1": 0.6833333333333333,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 37,
+                "correct": 18,
+                "wrong": 5,
+                "nulls": 14
+              },
+              "Medium": {
+                "count": 11,
+                "correct": 11,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "High": {
+                "count": 12,
+                "correct": 12,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 14,
+                "wrong": 4,
+                "nulls": 2,
+                "top1": 0.7,
+                "phantoms": 5
+              },
+              "evaluated": {
+                "correct": 13,
+                "wrong": 3,
+                "nulls": 4,
+                "top1": 0.65,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 10,
+                  "correct": 3,
+                  "wrong": 3,
+                  "nulls": 4
+                },
+                "Medium": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 4,
+                  "correct": 4,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 14,
+                "wrong": 2,
+                "nulls": 4,
+                "top1": 0.7,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 12,
+                "wrong": 2,
+                "nulls": 6,
+                "top1": 0.6,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 20,
+                  "correct": 12,
+                  "wrong": 2,
+                  "nulls": 6
+                }
+              }
+            },
+            "reputation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 17,
+                "wrong": 2,
+                "nulls": 1,
+                "top1": 0.85,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 16,
+                "wrong": 0,
+                "nulls": 4,
+                "top1": 0.8,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 7,
+                  "correct": 3,
+                  "wrong": 0,
+                  "nulls": 4
+                },
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 12,
+                "wrong": 1,
+                "nulls": 2,
+                "top1": 0.8,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 12,
+                "wrong": 0,
+                "nulls": 3,
+                "top1": 0.8,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 3
+                },
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 2,
+                  "correct": 2,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 9,
+                "wrong": 2,
+                "nulls": 4,
+                "top1": 0.6,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 8,
+                "wrong": 2,
+                "nulls": 5,
+                "top1": 0.5333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 9,
+                  "correct": 2,
+                  "wrong": 2,
+                  "nulls": 5
+                },
+                "Medium": {
+                  "count": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 14,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 5,
+                  "correct": 4,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 10,
+                "wrong": 4,
+                "nulls": 1,
+                "top1": 0.6666666666666666,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 7,
+                "wrong": 2,
+                "nulls": 6,
+                "top1": 0.4666666666666667,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 7,
+                  "wrong": 2,
+                  "nulls": 6
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3_empty",
+        "metrics": {
+          "images": 10,
+          "registered": 10,
+          "failed": 0,
+          "overall": {
+            "total": 0,
+            "absent": 120,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 40
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 10
+            },
+            "confidence": {}
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 18
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 4
+              },
+              "confidence": {}
+            },
+            "conservation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 6
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 3
+              },
+              "confidence": {}
+            },
+            "reputation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 16
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 3
+              },
+              "confidence": {}
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 11
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "blue": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 15
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 8
+              },
+              "confidence": {}
+            },
+            "yellow": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 5
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "black": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 9
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 2
+              },
+              "confidence": {}
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3",
+        "metrics": {
+          "images": 13,
+          "registered": 13,
+          "failed": 0,
+          "overall": {
+            "total": 156,
+            "absent": 0,
+            "raw": {
+              "correct": 113,
+              "wrong": 30,
+              "nulls": 13,
+              "top1": 0.7243589743589743,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 109,
+              "wrong": 28,
+              "nulls": 19,
+              "top1": 0.6987179487179487,
+              "phantoms": 0
+            },
+            "confidence": {
+              "High": {
+                "count": 48,
+                "correct": 40,
+                "wrong": 8,
+                "nulls": 0
+              },
+              "Uncertain": {
+                "count": 76,
+                "correct": 43,
+                "wrong": 14,
+                "nulls": 19
+              },
+              "Medium": {
+                "count": 32,
+                "correct": 26,
+                "wrong": 6,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 32,
+                "wrong": 14,
+                "nulls": 6,
+                "top1": 0.6153846153846154,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 31,
+                "wrong": 14,
+                "nulls": 7,
+                "top1": 0.5961538461538461,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 18,
+                  "correct": 15,
+                  "wrong": 3,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 3,
+                  "wrong": 5,
+                  "nulls": 7
+                },
+                "Medium": {
+                  "count": 19,
+                  "correct": 13,
+                  "wrong": 6,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 41,
+                "wrong": 8,
+                "nulls": 3,
+                "top1": 0.7884615384615384,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 39,
+                "wrong": 7,
+                "nulls": 6,
+                "top1": 0.75,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 52,
+                  "correct": 39,
+                  "wrong": 7,
+                  "nulls": 6
+                }
+              }
+            },
+            "reputation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 40,
+                "wrong": 8,
+                "nulls": 4,
+                "top1": 0.7692307692307693,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 39,
+                "wrong": 7,
+                "nulls": 6,
+                "top1": 0.75,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 13,
+                  "correct": 13,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 30,
+                  "correct": 25,
+                  "wrong": 5,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 9,
+                  "correct": 1,
+                  "wrong": 2,
+                  "nulls": 6
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 10,
+                  "correct": 7,
+                  "wrong": 3,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 14,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 14,
+                  "correct": 12,
+                  "wrong": 2,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 29,
+                "wrong": 9,
+                "nulls": 1,
+                "top1": 0.7435897435897436,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 29,
+                "wrong": 9,
+                "nulls": 1,
+                "top1": 0.7435897435897436,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 18,
+                  "correct": 12,
+                  "wrong": 5,
+                  "nulls": 1
+                },
+                "High": {
+                  "count": 11,
+                  "correct": 11,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 10,
+                  "correct": 6,
+                  "wrong": 4,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 13,
+                  "correct": 12,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 18,
+                  "correct": 13,
+                  "wrong": 5,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 18,
+                "wrong": 9,
+                "nulls": 12,
+                "top1": 0.46153846153846156,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 7,
+                "nulls": 18,
+                "top1": 0.358974358974359,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 30,
+                  "correct": 5,
+                  "wrong": 7,
+                  "nulls": 18
+                },
+                "High": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "legacy6",
+        "metrics": {
+          "images": 6,
+          "registered": 6,
+          "failed": 0,
+          "overall": {
+            "total": 72,
+            "absent": 0,
+            "raw": {
+              "correct": 60,
+              "wrong": 11,
+              "nulls": 1,
+              "top1": 0.8333333333333334,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 60,
+              "wrong": 11,
+              "nulls": 1,
+              "top1": 0.8333333333333334,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Medium": {
+                "count": 12,
+                "correct": 12,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "Uncertain": {
+                "count": 43,
+                "correct": 31,
+                "wrong": 11,
+                "nulls": 1
+              },
+              "High": {
+                "count": 17,
+                "correct": 17,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 20,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 20,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 4,
+                  "correct": 4,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 8,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 17,
+                "wrong": 6,
+                "nulls": 1,
+                "top1": 0.7083333333333334,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 17,
+                "wrong": 6,
+                "nulls": 1,
+                "top1": 0.7083333333333334,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 24,
+                  "correct": 17,
+                  "wrong": 6,
+                  "nulls": 1
+                }
+              }
+            },
+            "reputation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 23,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9583333333333334,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 23,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9583333333333334,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 7,
+                  "correct": 6,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 14,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.7777777777777778,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.7777777777777778,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 4,
+                  "correct": 4,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 13,
+                  "correct": 9,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 15,
+                "wrong": 2,
+                "nulls": 1,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 15,
+                "wrong": 2,
+                "nulls": 1,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 5,
+                  "wrong": 2,
+                  "nulls": 1
+                },
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 18,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": 1,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 18,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": 1,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 12,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 13,
+                "wrong": 5,
+                "nulls": 0,
+                "top1": 0.7222222222222222,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 13,
+                "wrong": 5,
+                "nulls": 0,
+                "top1": 0.7222222222222222,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 10,
+                  "correct": 5,
+                  "wrong": 5,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "negatives": {
+      "blankRejected": true,
+      "partialRejected": true,
+      "emptyReferenceNoHigh": true,
+      "passed": true
+    },
+    "negativeError": null,
+    "technicalFailures": 0
+  },
+  {
+    "variant": "B_new_scaled_4000x2800",
+    "referenceImage": "board_reference_single_shot_scaled_4000x2800.png",
+    "geometryFile": "scoring_regions_v3_candidate5_scaled_4000x2800.json",
+    "referenceWidth": 4000,
+    "referenceHeight": 2800,
+    "analysisScale": 0.5,
+    "registrationEdge": 1600,
+    "summaries": [
+      {
+        "batch": "calibration",
+        "metrics": {
+          "images": 17,
+          "registered": 17,
+          "failed": 0,
+          "overall": {
+            "total": 123,
+            "absent": 81,
+            "raw": {
+              "correct": 96,
+              "wrong": 11,
+              "nulls": 16,
+              "top1": 0.7804878048780488,
+              "phantoms": 20
+            },
+            "evaluated": {
+              "correct": 91,
+              "wrong": 10,
+              "nulls": 22,
+              "top1": 0.7398373983739838,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 61,
+                "correct": 29,
+                "wrong": 10,
+                "nulls": 22
+              },
+              "High": {
+                "count": 41,
+                "correct": 41,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "Medium": {
+                "count": 21,
+                "correct": 21,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 33,
+                "wrong": 4,
+                "nulls": 4,
+                "top1": 0.8048780487804879,
+                "phantoms": 11
+              },
+              "evaluated": {
+                "correct": 32,
+                "wrong": 3,
+                "nulls": 6,
+                "top1": 0.7804878048780488,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 3,
+                  "wrong": 3,
+                  "nulls": 6
+                },
+                "High": {
+                  "count": 17,
+                  "correct": 17,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 12,
+                  "correct": 12,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 27,
+                "wrong": 7,
+                "nulls": 7,
+                "top1": 0.6585365853658537,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 24,
+                "wrong": 7,
+                "nulls": 10,
+                "top1": 0.5853658536585366,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 41,
+                  "correct": 24,
+                  "wrong": 7,
+                  "nulls": 10
+                }
+              }
+            },
+            "reputation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 36,
+                "wrong": 0,
+                "nulls": 5,
+                "top1": 0.8780487804878049,
+                "phantoms": 7
+              },
+              "evaluated": {
+                "correct": 35,
+                "wrong": 0,
+                "nulls": 6,
+                "top1": 0.8536585365853658,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 24,
+                  "correct": 24,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 2,
+                  "wrong": 0,
+                  "nulls": 6
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 30,
+              "absent": 21,
+              "raw": {
+                "correct": 28,
+                "wrong": 2,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 7
+              },
+              "evaluated": {
+                "correct": 28,
+                "wrong": 2,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 11,
+                  "correct": 9,
+                  "wrong": 2,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 11,
+                  "correct": 11,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 27,
+              "absent": 24,
+              "raw": {
+                "correct": 18,
+                "wrong": 0,
+                "nulls": 9,
+                "top1": 0.6666666666666666,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 16,
+                "wrong": 0,
+                "nulls": 11,
+                "top1": 0.5925925925925926,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 14,
+                  "correct": 14,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 13,
+                  "correct": 2,
+                  "wrong": 0,
+                  "nulls": 11
+                }
+              }
+            },
+            "yellow": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 30,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.9090909090909091,
+                "phantoms": 6
+              },
+              "evaluated": {
+                "correct": 30,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.9090909090909091,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 9,
+                  "wrong": 3,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 11,
+                  "correct": 11,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 10,
+                  "correct": 10,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 20,
+                "wrong": 6,
+                "nulls": 7,
+                "top1": 0.6060606060606061,
+                "phantoms": 4
+              },
+              "evaluated": {
+                "correct": 17,
+                "wrong": 5,
+                "nulls": 11,
+                "top1": 0.5151515151515151,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 25,
+                  "correct": 9,
+                  "wrong": 5,
+                  "nulls": 11
+                },
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "holdout",
+        "metrics": {
+          "images": 8,
+          "registered": 8,
+          "failed": 0,
+          "overall": {
+            "total": 60,
+            "absent": 36,
+            "raw": {
+              "correct": 45,
+              "wrong": 6,
+              "nulls": 9,
+              "top1": 0.75,
+              "phantoms": 9
+            },
+            "evaluated": {
+              "correct": 39,
+              "wrong": 3,
+              "nulls": 18,
+              "top1": 0.65,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 35,
+                "correct": 14,
+                "wrong": 3,
+                "nulls": 18
+              },
+              "Medium": {
+                "count": 11,
+                "correct": 11,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "High": {
+                "count": 14,
+                "correct": 14,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 15,
+                "wrong": 2,
+                "nulls": 3,
+                "top1": 0.75,
+                "phantoms": 4
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 1,
+                "nulls": 5,
+                "top1": 0.7,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 2,
+                  "wrong": 1,
+                  "nulls": 5
+                },
+                "Medium": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 14,
+                "wrong": 2,
+                "nulls": 4,
+                "top1": 0.7,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 11,
+                "wrong": 2,
+                "nulls": 7,
+                "top1": 0.55,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 20,
+                  "correct": 11,
+                  "wrong": 2,
+                  "nulls": 7
+                }
+              }
+            },
+            "reputation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 16,
+                "wrong": 2,
+                "nulls": 2,
+                "top1": 0.8,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 0,
+                "nulls": 6,
+                "top1": 0.7,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 7,
+                  "correct": 1,
+                  "wrong": 0,
+                  "nulls": 6
+                },
+                "High": {
+                  "count": 8,
+                  "correct": 8,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 12,
+                "wrong": 1,
+                "nulls": 2,
+                "top1": 0.8,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 12,
+                "wrong": 0,
+                "nulls": 3,
+                "top1": 0.8,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 3
+                },
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 2,
+                  "correct": 2,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 10,
+                "wrong": 1,
+                "nulls": 4,
+                "top1": 0.6666666666666666,
+                "phantoms": 2
+              },
+              "evaluated": {
+                "correct": 9,
+                "wrong": 1,
+                "nulls": 5,
+                "top1": 0.6,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 7,
+                  "correct": 7,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 7,
+                  "correct": 1,
+                  "wrong": 1,
+                  "nulls": 5
+                },
+                "Medium": {
+                  "count": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 14,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 3
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 5,
+                  "correct": 4,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 9,
+                "wrong": 3,
+                "nulls": 3,
+                "top1": 0.6,
+                "phantoms": 1
+              },
+              "evaluated": {
+                "correct": 4,
+                "wrong": 1,
+                "nulls": 10,
+                "top1": 0.26666666666666666,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 4,
+                  "wrong": 1,
+                  "nulls": 10
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3_empty",
+        "metrics": {
+          "images": 10,
+          "registered": 10,
+          "failed": 0,
+          "overall": {
+            "total": 0,
+            "absent": 120,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 41
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 15
+            },
+            "confidence": {}
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 17
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 6
+              },
+              "confidence": {}
+            },
+            "conservation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 8
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 4
+              },
+              "confidence": {}
+            },
+            "reputation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 16
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 5
+              },
+              "confidence": {}
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 11
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "blue": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 14
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 13
+              },
+              "confidence": {}
+            },
+            "yellow": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 5
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "black": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 11
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 2
+              },
+              "confidence": {}
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3",
+        "metrics": {
+          "images": 13,
+          "registered": 13,
+          "failed": 0,
+          "overall": {
+            "total": 156,
+            "absent": 0,
+            "raw": {
+              "correct": 114,
+              "wrong": 31,
+              "nulls": 11,
+              "top1": 0.7307692307692307,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 108,
+              "wrong": 29,
+              "nulls": 19,
+              "top1": 0.6923076923076923,
+              "phantoms": 0
+            },
+            "confidence": {
+              "High": {
+                "count": 47,
+                "correct": 37,
+                "wrong": 10,
+                "nulls": 0
+              },
+              "Uncertain": {
+                "count": 76,
+                "correct": 44,
+                "wrong": 13,
+                "nulls": 19
+              },
+              "Medium": {
+                "count": 33,
+                "correct": 27,
+                "wrong": 6,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 31,
+                "wrong": 16,
+                "nulls": 5,
+                "top1": 0.5961538461538461,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 30,
+                "wrong": 15,
+                "nulls": 7,
+                "top1": 0.5769230769230769,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 17,
+                  "correct": 13,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 19,
+                  "correct": 13,
+                  "wrong": 6,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 16,
+                  "correct": 4,
+                  "wrong": 5,
+                  "nulls": 7
+                }
+              }
+            },
+            "conservation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 43,
+                "wrong": 7,
+                "nulls": 2,
+                "top1": 0.8269230769230769,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 40,
+                "wrong": 6,
+                "nulls": 6,
+                "top1": 0.7692307692307693,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 52,
+                  "correct": 40,
+                  "wrong": 6,
+                  "nulls": 6
+                }
+              }
+            },
+            "reputation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 40,
+                "wrong": 8,
+                "nulls": 4,
+                "top1": 0.7692307692307693,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 38,
+                "wrong": 8,
+                "nulls": 6,
+                "top1": 0.7307692307692307,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 14,
+                  "correct": 14,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 30,
+                  "correct": 24,
+                  "wrong": 6,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 0,
+                  "wrong": 2,
+                  "nulls": 6
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 32,
+                "wrong": 7,
+                "nulls": 0,
+                "top1": 0.8205128205128205,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 32,
+                "wrong": 7,
+                "nulls": 0,
+                "top1": 0.8205128205128205,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 10,
+                  "correct": 7,
+                  "wrong": 3,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 13,
+                  "wrong": 2,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 14,
+                  "correct": 12,
+                  "wrong": 2,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 30,
+                "wrong": 8,
+                "nulls": 1,
+                "top1": 0.7692307692307693,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 30,
+                "wrong": 8,
+                "nulls": 1,
+                "top1": 0.7692307692307693,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 9,
+                  "correct": 5,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 17,
+                  "correct": 13,
+                  "wrong": 3,
+                  "nulls": 1
+                },
+                "High": {
+                  "count": 13,
+                  "correct": 12,
+                  "wrong": 1,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 33,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.8461538461538461,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 14,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 15,
+                  "correct": 10,
+                  "wrong": 5,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 19,
+                "wrong": 10,
+                "nulls": 10,
+                "top1": 0.48717948717948717,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 13,
+                "wrong": 8,
+                "nulls": 18,
+                "top1": 0.3333333333333333,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 29,
+                  "correct": 4,
+                  "wrong": 7,
+                  "nulls": 18
+                },
+                "High": {
+                  "count": 9,
+                  "correct": 8,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "legacy6",
+        "metrics": {
+          "images": 6,
+          "registered": 6,
+          "failed": 0,
+          "overall": {
+            "total": 72,
+            "absent": 0,
+            "raw": {
+              "correct": 59,
+              "wrong": 12,
+              "nulls": 1,
+              "top1": 0.8194444444444444,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 59,
+              "wrong": 12,
+              "nulls": 1,
+              "top1": 0.8194444444444444,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Medium": {
+                "count": 15,
+                "correct": 15,
+                "wrong": 0,
+                "nulls": 0
+              },
+              "Uncertain": {
+                "count": 42,
+                "correct": 29,
+                "wrong": 12,
+                "nulls": 1
+              },
+              "High": {
+                "count": 15,
+                "correct": 15,
+                "wrong": 0,
+                "nulls": 0
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 20,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 20,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.8333333333333334,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 12,
+                  "correct": 8,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "conservation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 18,
+                "wrong": 5,
+                "nulls": 1,
+                "top1": 0.75,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 18,
+                "wrong": 5,
+                "nulls": 1,
+                "top1": 0.75,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 24,
+                  "correct": 18,
+                  "wrong": 5,
+                  "nulls": 1
+                }
+              }
+            },
+            "reputation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 21,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.875,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 21,
+                "wrong": 3,
+                "nulls": 0,
+                "top1": 0.875,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 6,
+                  "correct": 3,
+                  "wrong": 3,
+                  "nulls": 0
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 12,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.6666666666666666,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 12,
+                "wrong": 6,
+                "nulls": 0,
+                "top1": 0.6666666666666666,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 4,
+                  "correct": 4,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 14,
+                  "correct": 8,
+                  "wrong": 6,
+                  "nulls": 0
+                }
+              }
+            },
+            "blue": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 16,
+                "wrong": 1,
+                "nulls": 1,
+                "top1": 0.8888888888888888,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 16,
+                "wrong": 1,
+                "nulls": 1,
+                "top1": 0.8888888888888888,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 8,
+                  "correct": 6,
+                  "wrong": 1,
+                  "nulls": 1
+                },
+                "Medium": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 4,
+                  "correct": 4,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "yellow": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 17,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9444444444444444,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 17,
+                "wrong": 1,
+                "nulls": 0,
+                "top1": 0.9444444444444444,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Medium": {
+                  "count": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 10,
+                  "correct": 9,
+                  "wrong": 1,
+                  "nulls": 0
+                },
+                "High": {
+                  "count": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            },
+            "black": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 14,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.7777777777777778,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 14,
+                "wrong": 4,
+                "nulls": 0,
+                "top1": 0.7777777777777778,
+                "phantoms": 0
+              },
+              "confidence": {
+                "High": {
+                  "count": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "nulls": 0
+                },
+                "Uncertain": {
+                  "count": 10,
+                  "correct": 6,
+                  "wrong": 4,
+                  "nulls": 0
+                },
+                "Medium": {
+                  "count": 2,
+                  "correct": 2,
+                  "wrong": 0,
+                  "nulls": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "negatives": {
+      "blankRejected": true,
+      "partialRejected": true,
+      "emptyReferenceNoHigh": true,
+      "passed": true
+    },
+    "negativeError": null,
+    "technicalFailures": 0
+  },
+  {
+    "variant": "C_rectified_scoring_4000",
+    "referenceImage": "board_reference_rectified_scoringonly_4000.png",
+    "geometryFile": "scoring_regions_v3_rectified_candidate5_scoringonly.json",
+    "referenceWidth": 4000,
+    "referenceHeight": 1506,
+    "analysisScale": 0.5,
+    "registrationEdge": 1600,
+    "summaries": [
+      {
+        "batch": "calibration",
+        "metrics": {
+          "images": 17,
+          "registered": 0,
+          "failed": 17,
+          "overall": {
+            "total": 123,
+            "absent": 81,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 123,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 123,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 123,
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 123
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 41,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 41
+                }
+              }
+            },
+            "conservation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 41,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 41
+                }
+              }
+            },
+            "reputation": {
+              "total": 41,
+              "absent": 27,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 41,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 41,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 41
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 30,
+              "absent": 21,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 30,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 30,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 30,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 30
+                }
+              }
+            },
+            "blue": {
+              "total": 27,
+              "absent": 24,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 27,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 27,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 27,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 27
+                }
+              }
+            },
+            "yellow": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 33,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 33,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 33,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 33
+                }
+              }
+            },
+            "black": {
+              "total": 33,
+              "absent": 18,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 33,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 33,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 33,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 33
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "holdout",
+        "metrics": {
+          "images": 8,
+          "registered": 0,
+          "failed": 8,
+          "overall": {
+            "total": 60,
+            "absent": 36,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 60,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 60,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 60,
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 60
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 20,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 20
+                }
+              }
+            },
+            "conservation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 20,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 20
+                }
+              }
+            },
+            "reputation": {
+              "total": 20,
+              "absent": 12,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 20,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 20,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 20
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 15
+                }
+              }
+            },
+            "blue": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 15
+                }
+              }
+            },
+            "yellow": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 15
+                }
+              }
+            },
+            "black": {
+              "total": 15,
+              "absent": 9,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 15,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 15,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 15
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3_empty",
+        "metrics": {
+          "images": 10,
+          "registered": 0,
+          "failed": 10,
+          "overall": {
+            "total": 0,
+            "absent": 120,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 0,
+              "top1": null,
+              "phantoms": 0
+            },
+            "confidence": {}
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "conservation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "reputation": {
+              "total": 0,
+              "absent": 40,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "blue": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "yellow": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            },
+            "black": {
+              "total": 0,
+              "absent": 30,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 0,
+                "top1": null,
+                "phantoms": 0
+              },
+              "confidence": {}
+            }
+          }
+        }
+      },
+      {
+        "batch": "v3",
+        "metrics": {
+          "images": 13,
+          "registered": 0,
+          "failed": 13,
+          "overall": {
+            "total": 156,
+            "absent": 0,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 156,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 156,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 156,
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 156
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 52,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 52
+                }
+              }
+            },
+            "conservation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 52,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 52
+                }
+              }
+            },
+            "reputation": {
+              "total": 52,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 52,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 52,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 52
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 39,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 39
+                }
+              }
+            },
+            "blue": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 39,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 39
+                }
+              }
+            },
+            "yellow": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 39,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 39
+                }
+              }
+            },
+            "black": {
+              "total": 39,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 39,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 39,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 39
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "batch": "legacy6",
+        "metrics": {
+          "images": 6,
+          "registered": 0,
+          "failed": 6,
+          "overall": {
+            "total": 72,
+            "absent": 0,
+            "raw": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 72,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "evaluated": {
+              "correct": 0,
+              "wrong": 0,
+              "nulls": 72,
+              "top1": 0,
+              "phantoms": 0
+            },
+            "confidence": {
+              "Uncertain": {
+                "count": 72,
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 72
+              }
+            }
+          },
+          "tracks": {
+            "attractiveness": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 24,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 24
+                }
+              }
+            },
+            "conservation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 24,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 24
+                }
+              }
+            },
+            "reputation": {
+              "total": 24,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 24,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 24,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 24
+                }
+              }
+            }
+          },
+          "colors": {
+            "red": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 18,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 18
+                }
+              }
+            },
+            "blue": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 18,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 18
+                }
+              }
+            },
+            "yellow": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 18,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 18
+                }
+              }
+            },
+            "black": {
+              "total": 18,
+              "absent": 0,
+              "raw": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "evaluated": {
+                "correct": 0,
+                "wrong": 0,
+                "nulls": 18,
+                "top1": 0,
+                "phantoms": 0
+              },
+              "confidence": {
+                "Uncertain": {
+                  "count": 18,
+                  "correct": 0,
+                  "wrong": 0,
+                  "nulls": 18
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "negatives": null,
+    "negativeError": "0 <= roi.x && 0 <= roi.width && roi.x + roi.width <= m.cols && 0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= m.rows",
+    "technicalFailures": 54
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "buildErrors": 0,
+  "precheckPassed": true,
+  "applicationTestsPassed": 198,
+  "coreTestsPassed": 73,
+  "aReusedUnchanged": true,
+  "newlyEvaluatedVariants": [
+    "C_rectified_scoring_4000_v2_boundsfix"
+  ],
+  "buildWarnings": 0,
+  "reusedReportSha256": "94127d8a554a5f6e2dc4b3cc95c0302730f2d31255118313e16e54d8741b5b73",
+  "bReusedUnchanged": true
+}

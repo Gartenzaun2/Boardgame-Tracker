@@ -8,7 +8,28 @@ unverändert. C1/C2 sind abgeschlossen/verworfen. C3 bleibt ausschließlich
 kein F1/F2 und auch keine optionale C3-Warnregel. Eine weitere Untersuchung
 dieser optionalen Regel wurde bewusst nicht begonnen.
 
+Der reine Single-Shot-/Candidate-5-Referenzwechsel wurde ohne Regeländerung
+[erneut gemessen und abgelehnt](../tools/Games/ArkNova/PhotoRecognition/Reports/ReferenceV3Validation/README.md):
+V2 roh 45→44/60, V3 113→111/156, falsche V3-High-Vorschläge 8→11.
+Die alte Referenz und V2-Geometrie bleiben aktiv; keine Nachoptimierung.
+
+Auch die beiden getrennten [4000×2800-Ablationen](../tools/Games/ArkNova/PhotoRecognition/Reports/Reference4000Ablation/Reference4000Ablation.md)
+behalten den alten Stand: Baseline/A/B roh 312/308/310 von 411, falsche High-Werte
+auf vorhandenen GT 8/9/10; B zusätzlich ein falscher High auf Empty.
+Eine einmalige Homographie wurde identisch auf Single-Shot und Candidate5
+angewandt; keine A-/E-Anpassung und keine weitere Forschungsrunde.
+
 Die Qualität reicht für manuell geprüfte Vorschläge, nicht für stilles Speichern.
+
+Der aktualisierte [Dreifachvergleich](../tools/Games/ArkNova/PhotoRecognition/Reports/Reference3WayComparison/Reference3WayComparison.md)
+mit fertig gelieferten Paaren verändert den Standard ebenfalls nicht: A/B roh
+312/314 von 411, nach E jeweils 297, V3-False-High 8/10. Der separat gelieferte
+C-v2-Bounds-Fix (4000×1544, Analyse 2000×772) registriert 54/54 ohne technische
+Fehler und trifft roh 316/411, nach E ebenfalls 297; V3-False-High 10 und
+Empty-Phantome nach E 15. Nur C wurde wiederholt, A/B wurden unverändert
+übernommen. Der frühere C-ROI-Fehler bleibt im historischen Report dokumentiert.
+Keine Optimierung, CV-/Parameteränderung oder Produktionsumstellung.
+
 Auf wiederverwendetem V3 sind acht grüne Vorschläge falsch. Bekannte Grenzen:
 Schwarz, Nachbarfelder, mehrere Farben auf demselben Feld, Schatten und
 Karten/sonstiges Störmaterial. Weitere CV-Forschung nur bei einem reproduzierbaren

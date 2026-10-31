@@ -11,9 +11,34 @@ verfehlt aber noch das Paritätsgate. Mobile Produktintegration bleibt offen;
 OpenCvSharp ist kein Android-/iOS-Produktionsweg. iOS wurde vorerst nur gegen
 Dokumentation geprüft. Keine Schwellen-/Confidence-Änderung aus dem Stressfoto.
 
+Der isolierte [ReferenceV3Validation-Vergleich](Reports/ReferenceV3Validation/README.md)
+lehnt die neue Single-Shot-/Candidate-5-Referenz wegen Regression ab. Die bisherigen
+Standardassets bleiben aktiv; die Vergleichsbefehle und Reproduktion stehen im Report.
+
+Die nachfolgenden [4000×2800-Ablationen A/B](Reports/Reference4000Ablation/Reference4000Ablation.md)
+behalten ebenfalls den alten Stand. `prepare-reference-4000 <root> <handoff> <neuer-output>`
+erstellt einmalig die geometrisch abgebildete Referenz und beide Geometrien;
+`ablate-reference-4000 <root> <prepared> <neue-report.json>` misst ausschließlich
+Baseline/A/B mit den eingefrorenen Assets. Generierte Referenzassets bleiben unter
+ignoriertem `artifacts/`; keine neue Optimierung oder Forschungsrunde.
+
 Ausführbares .NET-10-Werkzeug für Windows x64. Es verarbeitet eine Bilddatei lokal
 und liefert Registrierung, zwölf Feldkandidaten, Confidence, mögliche Nachbarwerte
 und Stufenzeiten als JSON. Es ist noch keine mobile Kamera-Funktion.
+
+Der aktuelle [Dreifachvergleich A/B/C](Reports/Reference3WayComparison/Reference3WayComparison.md)
+verwendet ausschließlich die fertig gelieferten Bild-/Geometriepaare:
+`compare-reference-3way <root> <handoff> <neue-report.json>`. Produktionsassets und
+alle CV-Regeln bleiben unverändert. Technische OpenCV-Fehler werden mit Fehlertext
+und null-Entscheidungen bei erhaltenem Nenner dokumentiert; Ersatzdiagnostik ist
+keine gemessene Registrierung oder Confidence. Ergebnisse je abgeschlossener
+Variante werden zusätzlich gesichert; vorhandene Ausgabedateien werden abgelehnt.
+
+`compare-reference-c-boundsfix <root> <boundsfix> <bestehende-3way.json> <neue-report.json>`
+misst ausschließlich C v2. A/B werden samt Eingabehashprüfung übernommen; die
+Referenzhöhe 1544 und tatsächliche Analyzer-Höhe 772 sind zwingende Vorbedingungen.
+Der [Bounds-Fix-Nachtrag](Reports/Reference3WayComparison/Reference3WayComparison.md#nachtrag-c-v2-bounds-fix)
+ergänzt den historischen Vergleich ohne dessen alte Einzelreports zu ersetzen.
 
 Aktueller Confidence-V2-Stand: **38,3 % Coverage bei 23/23 richtigen akzeptierten
 Holdout-Werten**. Das 75-%-Coverage-Ziel wird nicht erreicht. Alle Ergebnisse,

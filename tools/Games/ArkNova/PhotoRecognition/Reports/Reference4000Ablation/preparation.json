@@ -1,0 +1,38 @@
+{
+  "protocol": "One empty-reference SIFT/RANSAC homography before scores; no tuning. Same H for image and every Candidate5 vertex; no rounding or clipping.",
+  "matrix": [
+    [
+      0.7696941768394485,
+      0.0035448970052040863,
+      -123.42123455061292
+    ],
+    [
+      -0.00209619037135872,
+      0.7437442925600071,
+      -258.3733784885254
+    ],
+    [
+      8.880652255025921E-06,
+      -6.168103648671668E-06,
+      1
+    ]
+  ],
+  "matches": 1965,
+  "inliers": 1608,
+  "reprojectionP95RegistrationPixels": 2.375828460405764,
+  "sourceScale": 0.2801120448179272,
+  "targetScale": 0.4,
+  "width": 4000,
+  "height": 2800,
+  "inputHashes": {
+    "oldReference": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114",
+    "singleShot": "689dc1d3bc383e2f8d6256f865146d564fd7dcb36d3e263a0b1ff0b90af40a0c",
+    "oldGeometry": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910",
+    "candidate5": "5f1137ed62682d4b04d7e727decf1cc3cf50032bbbaf4e84459b7dba80261606"
+  },
+  "frozenOutputs": {
+    "board_reference_single_shot_4000x2800.png": "614d3aa0182b86e7db94d423ac4bbdca309ddf2ab4b7c7b985c1f7b00a767314",
+    "test-a.json": "587bbb4ac55c9665ece7276408787b9e72dfcbe7be21a28036ff025071e5f983",
+    "test-b.json": "d6500ba6209bf2eb0609bc9be3feef43050c65d9ab684218723a28dfc5ca6b52"
+  }
+}

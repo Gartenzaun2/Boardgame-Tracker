@@ -4,6 +4,31 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.20
+
+- Ausschließlich C mit dem gelieferten v2-Bounds-Fix erneut gemessen: tatsächliche Referenzhöhe 1544 und tatsächliche Analyzer-Höhe 772 vor Fotoauswertung explizit geprüft; Polygonkoordinaten und Quellviereck unverändert. A/B vollständig aus Reference3WayComparison wiederverwendet, Eingabefoto-Hashes und Ergebnisgleichheit geprüft.
+- C registriert 54/54 ohne technische Fehler; Negativtests bestanden. Roh A/B/C 312/314/316 von 411, nach E jeweils 297; V3-False-High 8/10/10, Empty-Phantome nach E 10/15/15. Bestehenden Report nur um gültiges C ergänzt, alte JSON-/Detailreports erhalten. Keine Optimierung, keine Produktionsumstellung, A-/E-/Scoringlogik unverändert.
+- Solution-Build ohne Warnungen/Fehler, 73 Core- und 198 Application-Tests bestanden. App-Version 0.10.0.20 / ApplicationVersion 57. Änderungen lokal, kein Commit oder Push.
+
+## 0.10.0.19
+
+- Aktualisierten Dreifachvergleich ausschließlich mit den gelieferten unveränderten Paaren A_current, B_new_scaled_4000x2800 und C_rectified_scoring_4000 ausgeführt. A_NoZero, Confidence E, RegistrationEdge 1600 und AnalysisScale 0,5 unverändert; Produktionsstandard nicht umgestellt.
+- A/B: roh 312/314 von 411, nach E jeweils 297; V3-False-High 8/10 und Empty-Phantome nach E 10/15. B damit gemischt. C scheitert bei allen 54 Fotos technisch an über die Analysefläche reichenden Ruf-Feldmasken; keine Polygon-/Padding-/Threshold-Korrektur, null im vollständigen Nenner, Registrierungsstabilität nicht messbar.
+- Vergleichswerkzeug protokolliert technische OpenCV-Fehler und sichert abgeschlossene Varianten. Kurzer Reference3WayComparison-Report plus Farb-/Track-/Confidence-/Registrierungsmetriken, Einzelmessungen und Auflösungs-/Morphologiehinweisen; historische Reports unverändert. Alle 648 Baseline-Entscheidungen reproduziert.
+- Solution-Build ohne Warnungen/Fehler, 73 Core- und 198 Application-Tests bestanden; abschließendes Vergleichswerkzeug in Release gebaut und ausgeführt. App-Version 0.10.0.19 / ApplicationVersion 56. Keine weitere Forschung, kein Commit oder Push.
+
+## 0.10.0.18
+
+- Genau zwei Referenz-Ablationen auf 4000×2800 gemessen: Single-Shot einmal per bestehendem SIFT/RANSAC geometrisch auf die alte Referenz abgebildet und vor Auswertung eingefroren. Test A nutzt unveränderte alte Polygone, Test B dieselbe Homographie für sämtliche Candidate5-Eckpunkte. Keine Änderung von A_NoZero, E, Schwellen oder Polygonformen außerhalb der Koordinatentransformation.
+- Baseline/A/B roh 312/308/310 von 411, nach E 297/293/295. Falsche High-Werte auf vorhandenen GT 8/9/10, zusätzlich ein Empty-High bei B; Empty-Phantome nach E 10/15/16. Alten Stand behalten, keine weitere Forschung. Kurzer Reference4000Ablation-Report plus vollständige Einzel-/Farb-/Track-Metriken; historische Berichte und Assets erhalten.
+- Solution-Build ohne Warnungen/Fehler, 73 Core- und 198 Application-Tests bestanden; 648 Baseline-Entscheidungen unverändert reproduziert. App-Versionsmetadaten 0.10.0.18 / ApplicationVersion 55. Änderungen lokal, kein Commit oder Push.
+
+## 0.10.0.17
+
+- Reinen Single-Shot-/Candidate-5-Referenzwechsel gegen gehärtetes A_NoZero und unveränderte Confidence E validiert: Calibration roh 94→96/123, V2 45→44/60, V3 113→111/156; V3-High-Fehler 8→11. Entscheidung FAIL, bisherige Referenz/Geometrie bleiben aktiv, keine Nachoptimierung.
+- Expliziten gepaarten Validierungsbefehl und minimale Auswahl einer Geometriedatei mit Bildpfad aus deren Metadaten ergänzt. Vollständiger ReferenceV3Validation-Report mit Farb-/Track-/Confidence-Metriken, Negativprüfungen und unveränderten historischen Nennern; 456 alte Entscheidungen exakt reproduziert. Stressoriginal nicht im Repository verfügbar.
+- Solution-Build ohne Warnungen/Fehler, 73 Core- und 198 Application-Tests bestanden. App-Versionsmetadaten 0.10.0.17 / ApplicationVersion 54. Keine Schemaänderung, kein Commit oder Push.
+
 ## 0.10.0.16
 
 - App-Lokalisierung und Spielmaterial-Content getrennt: eine eingebettete Ark-Nova-JSON-Datei mit bestehenden deutschen Spezialkarten-/Zooplannamen; nur verifiziertes de unterstützt, zugleich Default. Allgemeine lokale Materialsprache pro Game.Key über MAUI Preferences, unabhängig von CurrentUICulture und ArkNovaSettings.

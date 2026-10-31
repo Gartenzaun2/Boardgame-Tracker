@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "file": "board_reference_master_single_shot.png",
+      "sha256": "689dc1d3bc383e2f8d6256f865146d564fd7dcb36d3e263a0b1ff0b90af40a0c",
+      "bytes": 42062082
+    },
+    {
+      "file": "scoring_regions_v3_candidate5.json",
+      "sha256": "5f1137ed62682d4b04d7e727decf1cc3cf50032bbbaf4e84459b7dba80261606",
+      "bytes": 146705
+    },
+    {
+      "file": "scoring_regions_v3_candidate5_overlay.jpg",
+      "sha256": "da5b5e7a8bcff6fe7ac1d14c7fdaf85dc95b0638c32e947fa8f36ac30b35eebf",
+      "bytes": 6415401
+    },
+    {
+      "file": "candidate5_reputation_zoom.jpg",
+      "sha256": "9a83a5d92b346e4b02f3323a504a793c15347d5fbb333d09f58c1fa088a3d34e",
+      "bytes": 187531
+    },
+    {
+      "file": "candidate5_reputation15_zoom.jpg",
+      "sha256": "7cfbe7e838ce79f3dfffd13961882a4a366e8a5467abe7c1cd24ab314de5edf0",
+      "bytes": 51553
+    },
+    {
+      "file": "calibration_guides_with_ruler.jpg",
+      "sha256": "13bd0abb9ab3f73671b0f0a7ec7c244d102f6de20420a591d89c2e8341b087ce",
+      "bytes": 13820166
+    },
+    {
+      "file": "marked_examples.jpg",
+      "sha256": "5e27b44b846a334947f1a40707282ee1ceb82f47c418a920b8d0f4a748dac76c",
+      "bytes": 13755209
+    }
+  ]
+}
