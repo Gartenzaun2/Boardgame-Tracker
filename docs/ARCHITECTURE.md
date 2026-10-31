@@ -127,6 +127,45 @@ Gemischte allgemeine Dokumente werden bei ihrer jeweiligen Konsolidierung getren
 wenn klar abgrenzbare spielspezifische Abschnitte entstehen. Jede dauerhafte Regel
 hat genau eine kanonische Quelle.
 
+### Generalisierungstest für spielspezifische Dokumentation
+
+Bevor eine Regel unter `docs/Games/<GameName>/` abgelegt wird, wird geprüft:
+
+> Würde dieselbe Regel für jedes zukünftige Spiel gelten – oder für jedes Spiel,
+> das dieses allgemeine Konzept verwendet?
+
+Wenn ja, gehört die Regel in das entsprechende **allgemeine** Dokument, auch wenn
+aktuell nur ein einziges Spiel sie implementiert.
+
+Eine Aussage gehört nur dann in ein spielspezifisches Dokument, wenn mindestens
+einer dieser Punkte zutrifft:
+
+- sie beschreibt einen konkreten spielabhängigen Typ, Wert, Inhalt oder Workflow;
+- ein anderes Spiel darf innerhalb der allgemeinen Architektur bewusst eine andere
+  fachliche oder UI-Entscheidung treffen;
+- sie dokumentiert Implementierungs-, Forschungs- oder Statusdetails genau dieses
+  Spiels.
+
+Die aktuelle Anzahl implementierter Spiele ist **kein** Kriterium für die
+Dokumentationszuordnung.
+
+Allgemeine Regeln dürfen dabei bedingt formuliert sein, zum Beispiel:
+
+```text
+Wenn ein Spiel PlayerColor verwendet, nutzt es den gemeinsamen PlayerColor-Typ
+und definiert nur seine erlaubte Teilmenge.
+```
+
+Das konkrete Spiel dokumentiert anschließend nur noch seine konkrete Umsetzung,
+zum Beispiel die tatsächlich erlaubten Farben.
+
+Spielspezifische Dokumente wiederholen weder Begründung noch vollständige Regel
+des allgemeinen Dokuments. Ein kurzer Verweis und die konkrete Ausprägung genügen.
+
+Ist unklar, ob eine Entscheidung künftig allgemeiner Vertrag oder echte
+Spielentscheidung sein soll und hätte diese Einordnung relevante Architektur-,
+Persistenz- oder UX-Auswirkungen, wird der Entwickler gefragt.
+
 ## 5. Verbindliches Domänenvokabular
 
 Für die zentralen allgemeinen Konzepte gelten diese Namen:

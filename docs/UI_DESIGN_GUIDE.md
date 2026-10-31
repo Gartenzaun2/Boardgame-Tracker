@@ -1,75 +1,99 @@
 # Boardgame Tracker – UI Design Guide
 
-## 1. Grundprinzip
+## 1. Geltungsbereich
 
-Die App verwendet ein zentrales, tokenbasiertes Farbsystem.
+Diese Datei beschreibt die **spielübergreifende visuelle Sprache und
+Interaktionskonventionen** der App.
 
-Die visuelle Struktur eines Screens bleibt unabhängig vom gewählten Theme gleich. Ein Theme ändert Farben, aber nicht Navigation, Abstände, Größen, Informationshierarchie oder fachliches Verhalten.
+Spielspezifische UI-Regeln stehen unter:
 
-Der Nutzer kann zwischen drei Themes wählen:
+```text
+docs/Games/<GameName>/UI_DESIGN_GUIDE.md
+```
+
+Konkrete Screens, Reihenfolgen, Navigation und Maße eines Screens stehen in
+[UI_WIREFRAME.md](UI_WIREFRAME.md). Fachliches Verhalten steht in
+[PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+
+Grundprinzip:
+
+> Das App-Theme bildet einen ruhigen, konsistenten Rahmen. Spielmaterial,
+> Spieleridentität und andere fachliche Visuals behalten ihre eigene Semantik.
+
+Ein Theme ändert Farben, aber nicht Navigation, Abstände, Größen,
+Informationshierarchie oder fachliches Verhalten.
+
+## 2. Themes
+
+Die App unterstützt:
 
 1. **Deep Forest**
 2. **Königsblau**
 3. **Dunkel**
 
-Die Theme-Auswahl gehört in die allgemeinen App-Einstellungen und wird dauerhaft gespeichert.
+**Dunkel ist das Standard-Theme**, wenn keine gültige Auswahl gespeichert ist.
+Die gespeicherte Nutzerwahl wird vor Aufbau der ersten App-Ansicht angewendet.
 
-**Dunkel ist ohne gespeicherte Auswahl das Standard-Theme.** Eine gespeicherte
-Nutzerwahl bleibt erhalten und wird vor dem Aufbau der ersten App-Ansicht angewendet.
+Der Theme-Wechsel:
 
-Spielbezogene Farben und Grafiken bleiben vom App-Theme getrennt. Insbesondere werden nicht verändert:
+- aktualisiert zentrale semantische Ressourcen;
+- wird ohne App-Neustart sichtbar;
+- wird als allgemeine App-Preference gespeichert;
+- ist keine Einstellung eines einzelnen Spiels.
 
-- Arche-Nova-Spielerfarben
-- farblich getönte Spielerkarten
-- Zooplan-Grafiken
-- Spiel-Logos und Illustrationen
-- fachlich notwendige Status- und Warnfarben
+Die native Splashfläche verwendet unabhängig von der gespeicherten Auswahl
+`#141A17`, da sie vor dem Laden der MAUI-Preferences entsteht. Die anschließende
+Ladeansicht verwendet sofort das gespeicherte bzw. standardmäßig dunkle Theme.
 
-Dadurch bleibt die App-Oberfläche ruhig, während die eigentlichen Brettspielinhalte Farbe und Persönlichkeit liefern.
+## 3. Semantische Theme-Rollen
 
----
+Screens definieren keine eigenen Theme-Paletten und entscheiden nicht selbst anhand
+eines Theme-Namens.
 
-## 2. Gemeinsame Farbrollen
+Verbindliche allgemeine Rollen:
 
-Screens dürfen keine eigenen unabhängigen Farbpaletten definieren.
+```text
+AppBackground
+Surface
+SurfaceSecondary
+Primary
+PrimaryPressed
+PrimaryForeground
+SelectedSurface
+SelectedBorder
+TextPrimary
+TextSecondary
+Outline
+NavigationBackground
+NavigationText
+NavigationSelectedSurface
+NavigationSelectedText
+Danger
+DangerSurface
+DisabledSurface
+DisabledText
+BusyOverlay
+IconSurface
+GameGraphicText
+BusyIndicator
+```
 
-Stattdessen verwenden alle Oberflächen semantische Theme-Tokens.
+Features dürfen zusätzliche semantische Statusrollen verwenden, wenn diese einen
+eigenständigen fachlichen Zustand ausdrücken. Solche Rollen werden zentral
+bereitgestellt, aber im jeweiligen Feature-/Spiel-Guide erklärt.
 
-Verbindliche Rollen:
+Neue Screens müssen mit allen Themes funktionieren, wenn sie ausschließlich
+semantische Ressourcen und ausdrücklich fachliche Farben verwenden.
 
-- `AppBackground`
-- `Surface`
-- `SurfaceSecondary`
-- `Primary`
-- `PrimaryPressed`
-- `PrimaryForeground`
-- `SelectedSurface`
-- `SelectedBorder`
-- `TextPrimary`
-- `TextSecondary`
-- `Outline`
-- `NavigationBackground`
-- `NavigationText`
-- `NavigationSelectedSurface`
-- `NavigationSelectedText`
-- `Danger`
-- `DangerSurface`
+## 4. Theme-Paletten
 
-Bestehende Komponenten sollen diese semantischen Rollen verwenden und nicht konkrete Theme-Farben kennen.
-
----
-
-## 3. Theme: Deep Forest
-
-Deep Forest ist das Standard-Theme.
-
-Es soll ruhig, natürlich und hochwertig wirken, ohne einen beigen oder papierartigen Eindruck zu erzeugen.
+### Deep Forest
 
 | Rolle | Farbe |
 |---|---|
 | AppBackground | `#D9E6DF` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#EEF5F1` (Sekundäraktion) |
+| SurfaceSecondary | `#EEF5F1` |
 | Primary | `#466655` |
 | PrimaryPressed | `#385346` |
 | PrimaryForeground | `#FFFFFF` |
@@ -84,22 +108,23 @@ Es soll ruhig, natürlich und hochwertig wirken, ohne einen beigen oder papierar
 | NavigationSelectedText | `#263D31` |
 | Danger | `#B3261E` |
 | DangerSurface | `#F9DEDC` |
+| DisabledSurface | `#FFFFFF` |
+| DisabledText | `#263D31` |
+| BusyOverlay | `#99000000` |
+| IconSurface | `#EEF5F1` |
+| GameGraphicText | `#101713` |
+| BusyIndicator | `#FFFFFF` |
 
-Deep Forest soll nicht durch zusätzliche gelbe oder beige Standardflächen ergänzt werden.
+Deep Forest wirkt ruhig und natürlich. Keine zusätzlichen gelben oder
+papier-beigen Standardflächen.
 
----
-
-## 4. Theme: Königsblau
-
-Königsblau ist das alternative helle Theme.
-
-Es soll etwas klarer, kühler und digitaler wirken als Deep Forest, ohne kräftig oder technisch steril zu werden.
+### Königsblau
 
 | Rolle | Farbe |
 |---|---|
 | AppBackground | `#DCE5F4` |
 | Surface | `#FFFFFF` |
-| SurfaceSecondary | `#EEF3FB` (Sekundäraktion) |
+| SurfaceSecondary | `#EEF3FB` |
 | Primary | `#315B9B` |
 | PrimaryPressed | `#274A80` |
 | PrimaryForeground | `#FFFFFF` |
@@ -114,20 +139,22 @@ Es soll etwas klarer, kühler und digitaler wirken als Deep Forest, ohne kräfti
 | NavigationSelectedText | `#18386A` |
 | Danger | `#B3261E` |
 | DangerSurface | `#F9DEDC` |
+| DisabledSurface | `#FFFFFF` |
+| DisabledText | `#18386A` |
+| BusyOverlay | `#99000000` |
+| IconSurface | `#EEF3FB` |
+| GameGraphicText | `#101713` |
+| BusyIndicator | `#FFFFFF` |
 
-Auch in diesem Theme bleiben Spielerfarben, Zoopläne und sonstige Spielgrafiken unverändert.
+Königsblau ist das kühlere helle Theme, ohne kräftig oder technisch steril zu wirken.
 
----
-
-## 5. Theme: Dunkel
-
-Das dunkle Theme ist ein eigenständiges Theme und keine einfache automatische Invertierung der hellen Farben.
+### Dunkel
 
 | Rolle | Farbe |
 |---|---|
 | AppBackground | `#141A17` |
 | Surface | `#222A26` |
-| SurfaceSecondary | `#29352F` (Sekundäraktion) |
+| SurfaceSecondary | `#29352F` |
 | Primary | `#5B8A70` |
 | PrimaryPressed | `#6D9B82` |
 | PrimaryForeground | `#101713` |
@@ -142,282 +169,252 @@ Das dunkle Theme ist ein eigenständiges Theme und keine einfache automatische I
 | NavigationSelectedText | `#FFFFFF` |
 | Danger | `#FFB4AB` |
 | DangerSurface | `#5F2423` |
+| DisabledSurface | `#222A26` |
+| DisabledText | `#F0F4F1` |
+| BusyOverlay | `#99000000` |
+| IconSurface | `#EEF5F1` |
+| GameGraphicText | `#101713` |
+| BusyIndicator | `#FFFFFF` |
 
-Das dunkle Theme verwendet keine rein schwarzen großen Flächen und keine rein weißen Konturen.
+Das dunkle Theme ist keine automatische Invertierung. Große Flächen sind nicht rein
+schwarz; Konturen nicht rein weiß.
 
----
+## 5. Flächenhierarchie
 
-## 6. Flächenhierarchie
+Die Inhaltsflächen verwenden drei Ebenen:
 
-Die App verwendet grundsätzlich drei visuelle Ebenen:
+### AppBackground
 
-### Ebene 1 – AppBackground
+Grundfläche eines Screens.
 
-Große Grundfläche eines Screens.
+### Surface
 
-Sie darf deutlich sichtbar sein und soll nicht wie eine weiße Standard-App wirken.
+Eigenständige inhaltliche oder interaktive Einheiten, beispielsweise:
 
-### Ebene 2 – Surface
+- Gruppen- und Historienkarten;
+- Einstellungskarten;
+- Dialogeinträge;
+- klar abgegrenzte interaktive Inhalte.
 
-Interaktive oder inhaltlich abgeschlossene Bereiche:
+### SelectedSurface
 
-- Partiekarten
-- Gruppenkarten
-- Einstellungskarten
-- einzelne Inhalts-/Auswahleinträge innerhalb von Dialogen; äußere SelectionDialog-Flächen verwenden AppBackground
-- Bottom-Navigation
-- Eingabebereiche, wenn eine klare Gruppierung erforderlich ist
+Nur für einen tatsächlich ausgewählten Zustand, z. B.:
 
-### Ebene 3 – SelectedSurface
+- aktiver Filter;
+- aktive Navigation;
+- ausgewählter Dialogeintrag.
 
-Für:
+`SurfaceSecondary` ist **keine vierte Kartenebene**, sondern die leichte Fläche
+sekundärer Aktionen.
 
-- ausgewählte Filter
-- aktiven Navigationseintrag
-- ausdrücklich ausgewählte Zustände
+Sektionen werden primär durch Abstand, Überschrift und Ausrichtung getrennt.
+Divider werden gezielt eingesetzt.
 
-Farbe soll nicht verwendet werden, nur um möglichst viele Flächen voneinander zu unterscheiden.
+Detail-/Bearbeitungsheader bleiben auf `AppBackground` und verwenden eine feine
+Unterkante über `HeaderDivider`, keine Header-Karte und keinen starken Schatten.
 
----
+Leerzustände und reine Metainformation benötigen keine dekorative Karte.
 
-## 7. Karten, Formulare und Metainformation
+## 6. Karten und Formulare
 
-**Karten sind Inhalt, Buttons sind Aktionen, Formulare bleiben flach und Metainformation steht ohne Karte.**
+> Karten sind Inhalt, Buttons sind Aktionen, Formulare bleiben flach und
+> Metainformation steht ohne Karte.
 
-Surface-Karten sind eigenständige inhaltliche oder interaktive Einheiten, z. B. Gruppen und historische Partien. Sie verwenden eine moderate Rundung und Outline ohne starken Standardschatten. Eine Karte ist kein universeller Gruppierungsrahmen für Überschrift und Text oder einzelne Formularsektionen.
+`CardBorder` ist die gemeinsame Surface-Karte mit moderater Rundung und Outline.
 
-Gruppenstammdaten und „Neuen Spieler anlegen“ sind flache Inline-Formulare. Gruppenname und Spielername verwenden dasselbe Label-links/Eingabe-rechts-Muster mit gleicher Typografie und Eingabehöhe. „Letzte Partie“ ist ein flacher Metabereich mit kleiner Überschrift, Datum und Ergebnis. Leere Gruppenmitglieder benötigen keine Karte.
+Formulare verwenden keine Karte nur zur Gruppierung einzelner Felder.
+Gleichartige Felder verwenden gleichartige Typografie, Höhe und Ausrichtung.
 
-Farbige Spielerflächen sind eine bewusste Identitäts-Ausnahme: Ihre gekoppelte Hintergrund-/Textfarbe bleibt erhalten. Eingefügte Gruppenmitglieder können als eigenständige interaktive Einheiten abgegrenzt bleiben.
+Farbige Spielerflächen sind eine bewusste fachliche Identitätsausnahme. Ihre
+gekoppelte Hintergrund-/Textfarbe bleibt unabhängig vom App-Theme erhalten.
 
-Sektionen werden zuerst durch Abstand, Überschrift und Ausrichtung getrennt; Divider nur gezielt. Detail-/Bearbeitungsheader bleiben auf AppBackground und erhalten eine feine Outline-Unterkante, keine Header-Karte oder starken Schatten.
+## 7. Buttons und Aktionen
 
-Die Regeln gelten für alle aktuellen Seiten: Jeder Seitenheader erhält eine feine Unterkante über den gemeinsamen Style `HeaderDivider`. Gruppen anlegen/bearbeiten und Wertungseingaben verwenden flache Formulare; Einstellungs-, Ergebnis- und interaktive Spielerkarten bleiben eigenständige Inhaltseinheiten. Leerzustände stehen ohne dekorative Karte.
+### PrimaryCompactButton
 
----
+Wichtigste Seitenaktion:
 
-## 8. Bottom-Navigation
+- `Primary`;
+- `PrimaryForeground`;
+- Pressed über `PrimaryPressed`;
+- mindestens 44 dp hoch.
 
-Die Hauptnavigation enthält weiterhin:
+### SecondaryActionButton
 
-`Spiele · Gruppen · Historie · Einstellungen`
+Normale nachgeordnete Aktion:
 
-Die Bottom-Bar verwendet grundsätzlich dieselbe Farbe wie `Surface`.
+- `SurfaceSecondary`;
+- `SelectedBorder`;
+- `TextPrimary`.
 
-Damit bildet sie dieselbe visuelle Ebene wie Karten und andere feste Oberflächen.
+Normale Buttons verwenden standardmäßig diese Rolle.
 
-Sie wird vom App-Inhalt abgegrenzt durch:
+### TextActionButton
 
-- eine sichtbare obere Kontur in `Outline`,
-- optional einen sehr zurückhaltenden Schatten nach oben,
-- eine eindeutige Markierung des aktiven Tabs.
+Kleine kontextuelle Aktion ohne starke Fläche und ohne Kontur, beispielsweise
+Abbrechen oder Schließen eines passenden Dialogs.
 
-Der aktive Tab erhält:
+### DangerButton
 
-- `NavigationSelectedSurface`,
-- `NavigationSelectedText`,
-- eine gemeinsame abgerundete Fläche hinter Icon **und Beschriftung**, nicht nur hinter dem Icon. Die Fläche verwendet `NavigationSelectedSurface` ohne abweichende Randfarbe; die obere Kontur der gesamten TabBar bleibt `Outline`.
+Destruktive Aktion:
 
-Die aktive Navigation darf nicht ausschließlich anhand einer anderen Textfarbe erkennbar sein.
+- `DangerSurface`;
+- `Danger`;
+- Danger-Kontur.
 
----
+Destruktive Aktionen bleiben visuell sekundär und werden bei weitreichenden Folgen
+ausdrücklich bestätigt.
 
-## 9. Filter und Auswahl
+`CompactActionButton` ist nur gemeinsame Stilbasis, keine zusätzliche semantische
+Aktionsrolle.
 
-Kurze Filter sollen bevorzugt als kompakte Filterflächen bzw. Chips dargestellt werden.
+Disabled-Zustände bleiben technisch deaktiviert und zusätzlich visuell erkennbar.
 
-Beispiele:
+## 8. Icons und Touch-Ziele
 
-`[ Arche Nova ▾ ] [ Alle Gruppen ▾ ]`
+- normale Icons etwa 20–24 dp;
+- Touch-Ziele mindestens 44–48 dp;
+- kleine sichtbare Icons behalten trotzdem eine komfortable interaktive Fläche;
+- Zurück, Info, Bearbeiten und Farbpalette behalten appweit dieselbe Bedeutung;
+- Bildressourcen statt fontabhängiger Unicode-Icons;
+- `IconButton` ist transparent und verwendet den Theme-Textton als Tint;
+- auf farbigen Spielerflächen verwendet ein Icon deren gekoppelte Spieler-Textfarbe;
+- semantische Beschreibung ist verpflichtend;
+- bei Pointer-Geräten kann zusätzlich ein Tooltip verwendet werden.
 
-Ein aktiver oder bewusst gewählter Filter darf zusätzlich eine Auswahlmarkierung erhalten:
+## 9. Bottom-Navigation
 
-`[ ✓ Arche Nova ▾ ]`
+Die permanente Hauptnavigation verwendet dieselbe visuelle Ebene wie `Surface`.
 
-Filter:
+Sie wird abgegrenzt durch:
 
-- sind nicht standardmäßig vollbreit,
-- stehen bei ausreichendem Platz nebeneinander,
-- besitzen komfortable Touch-Ziele,
-- verwenden `Surface` im normalen Zustand,
-- verwenden `SelectedSurface` und `SelectedBorder` im ausgewählten Zustand.
+- obere `Outline`-Kontur;
+- optional sehr zurückhaltenden Schatten;
+- eindeutig sichtbaren aktiven Zustand.
 
-Die eigentliche Auswahl darf weiterhin über Picker, Popup, Dialog oder eine geeignete native Auswahloberfläche erfolgen.
+Der aktive Tab verwendet:
 
-Lange Listen sollen später bei Bedarf über eine suchbare Auswahl oder ein Bottom Sheet dargestellt werden.
+- `NavigationSelectedSurface`;
+- `NavigationSelectedText`;
+- eine gemeinsame abgerundete Fläche hinter Icon und Beschriftung.
 
----
+Aktivität darf nie ausschließlich durch Textfarbe erkennbar sein.
 
-## 10. Historie
+Die konkrete Tabstruktur steht in [UI_WIREFRAME.md](UI_WIREFRAME.md).
 
-Abgeschlossene Partien werden nach Monaten gruppiert.
+## 10. Filter und Auswahl
 
-Beispiel:
+Kurze Filter sind kompakte Filterflächen bzw. Chips statt standardmäßig
+vollbreiter Controls.
 
-`Oktober 2026`
+Normal:
 
-darunter die entsprechenden Partiekarten.
+- `Surface`;
+- `Outline`.
 
-Die Monatsüberschrift verwendet keine eigene Karte.
+Ausgewählt:
 
-Die Historienfilter für Spiel und Gruppe stehen kompakt oberhalb der Liste.
+- `SelectedSurface`;
+- `SelectedBorder`;
+- sichtbare Auswahlmarkierung, wenn sinnvoll.
 
-Ob Monatsüberschriften später beim Scrollen sticky werden, ist keine Voraussetzung für den ersten Design-Umbau.
+Bei ausreichendem Platz stehen Filter nebeneinander. Touch-Ziele bleiben komfortabel.
 
----
+Die eigentliche Auswahl kann je nach Fall über App-Dialog, Page-internes
+`SelectionDialog` oder geeignete native Systemauswahl erfolgen.
 
-## 11. Primary, Secondary und Text Actions
+Lange Listen können bei Bedarf suchbar werden; dafür wird nicht vorsorglich eine
+neue Auswahlarchitektur eingeführt.
 
-- **PrimaryCompactButton:** wichtigste Seitenaktion, gefüllt mit Primary und PrimaryForeground, Pressed über PrimaryPressed. „Neue Gruppe“, „Speichern“ und „Starten“ sind Primary-Aktionen.
-- **SecondaryActionButton:** echte nachgeordnete Aktion mit leichter SurfaceSecondary-Fläche, SelectedBorder-Kontur und kontrastreichem TextPrimary. Dazu gehören „Zoopläne auslosen“, „Reihenfolge rotieren“, „Vorhandenen Spieler hinzufügen“ und „Spieler hinzufügen“. Die Aktionsfläche unterscheidet sich von weißen Inhaltskarten.
-- **TextActionButton:** kleine kontextuelle Aktion ohne starke Fläche, transparent ohne Kontur, z. B. Schließen eines Hinweisdialogs oder Abbrechen einer Entscheidung. Page-interne Auswahl-Picker verwenden zum Verlassen den Zurück-Pfeil im IconButton-Stil.
+## 11. SelectionDialog und modale Page-Auswahl
 
-Die Styles teilen Höhe (mindestens 44 dp), Radiusfamilie und Typografie. Disabled-Zustände bleiben technisch deaktiviert und visuell erkennbar. Normale Buttons verwenden standardmäßig SecondaryActionButton; kontextuelle Reihenfolgeaktionen und textuelle Schließen-Aktionen allgemeiner Dialoge verwenden TextActionButton. CompactActionButton dient nur als gemeinsame Stilbasis, nicht als zusätzliche Aktionsrolle. Destruktive Aktionen bleiben sekundär und verwenden Danger.
+Page-interne Auswahl-Picker verwenden zentral `SelectionDialog`.
 
----
+Struktur:
 
-## 12. Farbsemantik
+```text
+Page Root
+├─ Page-Inhalt
+├─ modales Auswahl-Overlay
+└─ Busy-Layer
+```
 
-Hauptaktionen verwenden `Primary` und `PrimaryForeground`, unabhängig vom konkreten Farbton. Gefahr/Löschen verwendet `Danger` und `DangerSurface`.
+Während das Overlay offen ist:
 
----
+- der gesamte darunterliegende Page-Inhalt ist explizit deaktiviert;
+- Tastaturfokus und Accessibility-Aktionen erreichen den Hintergrund nicht;
+- das Overlay bleibt interaktiv;
+- globale Shell-/Bottom-Navigation bleibt davon unberührt;
+- eine offene Auswahl ist nicht automatisch `IsBusy`;
+- Busy sperrt auch Dialogaktionen.
 
-## 13. Theme-Auswahl
+`SelectionDialog` verwendet:
 
-In den allgemeinen Einstellungen wird **Darstellung / Theme** angeboten.
+- `AppBackground` außen;
+- `Surface` für Einträge;
+- `Outline`;
+- `TextPrimary`;
+- `SelectedSurface` + `SelectedBorder` + sichtbare Markierung für Auswahl.
 
-Optionen:
+Page-interne Auswahl verwendet links den standardisierten Zurück-Pfeil
+`icon_back.png` im `IconButton`-Stil. Kein zusätzliches X oder textuelles
+„Schließen“.
 
-- Deep Forest
-- Königsblau
-- Dunkel
+System-Zurück schließt zuerst die Auswahl und verlässt nicht die Page.
+Abbruch verändert den zugrunde liegenden Entwurf nicht.
 
-Deep Forest ist der Standard für neue Installationen bzw. wenn noch keine Auswahl gespeichert ist.
+## 12. AppDialogPage
 
-Ein Theme-Wechsel aktualisiert die zentralen Ressourcen und wird ohne App-Neustart sichtbar.
+Informationen, Fehler, Sicherheitsabfragen sowie einfache App-Auswahlen verwenden
+`AppDialogPage`.
 
-Die Auswahl wird dauerhaft gespeichert.
+Regeln:
 
-Das Theme ist eine App-Einstellung und keine Einstellung eines einzelnen Spiels.
+- modale Fläche: `AppBackground`, `Outline`, `TextPrimary`;
+- Einträge: `Surface`;
+- aktuelle Auswahl: `SelectedSurface`, `SelectedBorder`, sichtbares Häkchen;
+- längere Inhalte scrollbar;
+- Bestätigung über Primary bzw. bei Löschen/Verwerfen `DangerButton`;
+- getrennte Textaktion zum Abbrechen;
+- System-Zurück bricht ab und bestätigt niemals implizit;
+- ein Dialog verändert keine ungespeicherten Formularentwürfe.
 
----
+Der konkrete Dialogbestand steht in [UI_WIREFRAME.md](UI_WIREFRAME.md).
 
-## 14. Accessibility und Kontrast
+## 13. Sektionen und Hilfetexte
 
-Ein Zustand darf nie ausschließlich anhand einer Farbe vermittelt werden.
+Längere Erklärungstexte zu Sektionen und Einstellungsgruppen werden über das
+Info-Icon im jeweiligen Header angeboten und öffnen den gemeinsamen
+App-Informationsdialog.
 
-Dies gilt insbesondere für:
+Nicht verwenden:
 
-- aktive Navigation
-- ausgewählte Filter
-- ausgewählte Zoopläne
-- Spielerfarben
-- Disabled-Zustände
-- Fehlerzustände
+- dauerhaft sichtbare lange Erklärungstexte;
+- zusätzliche Info-Karten;
+- individuelle Info-Button-Muster pro Feature;
+- wiederholte Erklärungen pro Listeneintrag.
 
-Text- und UI-Kontraste sollen für alle drei Themes geprüft werden.
+Kurze fachliche Labels, Statusmeldungen und Validierungstexte sind davon nicht
+betroffen.
 
-Insbesondere der Dunkelmodus darf nicht lediglich durch Austausch von Hintergrundfarben entstehen; Text, Konturen, Disabled-Zustände, Icons und destruktive Aktionen müssen separat geprüft werden.
+## 14. Busy, Fehler und Mehrfachtaps
 
----
+Asynchrone Navigation und Speicherung werden gegen Mehrfachtaps geschützt.
 
-## 15. Fachliche Spielgestaltung
+Busy:
 
-Theme-Wechsel verändern folgende fachliche Inhalte nicht:
+- blockiert den betroffenen Inhalt;
+- verwendet `BusyOverlay`;
+- zeigt `BusyIndicator`;
+- sperrt auch offene Dialogaktionen.
 
-- App-Logo
-- Zooplan-Grafiken
-- Arche-Nova-Spielerfarben
-- leichte Färbung der Spielerkarten anhand der Spielerfarbe
-- kompakte Wertungsdarstellung
-- fachlich benötigte Symbole und Spielgrafiken
+Fehlermeldungen werden nur dargestellt, wenn tatsächlich ein Fehlertext vorhanden ist.
 
-Das Theme bildet den neutralen Rahmen um diese Inhalte.
+## 15. Spielerfarben: UI-Palette
 
----
-
-## 16. Technische Leitlinie
-
-Themes sollen zentral definiert werden.
-
-Kein Screen soll anhand des Theme-Namens selbst entscheiden:
-
-`if Forest ...`
-`if Blue ...`
-`if Dark ...`
-
-Stattdessen greifen Screens ausschließlich auf semantische Ressourcen wie `AppBackground`, `Surface`, `Primary`, `TextPrimary` usw. zu.
-
-Die Theme-Umschaltung ersetzt bzw. aktualisiert diese Ressourcen zentral.
-
-Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie ausschließlich die semantischen Ressourcen verwenden.
-
-## XAML-Bindings und ViewModels
-
-Neue oder geänderte XAML-Bindings werden grundsätzlich als compiled bindings
-implementiert.
-
-- `x:DataType` auf dem Scope setzen, auf dem der jeweilige `BindingContext` gilt.
-- Jedes `DataTemplate` separat mit dem Typ seines Template-Elements typisieren.
-- Ändert sich der `BindingContext` innerhalb eines Scopes, dort den passenden
-  `x:DataType` setzen.
-- Command- oder Property-Bindings über `x:Reference` verwenden eine typisierte
-  Page-/ViewModel-Property statt eines untypisierten `BindingContext`.
-- String-basierte Bindings nur verwenden, wenn compiled bindings technisch nicht
-  sinnvoll möglich sind.
-- Bestehende Strict-XAML-/Binding-Compiler-Warnungen nicht durch `x:Object`,
-  `x:Null`, `NoWarn` oder das Abschalten der Compileroptionen umgehen.
-- Keine EF-Entities oder EF-Navigation-Properties direkt an die UI binden;
-  Pages und ViewModels arbeiten mit Domain-/Application-Modellen oder expliziten
-  Read Models.
-
-Das Projekt aktiviert `MauiStrictXamlCompilation` und
-`MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 werden als
-Buildfehler behandelt.
-
-ViewModel-Konstruktoren führen keine Datenbankzugriffe, Navigation oder asynchrones
-Laden aus. Allgemeine Async-/Nebenläufigkeitsregeln stehen in
-[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
-
-## Bedienung und Layout
-
-- Zielgerät: 6,1 Zoll, Hochformat, 1170 × 2532 px. Ruhige Informationshierarchie und einhändige Bedienung haben Vorrang vor Dekoration.
-- Abstände bevorzugt 4 / 8 / 12 / 16 / 20 / 24 / 32 dp. Moderate Rundungen, keine starken Standardschatten.
-- Icons ca. 20–24 dp, Touch-Ziele mindestens 44–48 dp. Kleine Symbole behalten komfortable interaktive Flächen und semantische Beschreibungen.
-- Zurück, Info, Bearbeiten und Farbpalette behalten ihre Bedeutung; Bildressourcen statt fontabhängiger Unicode-Icons. Hinweise über Info-Aktionen, bei Pointer zusätzlich Tooltip.
-- Gruppenkarte und Bearbeiten haben getrennte Touch-Ziele. Gruppenerstellung priorisiert vorhandene Spieler; leere Auswahl verschwindet zugunsten eines Leerzustands.
-- Asynchrone Navigation und Speicherung gegen Mehrfachtaps schützen. Busy-Overlays blockieren Eingaben und zeigen einen Indikator. Fehlermeldungen nur bei vorhandenem Text anzeigen.
-- Destruktive Aktionen sekundär gestalten und bei weitreichenden Folgen ausdrücklich bestätigen.
-- Wertungskarten reservieren eigene Zeilen für Name/Punkte, Zooplan, Rohwerte und Karten/Ruf. Fehlende Werte als „–“. Karten-Icon ohne Zähler; Kartenanzahl in der Informationszeile.
-- Zooplanauswahl markiert die gesamte Kachel mit `SelectedBorder` und einer sichtbaren Auswahlmarkierung; Skizze und Nummer bleiben fachliche Inhalte.
-- In deutschen sichtbaren Texten konsequent „Spieler“ verwenden; technische Typen und Ressourcenschlüssel behalten `Player`.
-- Alle sichtbaren Sprachtexte einschließlich Einstellungen, Ergebnisüberschriften und Abschlussbuttons führen über die bestehende Lokalisierung. Android und iOS teilen die Informationsarchitektur; native Bedienerwartungen bleiben erhalten. Bekannte Codeabweichungen stehen im Wireframe.
-
-## Sektions- und Gruppeninformationen
-
-Erklärungstexte zu Gruppen, Sektionen und Einstellungsbereichen werden verbindlich
-über das Info-Icon oben im jeweiligen Gruppen-/Sektionsheader angeboten. Tippen
-öffnet den bestehenden App-Informationsdialog; auf Pointer-Geräten kann zusätzlich
-der bestehende Tooltip-/Hover-Mechanismus verwendet werden.
-
-Keine dauerhaft sichtbaren langen Erklärungstexte innerhalb einer Sektion, keine
-zusätzlichen Info-Karten und keine individuellen Info-Button-Muster pro Feature.
-Erklärungen werden nicht pro Listeneintrag oder Karte wiederholt. Vorhandenes
-Info-Icon, gemeinsame Styles und App-Dialog-Muster wiederverwenden. Diese Konvention
-gilt insbesondere auch für Einstellungsgruppen wie die Spezialkartenverwaltung.
-Kurze fachlich notwendige Labels, Statusmeldungen und Validierungstexte bleiben
-von dieser Regel unberührt.
-
-## Zusätzliche semantische Rollen
-
-`DisabledSurface` und `DisabledText` kennzeichnen nicht bedienbare Aktionen; reduzierte Opazität unterstützt die technische Deaktivierung. `BusyOverlay` ist eine abgedunkelte Sperrfläche, `IconSurface` eine helle Unterlage ausschließlich für eingebettete Grafik-/Farbwahlfelder. Normale Info-, Zurück- und Bearbeiten-Iconbuttons sind transparent und verwenden den Theme-Textton als Icon-Tint; auf Spielerflächen gilt die Spieler-Textfarbe. Das Statussymbol für eine offene Partie auf Gruppenkarten ist ebenfalls transparent und verwendet TextPrimary als dynamischen Icon-Tint; es besitzt keine eigene grüne Fläche. `GameGraphicText` ist ein fester dunkler Textton ausschließlich auf hellen Zooplan-Grafikbadges. Spielerkarten verwenden ihre eigene Textfarbe aus der globalen Spielerfarben-Palette. `BusyIndicator` ist ein heller Indikator auf dem abgedunkelten Busy-Overlay. Disabled-Text verwendet den kontrastreichen Primärtextton; Opazität und die deaktivierte Interaktion kennzeichnen den Zustand.
-
-Sekundärtext ist für Surface-Flächen bestimmt. Kleine Texte direkt auf `AppBackground` verwenden `TextPrimary`, da die verbindlichen hellen Paletten dort für `TextSecondary` unter 4,5:1 liegen. Spielerkarten verwenden unabhängig vom App-Theme ihre gekoppelte Spieler-Textfarbe.
-
-
-## Spielerfarben: fachliche Kategorie und UI-Darstellung
-
-Physische/fachliche Farben werden durch gemeinsame semantische `PlayerColor`-Werte wie Rot oder Blau beschrieben. Jedes Spiel definiert die erlaubte Teilmenge. Die globale UI-Palette ist ausschließlich Presentation in der App-Schicht und ordnet dem gemeinsamen Farbwert Hintergrund und Textfarbe gemeinsam zu. Core kennt weder MAUI-Farben noch Theme-Ressourcen. Ein späterer Erkennungspfad lautet `physische Farbe → gemeinsame semantische Spielerfarbe → UI-Farbpaar`; UI-Hexwerte sind keine Kamera-Messwerte, Trainingsdaten oder RGB-/HSV-Schwellen.
+`PlayerColor` ist ein gemeinsamer fachlicher Farbtyp. Die globale UI-Palette liegt
+ausschließlich in der App-Presentation und ordnet jedem Wert ein
+Hintergrund-/Text-Paar zu.
 
 | Spielerfarbe | UI-Hintergrund | UI-Text |
 |---|---|---|
@@ -434,104 +431,160 @@ Physische/fachliche Farben werden durch gemeinsame semantische `PlayerColor`-Wer
 | Türkis | `#6EB7B4` | `#264543` |
 | Grau | `#9AA2A0` | `#323936` |
 
-Diese Werte bleiben in Deep Forest, Königsblau und Dunkel identisch. Keine Neonfarben und keine reinen Schwarz-/Weiß-Extremwerte für Spielerflächen oder Spielertext. Weitere Varianten wie Lime, Navy oder Beige gehören nicht zum Basiskatalog.
+Diese Werte bleiben in allen App-Themes identisch.
 
-Arche Nova erlaubt genau die gemeinsamen Farben Blau, Gelb, Rot und Schwarz. Es gibt keine separate Variante wie „Arche-Nova-Rot“. Weitere acht Farben werden dadurch nicht in Arche Nova freigeschaltet. Unbekannte Präsentationswerte fallen definiert auf Grau zurück. Namen werden separat lokalisiert, niemals aus Hexwerten abgeleitet.
+Weitere Regeln:
 
-Vollständig farbige Spielerkarten verwenden die zugehörige Textfarbe auch für Sekundärtext. Eingebettete Controls bleiben App-Chrome mit Theme-Surface, Outline und passenden Text-/Iconrollen. Helle Zooplan-Badges behalten dunklen Grafiktext, auch auf schwarzen Spielerkarten. Spielername, Position und/oder ausgeschriebener Farbname bleiben sichtbar; Farbe ist nie die einzige Identifikation.
+- unbekannte Präsentationswerte fallen definiert auf Grau zurück;
+- Namen werden separat lokalisiert und nie aus Hexwerten abgeleitet;
+- vollständig farbige Spielerflächen verwenden die zugehörige Textfarbe auch für
+  Sekundärtext;
+- eingebettete App-Controls bleiben App-Chrome mit Theme-Surface/Outline;
+- Spielername, Reihenfolge und/oder ausgeschriebener Farbname bleiben sichtbar;
+- Farbe ist nie die einzige Identifikation;
+- jede Hintergrund-/Textkombination muss für normalen Text mindestens **4,5:1**
+  Kontrast erreichen;
+- UI-Hexwerte sind keine Kamera-/Erkennungswerte oder Trainingsdaten.
 
-Verbindliche Designregel: Jede Kombination aus globaler Spieler-Hintergrundfarbe und zugehöriger Spieler-Textfarbe muss für normalen Text mindestens **4,5:1 Kontrast** erreichen, unabhängig vom App-Theme. Die finale Palette wird automatisiert nach der relativen sRGB-Luminanz ohne Rundung der Prüfschwelle getestet. Braun und Lila verwenden bewusst dunklere Flächen, damit ihre weichen Off-White-Texte erhalten bleiben. Die UI-Hexwerte bleiben ausschließlich Darstellung und sind keine Grundlage für Kameraerkennung. Farbsehschwächen werden durch die Palette allein nicht abgedeckt; Namen und Reihenfolge bleiben notwendig.
+Welche Teilmenge ein Spiel erlaubt, steht im Spiel-Datenmodell.
 
-Karten mit vergleichbarer Rolle (Gruppen, Historie) verwenden einheitlich `Surface`. Die letzte Partie ist Metainformation ohne Karte. `SurfaceSecondary` ist die leichte Aktionsfläche für Secondary Buttons, keine zusätzliche Kartenfarbe. Auch `DisabledSurface` verwendet `Surface`; Disabled-Zustände bleiben durch Opazität und deaktivierte Interaktion erkennbar. Filterchips öffnen die App-Auswahl direkt und benötigen keine unsichtbaren nativen Picker.
+### Spielabhängige Farbauswahl in Gruppenformularen
 
-## Reduzierte UI-Flächen
+Wenn ein Spiel `PlayerColor` verwendet, bieten Gruppe anlegen und Gruppe bearbeiten
+für jedes Gruppenmitglied denselben allgemeinen Farbworkflow an.
 
-Die Inhaltsflächen bleiben `AppBackground`, `Surface` und `SelectedSurface`; `SurfaceSecondary` ergänzt ausschließlich die visuelle Sprache sekundärer Aktionen. Primary-/Danger-Rollen, Konturen, Textfarben, Sperroverlays und fachliche Spielgrafiken sind davon getrennt. Die Auswahl besonderer Karten verwendet `AppBackground` für die äußere Dialogfläche und den Listenhintergrund sowie `Surface` für einzelne Karten; nur bereits dem Zielspieler zugeordnete Karten erhalten weiterhin `SelectedSurface` als Hintergrund. Nur bereits mindestens einem anderen Spieler zugeordnete Karten erhalten einen gestrichelten Rahmen (2 dp, Muster 4/3) in der vorhandenen semantischen Farbe `Danger`. Ausschließlich dem Zielspieler zugeordnete und nicht zugeordnete Karten behalten die normale Outline-Kontur. Ist die Karte dem Zielspieler und mindestens einem anderen Spieler zugeordnet, werden Hintergrundmarkierung und gestrichelter Rahmen kombiniert. Eine sichtbare Zuordnungszeile entfällt ohne Ersatzabstände; die Statusbeschreibung bleibt für Screenreader erhalten. Der bestehende Zurück-Pfeil im IconButton-Stil ersetzt für diese Auswahl Text-Schließen. Nicht zugeordnete oder anderen Spielern zugeordnete Karten erhalten keine zusätzliche Flächenfarbe.
+Allgemeine Regeln:
 
-Vorhandene Spieler werden über ein einheitliches App-Auswahlfenster gewählt: AppBackground außen, Surface-Einträge, Outline, TextPrimary und dieselbe modale Sperrfläche wie bei besonderen Karten. Ein Tap auf den Eintrag fügt unmittelbar hinzu und schließt; kein nativer Picker plus zusätzlichem Bestätigungsschritt. Schließen oder System-Zurück bricht nur die Auswahl ab. Namen und Gaststatus bleiben sichtbar.
+- Auswahl nur aus der für das aktuelle Spiel erlaubten Teilmenge;
+- zusätzlich „Keine Farbe“, sofern ein nicht gesetzter Default fachlich erlaubt ist;
+- Dialog nennt das aktuelle Spiel und den betroffenen Spieler;
+- die Auswahl wird zunächst nur im Formularentwurf geändert;
+- ein Tap übernimmt die Auswahl und schließt;
+- Abbruch bzw. System-Zurück verändert nichts;
+- erst Speichern persistiert Group und spielabhängige Defaults atomar;
+- eine bereits anderweitig vergebene Farbe wird innerhalb des Entwurfs getauscht,
+  statt einen doppelten Default zu erzeugen;
+- Spielerkacheln aktualisieren Hintergrund und Textfarbe unmittelbar aus der
+  gemeinsamen `PlayerColor`-Palette;
+- ohne Farbe bleibt die Kachel auf `Surface`;
+- Palettenbutton und Reihenfolge-/Entfernen-Aktionen besitzen mindestens
+  48 × 48 dp Touchfläche.
 
-## Dialogabdeckung
+Wenn ein Spiel keine `PlayerColor`-Auswahl unterstützt, entfallen Farbstatus und
+Palettenaktion vollständig.
 
-Page-interne Auswahl- und Dialog-Overlays sind modal gegenüber dem Inhalt ihrer Page.
-Während ein solches Overlay sichtbar ist, wird der gesamte darunterliegende Page-Inhalt
-einschließlich Header, Eingaben und Aktionen explizit deaktiviert. Das Overlay selbst
-bleibt interaktiv; globale Shell-/Bottom-Navigation bleibt davon unberührt.
-Nicht allein auf visuelles Überdecken oder das Hit-Test-Verhalten eines Overlay-Grids verlassen.
-Die Struktur ist: Root mit getrennten Geschwistern für Page-Inhalt, modales Overlay
-und abschließenden Busy-Layer. Der deaktivierte Inhalt darf seine Dialoge nicht enthalten.
-Busy und offene Auswahl bleiben getrennte Zustände: Eine laufende Operation sperrt auch
-Dialogaktionen; eine offene Auswahl setzt nicht IsBusy. System-Zurück schließt zuerst
-die offene Auswahl und verlässt dabei nicht die Page. Die explizite Deaktivierung gilt
-auch für Tastaturfokus und Accessibility-Aktionen auf Hintergrundcontrols.
+Die konkrete erlaubte Farbteilmenge steht im jeweiligen Spiel-Datenmodell bzw.
+Spiel-UI-Guide.
 
-Die Gleichstandsansicht verwendet neutrale Platzüberschriften mit HeaderDivider;
-auch leere Zielgruppen bleiben sichtbar. Darunter stehen kompakte Spielerzeilen
-mit Name, Platz-Chips und rechtsbündigen Punkten in einer horizontalen Reihe.
-Die Zeile übernimmt Hintergrund und Textkontrast aus der bestehenden Spielerpalette,
-ohne Farbe Surface/TextPrimary. Gruppenüberschriften und Buttons bleiben neutral.
-Namen dürfen bei Platzmangel gekürzt werden; keine redundante Rangnummer am Namen.
-Die 32-dp-Platz-Chips zeigen nur die Zahl. Surface/Outline kennzeichnen verfügbare
-Plätze, SelectedSurface/SelectedBorder und eine stärkere Kontur die eigene Auswahl.
-Ein Info-Icon öffnet die lokalisierte Erklärung über `AppDialogPage`; permanenter
-Hilfetext, Pfeile und Drag & Drop entfallen hier.
+## 16. Accessibility
 
-Page-interne modale Auswahl-Picker verwenden zentral `SelectionDialog` und den
-standardisierten Zurück-Pfeil (`icon_back.png`, `IconButton`) links im Dialog-Header.
-Textuelle „Schließen“-Buttons oder ein zusätzliches X werden für diesen Picker-Typ
-nicht verwendet. Der Pfeil schließt nur die aktuelle Auswahl; Eingaben und die
-darunterliegende Page bleiben erhalten. System-/Android-Zurück führt dieselbe Aktion aus.
-Der Pfeil erhält die lokalisierte semantische Beschreibung und den Tooltip „Zurück“.
-Bestätigungs-, Hinweis- und Entscheidungsdialoge dürfen weiterhin explizite
-Textaktionen wie „Abbrechen“ oder „Schließen“ verwenden.
+Ein Zustand wird nie ausschließlich durch Farbe vermittelt.
 
-Informationen, Fehler und Sicherheitsabfragen sowie die Auswahl von
-Historienfiltern, Theme und Standardspiel werden über `AppDialogPage` dargestellt.
-Die modale Fläche verwendet AppBackground, Outline und TextPrimary; Einträge liegen
-auf Surface, die aktuelle Auswahl erhält SelectedSurface, SelectedBorder und ein
-sichtbares Häkchen. Längere Inhalte sind scrollbar. Bestätigungen verwenden eine
-Primäraktion bzw. bei Verwerfen/Löschen DangerButton und eine getrennte Textaktion
-zum Abbrechen. System-Zurück bricht ausschließlich den Dialog ab, ohne eine Auswahl
-oder destruktive Aktion zu bestätigen. Ein Dialog verändert keine ungespeicherten
-Formular- oder Wertungsentwürfe der darunterliegenden Seite.
-Der aktuelle Dialogbestand steht in `UI_WIREFRAME.md`; die Anleitung für explizit beauftragte Geräteprüfungen in `SETUP.md`.
+Das gilt insbesondere für:
 
-## Splashscreen und App-Start
+- aktive Navigation;
+- ausgewählte Filter;
+- PlayerColor;
+- Disabled;
+- Fehler;
+- spielabhängige Auswahl-/Statuszustände.
 
-Die native Startfläche verwendet unabhängig von der gespeicherten Darstellung fest den dunklen AppBackground `#141A17`, damit beim Öffnen keine unerwartet helle Startfläche erscheint. Das vorhandene Splash-Logo bleibt erhalten. Der Betriebssystem-Splash wird vor dem Auslesen der App-Einstellungen erzeugt und verwendet keine MAUI-DynamicResources. Die anschließende Ladeansicht und App verwenden sofort die gespeicherte Darstellung; bei fehlender Auswahl ist Dunkel das Standard-Theme.
+Text- und UI-Kontraste werden für alle Themes geprüft.
 
-## Farbauswahl in Gruppenformularen
+Große Schrift und Tastatur dürfen Kernaktionen nicht verdecken; betroffene Inhalte
+sind scrollbar.
 
-Gruppe anlegen und Gruppe bearbeiten bieten je Gruppenmitglied denselben transparenten Palettenbutton und den ausgeschriebenen Farbstatus, sofern das aktuelle Spiel Farben erlaubt. Ohne erlaubte Farben entfallen Button und Farbstatus vollständig.
+Android und iOS teilen Informationsarchitektur und Semantik, behalten aber native
+Bedienerwartungen.
 
-Der gemeinsame modale Dialog verwendet `SelectionDialog`: AppBackground außen, Surface-Einträge, SelectedSurface/SelectedBorder und ein sichtbares Häkchen für die Auswahl. Er nennt ausdrücklich das Spiel, z. B. „Farbe für Arche Nova festlegen“, sowie den betroffenen Spieler. Die Einträge zeigen Farbfeld und lokalisierten Namen; nur die erlaubten Farben und „Keine Farbe“ stehen zur Auswahl. Ein Tap übernimmt die Farbe in den Formularentwurf und schließt. Bei einer bereits vergebenen Farbe werden die bisherigen Farben getauscht; kein doppelter Gruppendefault entsteht. Schließen/System-Zurück ändert keine Auswahl. Erst Speichern persistiert die Gruppe samt Defaults atomar.
+## 17. Layout
 
-Spielerkacheln in Gruppe anlegen und bearbeiten übernehmen eine zugewiesene Defaultfarbe unmittelbar aus der gemeinsamen Spielerpalette. Name, Farbname, Gaststatus, Palettenicon und Reihenfolge-/Entfernen-Aktionen verwenden auf der getönten Fläche die gekoppelte Spieler-Textfarbe. Ohne Zuweisung bleibt die Kachel auf dynamischem Surface mit Theme-Text; das Entfernen bleibt dort Danger. Nach Entfernen oder Tauschen einer Farbe aktualisieren sich Fläche und Texte sofort. Hoch-/Runter-/Entfernen-Symbole verwenden 26 sp und mindestens 48 × 48 dp Touch-Fläche; der Palettenbutton besitzt ebenfalls 48 × 48 dp.
+Zielgerät für die aktuelle mobile Gestaltung:
 
-## Begrenzte numerische Wertungseingaben
+```text
+6,1 Zoll
+Hochformat
+1170 × 2532 px Referenzauflösung
+```
 
-Zahlenräder und zugehörige direkt editierbare Felder bilden je eine zusammengehörige
-Spalte mit derselben Breite und CardBorder-Rundung. Die Eingabe bleibt auf ihrer
-gerundeten Surface transparent. Konturen und Texte verwenden die Theme-Rollen;
-keine Spielerfarben oder eigenen Akzentfarben für diese Controls.
-Der Ruf-Slider nutzt Primary für Griff/aktive Spur und Outline für die inaktive Spur.
-Vorschläge, Auswahl und Fehler müssen zusätzlich als Status erkennbar bleiben.
-Bedienhinweise gehören hinter Info, der Inhalt bleibt bei Tastatur/großer Schrift
-scrollbar. Verbindliche Screenmaße und Anordnung stehen ausschließlich im
-`UI_WIREFRAME.md`, Abschnitt „Spielereingabe“; fachliche Eingaberegeln in `PRODUCT_SPEC.md`.
+Bevorzugte Abstände:
 
-## Verwaltbare Arche-Nova-Spezialkarten
+```text
+4 / 8 / 12 / 16 / 20 / 24 / 32 dp
+```
 
-Kartenansichten bestehen aus den vom Benutzer gelieferten Einzelgrafiken unter
-`Resources/Images/ark_symbol_*.png` und dem aktuellen gespeicherten Namen.
-Quellgrafiken: `Icons/Symbole` im übergeordneten Projektordner. Reihenfolge und
-Wiederholungen werden unverändert gezeigt: Symbol1 → Symbol2 → Symbol3 → Name.
-Die 14 Symbole und ihre Grafiken sind fachliche Identität und werden nicht durch
-Theme-Tints ersetzt. Kontur, Hintergrund und Text verwenden semantische Theme-Rollen.
-Karten auf farbigen Ergebnisflächen erhalten eine neutrale Surface-Unterlage.
+Moderate Rundungen, keine starken Standardschatten.
 
-Verwaltung und Editor verwenden HeaderDivider, CardBorder, Primary für Neu/Speichern
-sowie transparente Bearbeiten-Icons direkt neben der Kartenansicht ohne eigene Aktionszeile. Archivieren/Entarchivieren erfolgt ausschließlich über den Switch „Archiviert“ im Bearbeiten-Editor und dessen Speichern-Aktion; bei Neuanlage ist der Switch verborgen. Das Info-Icon im Listenkopf öffnet den lokalisierten Hinweis zur Verwendung von Spezialkarten über den bestehenden App-Dialog.
-Archivieren ist reversibel; keine Danger-Löschaktion. Archivzustand zusätzlich als
-Text anzeigen. Der Symbolwähler folgt SelectionDialog mit grafischen, mindestens
-48 dp hohen Einträgen und einer Auswahlmarkierung zusätzlich zur Farbe. Namen
-können umbrechen; die Anordnung bleibt auf dem 6,1-Zoll-Zielgerät kompakt und scrollbar.
+Verbindliche konkrete Screenmaße und Anordnung stehen ausschließlich im
+[UI_WIREFRAME.md](UI_WIREFRAME.md).
+
+## 18. Lokalisierung
+
+Alle sichtbaren App-Texte laufen über die bestehende Lokalisierung.
+
+In deutschen sichtbaren Texten wird konsequent **„Spieler“** verwendet.
+Technische Typen und Ressourcenschlüssel behalten `Player`.
+
+Spielmaterial-/Content-Sprache ist davon getrennt und folgt der allgemeinen
+Architektur-/Datenmodellregel.
+
+## 19. XAML-Bindings und ViewModels
+
+Neue oder geänderte XAML-Bindings werden grundsätzlich als **compiled bindings**
+implementiert.
+
+- `x:DataType` auf dem Scope setzen, auf dem der jeweilige `BindingContext` gilt.
+- Jedes `DataTemplate` separat mit seinem Elementtyp typisieren.
+- Bei geändertem `BindingContext` den passenden `x:DataType` setzen.
+- Bindings über `x:Reference` verwenden eine typisierte Page-/ViewModel-Property
+  statt eines untypisierten `BindingContext`.
+- String-basierte Bindings nur, wenn compiled bindings technisch nicht sinnvoll
+  möglich sind.
+- Strict-XAML-/Binding-Warnungen nicht durch `x:Object`, `x:Null`, `NoWarn` oder
+  Abschalten der Compileroptionen umgehen.
+- Keine EF-Entities oder EF-Navigation-Properties direkt an die UI binden.
+- Pages/ViewModels arbeiten mit Domain-/Application-Modellen oder expliziten
+  Read Models.
+
+Das Projekt aktiviert:
+
+```text
+MauiStrictXamlCompilation
+MauiEnableXamlCBindingWithSourceCompilation
+XC0022..XC0025 als Buildfehler
+```
+
+ViewModel-Konstruktoren führen keine Datenbankzugriffe, Navigation oder asynchrones
+Laden aus.
+
+Allgemeine C#-/Async-Regeln:
+[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
+
+## 20. Gemeinsame Styles
+
+Die vorhandenen gemeinsamen Styles sind bevorzugt wiederzuverwenden:
+
+```text
+CompactActionButton
+PrimaryCompactButton
+SecondaryActionButton
+TextActionButton
+DangerButton
+HeaderDivider
+InlineFormEntry
+IconButton
+CardBorder
+GroupPlayerCard
+GroupPlayerText
+GroupPlayerAction
+GroupPlayerRemoveAction
+GroupPlayerPalette
+SelectionDialog
+FilterChip
+```
+
+Neue globale Styles werden nur eingeführt, wenn mehrere reale Screens denselben
+semantischen Bedarf besitzen.
+
+Spielspezifische Styles bleiben im jeweiligen Spielmodul, sofern sie nicht
+nachweislich allgemein sind.
