@@ -1,5 +1,11 @@
 # Reference3WayComparison – 31.10.2026
 
+**Finaler Stand:** A bleibt Produktionsbaseline. B brachte keinen Produktgewinn.
+C v2 registriert technisch 54/54, bringt nach Confidence E keinen Vorteil und bleibt
+dokumentierter Referenzkandidat/Forschungsstand. Keine automatische Übernahme;
+Referenz-/Heuristikoptimierung beendet. Nächster Schritt: nativer Mobile-CV-Port
+mit Paritätsnachweis und anschließende Produktintegration.
+
 **Ergänzung:** Das gültige C mit Bounds-Fix ist im [Nachtrag unten](#nachtrag-c-v2-bounds-fix) dokumentiert.
 Der folgende ursprüngliche Lauf mit 1506 Pixel Höhe bleibt als historischer Nachweis erhalten.
 

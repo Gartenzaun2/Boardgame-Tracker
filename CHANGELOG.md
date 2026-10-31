@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.21
+
+- Abgeschlossene PhotoRecognition-Referenzexperimente bereinigt: 14 ignorierte lokale Dateien (21.825.261 Bytes) entfernt – leere Abbruchdateien, zu versionierten Reports inhaltlich identische Ausgabekopien, redundante Varianten-Checkpoints und eine Scratchtabelle. Aktive Assets, Testfotos, Ground Truths, historische Reports und finaler C-v2-Nachtrag bleiben erhalten.
+- Vergleichswerkzeuge sowie vollständige Handoff-/Transformationsinputs bewusst für dokumentierte Reproduktion behalten; keine Änderung von Produktions-/CV-Logik oder aktiven Assetpfaden. Der historische C-1506-Fehler bleibt im versionierten Report, nur seine redundante lokale Ausgabe entfällt.
+- Finalen Status in vorhandener CV-Dokumentation, Werkzeug-README und Reference3WayComparison festgehalten: A bleibt Produktionsbaseline; B ohne Produktgewinn, C v2 technisch valide (54/54) ohne Vorteil nach E und ausschließlich dokumentierter Referenzkandidat. Weitere Referenz-/Heuristikoptimierung gestoppt; nächster Schritt nativer Mobile-CV-Port mit Paritätsnachweis und Produktintegration.
+- Solution-Build ohne Warnungen/Fehler; 73 Core- und 198 Application-Tests einschließlich relevanter Ark-Nova-CV-Regressionen bestanden. Alle acht erhaltenen Referenz-/Geometriepaare auflösbar, 21 Handoff-Dateien manifestkonform und aktive Baseline-Prüfsummen unverändert. Keine erneute Fotoauswertung.
+- App-Version 0.10.0.21 / ApplicationVersion 58. Keine Produktionsumstellung, kein Commit oder Push.
+
 ## 0.10.0.20
 
 - Ausschließlich C mit dem gelieferten v2-Bounds-Fix erneut gemessen: tatsächliche Referenzhöhe 1544 und tatsächliche Analyzer-Höhe 772 vor Fotoauswertung explizit geprüft; Polygonkoordinaten und Quellviereck unverändert. A/B vollständig aus Reference3WayComparison wiederverwendet, Eingabefoto-Hashes und Ergebnisgleichheit geprüft.

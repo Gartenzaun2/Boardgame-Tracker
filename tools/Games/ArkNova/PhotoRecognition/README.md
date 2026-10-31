@@ -1,6 +1,15 @@
 # Arche-Nova-Fotoanalyse – technischer Prototyp, Phase 1A
 
 **Aktuelle Entscheidung: Erkennungsforschung ABGESCHLOSSEN / FROZEN.**
+Referenzexperimente ebenfalls abgeschlossen: A bleibt mit alter Referenz/V2-Geometrie
+Produktionsbaseline. B brachte keinen Produktgewinn; C v2 registriert 54/54, bringt
+nach Confidence E aber keinen Vorteil und bleibt dokumentierter Forschungskandidat.
+Die unten aufgeführten Vergleichsbefehle und zugehörigen Eingabeassets bleiben zur
+Reproduktion erhalten. Doppelte lokale Ergebnis-/Checkpointdateien und Scratchdateien
+sind bereinigt; versionierte historische Reports bleiben erhalten. Nächster Schritt
+ist der native Mobile-CV-Port mit Paritätsnachweis und Produktintegration,
+keine neue Referenz-/Heuristikoptimierung und keine automatische Übernahme von B/C.
+
 Gehärtetes A bleibt Basis, C1/C2 verworfen, C3 research-only, keine F1/F2-Fusion
 und keine C3-Warnregel. [Kanonischer Status](../../../../docs/ARK_NOVA_CV_STATUS.md),
 [Abschlussmetriken und letztes Stressfoto](Reports/FinalAcceptance/README.md).
