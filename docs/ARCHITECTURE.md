@@ -3,20 +3,16 @@
 ## 1. Zielbild
 
 Boardgame Tracker ist ein **modularer Monolith mit pragmatischen Vertical Slices**.
-Die Architektur unterstützt mehrere Brettspiele, ohne eine generische Game Engine
-vorwegzunehmen.
 
-Das Projekt ist bewusst ein Lernprojekt. Architektur, Ordnerstruktur und
-Abhängigkeitsrichtungen sollen reale fachliche Grenzen sichtbar und nachvollziehbar
-machen. Verständlichkeit hat Vorrang vor cleveren Abstraktionen. Lernorientierung
-rechtfertigt keine zusätzlichen Schichten, Interfaces oder Generalisierungen.
+Das Projekt ist bewusst ein Lernprojekt: Fachgrenzen, Abhängigkeiten und Ordnerstruktur
+sollen sichtbar und nachvollziehbar bleiben. Verständlichkeit hat Vorrang vor cleveren
+Abstraktionen; Lernorientierung rechtfertigt keine zusätzlichen Schichten oder
+vorsorgliche Generalisierung.
 
-Die zentrale Regel lautet:
+> Allgemeiner Fach-/Presentation-Code kennt keine konkreten Spiele. Jedes Spiel lebt
+> in `Games/<GameName>/` und bindet sich über kleine allgemeine Erweiterungspunkte ein.
 
-> Allgemeiner Code kennt keine konkreten Spiele. Ein Spiel lebt vollständig in seinem
-> eigenen Modul und verwendet den gemeinsamen Kern nur über allgemeine Verträge.
-
-## 2. Schichten und Abhängigkeiten
+## 2. Schichten
 
 ```text
 App -> Application
@@ -26,474 +22,294 @@ Application -> EF Core
 App -> EF Core SQLite
 ```
 
-- **Core** enthält Domain-Entities, Value Objects und fachliche Regeln. Core kennt
-  weder MAUI noch EF Core noch SQLite.
-- **Application** enthält konkrete Use Cases, Queries, Read Models, den gemeinsamen
-  DbContext, relationale EF-Konfigurationen, Initialisierung und Seeding.
-  EF Core ist eine bewusste Application-Abhängigkeit; SQLite-spezifische APIs sind
-  dort verboten.
-- **App** enthält MAUI, XAML, ViewModels, Navigation, Präsentationslogik,
-  Plattformadapter, den Composition Root und die SQLite-Providerkonfiguration.
-  App darf Domain-Typen aus Core direkt verwenden; dafür wird keine zusätzliche
-  DTO-/Wrapper-Schicht eingeführt.
+- **Core:** Domain-Entities, Value Objects und fachliche Regeln; kein MAUI, EF Core
+  oder SQLite.
+- **Application:** Use Cases, Queries, Read Models, gemeinsamer DbContext,
+  EF-Konfiguration und Initialisierung. EF Core ist erlaubt, SQLite-spezifische APIs
+  nicht.
+- **App:** MAUI/XAML, ViewModels, Navigation, Presentation, Plattformadapter,
+  Composition Root und SQLite-Provider.
 
-ViewModels und Pages erhalten konkrete Use Cases oder Queries, niemals einen DbContext.
+App darf Domain-Typen aus Core direkt verwenden. Dafür wird keine künstliche
+DTO-/Wrapper-Schicht eingeführt.
 
-Der typische Ablauf bleibt sichtbar:
+Pages/ViewModels erhalten Use Cases oder Queries, niemals einen DbContext.
 
 ```text
-ViewModel-Command -> konkreter UseCase/Query -> DbContext -> Domain -> SaveChangesAsync
+ViewModel -> UseCase/Query -> DbContext -> Domain -> SaveChangesAsync
 ```
 
-## 3. Spielmodule als harte Architekturgrenze
+## 3. Spielmodule als harte Grenze
 
-Spielespezifischer Produktionscode liegt auf **allen drei Ebenen** unter
-`Games/<GameName>/`:
+Spielabhängiger Produktionscode liegt auf allen Schichten unter:
 
 ```text
-src/
-  BoardgameTracker.Core/
-    Games/
-      <GameName>/
-
-  BoardgameTracker.Application/
-    Games/
-      <GameName>/
-
-  BoardgameTracker.App/
-    Games/
-      <GameName>/
+src/BoardgameTracker.Core/Games/<GameName>/
+src/BoardgameTracker.Application/Games/<GameName>/
+src/BoardgameTracker.App/Games/<GameName>/
 ```
 
-Spielespezifische Tests spiegeln dieselbe fachliche Struktur in den Testprojekten.
-Spielespezifische Entwicklungswerkzeuge liegen unter `tools/Games/<GameName>/`.
+Spieltests spiegeln diese Struktur; spielabhängige Entwicklungswerkzeuge dürfen unter
+`tools/Games/<GameName>/` liegen.
 
-Diese Pfade sind Teil der Architektur, nicht nur eine Ablagekonvention. Ein Entwickler
-soll am Pfad und Namespace erkennen können, ob ein Typ allgemein oder
-spielespezifisch ist.
+Regeln:
 
-### Ownership-Regeln
+- Ein Entwickler soll am Pfad erkennen, ob Code allgemein oder spielabhängig ist.
+- Ein Spielmodul darf allgemeinen Code verwenden, aber kein anderes Spielmodul.
+- Allgemeiner Code enthält keine konkreten Spieltypen, Spiel-Namespaces oder
+  `GameKey`-Switches.
+- Konkrete Spiele implementieren allgemeine Erweiterungspunkte in ihrem Modul.
+- Der Composition Root kennt nur die öffentliche Modulregistrierung, nicht einzelne
+  Featuretypen.
+- Leere Spiegelordner werden nicht nur für Symmetrie angelegt.
+- Gemeinsamer Code entsteht erst aus real nachgewiesener Gemeinsamkeit, nicht als
+  Vorbereitung auf hypothetische Spiele.
 
-- Dateien und Typdeklarationen eines konkreten Spiels gehören in dessen
-  `Games/<GameName>/`-Baum. Namespaces folgen grundsätzlich derselben Ownership.
-- Technisch notwendige Partial-Erweiterungen eines gemeinsamen Typs dürfen dessen
-  allgemeinen Namespace verwenden. Die Ownership bleibt dann durch den Dateipfad im
-  Spielmodul sichtbar; diese Ausnahme rechtfertigt keine allgemeinen Spielabhängigkeiten.
-- Allgemeiner Code außerhalb dieses Baums darf nicht von konkreten Spieltypen oder
-  konkreten Spiel-Namespaces abhängen.
-- Ein Spielmodul darf allgemeinen Code verwenden.
-- Ein Spielmodul darf nicht von einem anderen Spielmodul abhängen.
-- Allgemeine Features enthalten keine `GameKey`-Switches oder andere
-  Fallunterscheidungen nach konkreten Spielen.
-- Ein konkretes Spiel implementiert allgemeine Erweiterungspunkte innerhalb seines
-  Moduls.
-- Der Composition Root bindet ein Spiel über dessen öffentliche Modulregistrierung an;
-  konkrete Featuretypen, Pages, Persistenzimplementierungen und Routen bleiben im Modul.
-- Leere Spiegelordner werden nicht nur aus Symmetriegründen angelegt.
+### Partial-Type-Ausnahme
 
-Neue Spiele beginnen als eigenes Modul. Code wird erst in den gemeinsamen Bereich
-verschoben, wenn eine reale, fachlich nachgewiesene Gemeinsamkeit existiert.
-Keine vorsorgliche Extraktion für hypothetische zukünftige Spiele.
+Spielabhängige Partial-Erweiterungen eines gemeinsamen Typs dürfen technisch dessen
+allgemeinen Namespace verwenden. Ownership bleibt durch den Dateipfad im Spielmodul
+bestimmt. Das ist keine Erlaubnis für sonstige konkrete Spielabhängigkeiten im
+allgemeinen Code.
 
 ## 4. Dokumentationsarchitektur
 
-Allgemeine Architekturentscheidungen stehen ausschließlich in dieser Datei.
-Spielspezifische Architekturentscheidungen stehen unter:
-
-```text
-docs/Games/<GameName>/ARCHITECTURE.md
-```
-
-Eine Spielarchitektur dokumentiert **nur zusätzliche konkrete Entscheidungen des
-Spiels**. Sie wiederholt keine allgemeinen Modul-, Composition-, Farb-, Content-,
-Persistenz- oder Navigationsregeln nur deshalb, weil das Spiel sie aktuell als erstes
-implementiert.
-
-Weitere vollständig spielspezifische Dokumente liegen im selben Spielordner, zum
-Beispiel:
+Allgemeine Regeln stehen unter `docs/`; Spielergänzungen unter:
 
 ```text
 docs/Games/<GameName>/
-  ARCHITECTURE.md
-  CV_STATUS.md
-  ...
 ```
 
-Bei Arbeiten an einem konkreten Spiel werden zuerst diese allgemeine Architektur und
-danach dessen Spielarchitektur gelesen. Weitere Spezialdokumente werden nur geladen,
-wenn ihr Thema tatsächlich betroffen ist.
+Bei einer Aufgabe zu einem konkreten Spiel wird zuerst das passende allgemeine
+Dokument und danach die Spielergänzung gelesen. Weitere Spezialdokumente nur bei
+Bedarf.
 
-Gemischte allgemeine Dokumente werden bei ihrer jeweiligen Konsolidierung getrennt,
-wenn klar abgrenzbare spielspezifische Abschnitte entstehen. Jede dauerhafte Regel
-hat genau eine kanonische Quelle.
+Jede dauerhafte Regel hat genau eine kanonische Quelle.
 
-### Generalisierungstest für spielspezifische Dokumentation
+### Generalisierungstest
 
-Bevor eine Regel unter `docs/Games/<GameName>/` abgelegt wird, wird geprüft:
+Bevor eine Regel in `docs/Games/<GameName>/` landet:
 
-> Würde dieselbe Regel für jedes zukünftige Spiel gelten – oder für jedes Spiel,
-> das dieses allgemeine Konzept verwendet?
+> Würde sie für jedes zukünftige Spiel gelten – oder für jedes Spiel, das dieses
+> allgemeine Konzept verwendet?
 
-Wenn ja, gehört die Regel in das entsprechende **allgemeine** Dokument, auch wenn
-aktuell nur ein einziges Spiel sie implementiert.
+Wenn ja, gehört sie ins allgemeine Dokument, auch wenn aktuell nur ein Spiel sie
+implementiert.
 
-Eine Aussage gehört nur dann in ein spielspezifisches Dokument, wenn mindestens
-einer dieser Punkte zutrifft:
+Spielspezifisch ist eine Aussage nur, wenn sie konkrete Spieltypen/-werte/-workflows
+beschreibt, ein anderes Spiel bewusst anders entscheiden darf oder sie Status/
+Forschung genau dieses Spiels dokumentiert.
 
-- sie beschreibt einen konkreten spielabhängigen Typ, Wert, Inhalt oder Workflow;
-- ein anderes Spiel darf innerhalb der allgemeinen Architektur bewusst eine andere
-  fachliche oder UI-Entscheidung treffen;
-- sie dokumentiert Implementierungs-, Forschungs- oder Statusdetails genau dieses
-  Spiels.
+Die Anzahl aktuell implementierter Spiele ist kein Zuordnungskriterium. Bei einer
+relevanten unklaren Grenzentscheidung wird der Entwickler gefragt.
 
-Die aktuelle Anzahl implementierter Spiele ist **kein** Kriterium für die
-Dokumentationszuordnung.
+## 5. Domänenvokabular
 
-Allgemeine Regeln dürfen dabei bedingt formuliert sein, zum Beispiel:
-
-```text
-Wenn ein Spiel PlayerColor verwendet, nutzt es den gemeinsamen PlayerColor-Typ
-und definiert nur seine erlaubte Teilmenge.
-```
-
-Das konkrete Spiel dokumentiert anschließend nur noch seine konkrete Umsetzung,
-zum Beispiel die tatsächlich erlaubten Farben.
-
-Spielspezifische Dokumente wiederholen weder Begründung noch vollständige Regel
-des allgemeinen Dokuments. Ein kurzer Verweis und die konkrete Ausprägung genügen.
-
-Ist unklar, ob eine Entscheidung künftig allgemeiner Vertrag oder echte
-Spielentscheidung sein soll und hätte diese Einordnung relevante Architektur-,
-Persistenz- oder UX-Auswirkungen, wird der Entwickler gefragt.
-
-## 5. Verbindliches Domänenvokabular
-
-Für die zentralen allgemeinen Konzepte gelten diese Namen:
+Verbindliche allgemeine Begriffe:
 
 ```text
 Game
 GameSession
 Group
 Player
-```
-
-Kombinationen verwenden dieselben Begriffe:
-
-```text
 GroupPlayer
 GameSessionPlayer
 ```
 
-Nicht als Synonyme verwenden:
+Nicht als Synonyme verwenden: `Person`, `Member`/`Participant` für `Player` oder
+`Session` für `GameSession`.
+
+Konkrete Felder und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
+
+## 6. Vertical Slices und Ordner
+
+Application und UI werden primär nach Fachfeature/Use Case organisiert.
+
+Kleine sliceeigene Commands, Inputs, Results und Read Models dürfen beim Haupttyp
+bleiben. Eigene Dateien/Ordner entstehen nur bei eigenständigem Fachbegriff,
+Wiederverwendung, relevanter Logik oder unabhängigen Änderungsgründen.
+
+Keine Standardhierarchie aus `Commands/`, `Queries/`, `Services/`, `Validators/`
+oder `DTOs/` nur um einer Schablone zu folgen.
+
+## 7. Domainmodellierung und Composition
+
+Entities besitzen fachliche Identität; Aggregate schützen ihre Invarianten.
+Cross-Aggregate-Beziehungen referenzieren bevorzugt IDs. Navigation Properties
+werden nicht nur für EF-Bequemlichkeit öffentlich gemacht.
+
+Spielabhängige Ergänzungen verwenden Composition statt Duplikation:
 
 ```text
-Person / People
-Member als Ersatz für Player
-Participant als Ersatz für Player
-Session als Ersatz für GameSession
+GameSessionPlayer 1 -> 0..1 <GameName>GameSessionPlayer
+GroupPlayer       1 -> 0..1 <GameName>GroupPlayer
 ```
 
-C#-Bezeichner verwenden konsequent `GameSession`, z. B. `GameSessionId`, nicht
-`SessionId`.
+Der gemeinsame Schlüssel darf als PK/FK wiederholt werden. Allgemeiner fachlicher
+Zustand wie Reihenfolge oder Placement wird nicht kopiert.
 
-Konkrete Entityfelder, Invarianten und Persistenzidentitäten stehen in
-[DATA_MODEL.md](DATA_MODEL.md).
+Persistierte Vererbung wird nur für eine echte stabile is-a-Beziehung mit
+polymorphem Verhalten eingesetzt. Value Objects werden für echte fachliche
+Werteblöcke eingeführt, nicht als technische Pflicht.
 
-## 6. Vertical Slices
+## 8. Application und Persistenz
 
-Application- und UI-Code wird primär nach **Use Case/Feature** organisiert, nicht
-nach technischen Klassentypen.
+Application arbeitet bewusst direkt mit EF Core.
 
-Kleine Slices bleiben flach im fachlichen Bereich. Kleine ausschließlich
-slice-eigene Commands, Inputs, Read Models, Results und Optionen stehen
-standardmäßig beim Haupttyp.
+- Keine Repositories/DbContext-Interfaces nur zum Verstecken von EF.
+- Interfaces nur für echte Polymorphie, Plattformgrenzen oder Modul-Erweiterung.
+- Kurzlebiger DbContext pro Operation über `IDbContextFactory`.
+- Ein DbContext wird nicht parallel verwendet und nicht als Singleton gehalten.
+- Queries: `AsNoTracking` und gezielte Projektionen.
+- Writes: Domainmethoden + `SaveChangesAsync`; explizite Transaktion bei
+  zusammengehörigen Multi-Writes.
+- Allgemeine EF-Konfiguration: `Application/Persistence`.
+- Spielkonfiguration: `Application/Games/<GameName>/Persistence`.
 
-Eine eigene Datei oder ein eigener Unterordner ist sinnvoll, wenn ein Typ:
+Es gibt einen gemeinsamen `sealed partial BoardgameTrackerDbContext`. Spielmodule
+ergänzen ihn über modul-eigene Partial-Dateien/Konfigurationen.
 
-- sliceübergreifend wiederverwendet wird,
-- einen eigenständigen Fachbegriff oder Vertrag darstellt,
-- relevante eigene Logik besitzt,
-- einen unabhängigen Änderungsgrund hat,
-- oder der Haupttyp sonst deutlich unübersichtlicher würde.
+`DatabaseInitializer` bleibt allgemein und führt registrierte
+`IDatabaseInitializationStep`-Implementierungen **sequenziell** aus; konkrete Spiele
+registrieren ihre eigenen Schritte. Referenzdaten-Seeder ergänzen fehlende feste
+Datensätze idempotent und setzen bereits vorhandenen veränderlichen Fachzustand
+nicht auf Defaults zurück.
 
-Nicht als Standardhierarchie:
+SQLite wird nur am App-/Host-Rand gewählt. Providerregistrierung und
+SQLite-spezifische Konfiguration gehören nicht in Core oder allgemeine
+Application-Fachlogik.
 
-```text
-Commands/
-Queries/
-Services/
-Validators/
-DTOs/
-```
+DB-/Build-/Migrationsregeln: [`SETUP.md`](../SETUP.md).
 
-Ordner und Dateien folgen der tatsächlichen fachlichen Komplexität, nicht einer
-vorgegebenen Symmetrie.
+## 9. Modulregistrierung und Host-Integration
 
-## 7. Domainmodellierung und spielabhängige Ergänzungen
+Jedes Spiel besitzt einen öffentlichen Registrierungseinstieg, bevorzugt
+`Add<GameName>()`.
 
-Entities besitzen fachliche Identität. Aggregate schützen ihre eigenen
-Invarianten. Cross-Aggregate-Beziehungen verwenden bevorzugt IDs; öffentliche
-Navigation Properties werden nicht nur für EF-Bequemlichkeit eingeführt.
+Allgemeiner Code arbeitet mit Spielmodulen nur über kleine fachliche Verträge.
+Der allgemeine Vertrag liegt außerhalb eines konkreten Spielmoduls; die konkrete
+Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum, z. B.:
 
-### Composition statt Duplikation
+- Session-Navigation/Resume;
+- optionale PlayerColor-Regeln und Gruppendefault-Persistenz;
+- Initialisierungsschritte;
+- Import-/Export-Schema und -Persistenz.
 
-Spielspezifische Daten, die ein allgemeines Modell **ergänzen**, werden über
-Composition modelliert. Das Spiel dupliziert keine allgemeinen Felder.
+Spielrouten werden im Modul registriert. Allgemeine Shell-/History-/Gruppenfeatures
+kennen keine konkreten Spielseiten.
 
-Für Partieteilnehmer gilt grundsätzlich:
+Composition Root und Host-Projektdatei dürfen Module registrieren, paketieren und
+modul-eigene Buildassets einbinden. Fachliche Spielentscheidungen gehören dort nicht
+hin. Wächst spielabhängige Buildlogik, soll sie in eine modul-eigene importierte
+Builddatei ausgelagert werden.
 
-```text
-GameSessionPlayer
-        1
-        |
-        0..1
-        |
-<GameName>GameSessionPlayer
-```
+Ein neuer Erweiterungspunkt entsteht erst, wenn allgemeiner Code tatsächlich eine
+austauschbare oder spielabhängige Implementierung benötigt.
 
-`<GameName>GameSessionPlayer` verwendet denselben fachlichen Teilnehmerbezug.
-Der gemeinsame Schlüssel darf als PK/FK wiederholt werden, damit die relationale
-1:1-Erweiterung eindeutig referenziert werden kann. Allgemeiner fachlicher Zustand
-wie Reihenfolge oder Platzierung wird nicht dupliziert.
+## 10. Gemeinsame Querschnittskonzepte
 
-Dasselbe Prinzip gilt für Gruppenmitglieder:
-
-```text
-GroupPlayer
-        1
-        |
-        0..1
-        |
-<GameName>GroupPlayer
-```
-
-Auch bei `<GameName>GroupPlayer` darf der gemeinsame `(GroupId, PlayerId)`-Schlüssel
-als PK/FK wiederholt werden; allgemeiner Gruppenmitgliedszustand wird nicht dupliziert.
-
-Ein Spiel darf daneben eigene Entities besitzen, wenn sie wirklich nur zu diesem
-Spiel gehören.
-
-Persistierte EF-Entity-Vererbung wird nicht allein verwendet, um Properties zu
-sparen. Vererbung bleibt erlaubt, wenn fachlich eine stabile is-a-Beziehung und
-echtes polymorphes Verhalten bestehen.
-
-Value Objects werden eingeführt, wenn ein eigenständiger fachlicher Werteblock ohne
-Identität dadurch verständlicher wird; nicht als technischer Selbstzweck.
-
-Konkrete Aggregate, Felder und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
-
-## 8. Application, EF Core und Persistenz
-
-Application verwendet EF Core und das relationale Modell direkt.
-
-- Keine Repositories, Stores oder DbContext-Interfaces nur zum Verstecken von EF Core.
-- Interfaces nur für echte Polymorphie, Host-/Plattformgrenzen und
-  Modul-Erweiterungspunkte.
-- Ein Slice erzeugt über `IDbContextFactory` einen kurzlebigen Context pro Operation.
-- Kein Singleton hält einen erzeugten Context; ein Context wird nicht parallel verwendet.
-- Queries verwenden `AsNoTracking` und gezielte Read-Model-Projektionen.
-- Schreibaktionen verwenden Domainmethoden und `SaveChangesAsync` am fachlichen Ende.
-- Explizite Transaktionen schützen zusammengehörige Multi-Write-Aktionen.
-- Allgemeine EF-Konfigurationen liegen unter `Application/Persistence`.
-- Spielkonfigurationen liegen unter
-  `Application/Games/<GameName>/Persistence`.
-
-Es gibt genau einen gemeinsamen `sealed partial BoardgameTrackerDbContext`.
-Der allgemeine Teil besitzt das allgemeine relationale Modell. Spielmodule ergänzen
-denselben Context über ihre eigenen Partial-Dateien und Konfigurationen innerhalb
-des jeweiligen Spielmoduls.
-
-`DatabaseInitializer` bleibt allgemein. Er erstellt den Context, führt die
-allgemeine Datenbankinitialisierung aus und verarbeitet registrierte
-`IDatabaseInitializationStep`-Implementierungen in Reihenfolge. Spielmodule
-registrieren ihre eigenen Schritte; der allgemeine Initialisierer kennt keine
-konkreten Spiele.
-
-SQLite wird nur am Host-Rand der App gewählt. Providerregistrierung,
-Connection-Interceptor und SQLite-spezifische Konfiguration gehören in die App,
-nicht in Core oder in allgemeine Application-Fachlogik.
-
-DB-Lifecycle, Pre-Alpha-Strategie, Build- und Migrationsregeln stehen in
-[`SETUP.md`](../SETUP.md).
-
-## 9. Modulregistrierung und allgemeine Erweiterungspunkte
-
-Jedes Spiel besitzt einen klaren öffentlichen Einstieg für die Hostregistrierung,
-bevorzugt als `Add<GameName>()` im App-Modul. Dort werden die konkreten
-Application-/UI-Komponenten und die benötigten allgemeinen Erweiterungspunkte des
-Spiels registriert.
-
-Gemeinsamer Code arbeitet mit Spielen nur über kleine fachliche Erweiterungspunkte,
-zum Beispiel:
-
-- Session-Navigation und Resume,
-- spielabhängige Regeln wie erlaubte Spielerfarben,
-- Persistenzadapter für spielabhängige Gruppendefaults,
-- Import-/Export-Schema und -Persistenz,
-- Initialisierungsschritte.
-
-Der allgemeine Vertrag liegt außerhalb eines konkreten Spielmoduls. Die konkrete
-Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum.
-
-Spielrouten werden innerhalb des Spielmoduls registriert. Shell und allgemeine
-Navigation kennen keine konkreten Spielseiten.
-
-Composition Root und Host-Projektdatei sind erlaubte technische Integrationspunkte:
-Sie dürfen ein Spielmodul registrieren, paketieren oder dessen modul-eigene Buildassets
-einbinden. Dort gehört jedoch keine fachliche Spielentscheidung oder konkrete
-Feature-Orchestrierung außerhalb der öffentlichen Modulregistrierung hin. Wenn
-spielabhängige Buildkonfiguration umfangreicher wird, soll sie nach Möglichkeit in
-eine modul-eigene importierte Builddatei ausgelagert werden.
-
-Ein Erweiterungspunkt wird nur eingeführt, wenn allgemeiner Code tatsächlich mit
-einer austauschbaren oder spielabhängigen Implementierung arbeiten muss. Ein
-Interface ist kein Standardwrapper um eine einzelne EF-Klasse.
-
-## 10. Gemeinsame Spielerfarben
+### PlayerColor
 
 `Core/Players/PlayerColor` ist der gemeinsame semantische Farbtyp für Spiele, die
-Spielerfarben verwenden. Er enthält keine UI-Hexwerte und keine
-Erkennungs-/Kameraparameter.
+Spielerfarben verwenden. Er enthält keine UI- oder Kamerawerte.
 
-Ein Spiel definiert ausschließlich die für dieses Spiel erlaubte Teilmenge der
-gemeinsamen Farben. Es führt kein eigenes Farbenum ein, wenn dieselben semantischen
-Farben gemeint sind.
+Ein Spiel definiert nur seine erlaubte Teilmenge und gegebenenfalls Persistenz/
+Validierung seiner Defaults. Benötigt ein Spiel ein anderes Marker-Konzept, erhält
+dieses einen eigenen Fachbegriff.
 
-Allgemeine Gruppen- und UI-Features kennen nur den gemeinsamen Farbtyp und einen
-allgemeinen Regelkatalog. Das Spielmodul liefert:
+Datenwerte: [DATA_MODEL.md](DATA_MODEL.md). Darstellung:
+[UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 
-- die erlaubte Teilmenge,
-- gegebenenfalls spielabhängige Default-Persistenz,
-- die Validierung seiner eigenen Domainobjekte.
+### Game Content
 
-Die gemeinsame Presentation ordnet `PlayerColor` einem Anzeigenamen und
-Darstellungswerten zu. Fachliche Farben und UI-Farben bleiben getrennt.
+App-Lokalisierung und Spielmaterial sind getrennt.
 
-Benötigt ein zukünftiges Spiel ein grundsätzlich anderes Marker- oder
-Identitätskonzept statt der gemeinsamen Spielerfarben, wird dafür ein eigener
-Fachbegriff modelliert, statt `PlayerColor` zweckzuentfremden.
-
-## 11. Game Content und Lokalisierung
-
-App-Lokalisierung und physisches Spielmaterial sind getrennte Bereiche:
-
-```text
-App Localization -> AppResources/.resx / CurrentUICulture
-Game Content      -> spielmodulspezifische Built-in-Inhalte + Nutzerinhalte
-```
-
-Allgemeine Regeln:
-
-- Built-in-Content liegt im jeweiligen Spielmodul.
-- Domainidentitäten und Content-Keys bleiben sprachneutral und stabil.
-- Built-in-Content wird nicht allein für Lokalisierung in SQLite gespiegelt.
-- Veränderliche Nutzerinhalte werden persistent gespeichert.
-- Die Spielmaterial-Sprache ist eine lokale Preference pro stabilem `Game.Key`,
-  kein historisches Sessionfeld.
+- Built-in-Content liegt im Spielmodul.
+- Identitäten/Keys bleiben sprachneutral.
+- Built-in-Namen werden nicht allein für Lokalisierung in SQLite gespiegelt.
+- Nutzerinhalt darf persistent sein.
+- Materialsprache ist Preference pro `Game.Key`, kein Sessionfeld.
 - Ein allgemeiner Preference-Port kennt keine konkreten Spieltypen.
-- Auflösung erfolgt in der Reihenfolge:
-  Nutzerinhalt -> ausgewählte Materialsprache -> unterstützte App-Sprache ->
-  Spiel-Default -> deterministischer Missing-Marker.
-- Historische Partien speichern stabile IDs, keine lokalisierten Namenssnapshots.
-- Eine generische Game-Content-Engine entsteht erst, wenn mehrere reale Spiele eine
-  gemeinsame Extraktion rechtfertigen.
+- Für diese Preference wird keine eigene Content-Sprach-Entity eingeführt.
+- Historie speichert IDs, keine lokalisierten Namenssnapshots.
+- Eine generische Content-Engine entsteht erst aus mehreren realen Spielen.
 
-Konkrete Content-Dateien, Objektidentitäten und Nutzerressourcen gehören in die
-jeweilige Spielarchitektur bzw. das Datenmodell.
+Die verbindliche Content-Fallbackkette steht in
+[PRODUCT_SPEC.md](PRODUCT_SPEC.md); Persistenzidentitäten in
+[DATA_MODEL.md](DATA_MODEL.md).
 
-## 12. Navigation, Settings und Host-Grenzen
+### Navigation und lokale Settings
 
-Die Hauptnavigation und allgemeine Features bleiben spielunabhängig.
-Spielabhängige Zielseiten werden über registrierte Modulhandler aufgelöst; allgemeine
-History-, Gruppen- oder Player-Features kennen keine konkreten Spielseiten.
+Allgemeine Navigation kennt keine konkreten Spielseiten. Spielziele werden über
+registrierte Handler aufgelöst.
 
-Shell-Navigationsparameter verwenden zentrale Konstanten in
-`App/Navigation/NavigationParameters.cs`; Sender und Empfänger verwenden denselben
-Schlüssel.
+Shell-Parameter verwenden zentrale Konstanten in
+`App/Navigation/NavigationParameters.cs`.
 
-Nicht-historische Navigation, Darstellung und lokale Preferences sind Hostzustand und
-werden nicht in SQLite modelliert. Spielabhängige lokale Preferences werden über
-allgemeine Hostgrenzen und einen stabilen `Game.Key` adressiert.
+Navigation, Theme und andere nicht-historische Preferences sind Hostzustand, keine
+GameSession-Daten.
 
-Theme-, XAML-, Binding-, Dialog- und weitere Presentationregeln stehen in
-[UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md) und [UI_WIREFRAME.md](UI_WIREFRAME.md).
+### History-Transfer
 
-## 13. Lokaler History-Transfer
+Import/Export ist ein allgemeiner Application-Slice. Spielmodule liefern nur ihre
+spielabhängigen Schema-/Persistenzteile. Native Picker, Speichern und Teilen sind
+App-Adapter und enthalten keine Format-/Matchinglogik.
 
-Import und Export historischer Partien bilden einen allgemeinen Application-Slice.
-Das versionierte Austauschformat kennt keinen konkreten Transport.
+Details: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
-Spielmodule erweitern den Transfer über allgemeine Schema-/Persistenzgrenzen.
-Die konkrete Spielimplementierung bleibt in
-`Application/Games/<GameName>/`.
+## 11. Rollen
 
-Dateispeichern, Teilen und native Picker sind App-seitige Ausgabe- bzw.
-Eingabeadapter und enthalten keine eigenen Format- oder Matchingregeln.
-
-Format, Matching, Validierung, Snapshotprüfung und Commitregeln stehen ausschließlich
-in [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
-
-## 14. Fachliche Rollen
-
-- `Query`: reine Leseprojektion ohne Mutation.
-- `UseCase`: Application-Orchestrierung eines fachlichen Ablaufs.
-- `Persistence`: konkrete zusammenhängende EF-Komponente oder
-  Modul-Erweiterungsimplementierung, insbesondere für Arbeiten auf demselben Context.
-- `Store`: Host-/Preferences-Grenze; kein EF-Wrapper.
-- `Handler`: Dispatch-, Routing-, Navigations- oder Transportentscheidung.
+- **Query:** reine Leseprojektion.
+- **UseCase:** Application-Orchestrierung eines fachlichen Ablaufs.
+- **Persistence:** konkrete zusammenhängende EF-Komponente oder Modul-Persistenzadapter.
+- **Store:** Host-/Preferences-Grenze, kein EF-Wrapper.
+- **Handler:** Dispatch-, Routing-, Navigations- oder Transportentscheidung.
 
 `DataAccess` ist kein bevorzugter Standardname.
 
-Projektweite C#-, Async-, Benennungs- und Kommentarregeln:
-[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
+C#-/Async-/Naming-Regeln: [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
 
-## 15. Tests und Architekturschutz
+## 12. Tests und Architekturschutz
 
-Core-Tests bleiben reine Unit-Tests ohne EF oder SQLite.
+Core-Tests bleiben ohne EF/SQLite. Application-Tests für relationale Regeln verwenden
+echtes EF/SQLite mit isolierter Lebensdauer; EF InMemory ersetzt keine
+SQL-/Constraint-/Transaktionsprüfung.
 
-Application-Slice-Tests verwenden für relationale Regeln echte EF-/SQLite-
-Datenbanken mit isolierter Lebensdauer und Cleanup; EF InMemory ersetzt keine
-Constraints, SQL-Übersetzung oder Transaktionen.
+Architekturtests sollen schützen:
 
-Architekturtests sollen insbesondere schützen:
+- erlaubte Schichtabhängigkeiten;
+- Providergrenze;
+- EF-freie ViewModels;
+- `Games/<GameName>/`-Ownership;
+- keine konkrete Spielabhängigkeit im allgemeinen Code;
+- Unabhängigkeit der Spielmodule.
 
-- die erlaubten Abhängigkeiten `App -> Application`, `App -> Core` und
-  `Application -> Core`,
-- die Providergrenze,
-- EF-freie ViewModels,
-- die harte `Games/<GameName>/`-Ownership,
-- das Verbot konkreter Spielabhängigkeiten im allgemeinen Code,
-- die Unabhängigkeit verschiedener Spielmodule.
+Tests spiegeln die fachliche Modul-/Slicestruktur.
 
-Tests spiegeln die fachliche Slice- und Modulstruktur.
+## 13. Nicht gewünschte Muster
 
-## 16. Nicht gewünschte Muster
+Ohne konkreten Bedarf nicht einführen:
 
-Ohne konkreten Bedarf werden nicht eingeführt:
+- generische Repositories;
+- MediatR nur als Dispatch-Schicht;
+- `Common`-/`Utils`-Sammelordner;
+- bedeutungslose Ein-Methoden-Interfaces;
+- Wrapper-Services ohne eigene Semantik;
+- Navigation-Service nur als Shell-Wrapper;
+- generische Game Engine;
+- technische Ordnerhierarchien, die ein Feature zerreißen;
+- leere Modulordner;
+- Compatibility-Aliase für alte interne Begriffe.
 
-- generische Repositories,
-- MediatR nur als Dispatch-Schicht,
-- `Common`-/`Utils`-Sammelordner,
-- bedeutungslose Ein-Methoden-Interfaces,
-- allgemeine Services nur zum Wrappen vorhandener APIs,
-- ein allgemeiner Navigation-Service nur zum Wrappen von Shell,
-- eine generische Game Engine,
-- technische Ordnerhierarchien, die zusammengehörige Features auseinanderziehen,
-- leere Spielmodulordner nur für Symmetrie,
-- Compatibility-Aliase für alte interne Domänensynonyme.
-
-## 17. Bewusste allgemeine technische Entscheidungen
+## 14. Bewusste technische Entscheidungen
 
 SQLite kann bestimmte `DateTimeOffset`-Sortierungen nicht zuverlässig übersetzen.
-Betroffene lokale Listen projizieren deshalb nur benötigte Metadaten und sortieren
-für die derzeit kleine lokale Datenmenge anschließend im Speicher. Eine andere
-Timestampdarstellung oder Schemaänderung braucht einen konkreten Bedarf.
+Betroffene kleine lokale Listen dürfen deshalb nur benötigte Daten projizieren und
+anschließend im Speicher sortieren. Eine Schemaänderung braucht einen realen Bedarf.
 
-`AppShell` darf im Bootstrap über `IServiceProvider` aufgelöst werden, wenn seine
-Erzeugung erst nach `InitializeComponent` und der Theme-Anwendung erfolgen muss.
-Eine zusätzliche Startup-Serviceschicht wird nicht allein eingeführt, um diesen
-Lebenszyklus zu verstecken.
+`AppShell` darf beim Bootstrap über `IServiceProvider` aufgelöst werden, wenn dies
+für den Lebenszyklus nach `InitializeComponent`/Theme-Anwendung erforderlich ist.
+Dafür wird keine zusätzliche Startup-Schicht eingeführt.
 
-Drittanbieter-Lizenzinformationen werden offline aus paketierten Ressourcen
-bereitgestellt. Wartungs- und Lizenzregeln stehen ausschließlich in
+Drittanbieter-Lizenzinformationen werden offline paketiert; Regeln stehen in
 [THIRD_PARTY_LICENSE_POLICY.md](THIRD_PARTY_LICENSE_POLICY.md).
