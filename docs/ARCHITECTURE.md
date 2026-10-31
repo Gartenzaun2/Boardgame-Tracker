@@ -3,18 +3,20 @@
 ## 1. Zielbild
 
 Boardgame Tracker ist ein **modularer Monolith mit pragmatischen Vertical Slices**.
-Die Architektur soll mehrere Brettspiele unterstützen, ohne eine generische Game
-Engine zu bauen. Domain-Regeln in Core bleiben unabhängig von MAUI, EF Core und
-SQLite; technische Abstraktionen werden nur eingeführt, wenn sie einen konkreten
-Nutzen haben.
+Die Architektur unterstützt mehrere Brettspiele, ohne eine generische Game Engine
+vorwegzunehmen.
 
-Erstes vollständig unterstütztes Spiel ist **Arche Nova** (`ArkNova`).
+Das Projekt ist bewusst ein Lernprojekt. Architektur, Ordnerstruktur und
+Abhängigkeitsrichtungen sollen reale fachliche Grenzen sichtbar und nachvollziehbar
+machen. Verständlichkeit hat Vorrang vor cleveren Abstraktionen. Lernorientierung
+rechtfertigt keine zusätzlichen Schichten, Interfaces oder Generalisierungen.
 
-Das Projekt dient zusätzlich als Lernprojekt. Nicht offensichtliche Trade-offs werden
-nachvollziehbar dokumentiert. Lernorientierung rechtfertigt keine zusätzlichen
-Abstraktionsschichten; Verständlichkeit und reale fachliche Grenzen bleiben maßgeblich.
+Die zentrale Regel lautet:
 
-## 2. Projektgrenzen
+> Allgemeiner Code kennt keine konkreten Spiele. Ein Spiel lebt vollständig in seinem
+> eigenen Modul und verwendet den gemeinsamen Kern nur über allgemeine Verträge.
+
+## 2. Schichten und Abhängigkeiten
 
 ```text
 App -> Application -> Core
@@ -22,31 +24,105 @@ Application -> EF Core
 App -> EF Core SQLite
 ```
 
-- **Core** enthält Domain-Entities, fachliche Regeln und spielespezifische
-  Domain-Erweiterungen.
-- **Application** enthält Vertical Slices, Use Cases, konkrete Queries, Read Models,
-  DbContext, relationale EF-Konfigurationen, Initialisierung und Seeding. EF Core ist
-  eine bewusste Application-Abhängigkeit; SQLite-spezifische APIs sind dort verboten.
-- **App** enthält MAUI, XAML, ViewModels, Navigation, Präsentationslogik und den
-  Composition Root sowie die SQLite-Providerkonfiguration.
+- **Core** enthält Domain-Entities, Value Objects und fachliche Regeln. Core kennt
+  weder MAUI noch EF Core noch SQLite.
+- **Application** enthält konkrete Use Cases, Queries, Read Models, den gemeinsamen
+  DbContext, relationale EF-Konfigurationen, Initialisierung und Seeding.
+  EF Core ist eine bewusste Application-Abhängigkeit; SQLite-spezifische APIs sind
+  dort verboten.
+- **App** enthält MAUI, XAML, ViewModels, Navigation, Präsentationslogik,
+  Plattformadapter, den Composition Root und die SQLite-Providerkonfiguration.
 
-SQLite wird einmal am Host-Rand ausgewählt: AddBoardgameTrackerSqlite registriert
-IDbContextFactory, UseSqlite, EF-Warning-Regeln und SqliteNameCollationInterceptor.
-ViewModels und Pages erhalten konkrete Use Cases/Queries, niemals einen DbContext.
+ViewModels und Pages erhalten konkrete Use Cases oder Queries, niemals einen DbContext.
 
-Der nachvollziehbare Programmfluss lautet:
+Der typische Ablauf bleibt sichtbar:
 
 ```text
 ViewModel-Command -> konkreter UseCase/Query -> DbContext -> Domain -> SaveChangesAsync
 ```
 
-Beispiele: CreateGroupViewModel -> CreateGroupUseCase, HistoryPage ->
-CompletedGameSessionsQuery und ArkNovaScoringViewModel -> ArkNovaScoringUseCase.
-Die fachliche Aktion und ihr Transaktionsende sind im jeweiligen Slice sichtbar.
+## 3. Spielmodule als harte Architekturgrenze
 
-## 3. Verbindliches Domänenvokabular
+Spielespezifischer Produktionscode liegt auf **allen drei Ebenen** unter
+`Games/<GameName>/`:
 
-Für die vier zentralen Domänenkonzepte gelten ausschließlich diese Namen:
+```text
+src/
+  BoardgameTracker.Core/
+    Games/
+      <GameName>/
+
+  BoardgameTracker.Application/
+    Games/
+      <GameName>/
+
+  BoardgameTracker.App/
+    Games/
+      <GameName>/
+```
+
+Spielespezifische Tests spiegeln dieselbe fachliche Struktur in den Testprojekten.
+Spielespezifische Entwicklungswerkzeuge liegen unter `tools/Games/<GameName>/`.
+
+Diese Pfade sind Teil der Architektur, nicht nur eine Ablagekonvention. Ein Entwickler
+soll am Pfad und Namespace erkennen können, ob ein Typ allgemein oder
+spielespezifisch ist.
+
+### Ownership-Regeln
+
+- Dateien, Typdeklarationen und Namespaces eines konkreten Spiels gehören in dessen
+  `Games/<GameName>/`-Baum.
+- Allgemeiner Code außerhalb dieses Baums darf nicht von konkreten Spieltypen oder
+  konkreten Spiel-Namespaces abhängen.
+- Ein Spielmodul darf allgemeinen Code verwenden.
+- Ein Spielmodul darf nicht von einem anderen Spielmodul abhängen.
+- Allgemeine Features enthalten keine `GameKey`-Switches oder andere
+  Fallunterscheidungen nach konkreten Spielen.
+- Ein konkretes Spiel implementiert allgemeine Erweiterungspunkte innerhalb seines
+  Moduls.
+- Der Composition Root bindet ein Spiel über dessen öffentliche Modulregistrierung an;
+  konkrete Featuretypen, Pages, Persistenzimplementierungen und Routen bleiben im Modul.
+- Leere Spiegelordner werden nicht nur aus Symmetriegründen angelegt.
+
+Neue Spiele beginnen als eigenes Modul. Code wird erst in den gemeinsamen Bereich
+verschoben, wenn eine reale, fachlich nachgewiesene Gemeinsamkeit existiert.
+Keine vorsorgliche Extraktion für hypothetische zukünftige Spiele.
+
+## 4. Dokumentationsarchitektur
+
+Allgemeine Architekturentscheidungen stehen ausschließlich in dieser Datei.
+Spielspezifische Architekturentscheidungen stehen unter:
+
+```text
+docs/Games/<GameName>/ARCHITECTURE.md
+```
+
+Eine Spielarchitektur dokumentiert **nur zusätzliche konkrete Entscheidungen des
+Spiels**. Sie wiederholt keine allgemeinen Modul-, Composition-, Farb-, Content-,
+Persistenz- oder Navigationsregeln nur deshalb, weil das Spiel sie aktuell als erstes
+implementiert.
+
+Weitere vollständig spielspezifische Dokumente liegen im selben Spielordner, zum
+Beispiel:
+
+```text
+docs/Games/<GameName>/
+  ARCHITECTURE.md
+  CV_STATUS.md
+  ...
+```
+
+Bei Arbeiten an einem konkreten Spiel werden zuerst diese allgemeine Architektur und
+danach dessen Spielarchitektur gelesen. Weitere Spezialdokumente werden nur geladen,
+wenn ihr Thema tatsächlich betroffen ist.
+
+Gemischte allgemeine Dokumente werden bei ihrer jeweiligen Konsolidierung getrennt,
+wenn klar abgrenzbare spielspezifische Abschnitte entstehen. Jede dauerhafte Regel
+hat genau eine kanonische Quelle.
+
+## 5. Verbindliches Domänenvokabular
+
+Für die zentralen allgemeinen Konzepte gelten diese Namen:
 
 ```text
 Game
@@ -60,8 +136,6 @@ Kombinationen verwenden dieselben Begriffe:
 ```text
 GroupPlayer
 GameSessionPlayer
-ArkNovaGroupPlayer
-ArkNovaGameSessionPlayer
 ```
 
 Nicht als Synonyme verwenden:
@@ -76,134 +150,27 @@ Session als Ersatz für GameSession
 C#-Bezeichner verwenden konsequent `GameSession`, z. B. `GameSessionId`, nicht
 `SessionId`.
 
-## 4. Organisation nach allgemeinem Code und Spielmodulen
+Konkrete Entityfelder, Invarianten und Persistenzidentitäten stehen in
+[DATA_MODEL.md](DATA_MODEL.md).
 
-In **jedem Produktionsprojekt** ist `Games/<GameName>/` der Einstieg für
-spielespezifischen Code. Allgemeiner Code liegt außerhalb eines konkreten
-Spieleordners.
+## 6. Vertical Slices
 
-Beispiel:
+Application- und UI-Code wird primär nach **Use Case/Feature** organisiert, nicht
+nach technischen Klassentypen.
 
-```text
-BoardgameTracker.Core/
-  GameSessions/
-    GameSession.cs
-    GameSessionPlayer.cs
-  Groups/
-    Group.cs
-    GroupPlayer.cs
-  Players/
-    Player.cs
-  Games/
-    Game.cs
-    ArkNova/
-      GameSessions/
-      Groups/
-      Players/
+Kleine Slices bleiben flach im fachlichen Bereich. Kleine ausschließlich
+slice-eigene Commands, Inputs, Read Models, Results und Optionen stehen
+standardmäßig beim Haupttyp.
 
-BoardgameTracker.Application/
-  GameSessions/
-    OpenGameSessionQuery.cs
-    RunningGameSessionUseCase.cs
-  Groups/
-    CreateGroupUseCase.cs
-    EditGroupUseCase.cs
-    ListGroupsQuery.cs
-    Colors/
-  Players/
-    EditPlayerUseCase.cs
-    ListPlayersQuery.cs
-  Games/
-    ArkNova/
-      GameSessions/
-        StartArkNovaGameSessionUseCase.cs
-        ArkNovaRunningGameSessionQuery.cs
-        Preparation/
-        Scoring/
-        History/
-        Results/
-      SpecialCards/
-      Settings/
-      Persistence/
-        BoardgameTrackerDbContext.ArkNova.cs
-        Configurations/
-        Seeding/
-  Persistence/
-    BoardgameTrackerDbContext.cs
-    Configurations/         # allgemeines relationales EF-Modell
-    DatabaseInitializer.cs
-    IDatabaseInitializationStep.cs
+Eine eigene Datei oder ein eigener Unterordner ist sinnvoll, wenn ein Typ:
 
-BoardgameTracker.App/
-  Persistence/SQLite/       # Providerregistrierung und Connection-Interceptor
-  Features/                 # allgemeine UI-Features
-    Games/
-    Groups/
-    History/
-    Settings/
-  Games/
-    ArkNova/
-      Features/
-        GameSessions/
-        SpecialCards/
-        Settings/
-```
+- sliceübergreifend wiederverwendet wird,
+- einen eigenständigen Fachbegriff oder Vertrag darstellt,
+- relevante eigene Logik besitzt,
+- einen unabhängigen Änderungsgrund hat,
+- oder der Haupttyp sonst deutlich unübersichtlicher würde.
 
-Ein konkretes Spiel darf innerhalb `Games/<GameName>/` die allgemeine Struktur
-spiegeln, wenn es dort tatsächlich eigene Logik oder Daten besitzt. Es werden
-keine leeren Spiegelordner nur aus Symmetriegründen angelegt.
-
-### Ownership-Regel
-
-Spielespezifischer Code gehört vollständig dem jeweiligen Spielmodul. Ein
-`TerraformingMars`-Feature darf beispielsweise nicht von `ArkNova`-Typen
-abhängen.
-
-Allgemeine Konzepte wie `GameSession`, `Group` und `Player` bleiben dagegen im
-gemeinsamen Kern und werden von den Spielemodulen verwendet bzw. erweitert.
-
-## 5. Vertical Slices
-
-Application- und UI-Code wird primär nach **Use Case/Feature** organisiert und
-nicht nach technischen Klassentypen.
-
-Slice-Grenzen sind fachliche Grenzen und nicht automatisch Verzeichnisgrenzen.
-Kleine Slices liegen flach im übergeordneten fachlichen Bereich; ihre kleinen
-Commands, Inputs, Read Models und Results stehen standardmäßig in der Hauptdatei:
-
-```text
-Application/
-  Groups/
-    CreateGroupUseCase.cs    # auch Command, PlayerInput und SelectablePlayer
-    EditGroupUseCase.cs      # auch Command, Details und Player-Projektion
-    ListGroupsQuery.cs       # auch GroupListItem
-    Colors/                 # gemeinsam verwendete Farbregeln und Modulvertrag
-```
-
-Eine eigene Datei bleibt sinnvoll für sliceübergreifend verwendete Typen,
-eigenständige Fachbegriffe, echte Contracts/Extension Points, relevante eigene
-Logik oder einen unabhängigen Änderungsgrund. Eine Zusammenführung darf die
-Hauptdatei nicht deutlich unübersichtlicher machen. So bleiben etwa gemeinsame
-Ergebnisdaten von Scoring und Korrektur, GroupColorDefaults sowie die echten
-Persistenz-Erweiterungspunkte separat.
-
-Ordner dienen der Navigation und Verständlichkeit. Ein eigener Slice-Ordner
-gruppiert mehrere eigenständige Komponenten; ein kleiner Use Case braucht ihn
-nicht automatisch. Verschachtelung folgt der tatsächlichen Komplexität des Features,
-nicht Symmetrie oder einer festen Mindestzahl von Dateien.
-
-Für umfangreichere Features sind Unterordner weiterhin sinnvoll, zum Beispiel
-in der App mit XAML, Pages und ViewModels:
-
-```text
-App/Games/ArkNova/Features/GameSessions/
-  Preparation/
-  Running/
-  Scoring/
-  Result/
-```
-
-Nicht als Standardstruktur:
+Nicht als Standardhierarchie:
 
 ```text
 Commands/
@@ -213,39 +180,36 @@ Validators/
 DTOs/
 ```
 
-Ein Slice darf nur die Klassen enthalten, die er wirklich benötigt. Es gibt
-keine Pflicht, jeden Slice mit identischer Klassenanzahl oder identischen
-Abstraktionsschichten aufzubauen.
+Ordner und Dateien folgen der tatsächlichen fachlichen Komplexität, nicht einer
+vorgegebenen Symmetrie.
 
-## 6. Composition statt persistierter Spiel-Entity-Vererbung
+## 7. Domainmodellierung und spielabhängige Ergänzungen
 
-Spielespezifische Daten, die eine allgemeine Entity **ergänzen**, werden über
-Composition modelliert.
+Entities besitzen fachliche Identität. Aggregate schützen ihre eigenen
+Invarianten. Cross-Aggregate-Beziehungen verwenden bevorzugt IDs; öffentliche
+Navigation Properties werden nicht nur für EF-Bequemlichkeit eingeführt.
 
-### GameSessionPlayer
+### Composition statt Duplikation
+
+Spielspezifische Daten, die ein allgemeines Modell **ergänzen**, werden über
+Composition modelliert. Das Spiel dupliziert keine allgemeinen Felder.
+
+Für Partieteilnehmer gilt grundsätzlich:
 
 ```text
 GameSessionPlayer
-- GameSessionId
-- PlayerId
-- Order
-- Placement
-
         1
         |
         0..1
         |
-ArkNovaGameSessionPlayer
-- GameSessionId
-- PlayerId
-- Ark-Nova-spezifische Felder
+<GameName>GameSessionPlayer
 ```
 
-`ArkNovaGameSessionPlayer` dupliziert keine allgemeinen
-`GameSessionPlayer`-Felder. Sein Schlüssel `(GameSessionId, PlayerId)` verweist
-1:1 auf den allgemeinen `GameSessionPlayer`.
+`<GameName>GameSessionPlayer` verwendet denselben fachlichen Teilnehmerbezug und
+enthält ausschließlich spielespezifische Daten. Allgemeine Felder wie Reihenfolge,
+Platzierung oder Player-Identität werden nicht erneut gespeichert.
 
-Dasselbe Prinzip gilt für Gruppen:
+Dasselbe Prinzip gilt für Gruppenmitglieder:
 
 ```text
 GroupPlayer
@@ -253,207 +217,199 @@ GroupPlayer
         |
         0..1
         |
-ArkNovaGroupPlayer
+<GameName>GroupPlayer
 ```
 
-Damit bleiben allgemeines Schema und einzelne Spielmodule getrennt. Neue
-Terraforming-Mars-Felder verändern nicht die Ark-Nova-Tabellen und umgekehrt.
+Ein Spiel darf daneben eigene Entities besitzen, wenn sie wirklich nur zu diesem
+Spiel gehören.
 
-### Vererbung bleibt erlaubt
+Persistierte EF-Entity-Vererbung wird nicht allein verwendet, um Properties zu
+sparen. Vererbung bleibt erlaubt, wenn fachlich eine stabile is-a-Beziehung und
+echtes polymorphes Verhalten bestehen.
 
-Vererbung ist nicht grundsätzlich verboten. Sie wird verwendet, wenn fachlich
-wirklich eine stabile **is-a**-Beziehung besteht und polymorphes Verhalten einen
-Nutzen bringt. Insbesondere Strategien/Regeln dürfen gemeinsame Interfaces oder
-abstrakte Basistypen verwenden.
+Value Objects werden eingeführt, wenn ein eigenständiger fachlicher Werteblock ohne
+Identität dadurch verständlicher wird; nicht als technischer Selbstzweck.
 
-EF-Core-Entity-Vererbung wird jedoch nicht allein eingesetzt, um Properties zu
-sparen.
+Konkrete Aggregate, Felder und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
 
-## 7. Entities und Value Objects
+## 8. Application, EF Core und Persistenz
 
-Entities besitzen eine fachliche Identität, z. B.:
+Application verwendet EF Core und das relationale Modell direkt.
 
-- `Player` über `PlayerId`,
-- `Group` über `GroupId`,
-- `GameSession` über `GameSessionId`,
-- `GroupPlayer` über `(GroupId, PlayerId)`,
-- `GameSessionPlayer` über `(GameSessionId, PlayerId)`.
-
-Value Objects werden nur eingeführt, wenn ein klarer fachlicher Werteblock ohne
-eigene Identität entsteht und das Modell dadurch verständlicher wird. EF Core
-10 `Complex Types` sind dafür eine mögliche Persistenzabbildung, aber kein
-Selbstzweck. Aktuelle Score-Felder bleiben dort, wo sie fachlich bereits klar
-modelliert sind.
-
-## 8. EF Core und Persistenz
-
-- Application verwendet EF Core 10 und das relationale Persistenzmodell direkt.
-- App und Integrationstests wählen SQLite als Provider; Core kennt keine Persistenztechnologie.
 - Keine Repositories, Stores oder DbContext-Interfaces nur zum Verstecken von EF Core.
-- Interfaces bleiben für echte Polymorphie, Host-/Plattformgrenzen und Spielmodul-Erweiterungspunkte.
-- Ein Slice erzeugt über IDbContextFactory einen kurzlebigen Context pro Operation;
-  kein Singleton hält einen erzeugten Context und kein Context wird parallel verwendet.
-- Konkrete Queries verwenden AsNoTracking und gezielte Read-Model-Projektionen.
-- Schreibaktionen verwenden Domainmethoden und SaveChangesAsync am fachlichen Ende.
-  Explizite Transaktionen schützen Aktionen mit mehreren direkten relationalen Writes,
-  etwa Reihenfolgetausch, Farbdefaults, Korrektur und History-Import.
-- Allgemeine Konfigurationen liegen in Application/Persistence/Configurations;
-  Spielkonfigurationen in Application/Games/<GameName>/Persistence/Configurations.
+- Interfaces nur für echte Polymorphie, Host-/Plattformgrenzen und
+  Modul-Erweiterungspunkte.
+- Ein Slice erzeugt über `IDbContextFactory` einen kurzlebigen Context pro Operation.
+- Kein Singleton hält einen erzeugten Context; ein Context wird nicht parallel verwendet.
+- Queries verwenden `AsNoTracking` und gezielte Read-Model-Projektionen.
+- Schreibaktionen verwenden Domainmethoden und `SaveChangesAsync` am fachlichen Ende.
+- Explizite Transaktionen schützen zusammengehörige Multi-Write-Aktionen.
+- Allgemeine EF-Konfigurationen liegen unter `Application/Persistence`.
+- Spielkonfigurationen liegen unter
+  `Application/Games/<GameName>/Persistence`.
 
 Es gibt genau einen gemeinsamen `sealed partial BoardgameTrackerDbContext`.
-Der generische Teil unter `Application/Persistence` enthält die allgemeinen DbSets
-und `OnModelCreating`; die Arche-Nova-DbSets stehen in
-`Games/ArkNova/Persistence/BoardgameTrackerDbContext.ArkNova.cs` im selben
-Namespace wie der gemeinsame Context. Die allgemeinen und spielspezifischen Modellkonfigurationen bleiben getrennt.
+Der allgemeine Teil besitzt das allgemeine relationale Modell. Spielmodule ergänzen
+denselben Context über ihre eigenen Partial-Dateien und Konfigurationen innerhalb
+des jeweiligen Spielmoduls.
 
-`DatabaseInitializer` erstellt den Context, führt `EnsureCreatedAsync` aus und
-führt anschließend die registrierten `IDatabaseInitializationStep`-Implementierungen
-in Registrierungsreihenfolge auf demselben Context aus. `MauiProgram` ruft explizit `AddArkNova()` auf. Diese Extension unter
-`App/Games/ArkNova` registriert die Ark-Nova-Application- und UI-Komponenten
-einschließlich `ArkNovaReferenceDataSeeder` als spielspezifischem Schritt. Allgemeine
-Dienste bleiben in `MauiProgram`. Die Registrierungen bleiben explizit, ihre Lifetimes
-und die Reihenfolge innerhalb mehrfach registrierter Verträge bleiben erhalten. Der generische
-Initialisierer kennt keine Spielmodule; Fehler und Abbruch werden weitergegeben.
+`DatabaseInitializer` bleibt allgemein. Er erstellt den Context, führt die
+allgemeine Datenbankinitialisierung aus und verarbeitet registrierte
+`IDatabaseInitializationStep`-Implementierungen in Reihenfolge. Spielmodule
+registrieren ihre eigenen Schritte; der allgemeine Initialisierer kennt keine
+konkreten Spiele.
 
-Die App erhält `IEnumerable<IGameSessionResumeHandler>` aus `App/Navigation` per DI
-und wählt für eine gemerkte offene Partie den ersten Handler anhand des GameKey.
-Ohne passenden Handler wird LastGameSessionId gelöscht und die bestehende
-Hauptnavigation verwendet. `ArkNovaGameSessionNavigationHandler` unter
-`App/Games/ArkNova/Navigation` übernimmt Spiel-/Gruppenkontext und Navigation
-zu Running oder Scoring. `ArkNovaRoutes.Register()` registriert dort explizit
-die bisherigen Spielrouten und wird von `AddArkNova()` aufgerufen; App und Shell
-kennen keine konkreten Arche-Nova-Seiten. Navigation Memory bleibt unverändert.
+SQLite wird nur am Host-Rand der App gewählt. Providerregistrierung,
+Connection-Interceptor und SQLite-spezifische Konfiguration gehören in die App,
+nicht in Core oder in allgemeine Application-Fachlogik.
 
-### Aktuelle Pre-Alpha-Datenbankstrategie
+DB-Lifecycle, Pre-Alpha-Strategie, Build- und Migrationsregeln stehen in
+[`SETUP.md`](../SETUP.md).
 
-Der Runtime-Start verwendet `Database.EnsureCreatedAsync()` und danach idempotentes
-Referenzdaten-Seeding. Neue Datenbanken erhalten direkt das aktuelle Modell.
-Die Startkarten besitzen deterministische IDs; Seeding ergänzt fehlende Karten,
-überschreibt aber keine Benutzeränderungen oder Archivzustände.
+## 9. Modulregistrierung und allgemeine Erweiterungspunkte
 
-Bis zum ersten Deployment gibt es keine Migrationen, Schema-Upgrades oder
-Kompatibilitätspfade für ältere Entwicklungsstände. Auch die Startnavigation
-verwendet ausschließlich den explizit gespeicherten Kontext gemäß PRODUCT_SPEC;
-sie sucht keinen Ersatzkontext aus alten Entwicklungsdaten. Hinweise zu nötiger
-Neuinstallation und Datenverlust stehen in `SETUP.md`.
+Jedes Spiel besitzt einen klaren öffentlichen Einstieg für die Hostregistrierung,
+bevorzugt als `Add<GameName>()` im App-Modul. Dort werden die konkreten
+Application-/UI-Komponenten und die benötigten allgemeinen Erweiterungspunkte des
+Spiels registriert.
 
-### Spezialkarten-Slice
+Gemeinsamer Code arbeitet mit Spielen nur über kleine fachliche Erweiterungspunkte,
+zum Beispiel:
 
-`Core/Games/ArkNova/ArkNovaSpecialCard` schützt Identität, geordnete Symbole
-und Archivstatus. Der feste Symbolkatalog ist ein Enum, die Kartenidentität eine GUID.
-`Application/Games/ArkNova/SpecialCards` enthält Verwaltung und Leseprojektion mit direktem EF-Zugriff.
-Verwaltungsdaten gehören nicht in `IArkNovaSettingsStore` oder Preferences.
-Die UI unter `App/Games/ArkNova/Features/SpecialCards` verwendet einen gemeinsamen
-Editor für Create/Edit und dieselbe ikonbasierte Kartenansicht wie die Wertung.
-Die Symbol-Präsentation ordnet ausschließlich feste Symboltypen auf Bildressourcen
-und lokalisierte Accessibility-Namen ab. Kartennamen kommen aus der unten
-beschriebenen Game-Content-Auflösung.
+- Session-Navigation und Resume,
+- spielabhängige Regeln wie erlaubte Spielerfarben,
+- Persistenzadapter für spielabhängige Gruppendefaults,
+- Import-/Export-Schema und -Persistenz,
+- Initialisierungsschritte.
 
-Scoring arbeitet weiterhin ausschließlich mit Scoring-Sessions; die Korrektur
-bleibt ein eigener Completed-Pfad. Katalogdaten werden aktuell gelesen und
-Entwürfe beim Wiederöffnen aktualisiert. Neue Assignments setzen eine aktive
-Karte voraus; archivierte bestehende Assignments bleiben erhalten oder werden
-entfernt. Application und transaktionaler Persistenzpfad prüfen dies beim Speichern.
+Der allgemeine Vertrag liegt außerhalb eines konkreten Spielmoduls. Die konkrete
+Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum.
 
-### App-Lokalisierung und Game Content
+Spielrouten werden innerhalb des Spielmoduls registriert. Shell und allgemeine
+Navigation kennen keine konkreten Spielseiten.
 
-Es gibt zwei fachliche Lokalisierungsbereiche:
+Ein Erweiterungspunkt wird nur eingeführt, wenn allgemeiner Code tatsächlich mit
+einer austauschbaren oder spielabhängigen Implementierung arbeiten muss. Ein
+Interface ist kein Standardwrapper um eine einzelne EF-Klasse.
 
-~~~text
-App Localization → AppResources/.resx (aktuelle App-Sprache)
-Game Content → spielmodulspezifisches content.json + persistente Nutzerressourcen
-~~~
+## 10. Gemeinsame Spielerfarben
 
-Application/Games/ArkNova/Content/content.json ist die einzige mitgelieferte
-Content-Datei des Moduls und als EmbeddedResource paketiert. Sie deklariert
-supportedLanguages/defaultLanguage sowie Namen unter specialCards (GUID) und
-zooPlans (Number). Derzeit nur de; fehlende verifizierte Übersetzungen werden nicht
-ersetzt oder erfunden. Bestehende sprachneutrale Skizzen bleiben App-Bildressourcen.
+`Core/Players/PlayerColor` ist der gemeinsame semantische Farbtyp für Spiele, die
+Spielerfarben verwenden. Er enthält keine UI-Hexwerte und keine
+Erkennungs-/Kameraparameter.
 
-ArkNovaContentCatalog liest die Datei einmal bei Modulregistrierung; ArkNovaContent
-führt Nutzerquelle und Built-in-Quelle zusammen. Die einzige Auflösungsregel lautet:
-Nutzer → ausgewählte Materialsprache → unterstützte App-Sprache → Default →
-stabiler [missing:ark-nova/.../name]-Marker mit Debug-Diagnose. Kein First-Fallback.
-Tests prüfen sämtliche erwarteten Defaultressourcen und bekannte IDs/Nummern.
-JSON und SQLite sind Speicherquellen desselben Game Content, keine eigenständigen
-Lokalisierungsarchitekturen. Built-in-Content wird nicht in SQLite gespiegelt.
+Ein Spiel definiert ausschließlich die für dieses Spiel erlaubte Teilmenge der
+gemeinsamen Farben. Es führt kein eigenes Farbenum ein, wenn dieselben semantischen
+Farben gemeint sind.
 
-GameContentLanguagePreference verwendet den vorhandenen Hostgrenzentyp eines
-Preferences-Ports: IGameContentLanguageStore, implementiert durch
-App/Features/Settings/MauiGameContentLanguageStore. Der native Schlüssel lautet
-Game.{Game.Key}.ContentLanguage. Beim ersten Lesen wird eine unterstützte App-Sprache,
-sonst DefaultContentLanguage initialisiert und gespeichert. Kein CurrentUICulture-Wechsel.
-Das Modul registriert seine Sprachdeklaration über den Content-Katalog; die gemeinsame
-Preference kennt keine Ark-Nova-Details und ist unabhängig von ArkNovaSettings.
+Allgemeine Gruppen- und UI-Features kennen nur den gemeinsamen Farbtyp und einen
+allgemeinen Regelkatalog. Das Spielmodul liefert:
 
-ArkNovaUserContent ist eine kleine modulinterne relationale Namensabbildung mit
-(ResourceType, ObjectId) als Schlüssel. Vorhandene Domainidentitäten werden direkt
-verwendet; keine redundanten Content-Keys oder Content-Entity pro Objektart. Lesen
-und Schreiben bleiben bei konkreten EF-Slices. Kartenverwaltung, Ergebnisse und
-laufende Partie verwenden dieselbe Auflösung; ViewModels erhalten Read Models.
-Symbole sind Domainzustand, ihre sprachlichen Accessibility-Labels bleiben .resx.
+- die erlaubte Teilmenge,
+- gegebenenfalls spielabhängige Default-Persistenz,
+- die Validierung seiner eigenen Domainobjekte.
 
-Es gibt keine generische Game-Content-Engine, Repository-Hierarchie oder Übersetzungs-
-Plattform. Erst reale Anforderungen weiterer Spiele könnten gemeinsame Extraktion
-begründen. Historische Assignments bleiben GUID-Referenzen auf aktuelle Kartendaten;
-Namen und Materialsprachen werden nicht historisiert oder an Partien gespeichert.
+Die gemeinsame Presentation ordnet `PlayerColor` einem Anzeigenamen und
+Darstellungswerten zu. Fachliche Farben und UI-Farben bleiben getrennt.
 
-## 9. Domänenaggregate
+Benötigt ein zukünftiges Spiel ein grundsätzlich anderes Marker- oder
+Identitätskonzept statt der gemeinsamen Spielerfarben, wird dafür ein eigener
+Fachbegriff modelliert, statt `PlayerColor` zweckzuentfremden.
 
-### Player
+## 11. Game Content und Lokalisierung
 
-`Player` ist ein eigenständiges Aggregate Root. Gast und regulärer Spieler sind
-derselbe Typ; `IsGuest` beschreibt den Zustand.
-
-### Group
-
-`Group` ist ein Aggregate Root und besitzt seine `GroupPlayer`-Einträge. Die
-Spielerzusammensetzung einer Gruppe ist fest; Reihenfolge, Name,
-Temporär-/Archivstatus dürfen innerhalb der definierten Use Cases geändert
-werden.
-
-### GameSession
-
-`GameSession` ist ein Aggregate Root und besitzt die allgemeinen
-`GameSessionPlayer`-Snapshots. Statusübergänge werden durch die Domain geschützt.
-
-Spielmodule ergänzen diese allgemeinen Snapshots über Composition.
-
-## 10. Navigation und Einstellungen
-
-Die Hauptnavigation lautet:
+App-Lokalisierung und physisches Spielmaterial sind getrennte Bereiche:
 
 ```text
-Spiele · Gruppen · Historie · Einstellungen
+App Localization -> AppResources/.resx / CurrentUICulture
+Game Content      -> spielmodulspezifische Built-in-Inhalte + Nutzerinhalte
 ```
 
-Gruppen werden im Kontext eines ausgewählten Spiels angezeigt. Nicht-historische
-Navigationseinstellungen und lokale Ark-Nova-Präferenzen werden über MAUI
-`Preferences` gespeichert, nicht in SQLite.
+Allgemeine Regeln:
 
-### Navigationsparameter
+- Built-in-Content liegt im jeweiligen Spielmodul.
+- Domainidentitäten und Content-Keys bleiben sprachneutral und stabil.
+- Built-in-Content wird nicht allein für Lokalisierung in SQLite gespiegelt.
+- Veränderliche Nutzerinhalte werden persistent gespeichert.
+- Die Spielmaterial-Sprache ist eine lokale Preference pro stabilem `Game.Key`,
+  kein historisches Sessionfeld.
+- Ein allgemeiner Preference-Port kennt keine konkreten Spieltypen.
+- Auflösung erfolgt in der Reihenfolge:
+  Nutzerinhalt -> ausgewählte Materialsprache -> unterstützte App-Sprache ->
+  Spiel-Default -> deterministischer Missing-Marker.
+- Historische Partien speichern stabile IDs, keine lokalisierten Namenssnapshots.
+- Eine generische Game-Content-Engine entsteht erst, wenn mehrere reale Spiele eine
+  gemeinsame Extraktion rechtfertigen.
 
-Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.
+Konkrete Content-Dateien, Objektidentitäten und Nutzerressourcen gehören in die
+jeweilige Spielarchitektur bzw. das Datenmodell.
 
-### Offline-Lizenzanzeige
+## 12. Navigation, Settings und Host-Grenzen
 
-`App/Features/Settings/Licenses` trennt Katalog/Modell, `LicenseTextService`, den
-MAUI-Package-Adapter und ViewModels/Pages. Lesen über
-`FileSystem.OpenAppPackageFileAsync`, kein Runtime-Netzwerk und keine Datenbank.
-Das zentrale `Resources/Raw/ThirdPartyLicenses/catalog.json` fasst Bibliotheksfamilien
-zusammen und referenziert deduplizierte Texte. Die acht nativen Originaldateien
-unter `Games/ArkNova/PhotoRecognition/Native/licenses` bleiben unverändert.
-Source-generierte JSON-Metadaten unterstützen Trimming/AOT. Shell nutzt
-`NavigationParameters.LicenseComponentId`; compiled bindings und bestehende
-Styles bleiben maßgeblich. Fehlende Texte werden geloggt und als lokalisierter,
-wiederholbarer Fehler behandelt. Lizenzpflege gemäß
-[Third-Party-Policy](THIRD_PARTY_LICENSE_POLICY.md), kein automatischer Audit.
+Die Hauptnavigation und allgemeine Features bleiben spielunabhängig.
+Spielabhängige Zielseiten werden über registrierte Modulhandler aufgelöst; allgemeine
+History-, Gruppen- oder Player-Features kennen keine konkreten Spielseiten.
 
-### Zentrales Theme-System
+Shell-Navigationsparameter verwenden zentrale Konstanten in
+`App/Navigation/NavigationParameters.cs`; Sender und Empfänger verwenden denselben
+Schlüssel.
 
-App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Der `AppNavigationSettings`-/Preferences-Port speichert die Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.
+Nicht-historische Navigation, Darstellung und lokale Preferences sind Hostzustand und
+werden nicht in SQLite modelliert. Spielabhängige lokale Preferences werden über
+allgemeine Hostgrenzen und einen stabilen `Game.Key` adressiert.
 
-## 11. Nicht gewünschte Muster
+Theme-, XAML-, Binding-, Dialog- und weitere Presentationregeln stehen in
+[UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md) und [UI_WIREFRAME.md](UI_WIREFRAME.md).
+
+## 13. Lokaler History-Transfer
+
+Import und Export historischer Partien bilden einen allgemeinen Application-Slice.
+Das versionierte Austauschformat kennt keinen konkreten Transport.
+
+Spielmodule erweitern den Transfer über allgemeine Schema-/Persistenzgrenzen.
+Die konkrete Spielimplementierung bleibt in
+`Application/Games/<GameName>/`.
+
+Dateispeichern, Teilen und native Picker sind App-seitige Ausgabe- bzw.
+Eingabeadapter und enthalten keine eigenen Format- oder Matchingregeln.
+
+Format, Matching, Validierung, Snapshotprüfung und Commitregeln stehen ausschließlich
+in [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
+
+## 14. Fachliche Rollen
+
+- `Query`: reine Leseprojektion ohne Mutation.
+- `UseCase`: Application-Orchestrierung eines fachlichen Ablaufs.
+- `Persistence`: konkrete zusammenhängende EF-Komponente oder
+  Modul-Erweiterungsimplementierung, insbesondere für Arbeiten auf demselben Context.
+- `Store`: Host-/Preferences-Grenze; kein EF-Wrapper.
+- `Handler`: Dispatch-, Routing-, Navigations- oder Transportentscheidung.
+
+`DataAccess` ist kein bevorzugter Standardname.
+
+Projektweite C#-, Async-, Benennungs- und Kommentarregeln:
+[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
+
+## 15. Tests und Architekturschutz
+
+Core-Tests bleiben reine Unit-Tests ohne EF oder SQLite.
+
+Application-Slice-Tests verwenden für relationale Regeln echte EF-/SQLite-
+Datenbanken mit isolierter Lebensdauer und Cleanup; EF InMemory ersetzt keine
+Constraints, SQL-Übersetzung oder Transaktionen.
+
+Architekturtests schützen insbesondere:
+
+- die Abhängigkeitsrichtung `App -> Application -> Core`,
+- die Providergrenze,
+- EF-freie ViewModels,
+- die harte `Games/<GameName>/`-Ownership,
+- das Verbot konkreter Spielabhängigkeiten im allgemeinen Code,
+- die Unabhängigkeit verschiedener Spielmodule.
+
+Tests spiegeln die fachliche Slice- und Modulstruktur.
+
+## 16. Nicht gewünschte Muster
 
 Ohne konkreten Bedarf werden nicht eingeführt:
 
@@ -461,314 +417,25 @@ Ohne konkreten Bedarf werden nicht eingeführt:
 - MediatR nur als Dispatch-Schicht,
 - `Common`-/`Utils`-Sammelordner,
 - bedeutungslose Ein-Methoden-Interfaces,
+- allgemeine Services nur zum Wrappen vorhandener APIs,
 - ein allgemeiner Navigation-Service nur zum Wrappen von Shell,
 - eine generische Game Engine,
-- technische Ordnerhierarchien, die zusammengehörige Features auseinanderziehen.
+- technische Ordnerhierarchien, die zusammengehörige Features auseinanderziehen,
+- leere Spielmodulordner nur für Symmetrie,
+- Compatibility-Aliase für alte interne Domänensynonyme.
 
-## 12. Namespaces, Dateien und Tests
+## 17. Bewusste allgemeine technische Entscheidungen
 
-Namespace-Hierarchien folgen der fachlichen Ordnerstruktur; Tests spiegeln den
-getesteten Slice. Gemeinsame Fachbegriffe und Architekturverträge bleiben ihrer
-Schicht zugeordnet. Core-Tests bleiben reine Unit-Tests ohne EF/SQLite.
-Application-Slice-Tests verwenden echte EF-/SQLite-Datenbanken mit isolierter Lebensdauer
-und Cleanup; keine Fakes für entfernte Store-/Query-Interfaces und kein EF InMemory als
-Ersatz für Constraints, Übersetzung oder Transaktionen. Architekturtests schützen Core,
-Providergrenze, EF-freie ViewModels sowie Gruppen- und Spielmodul-Ownership.
-Kleine ausschließlich slice-eigene Begleittypen stehen standardmäßig beim Haupttyp;
-Tests spiegeln die fachliche Gruppierung ohne unnötige Ein-Datei-Unterordner.
-XAML, DI und EF zählen als Verwendung. Projektweite C#-, Async-, Benennungs- und
-Kommentarregeln stehen in [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
-Bei Refactorings werden alte Domänensynonyme nicht als Compatibility-Aliase
-weitergeführt.
+SQLite kann bestimmte `DateTimeOffset`-Sortierungen nicht zuverlässig übersetzen.
+Betroffene lokale Listen projizieren deshalb nur benötigte Metadaten und sortieren
+für die derzeit kleine lokale Datenmenge anschließend im Speicher. Eine andere
+Timestampdarstellung oder Schemaänderung braucht einen konkreten Bedarf.
 
-## 13. Architekturregel für zukünftige Spiele
+`AppShell` darf im Bootstrap über `IServiceProvider` aufgelöst werden, wenn seine
+Erzeugung erst nach `InitializeComponent` und der Theme-Anwendung erfolgen muss.
+Eine zusätzliche Startup-Serviceschicht wird nicht allein eingeführt, um diesen
+Lebenszyklus zu verstecken.
 
-Ein neues Spiel wie Terraforming Mars wird zunächst als eigenes Modul angelegt:
-
-```text
-Games/TerraformingMars/
-```
-
-Nur wirklich allgemeine Konzepte werden in den gemeinsamen Kern verschoben.
-Gemeinsamer Code entsteht durch nachgewiesene Gemeinsamkeit, nicht durch
-vorsorgliche Abstraktion.
-
-## Historien-Slice
-
-Die allgemeine Spielerverwaltung liegt in `Application/Players/ListPlayersQuery.cs`
-und `Application/Players/EditPlayerUseCase.cs` sowie den zugehörigen App-Features und
-konkreten EF-Slices. Die Listenprojektion lädt Spieler und Partiemetadaten gebündelt;
-das Bearbeiten speichert ausschließlich Name und Archivstatus des Player-Aggregats.
-`App/Navigation/IGameSessionNavigationHandler` ist die gemeinsame Navigation von Historie
-und Spielerverwaltung zu einer Partie. Jedes Spiel registriert seinen Handler
-im Modul; dieser entscheidet anhand des Session-Status über die konkrete Seite.
-Das allgemeine Player-Feature enthält keine Spielmodul-Abhängigkeiten.
-
-Konkrete CompletedGameSessionsQuery unter `Application/History`, Listenoberfläche unter `App/Features/History`. Arche-Nova-Korrekturen gehören unter `Games/ArkNova/GameSessions/History`: eigener Use Case mit direktem EF-Zugriff für Completed, UI verwendet die vorhandenen Wertungs- und Gleichstandskomponenten. Ein ansichtsgebundener Entwurf wird atomar gespeichert; der Scoring-Use-Case behält seine Statusgrenze.
-
-## Gemeinsame Spielerfarben und Spielregeln
-
-`Core/Players/PlayerColor` definiert zwölf gemeinsame semantische Farben ohne UI-Hexwerte. Es gibt kein separates Arche-Nova-Farbenum. `GamePlayerColorRules` beschreibt eine erlaubte Teilmenge; `Games/ArkNova/ArkNovaPlayerColors` erlaubt Blau, Gelb, Rot und Schwarz. Gruppen- und Partiedomänenobjekte des Spielmoduls prüfen diese Regeln. `Application/Groups/Colors/GamePlayerColorCatalog` verwendet die im Composition Root registrierten Regeln. Eine leere oder fehlende Teilmenge bedeutet: keine Spielerfarben.
-
-`App/Presentation/PlayerColors` ordnet dem gemeinsamen Farbwert Hintergrund, Textfarbe und lokalisierten Namen zu. Diese Palette ist themeunabhängig und kein Kamera-Erkennungskatalog. Physische Farbe → gemeinsame semantische Farbe → UI-Farbpaar; Hexwerte sind keine Erkennungsgrenzen.
-
-## Gruppenbearbeitung und Modulgrenze
-
-`Application/Groups/CreateGroupUseCase.cs` und `EditGroupUseCase.cs` enthalten jeweils den Use Case und seine kleinen Begleittypen für gemeinsame Gruppendaten und optionale semantische Farbauswahlen für den aktuellen Spielschlüssel. Sie kennen keine konkreten Spieltypen oder Listen erlaubter Farben. Der registrierte Regelkatalog validiert die Auswahl; Gruppenfarben bleiben pro Spiel und Gruppenmitglied, keine globale Eigenschaft von `Player` oder `GroupPlayer`.
-
-Die allgemeinen Gruppen-Use-Cases speichern Gruppe, neue Spieler, Reihenfolge und Farben in einer Transaktion. `Application/Groups/Colors/IGroupColorPersistence` ist die kleine technische Erweiterungsgrenze für Lesen und Ersetzen der Spieldefaults auf demselben DbContext. Der registrierte `Games/ArkNova/.../ArkNovaGroupColorPersistence` besitzt die Arche-Nova-Tabelle. Allgemeine Use Cases greifen nicht direkt auf diese Tabelle zu; ohne Farbmodul werden keine fremden Defaults gelesen oder verändert.
-
-Beide Gruppenformulare bleiben unter `App/Features/Groups`. `GroupColorSelectionViewModel` und `GroupColorPickerView` werden für Anlage und Bearbeitung gemeinsam verwendet. Der aktuelle Spielkontext entscheidet über die Palette. Der Composition Root registriert zusätzlich den lokalisierten Anzeigenamen des Spiels für den Dialogtitel. Ein weiteres Spiel ergänzt seine Regeln und bei Farbunterstützung seinen Persistenzadapter; gemeinsame Formulare und Verträge erhalten keine Spiel-Fallunterscheidungen. Der Architekturtest schützt die öffentlichen Gruppenverträge vor spielspezifischen Typen.
-
-## UI-Bindings und Fehlerdiagnose
-
-Die App aktiviert `MauiStrictXamlCompilation` und
-`MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 sind Buildfehler.
-Die verbindlichen Regeln für compiled bindings, `x:DataType`, `DataTemplate` und
-`x:Reference` stehen in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
-
-Abgefangene technische Fehler in Historie und Wertungsansichten werden über injiziertes `ILogger<T>` mit Exception und relevantem ID-Kontext protokolliert; sichtbare Meldungen bleiben lokalisiert. Im Debug-Build gibt der Microsoft-Debug-Provider die Meldungen bei angeschlossenem Debugger aus. Es werden keine dauerhaften Protokolldateien oder Telemetriedienste eingeführt.
-
-## Lokaler Austausch historischer Partien
-
-Unter `Application/History/Transfer` liegen das unabhängige BGT-Austauschmodell,
-Formatprüfung, ImportPlan und die Export-/Import-Use-Cases. JSON wird ausschließlich
-in DTOs deserialisiert. Der Plan enthält globale 1:1-Spielerzuordnungen und bleibt
-bis zum Commit ohne produktive Writes. Die App führt Dateiauswahl, Resolve und
-Preview im History-Feature aus; sie kennt keine konkreten Persistenzadapter.
-
-Die konkrete HistoryTransferPersistence im History/Transfer-Slice führt Exportlesevorgänge und den abschließenden Import jeweils
-auf einem kurzlebigen Context in einer Transaktion aus. Vor dem Import wird der
-lokale Snapshot einschließlich Modulreferenzen erneut geprüft; Änderungen erfordern
-neue Analyse. Die persistierten Entities entstehen über Domainkonstruktoren und
-Domainmethoden. SQLite-Namensindizes verwenden die pro Verbindung registrierte
-BGT_NAME-Collation mit der gemeinsamen EntityName-Semantik (Trim + OrdinalIgnoreCase).
-Der App-seitige Connection-Interceptor registriert sie beim Erzeugen/Öffnen jeder
-Verbindung, auch für EnsureCreatedAsync. Das relationale Modell benennt die Collation,
-kennt aber keine SQLite-Typen. Tests verwenden denselben Registrierungscode und
-registrieren bei selbst übergebenen bereits offenen Verbindungen ausdrücklich vorab.
-
-Bekannte Spielmodule registrieren IGameTransferSchema (Version und Validierung)
-und IGameTransferPersistence (Projektion, Referenzmatching und Persistenz auf demselben
-Context). Arche Nova besitzt seine DTOs und EF-Persistenz unter Application/Games/ArkNova; allgemeiner
-Transfercode kennt keine Arche-Nova-Felder. Custom Games sind noch nicht unterstützt.
-Format, Matching und Limits: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
-
-Die Application erzeugt BgtExportContent genau einmal vor der Ausgabeauswahl; das
-versionierte Austauschformat kennt keinen Transport. App/Features/History/Export
-orchestriert über HistoryExportFlow und registrierte IHistoryExportTarget-Ausgabeziele
-Speichern oder Teilen. Native Dokument-Picker liegen unter Platforms/Android und
-Platforms/iOS; Share verwendet MAUI. Weitere Transportziele ändern weder das
-Austauschmodell noch die Importpipeline. Details stehen in IMPORT_EXPORT.md.
-
-## Fachliche Rollen und gemeinsame Implementierungen
-
-- `Query`: reine Leseprojektion ohne Mutation; etwa `CompletedGameSessionsQuery` oder `ArkNovaPreparationQuery`.
-- `Store`: weiterhin sinnvoll für echte Preferences-/Hostgrenzen, kein EF-Wrapper.
-- `Persistence`: konkrete zusammenhängende EF-Komponente oder Spielmodul-Erweiterung, insbesondere für Arbeiten auf einem bestehenden Context/in derselben Transaktion (z. B. Gruppenfarben oder Spiel-Importdaten).
-- `UseCase`: Application-Orchestrierung, die Domainregeln und Persistenzoperationen für einen fachlichen Ablauf verbindet.
-- `Handler`: Dispatch-/Routing-/Navigations- oder Transportentscheidung. Kein allgemeiner Service-Ersatz.
-
-`DataAccess` ist kein bevorzugter Standardname. Projektweite Benennungs-,
-Kommentar- und C#-Regeln stehen in [CODE_GUIDELINES.md](CODE_GUIDELINES.md);
-objektive Produktions-Namingregeln zusätzlich in `.editorconfig`.
-
-Scoring und historische Korrektur verwenden EF Core direkt in getrennten Use Cases.
-Sie teilen ausschließlich die konkrete ArkNovaGameSessionResultQuery ohne Interface.
-Diese Klasse besitzt nur die gemeinsame Leseprojektion, keine Schreibmethoden.
-
-Die gemeinsame Projektion `ArkNovaGameSessionResultData`, ihre Spielerwerte und der
-CompletionPlan gehören unter `Application/Games/ArkNova/GameSessions/Results`, nicht
-zum Live-Scoring-Slice. Sie können unvollständige Werte und alle GameSession-Status
-repräsentieren. Die Schreibregeln bleiben spezifisch: Live-Scoring speichert inkrementell;
-historische Korrektur ersetzt Ergebniswerte/Placements/Kartenzuordnungen atomar für
-Completed. Prüfungen in Application und an der Persistenzgrenze sind bewusst vorhanden,
-damit inzwischen archivierte Karten nicht neu zugeordnet werden. Die Domainmethoden
-ändern ausschließlich editierbare Ergebniswerte am geladenen Zustand; Setupdaten bleiben erhalten.
-Der EF-Code gehört zum jeweiligen Spiel-/Use-Case-Unterordner.
-
-`ArkNovaGameSessionNavigationHandler` implementiert die allgemeinen Ports
-`IGameSessionNavigationHandler` und `IGameSessionResumeHandler`. Gruppenliste, Historie,
-Spielerbereich und Resume delegieren Status→Zielroute an denselben Modulbaustein. Resume
-restauriert zusätzlich den gespeicherten Gruppenkontext. Die allgemeinen Gruppen-/History-
-Features kennen keine konkreten Ark-Nova-Partieseiten. Der gemeinsame Wertungsscreen bleibt
-erhalten; `ArkNovaScoringMode` benennt Live-Scoring und historische Korrektur explizit.
-
-ImportPlan/ImportPlanner, HistoryTransferPersistence und HistoryTransferUseCase liegen in getrennten,
-fachlich benannten Dateien. Kleine eng zugehörige Begleittypen bleiben beim Haupttyp.
-Weder Zeilenzahl noch ein gemeinsamer Entitytyp begründen eine Zusammenlegung/Trennung:
-maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini-Interfaces.
-
-## Bewusste technische Entscheidungen
-
-### Arche-Nova-Fotoanalyse
-
-Aktuelle Abschlussentscheidung: [CV-Status](ARK_NOVA_CV_STATUS.md).
-Erkennungsforschung eingefroren, gehärtetes A bleibt Referenz/Basis; keine C3-Fusion.
-MAUI/C# → `IArkNovaVisionEngine` in Application → C-ABI → gemeinsamer C++-OpenCV-Kern
-unter `App/Games/ArkNova/PhotoRecognition/Native`. Keine OpenCvSharp-Pakete in der App.
-Native Evidenz enthält nur Registrierung und Feldmesswerte; unverändertes Ranking
-A_NoZero/Confidence E bleiben in Application. SafeHandle besitzt den serialisierten
-nativen Kontext, aufrufereigene Puffer werden nur synchron geliehen. Beide Hosts
-verwenden dieselben Quellen, Referenzassets und ABI. Android paketiert eine `.so`,
-iOS ein zusammengeführtes statisches Archiv mit `NativeReference`/`__Internal`.
-Der implementierte iOS-Host benötigt noch manuelle Apple-Build-/Link-/Runtimeprüfung.
-
-Kamera/Systempicker liefern denselben Service-Input. Foto-Review verwendet eigene
-Entwurfsobjekte ohne Autosave-Bindungen und verändert keine persistierten Werte.
-Erst ausdrückliche Bestätigung ruft einen validierenden Application-Use-Case mit
-einem atomaren `SaveChangesAsync` auf. Fehler lassen die bisherigen Werte bestehen.
-Android Release/Trimming und x64-App-Workflow sind geprüft; Native Mobile ist
-fachlich für assistierte Wertung freigegebener Produktionspfad. Dokumentierte
-Plattformabweichungen sind bewusst akzeptiert. Windows/OpenCvSharp bleibt
-Referenz-/Regressionstool. Frühere Empfehlungen in historischen Reports lösen
-keine weitere CV-Forschung aus.
-
-`tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
-für Phase 1A, kein viertes Produktionsprojekt. Es rekonstruiert die Bildpipeline aus
-dem Forschungs-Handoff; die früheren Python-Implementierungen lagen nicht vor.
-OpenCvSharp4 und die native Slim-Windows-Runtime werden ausschließlich in den CV-Entwicklungswerkzeugen
-referenziert. Core, Application und App enthalten keine CV-Paketreferenzen.
-Die reinen experimentellen Feld-/Confidence-Regeln liegen im Arche-Nova-Scoring-Slice
-in Application. Das Werkzeug liefert Diagnostik-JSON und schreibt keine Partiewerte.
-
-Die kanonische Referenztafel/v2-Geometrie liegen im Werkzeug und werden als
-verlinkte MAUI-Assets paketiert; Testfotos und B/C-Forschungsassets bleiben außen vor.
-Der Windows-Analyzer berechnet Referenzfeatures einmal beim Aufbau. Der native
-Kontext besitzt Referenz/Masken, die Registrierung berechnet Features je Aufruf;
-ein serialisierter Featurecache wird nicht eingeführt. Benchmark und Grenzen
-stehen im README des Werkzeugs.
-
-Die Registrierung verlangt ausreichende Matches/Inlier, begrenzten Projektionsfehler,
-räumlich verteilte Inlier, eine plausible konvexe Bildprojektion und mindestens 75 %
-mittlere Feldsichtbarkeit je Track. Kandidaten müssen mindestens 97 % sichtbar sein.
-Diese experimentellen Grenzen
-sind keine produktiv validierten Schwellen. Außerhalb des Fotos liegende schwarze
-Warp-Ränder dürfen keine Farbevidenz liefern. Schlechte Registrierung liefert keine Werte.
-
-Der Analyzer behält die ursprüngliche Baseline als Diagnostik bei: unvollständige
-Tracks (<99 %) und mindestens 6 % erweiterte Farbmaske im direkten Artenschutz-
-Nachbarfeld reduzieren High auf Uncertain. Werte werden dabei nie umgeschrieben.
-Die nicht rekonstruierte Richtungsheuristik ist im Analyzer deaktiviert; das reine
-Handoff-Prädikat bleibt für eine spätere kalibrierte Richtungsinformation testbar.
-
-`ArkNovaConfidencePolicy` im Entwicklungswerkzeug vergleicht fünf kleine Varianten.
-`analyze` verwendet nach der CV-Kandidatenbildung die auf Calibration gewählte
-Confidence-Variante E: lokale Feldsichtbarkeit,
-mindestens zwei unabhängig belegte Tracks zur Unterstützung einer Spielerfarbe
-(je mindestens 15 % Kernfarbe), kernbasierte Dominanz gegenüber dem zweitbesten
-Feld und zurückhaltende Medium-Freigabe bei gesättigten Scores. Ohne Farbstützung
-liefert sie null/Uncertain statt eines scheinbaren Werts. RawPrediction bleibt in
-den Confidence-Berichten separat erhalten. Artenschutz wird wegen nicht zuverlässig
-trennbarer Calibration-Fehler grundsätzlich Uncertain; dies ist eine dokumentierte
-Grenze des Prototyps, keine produktive Erkennungsfreigabe.
-
-Der Confidence-V2-Datensatz wird unverändert mit 2000-px-Bildern verwendet.
-`split.json` fixiert 17 Calibration- und 8 Holdout-Fotos. Die Auswahl wurde vor
-Holdout-Auswertung mit Split-/Quellcode-Hashes eingefroren; der Benchmark prüft
-dies vor Zugriff auf Holdout-Bilder. Ground Truth beeinflusst nur Auswertung und
-Gates, niemals Feldentscheidung oder Farbanwesenheit. Alle 300 Entscheidungen
-(183 vorhandene Werte, 117 explizit abwesende Farb-/Track-Kombinationen) zählen;
-akzeptierte Phantomfarben sind Accuracy-Fehler. Die vollständigen Berichte liegen
-unter `tools/Games/ArkNova/PhotoRecognition/Reports`.
-
-Der Holdout bestätigt nur 38,3 % Coverage bei 23/23 richtigen akzeptierten Werten.
-Die Rohgenauigkeit beträgt 42/60. Die 75-%-/98-%-Ziele sind nicht gemeinsam erreicht;
-ein erfolgreiches Sicherheitsgate bezeichnet keine Produktionsreife. `viewIndex`
-ist die Aufnahmereihenfolge und keine kalibrierte Kameraposition.
-
-Der optionale `ArkNovaBlackDiagnostics`-Observer im Entwicklungswerkzeug liest die
-tatsächlich verwendeten Zwischenmatrizen synchron und exportiert ausschließlich
-Diagnostik. Bildannotationen verwenden Kopien. Der Aufruf `diagnose-black` untersucht
-IMG_4265–4268 ohne Änderung von Schwellen, Gewichtung, Confidence oder Geometrie.
-Die bestätigte physische Belegung ist Artenschutz 20; die Diagnose weist Feld 0
-als Fehlgewinner und keine strenge Schwarzbelegung auf 21 nach. Ergebnisse und
-methodische Grenzen stehen unter `PhotoRecognition/Reports/BlackConservationDiagnosis`.
-
-`ArkNovaRankingCapture` liest dieselben registrierten Pixel und Feldmasken für das
-separate A/B/C-Rankingexperiment. Die acht Varianten teilen eine Registrierung;
-die Original-Baseline wird je Entscheidung auf Gleichheit mit dem Analyzer geprüft.
-Relative Schwarz-Evidenz und Kernrangfolge bei Sättigung sind nur Experimente.
-Übernommen wurde ausschließlich `A_NoZero` in `ArkNovaRankingRules`.
-`analyze` schließt Wert 0 aus der CV-Kandidatenbildung aus. Schwache Kandidaten
-(Score <0,38, FullColor <0,06 oder CoreColor <0,06) bleiben null. Nach Ersatz eines
-früheren Nullfeld-Gewinners gilt zusätzlich CoreColor >=0,10. Ein stark belegtes
-ausgeschlossenes Nullfeld kann als reine Kontrollregion Enthaltung auslösen;
-es wird weder als Wert noch als Nachbaralternative angeboten. Die Kontrollregel
-verlangt mindestens 30 % Full-/Core-Farbe und einen Score mindestens wie der Ersatz.
-Keine dieser Grenzen ändert die Confidence-Policy oder die manuelle Domain: dort
-bleibt 0 weiterhin zulässig. Die Polygondatei wird nicht verändert.
-
-Das Rankingexperiment verwendet denselben 17/8-Split. Die Auswahl wurde vor dem
-einzigen Holdout-Lauf in `ranking-selection.json` einschließlich Quellcode-,
-Geometrie-, Ground-Truth- und Split-Hashes eingefroren. Calibration verbessert sich
-von 93 auf 94/123, Holdout von 42 auf 45/60 richtige ausgegebene Rohkandidaten;
-Schwarz-Artenschutz erreicht dort 5/5 statt 2/5. Zwei schwache Schwarz-Rufkandidaten
-auf Calibration werden zusätzlich zurückgehalten. Die unveränderte Confidence-
-Policy bleibt auf Holdout bei 38,3 % Coverage. Berichte und Vorher-/Nachher-Bilder
-liegen unter `PhotoRecognition/Reports/RankingExperiment`. Frühere `benchmark`-,
-`confidence`- und `diagnose-black`-Aufrufe behalten ihre dokumentierte historische
-Baseline für Regression/Vergleich; sie sind keine aktuelle CV-Eingabefunktion.
-
-`tools/Games/ArkNova/StructureResearch` ist ein weiteres ausschließliches
-Entwicklungswerkzeug. Es kompiliert die kanonischen Analyzer-/Rankingquellen
-als verlinkte Dateien und benutzt lesende Frame-Observer derselben Registrierung.
-Der farbunabhängige Strukturweg erhält Graustufen-/Gradientenreferenzen aus
-Empty-Fotos und zählt nur Komponentenpixel innerhalb von Polygon und Core als
-Kontakt. Er verändert keine A-Erkennungsregel. Quellen, Config, Normalcaches und
-Inputs werden vor Fall-Auswertung gehasht; ein Run-Latch verhindert wiederholtes
-Auswerten. Ein technischer A-Zahlenfehler erforderte eine dokumentierte
-Wiederaufnahme mit identischen Detektor-/Modellhashes und expliziter Fehlerzählung.
-Ergebnisse, Grenzen der Near-Object-Diagnose und DINOv3-Verfügbarkeit stehen unter
-`PhotoRecognition/Reports/ResearchV3`. Die sehr geringe Struktur-Recall rechtfertigt
-keine Fusion. Historische Freeze-Dateien werden auch bei Änderungen ausschließlich
-an Observer-Plumbing nicht umgeschrieben; ihre Quellcodeprüfung kann dadurch
-erwartungsgemäß spätere historische Holdout-Aufrufe ablehnen.
-
-`tools/Games/ArkNova/ClassicCvResearch` untersucht als separates Entwicklungswerkzeug
-geometrisches Directional Chamfer, 5×5-Census mit/ohne begrenzte Track-Translation-ECC
-und eine klassische approximative Low-Rank/Sparse-Projektion aus Empty-Daten.
-Es nutzt die vorhandenen Frame-Observer ohne Änderungen an A oder der globalen
-Registrierung. Lokale ECC bleibt auf vier Pixel pro Achse begrenzt und verändert
-ausschließlich Forschungsframes. C3 zeigt zusätzliche Occupancy, besonders bei
-Artenschutz; die getestete einfache A+C3-Regel ist nicht für Übernahme geeignet.
-Alle belegten Vergleichsdaten sind wiederverwendete Forschungsdaten, kein neuer
-unabhängiger Holdout. Auswahl erfolgt auf alter Calibration, mit neuen Quellen-/
-Inputhashes vor dem Vergleich. Ergebnisse und Entscheidungsgrenzen stehen unter
-`PhotoRecognition/Reports/ClassicCvResearchV4`; historische Freezes bleiben erhalten.
-
-`tools/Games/ArkNova/C3Refinement` begrenzt die Folgearbeit auf vorhandene
-Empty-SVD-/Sparse-Evidenz, Attraktivitäts-Feld-Floors, lokalen Farb-Readout und zwei
-feste Track-Fusionen. Mehrere Farben dürfen unabhängig Kontaktpixel desselben Feldes
-stützen. Auswahl erfolgt nur auf alter Calibration/Empty; wiederverwendete Vergleiche
-führen zu keiner Regeländerung. Die Qualitätsziele werden nicht erreicht; keine Fusion
-wird in den App-Workflow übernommen. Ergebnisse: `PhotoRecognition/Reports/C3RefinementV5`.
-
-Davon getrennt begrenzt `ArkNovaMaskFraction.ClampRoundoff` ausschließlich Rundungs-
-abweichungen bis 1e−12 an den mathematischen [0,1]-Grenzen der A-Maskenanteile.
-Größere/fachlich ungültige Werte bleiben Fehler. Analyzer und Ranking-Capture nutzen
-denselben reinen Guard; Masken, Scoreformeln, Confidence und Domain bleiben gleich.
-Alle 48 registrierten Frames wurden identisch reproduziert, 564 zuvor erfolgreiche
-Kandidaten und Confidence-Werte bleiben erhalten. Historische Quellhashes bleiben
-unverändert gespeichert und können unter dem gehärteten Code deshalb ablehnen.
-
-Die mobile Produktionsbibliothek ist der gemeinsame native OpenCV-Kern.
-Das fachliche GO für assistierte Wertung akzeptiert die dokumentierten
-Plattformabweichungen bewusst; historische Paritäts-/GT-Gate-FAILs und Messwerte
-bleiben erhalten. Alle Vorschläge benötigen Nutzerprüfung und Bestätigung.
-Offen bleiben die manuellen Runtime-Nachweise auf echtem Android ARM64 und iOS.
-Keine weitere CV-Optimierung geplant.
-Foto-Review bestätigt dieselben fachlichen Wertungsfelder, ohne neue Tabellen oder
-gespeicherte Bild-/Confidence-Daten. Technische Details: NativeVisionSpike-README.
-
-SQLite kann die verwendeten DateTimeOffset-Sortierungen nicht zuverlässig übersetzen.
-Die lokalen Listen projizieren deshalb nur benötigte Partiemetadaten und sortieren sie
-anschließend im Speicher. Für die derzeit kleine lokale Datenmenge bleibt das bewusst
-akzeptierte technische Schuld; keine neue Timestampdarstellung oder Schemaänderung.
-IDbContextFactory, gezielte AsNoTracking-Projektionen, ExecuteUpdate/Delete und compiled
-MAUI-Bindings bleiben bestehen. Größere Performanceänderungen benötigen Messdaten.
-
-App injiziert feste Settings-/Open-GameSession-Abhängigkeiten direkt. Nur AppShell wird
-weiterhin im Bootstrap über IServiceProvider aufgelöst: Die Seitenerzeugung muss nach
-InitializeComponent und Theme-Anwendung erfolgen. Eine zusätzliche Startup-Serviceschicht
-würde diese Lebensdauer nur verstecken. Navigation-Preferences liegen bei App/Navigation.
+Drittanbieter-Lizenzinformationen werden offline aus paketierten Ressourcen
+bereitgestellt. Wartungs- und Lizenzregeln stehen ausschließlich in
+[THIRD_PARTY_LICENSE_POLICY.md](THIRD_PARTY_LICENSE_POLICY.md).

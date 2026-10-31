@@ -19,7 +19,7 @@ dieser optionalen Regel wurde bewusst nicht begonnen.
 **Referenzexperimente B/C: abgeschlossen, kein Produktgewinn.** Produktionsbaseline A
 bleibt `board_reference_master_clean.png` mit `scoring_regions_v2.json`, gehärtetem
 A_NoZero, Confidence E, `RegistrationEdge=1600` und `AnalysisScale=0.5`.
-Im [finalen Referenzvergleich](../tools/Games/ArkNova/PhotoRecognition/Reports/Reference3WayComparison/Reference3WayComparison.md)
+Im [finalen Referenzvergleich](../../../tools/Games/ArkNova/PhotoRecognition/Reports/Reference3WayComparison/Reference3WayComparison.md)
 registriert C v2 technisch erfolgreich 54/54; nach E treffen A/B/C jeweils 297/411.
 C v2 bleibt ausschließlich dokumentierter Referenzkandidat/Forschungsstand,
 keine automatische Übernahme. Weitere Referenz-/Heuristikoptimierung ist gestoppt.
@@ -37,7 +37,7 @@ Das letzte Stressfoto `IMG_4263.jpeg` registriert erfolgreich: fünf richtige,
 ein falscher, kein fehlender Wert. Schwarz-Artenschutz: **2 statt 24**, Rot/Unsicher.
 Drei grüne Werte sind korrekt. Dies ist ein zusätzlicher Stress-Test, kein
 statistisch ausreichender unabhängiger Holdout. Originalhash, vorab gespeicherte
-GT und Einzelauswertung: [Abschlussreport](../tools/Games/ArkNova/PhotoRecognition/Reports/FinalAcceptance/README.md).
+GT und Einzelauswertung: [Abschlussreport](../../../tools/Games/ArkNova/PhotoRecognition/Reports/FinalAcceptance/README.md).
 
 ## Verbindlicher Produktworkflow
 
@@ -92,7 +92,7 @@ Highs, kein korrekt-High zu falsch-High und keine neuen High-Phantome.
 V3 Empty nach E **11/120** Phantome (Windows A 10/120), Raw 42/120 (A 40/120).
 Windows A bleibt mit 297/411 nach E die Vergleichsbaseline. Vollständige Tabellen
 und Einzelentscheidungen, einschließlich des historischen GT-Gate-FAIL:
-[NativeGroundTruthAcceptance](../tools/Games/ArkNova/NativeVisionSpike/NativeGroundTruthAcceptance.md).
+[NativeGroundTruthAcceptance](../../../tools/Games/ArkNova/NativeVisionSpike/NativeGroundTruthAcceptance.md).
 
 Das historische strengere Gate bleibt als Mess-/Bewertungsstand erhalten.
 Das ausdrückliche fachliche GO akzeptiert die Plattformabweichungen für den
@@ -117,7 +117,7 @@ das ersetzt keinen Apple-Build-/Link-/Laufzeitnachweis:
 `iOS build/link/runtime verification pending manual user verification`.
 
 Build-/Reproduktionsanleitung und aktuelle Nachweisgrenzen:
-[Native README](../tools/Games/ArkNova/NativeVisionSpike/README.md).
+[Native README](../../../tools/Games/ArkNova/NativeVisionSpike/README.md).
 Windows/OpenCvSharp bleibt Referenz-/Regressionstool; Native Mobile ist der
 Produktionspfad für assistierte Wertung. Keine weitere CV-Forschung geplant.
 

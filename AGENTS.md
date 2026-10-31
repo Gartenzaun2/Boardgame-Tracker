@@ -70,14 +70,26 @@ Wenn ein Ansatz scheitert, zuerst Ursache und vorhandene Evidenz neu bewerten.
 Den Untersuchungsraum nicht reflexartig durch weitere Dateien, Tools oder Recherche
 vergrößern.
 
-## Quellen der Wahrheit
+## Dokumentationsstruktur und Quellen der Wahrheit
 
-Nur die für den aktuellen Auftrag relevanten Dokumente lesen:
+`AGENTS.md` bleibt eine kompakte Arbeits- und Routingdatei. Fach-, Architektur-, UI-,
+Code-, Persistenz- und spielspezifische Detailregeln gehören in ihre kanonischen
+Dokumente und werden hier nicht dupliziert.
+
+Allgemeine Dokumente unter `docs/` beschreiben ausschließlich spielübergreifende
+Regeln. Spielspezifische Dokumentation liegt unter `docs/Games/<GameName>/`.
+Ein spielespezifisches Dokument wird nur gelesen, wenn die Aufgabe dieses Spiel
+oder genau dieses Spezialthema betrifft.
+
+Bei Architekturfragen eines konkreten Spiels gelten die allgemeine
+`docs/ARCHITECTURE.md` und ergänzend `docs/Games/<GameName>/ARCHITECTURE.md`.
+Spezialisierte Dokumente, auf die eine Spielarchitektur verweist, nur bei Bedarf lesen.
 
 | Thema | Kanonische Quelle |
 |---|---|
 | Produktverhalten und Anforderungen | `docs/PRODUCT_SPEC.md` |
-| Architektur, Schichten, EF, Module | `docs/ARCHITECTURE.md` |
+| allgemeine Architektur, Schichten und Modulregeln | `docs/ARCHITECTURE.md` |
+| Architektur eines konkreten Spiels | `docs/Games/<GameName>/ARCHITECTURE.md` |
 | Domain und Persistenzmodell | `docs/DATA_MODEL.md` |
 | C#, Async, Naming und Kommentare | `docs/CODE_GUIDELINES.md` |
 | allgemeine UI-/Interaktionsregeln | `docs/UI_DESIGN_GUIDE.md` |
@@ -92,13 +104,9 @@ Nicht alle Dokumente vorsorglich lesen. `README.md` und `CHANGELOG.md` sind kein
 Standardlektüre für normale Implementierungsaufträge. Historische Quellen nur lesen,
 wenn der Auftrag tatsächlich Historie benötigt.
 
-Jede dauerhafte Detailregel besitzt genau eine kanonische Quelle. Regeln aus den
-genannten Dokumenten nicht in `AGENTS.md` duplizieren. Spezialisierte Dokumente, auf
-die eine kanonische Quelle verweist, nur lesen, wenn deren Thema für den Auftrag
-konkret relevant ist.
-
-Bei relevantem Widerspruch zwischen Code und kanonischer Dokumentation nicht
-stillschweigend eine Seite wählen. Den Widerspruch klären lassen.
+Jede dauerhafte Detailregel besitzt genau eine kanonische Quelle. Bei relevantem
+Widerspruch zwischen Code und kanonischer Dokumentation nicht stillschweigend eine
+Seite wählen. Den Widerspruch klären lassen.
 
 ## Änderungen
 
