@@ -1,138 +1,162 @@
-# Third-Party License Policy
+# Boardgame Tracker – Third-Party License Policy
 
-## Ziel
+## 1. Zweck
 
-Boardgame Tracker soll dauerhaft sowohl kommerziell als auch unentgeltlich vertrieben werden können und die Freiheit behalten, den eigenen Quellcode wahlweise proprietär/Closed Source oder ausdrücklich Open Source bereitzustellen.
+Diese Policy definiert die Lizenzanforderungen für neue Drittanbieter-Bibliotheken,
+Frameworks, native Komponenten, Assets und andere ausgelieferte Abhängigkeiten.
 
-Neue Drittanbieter-Bibliotheken, Frameworks, native Komponenten, Assets oder sonstige Abhängigkeiten dürfen deshalb nur verwendet werden, wenn ihre Lizenz mit diesen Zielen vereinbar ist.
+Boardgame Tracker soll die Freiheit behalten, künftig:
 
-## Grundregel
+- kommerziell oder unentgeltlich vertrieben zu werden;
+- proprietär / Closed Source zu bleiben;
+- oder ausdrücklich Open Source veröffentlicht zu werden.
 
-Neue Drittanbieter-Abhängigkeiten müssen eine Lizenz besitzen, die mindestens Folgendes erlaubt:
+Eine Dependency darf diese Wahl nicht unbeabsichtigt einschränken.
+
+## 2. Grundanforderungen
+
+Neue Drittanbieter-Abhängigkeiten müssen für die tatsächlich verwendete Version und
+Einbindungsform mindestens erlauben:
 
 - kommerzielle Nutzung und Monetarisierung;
-- kostenlose Nutzung und Distribution;
-- Nutzung in einer proprietären / Closed-Source-Anwendung;
-- Nutzung in einer Open-Source-Anwendung;
-- Weitergabe in kompilierter bzw. binärer Form;
-- Weitergabe des Quellcodes, sofern das Projekt dies ausdrücklich möchte;
+- unentgeltliche Nutzung und Distribution;
+- Nutzung in proprietärer / Closed-Source-Software;
+- Nutzung in Open-Source-Software;
+- Binärdistribution;
 - Modifikation;
-- Distribution über App Stores und andere übliche Vertriebskanäle.
+- Quellcodeweitergabe, falls das Projekt dies später möchte;
+- Distribution über App Stores und übliche Vertriebskanäle.
 
-Die Lizenz darf insbesondere nicht verlangen, dass der gesamte eigene Boardgame-Tracker-Quellcode veröffentlicht, unter dieselbe Lizenz gestellt oder anderweitig in seiner künftigen Lizenzwahl eingeschränkt wird.
+Übliche Pflichten wie Lizenztext, Copyright-Hinweis, Attribution oder NOTICE sind
+zulässig, müssen aber vollständig erfüllt werden.
 
-Übliche Pflichten wie Copyright-Hinweise, vollständige Lizenztexte, Attributionen oder NOTICE-Dateien sind zulässig und müssen korrekt erfüllt werden.
+Eine Dependency darf ohne ausdrückliche Projektentscheidung insbesondere nicht
+erzwingen, dass der gesamte Boardgame-Tracker-Quellcode veröffentlicht oder unter
+eine bestimmte Lizenz gestellt wird.
 
-## Bevorzugte Lizenzen
+## 3. Bevorzugte Lizenzen
 
-Permissive Open-Source-Lizenzen sind grundsätzlich zu bevorzugen, insbesondere:
+Bevorzugt werden permissive Open-Source-Lizenzen, insbesondere:
 
-- Apache License 2.0;
-- MIT License;
-- BSD 2-Clause;
-- BSD 3-Clause;
-- ISC License;
-- zlib License.
+```text
+Apache-2.0
+MIT
+BSD-2-Clause
+BSD-3-Clause
+ISC
+Zlib
+```
 
-Andere permissive Open-Source-Lizenzen können ebenfalls verwendet werden, müssen aber vor Aufnahme anhand der tatsächlich verwendeten Version geprüft werden.
+Andere permissive Lizenzen sind ebenfalls möglich, müssen aber für die tatsächlich
+verwendete Version geprüft werden.
 
-## Nicht ohne ausdrückliche Prüfung verwenden
+## 4. Nur nach ausdrücklicher Prüfung
 
-Abhängigkeiten mit Copyleft-, File-Level-Copyleft- oder vergleichbaren Verpflichtungen dürfen nicht automatisch aufgenommen werden. Dazu gehören insbesondere:
+Copyleft-, File-Level-Copyleft-, Source-Available- oder vergleichbare Modelle werden
+nicht automatisch integriert, insbesondere:
 
-- GPL;
-- AGPL;
-- LGPL;
-- MPL;
-- SSPL und andere Source-Available-Lizenzen;
-- Dual-Licensing-Modelle mit unklaren Bedingungen für kommerzielle oder proprietäre Nutzung;
-- sonstige Lizenzen, deren Pflichten von der Einbindungs-, Link- oder Distributionsform abhängen.
+```text
+GPL
+AGPL
+LGPL
+MPL
+SSPL
+Dual Licensing mit relevanten Nutzungseinschränkungen
+```
 
-Diese Kategorien sind nicht pauschal als technisch oder rechtlich unbrauchbar einzustufen. Ihre Verwendung benötigt jedoch vor der Integration eine ausdrückliche Projektentscheidung und eine Prüfung der konkreten Lizenzfolgen für die tatsächliche Einbindungs- und Vertriebsform.
+Diese Kategorien sind nicht pauschal unzulässig. Vor Integration muss jedoch
+ausdrücklich geklärt werden, welche Folgen die konkrete Lizenz für die tatsächliche
+Einbindungs-, Link- und Distributionsform hat.
 
-## Ohne ausdrückliche Projektentscheidung nicht zulässig
+Dasselbe gilt für jede andere Lizenz, deren Pflichten von der technischen Nutzung
+oder dem Vertriebsmodell abhängen.
 
-Keine neue Komponente aufnehmen, deren Lizenz beispielsweise:
+## 5. Ohne ausdrückliche Projektentscheidung nicht zulässig
 
-- kommerzielle Nutzung oder Monetarisierung verbietet oder einschränkt;
-- nur nicht-kommerzielle Nutzung gestattet;
-- bestimmte Geschäftsfelder, Nutzergruppen oder allgemein zulässige Nutzungszwecke ausschließt;
+Nicht integrieren, wenn die maßgebliche Lizenz beispielsweise:
+
+- kommerzielle Nutzung oder Monetarisierung verbietet bzw. wesentlich beschränkt;
+- nur nicht-kommerzielle Nutzung erlaubt;
+- bestimmte Geschäftsfelder, Nutzergruppen oder allgemein zulässige Nutzungszwecke
+  ausschließt;
 - App-Store-Distribution verbietet oder wesentlich einschränkt;
-- die Offenlegung oder Relizenzierung des gesamten Boardgame-Tracker-Quellcodes erzwingt;
-- eine kostenpflichtige kommerzielle Lizenz voraussetzt, die nicht ausdrücklich beschlossen wurde;
-- keine ausreichenden Rechte zur Weitergabe der Anwendung gewährt;
-- keine ausreichenden Rechte zur gewünschten Modifikation oder Weitergabe des betroffenen Drittanbieter-Codes gewährt.
+- Veröffentlichung oder Relizenzierung des gesamten eigenen Anwendungscodes
+  erzwingt;
+- eine nicht beschlossene kostenpflichtige kommerzielle Lizenz voraussetzt;
+- keine ausreichenden Rechte für Distribution oder notwendige Modifikation gewährt.
 
-## Umfang von Lizenzprüfungen
+Ist die Lizenzlage nicht eindeutig, wird die Dependency nicht integriert, bis die
+Vereinbarkeit mit dieser Policy geklärt ist.
 
-Die Umsetzung oder Pflege der In-App-Lizenzanzeige ist kein automatischer
-vollständiger Dependency-License-Audit. Ohne ausdrücklichen Audit-Auftrag:
+## 6. Prüfung einer neuen Dependency
 
-- keinen vollständigen transitiven NuGet-Paketbaum herunterladen oder analysieren;
-- keine komplette .NET-/Mono-Runtime inventarisieren;
-- keine SDK-/NDK-Bestandteile systematisch auditieren;
-- keine projektweite Lizenz-Inventur erstellen;
-- keine Prüfsummen-/Provenance-Dokumentation für sämtliche Drittanbieterdateien erzeugen;
-- keine zusätzlichen externen Quellen recherchieren, wenn vorhandene konkret
-  ausgelieferte Lizenzinformationen ausreichen.
-
-Bei einer konkreten neuen Dependency deren Lizenz gemäß dieser Policy prüfen.
-Bei einer bereits bekannten nativen Bibliothek dürfen die unmittelbar mit ihr
-ausgelieferten bzw. statisch eingebundenen Lizenz-/NOTICE-Pflichten geprüft werden.
-Der Umfang endet, wenn die konkrete Änderung und die tatsächlich bekannten
-Distributionspflichten erfüllt sind. Ein vollständiger Dependency-License-Audit
-ist ein eigener Auftrag.
-
-## Prüfung neuer Abhängigkeiten
-
-Vor Aufnahme einer neuen Third-Party-Dependency mindestens prüfen und nachvollziehbar festhalten:
+Vor Aufnahme mindestens prüfen und nachvollziehbar festhalten:
 
 1. Name und tatsächlich verwendete Version;
 2. maßgebliche Lizenz bzw. Lizenzen;
-3. kommerzielle Nutzung und Monetarisierung erlaubt;
-4. proprietäre/Closed-Source-Nutzung erlaubt;
-5. Open-Source-Nutzung erlaubt;
-6. Binärdistribution erlaubt;
-7. Quellcodeweitergabe und Modifikation im gewünschten Umfang erlaubt;
-8. Copyleft-, Source-Disclosure- oder Relizenzierungspflichten;
-9. Attribution-, Copyright- und NOTICE-Pflichten;
-10. besondere Patent-, Marken- oder Werbehinweise;
-11. Kompatibilität mit Android-/iOS-App-Store-Distribution und dem geplanten Vertriebsmodell.
+3. kommerzielle und proprietäre Nutzung;
+4. Binärdistribution und gewünschte Modifikation/Quellcodeweitergabe;
+5. Copyleft-, Source-Disclosure- oder Relizenzierungspflichten;
+6. Copyright-, Attribution- und NOTICE-Pflichten;
+7. relevante Patent-, Marken- oder Werbehinweise;
+8. Vereinbarkeit mit Android-/iOS-App-Store-Distribution und dem geplanten
+   Vertriebsmodell.
 
-Die Prüfung bezieht sich auf die tatsächlich verwendete Version und den tatsächlich ausgelieferten Bestandteil, nicht nur auf allgemeine Angaben zum Upstream-Projekt.
+Maßgeblich sind die **tatsächlich verwendete Version und der tatsächlich
+ausgelieferte Bestandteil**, nicht nur allgemeine Angaben zum Upstream-Projekt.
 
-Wenn die Lizenzlage nicht eindeutig ist, wird die Dependency nicht eingebunden, bis die Vereinbarkeit mit dieser Policy geklärt ist.
+## 7. Umfang der Prüfung
 
-## Dokumentation und Auslieferung
+Eine konkrete Dependency-Prüfung ist kein automatischer vollständiger
+Repository-License-Audit.
 
-Für tatsächlich ausgelieferte Drittanbieter-Komponenten müssen erforderliche Lizenztexte, Copyright-Hinweise, Attributionen und NOTICE-Inhalte erhalten bleiben und entsprechend der jeweiligen Lizenz mit der Anwendung bereitgestellt werden.
+Ohne ausdrücklichen Audit-Auftrag insbesondere nicht:
 
-Soweit sinnvoll, werden Third-Party-Informationen zentral erfasst mit:
+- den gesamten transitiven NuGet-Baum untersuchen;
+- .NET-/Mono-Runtime oder SDK/NDK vollständig inventarisieren;
+- eine projektweite Lizenz-/Provenance-Inventur erstellen;
+- zusätzliche externe Quellen recherchieren, wenn die konkret ausgelieferten
+  Lizenzinformationen die Frage bereits eindeutig beantworten.
 
-- Komponentenname;
-- Version;
-- Lizenzname;
-- SPDX-Identifier, sofern eindeutig;
-- Lizenztext;
-- erforderlichen Attributionen bzw. NOTICE-Angaben.
+Bei einer neuen Dependency endet die Prüfung, sobald ihre konkrete Einbindung und
+die tatsächlich daraus entstehenden Distributionspflichten ausreichend geklärt und
+erfüllt sind.
 
-Die In-App-Anzeige von Open-Source-/Third-Party-Lizenzen ersetzt keine darüber hinausgehenden Pflichten der jeweiligen Lizenz, ist aber der bevorzugte Ort für nutzerlesbare Lizenz- und Attributionshinweise.
+Bei nativen Bibliotheken werden die unmittelbar mit ausgelieferten bzw. statisch
+eingebundenen Lizenz-/NOTICE-Pflichten berücksichtigt.
 
-## Eigener Anwendungscode
+Ein vollständiger Dependency-License-Audit ist ein eigener Auftrag.
 
-Die Lizenz einer eingebundenen Drittanbieter-Komponente ändert nicht automatisch die Lizenz des Boardgame Trackers. Die Auswahl von Dependencies soll gerade verhindern, dass die künftige Lizenzierungsfreiheit des eigenen Anwendungscodes unbeabsichtigt eingeschränkt wird.
+## 8. Dokumentation und Auslieferung
 
-Der eigene Anwendungscode soll die Option behalten, je nach späterer Produktentscheidung:
+Für tatsächlich ausgelieferte Drittanbieter-Komponenten müssen alle erforderlichen:
 
-- proprietär / Closed Source;
-- kostenlos;
-- kommerziell;
-- oder ausdrücklich unter einer Open-Source-Lizenz
+- Lizenztexte;
+- Copyright-Hinweise;
+- Attributionen;
+- NOTICE-Inhalte
 
-bereitgestellt zu werden.
+erhalten und entsprechend der jeweiligen Lizenz bereitgestellt werden.
 
-## Projektregel
+Soweit sinnvoll, werden dafür zentral festgehalten:
 
-Lizenzkompatibilität ist Teil der technischen Dependency-Auswahl und keine nachträgliche Release-Aufgabe.
+```text
+Komponentenname
+Version
+Lizenzname
+SPDX-Identifier, falls eindeutig
+Lizenztext
+erforderliche Attribution / NOTICE
+```
 
-Neue Drittanbieter-Abhängigkeiten nur aufnehmen, wenn ihre Lizenz geprüft und ihre Vereinbarkeit mit dieser Policy bestätigt wurde. Im Zweifel nicht integrieren und zuerst eine ausdrückliche Entscheidung einholen.
+Die In-App-Anzeige ist der bevorzugte Ort für nutzerlesbare Third-Party-Hinweise.
+Sie ersetzt keine darüber hinausgehende Pflicht der jeweiligen Lizenz.
+
+## 9. Projektregel
+
+Lizenzkompatibilität ist Teil der **Dependency-Auswahl**, nicht erst eine
+nachträgliche Release-Aufgabe.
+
+Neue Drittanbieter-Abhängigkeiten nur integrieren, wenn ihre Lizenz geprüft und mit
+dieser Policy vereinbar ist. Im Zweifel zuerst eine ausdrückliche Projektentscheidung
+einholen.

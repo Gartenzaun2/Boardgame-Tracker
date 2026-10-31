@@ -1,201 +1,382 @@
-# Lokaler Import und Export
+# Boardgame Tracker – Lokaler History-Transfer
 
-## Umfang und Nicht-Ziele
+## 1. Zweck und Umfang
 
-.bgt-Dateien tauschen gezielt abgeschlossene GameSessions zwischen Installationen aus.
-Export startet mit exakt den in der Historie gefilterten GameSession-IDs. Import ist
-filterunabhängig. Aktuell wird ausschließlich das bekannte Spiel Arche Nova unterstützt.
-Custom Games werden vollständig abgelehnt; ihre Konfiguration und Ergebnisschemas gehören
-zum späteren Custom-Game-Feature. Die Modulgrenze erlaubt dessen spätere Ergänzung.
+Diese Datei ist die kanonische Quelle für den **spielübergreifenden `.bgt`-
+Transfervertrag**: Envelope, Versionierung, allgemeine Validierung, Matching,
+Konfliktauflösung, Commit und native Ausgabeziele.
 
-Kein Cloud-/Geräte-Sync, vollständiges Backup, Partial Import, Löschabgleich,
-Foreign-ID-Aliase, persistentes Mapping, Fuzzy Matching oder GameSession-Merge.
-Zuordnungen gelten ausschließlich innerhalb eines Importvorgangs.
+Spielspezifische Schemas und Referenzregeln stehen unter
+`docs/Games/<GameName>/IMPORT_EXPORT.md`.
 
-## Format v1
+`.bgt` überträgt gezielt **abgeschlossene `GameSession`s** zwischen Installationen.
+Export startet mit genau den aktuell in der Historie ausgewählten/gefilterten
+Session-IDs; Import ist davon unabhängig.
 
-UTF-8-JSON ohne BOM, Dateiendung `.bgt`, kein ZIP und keine Anhänge. Der Export schreibt
-immer die aktuell unterstützte Version. `formatVersion = 1`, Arche-Nova-`schemaVersion = 2`.
-Versionen sind positive Integer. `appVersion` und `exportedAtUtc` sind reine Metadaten.
-Format- und Spielversionen sind unabhängig; Spieländerungen ändern nicht automatisch das
-Envelope. Es existiert noch keine veröffentlichte ältere Version und daher kein älterer
-Migrationsschritt. Künftige unterstützte Altversionen werden vor Matching schrittweise in
-DTOs migriert; Quelldateien bleiben unverändert. Nicht unterstützte Versionen sowie unbekannte
-Known-Game-Keys erfordern ein App-Update und werden vollständig abgelehnt. Kein Best Effort.
+Nicht-Ziele:
 
-Envelope (camelCase; alle aufgeführten Konstruktorfelder sind Pflicht):
+- Cloud-/Gerätesynchronisation;
+- vollständiges Backup;
+- Partial Import;
+- Löschabgleich;
+- persistente Foreign-ID-Aliase oder Mappings;
+- Fuzzy Matching;
+- Merge zweier `GameSession`s.
+
+Importzuordnungen gelten nur für den jeweiligen Importvorgang.
+
+## 2. Format v1
+
+Datei:
+
+```text
+UTF-8 JSON ohne BOM
+Endung .bgt
+kein ZIP
+keine Anhänge
+formatVersion = 1
+```
+
+Envelope, camelCase; alle aufgeführten Konstruktorfelder sind Pflicht:
 
 ```text
 formatVersion, appVersion, exportedAtUtc
- games: [{ id, key, schemaVersion, data }]
- players: [{ id, name, isGuest, isArchived, createdAt }]
- groups: [{ id, name, isTemporary, isArchived,
-            groupPlayers: [{ playerId, defaultOrder }] }]
- gameSessions: [{ id, gameId, groupId, startedAt, endedAt, modifiedAt,
-                  players: [{ playerId, order, placement }], data }]
+
+games: [{
+  id, key, schemaVersion, data
+}]
+
+players: [{
+  id, name, isGuest, isArchived, createdAt
+}]
+
+groups: [{
+  id, name, isTemporary, isArchived,
+  groupPlayers: [{ playerId, defaultOrder }]
+}]
+
+gameSessions: [{
+  id, gameId, groupId, startedAt, endedAt, modifiedAt,
+  players: [{ playerId, order, placement }],
+  data
+}]
 ```
 
-GameSessions sind ausschließlich Completed; der Status wird deshalb nicht redundant
-transportiert. Zeitstempel sind DateTimeOffset-Werte in JSON-ISO-Darstellung. Erstellt wird
-als echter Anlagezeitpunkt transportiert und niemals aus Partien/Gruppen abgeleitet.
-Alle IDs sind GUIDs ungleich Guid.Empty; UUIDv7 ist keine Importvoraussetzung.
+`gameSessions` enthält ausschließlich `Completed`-Partien; der Status wird nicht
+redundant transportiert.
 
-Arche-Nova-Game.data:
+Zeitstempel sind `DateTimeOffset` in JSON-ISO-Darstellung. `createdAt` ist der echte
+Anlagezeitpunkt und wird nicht aus Gruppen oder Partien abgeleitet.
+
+Alle IDs sind nichtleere GUIDs. UUIDv7 ist keine Importvoraussetzung.
+
+`appVersion` und `exportedAtUtc` sind Metadaten.
+
+## 3. Format- und Spielversionen
+
+`formatVersion` und `games[].schemaVersion` sind unabhängige positive
+Versionsverträge. Eine Änderung eines Spielschemas erhöht nicht automatisch die
+allgemeine Formatversion.
+
+Der Export schreibt immer die aktuell unterstützten Versionen.
+
+Nicht unterstützte Formatversionen, nicht registrierte Spiel-Keys oder nicht
+unterstützte Spielschema-Versionen werden als **gesamte Datei** abgelehnt. Es gibt
+kein Best Effort.
+
+Unterstützte ältere Versionen würden vor Matching schrittweise in aktuelle DTOs
+migriert; die Quelldatei bleibt unverändert. Aktuell existiert für Format v1 kein
+allgemeiner Altversions-Migrationsschritt.
+
+Custom Games werden derzeit abgelehnt, solange kein passendes registriertes
+Transferschema existiert.
+
+## 4. Export-Snapshot
+
+Exportiert werden nur die ausgewählten `Completed`-Sessions. Ist eine ausgewählte
+Session beim tatsächlichen Export nicht mehr verfügbar oder nicht mehr abgeschlossen,
+schlägt der Export fehl.
+
+Ein gemeinsamer lesender Snapshot enthält nur die für diese Sessions benötigten:
+
+- `Game`-Datensätze;
+- `Group`s;
+- vollständigen festen `GroupPlayer`-Mitgliedschaften samt `DefaultOrder`;
+- referenzierten `Player`;
+- `GameSessionPlayer`;
+- spielabhängigen Sessiondaten;
+- vom Spielmodul für diese Sessions benötigten Referenzdaten.
+
+Nicht exportiert werden Preferences, nicht benötigte Stammdaten oder
+spielabhängige Gruppendefaults. Format v1 besitzt dafür kein spielabhängiges
+Group-Payload.
+
+Spielmodule lesen ihre Exportwerte gebündelt, nicht per N+1-Abfrage pro Partie.
+
+## 5. Lesen und allgemeine Validierung
+
+Pipeline:
 
 ```text
-specialCards: [{ id, userName, symbol1, symbol2, symbol3, isArchived }]
+native Dateiauswahl
+→ begrenztes Lesen
+→ striktes UTF-8
+→ JSON / Tiefe
+→ Envelope / Versionen
+→ allgemeine DTO-/Domainvalidierung
+→ Spielschema-Validierung
+→ bekannte GameSession-IDs überspringen
+→ Dependency-Pruning
+→ Analyze
+→ Resolve
+→ Preview
+→ Commit
 ```
 
-Arche-Nova-GameSession.data:
+Dateiname, MIME-Type und Endung dienen nur der Auswahl. Die Inhaltsprüfung entscheidet
+über die Verwendbarkeit.
+
+Zentrale Grenzen:
+
+- maximal **16 MiB** gesamte Datei, auch bei Streams ohne Längeninformation;
+- JSON-Tiefe maximal **32**;
+- maximal **10.000** Elemente pro JSON-Array/Entitymenge;
+- JSON-Strings maximal **1.000** Zeichen;
+- `appVersion` maximal **100** Zeichen;
+- keine doppelten JSON-Properties;
+- keine unbekannten DTO-Felder;
+- Pflichtfelder und Nichtnull-Collections müssen vorhanden sein;
+- IDs pro Entitymenge: nichtleer und eindeutig;
+- `Player.Name`/`Group.Name`: nach `Trim()` 1–100 Zeichen und je Typ
+  `OrdinalIgnoreCase` eindeutig;
+- `Game.Key` innerhalb der Datei eindeutig;
+- alle allgemeinen Referenzen müssen auflösbar sein;
+- `GroupPlayer.DefaultOrder` und `GameSessionPlayer.Order` jeweils lückenlos `1..n`;
+- Session-Spielermenge muss exakt der Spieler-Menge ihrer Gruppe entsprechen;
+- `Placement` liegt in `1..n`;
+- `EndedAt >= StartedAt`;
+- `ModifiedAt >= EndedAt`.
+
+Spielspezifische `data`-Felder und Invarianten validiert das registrierte
+`IGameTransferSchema`.
+
+Ungültige Eingaben verändern keine produktiven Daten.
+
+## 6. Bereits bekannte Sessions und Dependency-Pruning
+
+Eine lokal bereits vorhandene `GameSession.Id` wird ohne Inhaltsvergleich
+übersprungen und niemals überschrieben.
+
+Danach werden alle ausschließlich von übersprungenen Sessions benötigten Groups,
+Players, Games und Modulreferenzen aus dem Importplan entfernt.
+
+Matching und Preview arbeiten nur noch auf den tatsächlich neu zu importierenden
+Abhängigkeiten.
+
+## 7. Player-Matching
+
+Priorität:
 
 ```text
-players: [{ playerId, color, zooPlanOption1Number, zooPlanOption2Number,
-            selectedZooPlanNumber, attractiveness, conservation, reputation,
-            specialCardIds }]
+gleiche ID
+→ gleicher normalisierter Name
+→ neuer Player
 ```
 
-userName ist ein Pflichtfeld mit nullable Wert: null bedeutet keine Nutzerressource.
-Bei selbst erstellten Karten ist ein Nutzername erforderlich. Mitgelieferte Namen
-und Sprachvarianten aus content.json werden nicht exportiert; ebenso wenig die
-lokale Materialsprach-Preference. Ein importierter Name wird ausschließlich als
-Nutzerressource behandelt, niemals als Änderung einer mitgelieferten Übersetzung.
-Das frühere Ark-Nova-Schema 1 mit name wird im Pre-Alpha-Stand vollständig abgelehnt;
-keine dauerhafte Altkompatibilität. Das allgemeine Format bleibt Version 1.
+Normalisierung entspricht dem allgemeinen Datenmodell: `Trim()` +
+`OrdinalIgnoreCase`, ohne Fuzzy-, Akzent-, Satzzeichen- oder
+innere-Leerzeichen-Normalisierung.
 
-Farben und Kartensymbole verwenden die numerischen Domain-Enumwerte. Nullable Symbole und
-Ruf und fehlende Nutzernamen werden explizit als null geschrieben. Berechnete Punkte werden nicht transportiert.
+Bei einem Match gewinnt der lokale Player vollständig: Name, Gast-/Archivstatus und
+Anlagezeitpunkt werden nicht überschrieben.
 
-## Export und Abhängigkeiten
+Bei Neuanlage werden importierte ID und importierte Stammdaten übernommen.
 
-Nur selektierte Completed-GameSessions; ändert sich deren Verfügbarkeit vor Export,
-schlägt Export fehl. Ein lesender Transaktionssnapshot liefert Games, Groups, die
-vollständigen festen GroupPlayer-Mengen, deren Player, getrennte GameSessionPlayer,
-Spielwerte und ausschließlich referenzierte Spezialkarten. Keine zukünftigen
-Gruppenkomfortdefaults (z. B. Farben), Preferences oder unreferenzierten Stammdaten.
-Modulprojektionen lesen Werte gebündelt statt pro Partie abzufragen.
+`ImportPlan.PlayerMappings` ist global und eins-zu-eins:
 
-## Validierung und Pipeline
+- jeder importierte Player höchstens einem lokalen Player;
+- jeder lokale Player höchstens einem importierten Player.
 
-Native Dateiauswahl → begrenztes Lesen → striktes UTF-8 → JSON/Tiefe → Envelope/Versionen
-→ strukturierte DTO-/Domainvalidierung → bekannte GameSession-IDs überspringen
-→ Dependency-Pruning → Analyze → Resolve → Preview → Commit.
+Es gibt keine persistente Alias- oder Mappingtabelle.
 
-Zentrale Limits in BgtFormat:
+## 8. Gruppenanalyse und Resolve
 
-- 16 MiB gesamte Datei, auch bei Streams ohne Längeninformation.
-- JSON-Tiefe 32 und höchstens 10.000 Elemente pro Collection/Entitymenge.
-- JSON-Strings maximal 1.000 Zeichen, Appversion maximal 100.
-- Player-/Group-Namen nach Trim 1–100 Zeichen; Spezialkarten 1–120.
-- Keine doppelten JSON-Properties oder unbekannten DTO-Felder.
-- Pflichtfelder, Nichtnull-Collections, gültige GUIDs, eindeutige IDs je Entitymenge.
-- Eindeutige Player-/Group-Namen nach Trim + OrdinalIgnoreCase; eindeutige Known Keys.
-- Auflösbare Referenzen und feste Player-Menge(GameSession) = Player-Menge(Group).
-- Getrennte, lückenlose Ordnungen 1..n für GroupPlayer und GameSessionPlayer.
-- Endzeit nicht vor Start, ModifiedAt nicht vor Ende, gültige Placements.
-- Arche Nova: höchstens vier Spieler, eindeutige erlaubte Farben, 1–14-Zoopläne,
-  zwei unterschiedliche Angebote je Spieler, insgesamt keine doppelten Angebote,
-  Auswahl aus dem Angebot, Domainwertebereiche für Punkte/Ruf und gültige Tie-Blöcke.
-- Eindeutige Spezialkartenzuordnungen pro importiertem Spieler und auflösbare Karten.
+### Kandidat
 
-Ungültige Eingaben verändern keine produktiven Daten. Dateiname/MIME/Endung dienen
-nur der Auswahl; die Datenprüfung entscheidet über die Verwendbarkeit.
+Eine gleiche `Group.Id` bezeichnet dieselbe Identität. Nach den globalen
+Player-Mappings muss die endgültige Mitgliedermenge exakt identisch sein; sonst ist
+der Import ungültig.
 
-## Analyze und globale Player-Zuordnungen
+Ohne ID-Match ist eine lokale Gruppe nur Kandidat, wenn:
 
-Player-Matching: gleiche ID → sonst gleicher normalisierter Name → sonst zunächst neu.
-Lokale Stammdaten gewinnen vollständig (Name, Gast-/Archivstatus, Anlagezeitpunkt).
-Bei Neuanlage bleiben importierte IDs und Werte erhalten.
+- der normalisierte Name übereinstimmt;
+- die Spieleranzahl übereinstimmt.
 
-Der ImportPlan hält PlayerMappings global: jeder ImportedPlayer hat maximal einen
-LocalPlayer und jeder LocalPlayer maximal einen ImportedPlayer. Das gilt auch für
-automatische Zuordnungen. Keine Alias-Persistenz. Keine kulturabhängige, Akzent-,
-Satzzeichen- oder innere-Leerzeichen-Normalisierung.
+Ist nach den globalen Player-Mappings die endgültige Mitgliedermenge eindeutig
+identisch, wird automatisch zusammengeführt.
 
-Vorhandene GameSession-IDs werden ohne Inhaltsvergleich übersprungen. Alle ausschließlich
-davon abhängigen Groups, Players, Games und Spezialkarten werden nicht angelegt.
+### Manuelle Zuordnung
 
-## Gruppen und Resolve
+Offene zulässige Zuordnungen erscheinen im Resolve-Schritt. Sichere Identitäten sind
+nicht editierbar.
 
-Gleiche GroupId identifiziert dieselbe Gruppe; die endgültige Player-Menge muss identisch
-sein. Jede Abweichung ist ein Importfehler. Ohne ID-Match gilt ein lokaler Datensatz nur
-bei gleichem normalisiertem Namen und gleicher Spieleranzahl als Kandidat.
+Manuelle Player-Zuordnungen wirken **global** für den gesamten Import. Nach jeder
+Entscheidung werden alle noch offenen Gruppenkandidaten neu bewertet; unmöglich
+gewordene Zuordnungen werden nicht weiter angeboten.
 
-Identische endgültige Player-Mengen werden automatisch zusammengeführt. Offene zulässige
-Zuordnungen werden im Resolve angeboten. Sichere Identitäten sind nicht editierbar.
-Manuelles Mapping verschieden benannter Spieler existiert nur in diesem Gruppenkontext.
-Nach jeder Entscheidung werden ALLE offenen Kandidaten mit globalen Mappings neu bewertet.
-Ein durch Tom → Thomas unmöglich gewordenes Tom → Tobias wird nicht mehr angeboten.
+### Gruppe trennen
 
-Gruppen können ausdrücklich getrennt werden. Name bei Kollision: erster freier Name
-`Montag Import`, `Montag Import 2`, usw., deterministisch in Group-ID-Reihenfolge.
-Bei maximal langen Namen wird nur der Stamm gekürzt, damit der Suffix hineinpasst.
-Ein Split verändert bereits globale Spieleridentitäten nicht. Unterschiedliche
-Spieleranzahl verhindert Match und führt ebenfalls zu einer eigenständigen Importgruppe.
+Eine importierte Gruppe kann ausdrücklich getrennt als neue Gruppe übernommen
+werden, sofern keine sichere gleiche ID dagegensteht.
 
-Bei Group-Match bleiben Name, Reihenfolge, Temporär-/Archivstatus und lokale Spieldefaults
-vollständig erhalten. Mitgliedschaften werden nie geändert. Neue Gruppen übernehmen
-Zusammensetzung, importierte Reihenfolge und Flags.
+Bei Namenskollision wird deterministisch nach `Group.Id` der erste freie Name
+gebildet:
 
-## Spezialkarten
+```text
+Montag Import
+Montag Import 2
+Montag Import 3
+...
+```
 
-Nur referenzierte Karten der tatsächlich neu importierten Partien werden verarbeitet.
-Gleiche GUID → lokale Karte; sonst neue Karte mit importierter GUID, Symbolen und
-Archivstatus. Es gibt kein Namensmatching, auch nicht über Nutzernamen. Anzeigenamen
-und aktuelle App-/Materialsprachen beeinflussen niemals die Identität.
-Lokale Symbole und Archivzustände werden niemals überschrieben. Vorhandene lokale
-Nutzernamen gewinnen; ein mittransportierter Nutzername wird bei noch fehlender
-Nutzerressource übernommen, auch für eine bereits lokal angelegte Built-in-Karte.
-Ein Built-in-Datensatz ist selbst keine Nutzerressource. Der Snapshotvergleich
-berücksichtigt neben Kartenfeldern auch persistente Nutzernamen. Alle übernommenen
-Karten und Nutzernamen werden gemeinsam mit Partien atomar gespeichert.
+Bei 100-Zeichen-Namen wird nur der Stamm so gekürzt, dass der Suffix hineinpasst.
 
-## Preview und Commit
+Eine unterschiedliche Spieleranzahl verhindert ein Match und erzeugt ebenfalls
+eine neue Importgruppe.
 
-Preview zählt neue/vorhandene Games (aktuell nur Known Games), automatische/manuelle/neue
-Player, zusammengeführte/neue Groups mit neuen Namen, importierte/übersprungene GameSessions
-und neue/vorhandene Modulreferenzen. Keine Writes vor dem abschließenden Importbutton.
-Es werden aktuell keine historischen Werte verworfen; deshalb entstehen keine der später
-für Custom Games benötigten Warnungen über entfernte Scores.
+### Lokale vs. importierte Werte
 
-Commit verwendet einen neuen Context und eine gemeinsame Transaktion für Stammdaten,
-GameSessions und sämtliche Moduldaten. Ein erneuter Snapshotvergleich prüft Namen,
-Mitgliedschaften, Partie-IDs und Modulreferenzdaten gegen den analysierten Stand. Bei
-Änderungen muss erneut analysiert werden. Der Plan wird nochmals berechnet. Alle Inserts
-und Moduldaten werden gemeinsam gespeichert; jede Exception rollt die Transaktion zurück.
-Kein automatisches Löschen, kein Überschreiben bestehender Partien, keine Teilübernahme.
+Bei zusammengeführter Gruppe bleiben lokal:
 
-## Ausgabeziele und Erweiterbarkeit
+- Name;
+- Mitgliedschaft;
+- `DefaultOrder`;
+- `IsTemporary`;
+- `IsArchived`;
+- spielabhängige lokale Gruppendefaults.
 
-Nach Tap auf den History-Exportbutton werden die aktuell gefilterten GameSession-IDs
-festgehalten. HistoryTransferUseCase.CreateExportContentAsync erzeugt, validiert und
-serialisiert den Export genau einmal in BgtExportContent (Dateiname und UTF-8-Bytes).
-Erst dann wählt der Benutzer im App-Dialog Speichern, Teilen oder Abbrechen.
-HistoryExportFlow übergibt denselben Inhalt ausschließlich an das gewählte
-IHistoryExportTarget. Die Ausgabeadapter haben keine eigenen Format-, Matching- oder
-Serialisierungsregeln. Sie gehören zur App; die konkrete HistoryTransferPersistence
-im Application-Slice übernimmt die EF-Persistenz. IGameTransferPersistence bleibt
-als Spielmodulgrenze erhalten und arbeitet auf demselben Context und derselben Transaktion.
+Bei neuer Gruppe werden importiert:
 
-Speichern verwendet auf Android ACTION_CREATE_DOCUMENT mit CATEGORY_OPENABLE,
-vorgeschlagenem .bgt-Dateinamen und einem beschreibbaren Dokument-URI. Die Bytes werden
-direkt in das vom Benutzer ausgewählte Dokument geschrieben; keine Speicherberechtigung
-für allgemeine Verzeichnisse nötig. Auf iOS exportiert UIDocumentPickerViewController
-mit asCopy eine temporäre Datei in den gewählten Speicherort; die temporäre Quelldatei
-wird danach entfernt. Speichern ist ein echter nativer Dokumentflow, kein Share-Sheet.
+- endgültige Mitgliedschaft;
+- `DefaultOrder`;
+- `IsTemporary`;
+- `IsArchived`.
 
-Teilen verwendet den vorhandenen MAUI-Share-Flow mit einer .bgt-Datei im App-Cache.
-Die Cache-Datei bleibt für empfangende Apps lesbar, auch wenn das Share-Sheet bereits
-geschlossen ist. Der native Share-Sheet stellt die installierten Ziele bereit.
+Bestehende Gruppenmitgliedschaften werden niemals verändert.
 
-Abbrechen der Zielauswahl, des Dokument-Pickers oder Share-Sheets beendet den Export
-normal. Es gibt keine automatische Doppelaktion und keinen Wechsel zum anderen Ziel.
-Tatsächliche I/O-Fehler werden über den bestehenden Fehlerdialog angezeigt.
+## 9. Preview
 
-Weitere Ziele können später über IHistoryExportTarget registriert werden. Ein QR-Code
-wäre ausschließlich ein Transport desselben versionierten BGT-Inhalts bzw. einer eindeutig
-daraus abgeleiteten Transportrepräsentation. Formatversionen, Spielschemas, Validierung,
-Matching und ImportPlan bleiben davon unberührt. QR-Code, Kompression und Segmentierung
-sind in diesem Stand nicht implementiert.
+Preview schreibt nichts.
 
-Native API-Verträge: [Android ACTION_CREATE_DOCUMENT](https://learn.microsoft.com/en-us/dotnet/api/android.content.intent.actioncreatedocument)
-und [iOS Dokumentexport als Kopie](https://developer.apple.com/documentation/uikit/uidocumentpickerviewcontroller/init(forExporting:asCopy:)).
+Es zeigt mindestens:
+
+- betroffene vorhandene/bekannte Games;
+- automatische, manuelle und neue Player;
+- zusammengeführte und neue Groups einschließlich neuer Kollisionsnamen;
+- zu importierende und bereits vorhandene/übersprungene `GameSession`s;
+- neue und vorhandene spielabhängige Referenzen.
+
+Spielspezifische Preview-Zählung kommt vom registrierten Transfermodul.
+
+## 10. Commit und Atomarität
+
+Commit verwendet einen **neuen DbContext** und eine **gemeinsame Transaktion** für
+allgemeine Stammdaten, Sessions und sämtliche Moduldaten.
+
+Vor dem Schreiben wird der analysierte Snapshot erneut gegen den aktuellen Zustand
+geprüft. Dazu gehören insbesondere:
+
+- Player-/Group-Namen;
+- Gruppenmitgliedschaften;
+- vorhandene Session-IDs;
+- spielabhängiger Referenzzustand.
+
+Bei Änderung wird der Import abgebrochen und muss neu analysiert werden.
+
+Danach wird der Plan mit demselben Resolve-Stand erneut berechnet. Offene Konflikte
+verhindern den Commit.
+
+Neu angelegte Player und Groups behalten ihre importierten IDs. Für bekannte Games
+wird die lokale `Game.Id` über den stabilen `Game.Key` verwendet.
+
+Alle Inserts und Spielmoduldaten werden gemeinsam gespeichert. Jede Exception rollt
+die Transaktion zurück.
+
+Es gibt:
+
+- kein automatisches Löschen;
+- kein Überschreiben bestehender Sessions;
+- keine Teilübernahme.
+
+## 11. Spielmodule
+
+Allgemeiner Transfer kennt konkrete Spiele nur über registrierte Verträge.
+
+`IGameTransferSchema` besitzt:
+
+- `GameKey`;
+- `SchemaVersion`;
+- Validierung von `Game.data` und `GameSession.data`.
+
+`IGameTransferPersistence` besitzt für dasselbe Spiel:
+
+- Snapshot des relevanten lokalen Referenzzustands;
+- Export der benötigten Referenzen;
+- Export der Sessiondaten;
+- Preview der Modulreferenzen;
+- Import der Moduldaten.
+
+Das Spielmodul arbeitet bei Import auf demselben DbContext und derselben Transaktion
+wie der allgemeine Transfer.
+
+Aktuelles Arche-Nova-Schema:
+[Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md).
+
+## 12. Exportziele
+
+Zu Beginn eines Exports werden die aktuell ausgewählten/gefilterten Session-IDs
+festgehalten.
+
+`HistoryTransferUseCase.CreateExportContentAsync` erzeugt und validiert den
+`BgtExportContent` **genau einmal**: vorgeschlagener Dateiname plus UTF-8-Bytes.
+
+Danach wählt der Benutzer genau ein Ziel:
+
+```text
+Speichern
+Teilen
+Abbrechen
+```
+
+Alle Ziele erhalten denselben bereits erzeugten Inhalt. Ausgabeadapter besitzen
+keine eigene Format-, Matching- oder Serialisierungslogik.
+
+### Speichern
+
+Android verwendet `ACTION_CREATE_DOCUMENT` + `CATEGORY_OPENABLE` mit
+vorgeschlagenem `.bgt`-Dateinamen. Die Bytes werden direkt in das ausgewählte
+Dokument geschrieben; keine allgemeine Speicherberechtigung ist erforderlich.
+
+iOS verwendet `UIDocumentPickerViewController` als Exportkopie. Die temporäre
+Quelldatei wird anschließend entfernt.
+
+Speichern ist ein nativer Dokumentflow, kein Share-Sheet.
+
+### Teilen
+
+Teilen verwendet den MAUI-Share-Flow mit einer `.bgt`-Datei im App-Cache.
+Die Datei bleibt für empfangende Apps ausreichend lange lesbar; die installierten
+Ziele bestimmt das native Share-Sheet.
+
+### Abbruch und Fehler
+
+Abbruch von Zielauswahl, Dokument-Picker oder Share-Sheet ist ein normaler Abbruch.
+Es folgt keine automatische zweite Aktion.
+
+Tatsächliche I/O-Fehler werden über den bestehenden Fehlerdialog gemeldet.
+
+Weitere `IHistoryExportTarget`-Implementierungen dürfen später denselben
+versionierten Inhalt transportieren. QR-Code, Kompression und Segmentierung sind
+derzeit nicht implementiert und ändern den `.bgt`-Vertrag nicht.
+
+Konkrete History-Screenanordnung: [UI_WIREFRAME.md](UI_WIREFRAME.md).

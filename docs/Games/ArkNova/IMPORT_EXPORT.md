@@ -1,0 +1,208 @@
+# Arche Nova – Import / Export
+
+## 1. Geltungsbereich
+
+Diese Datei ergänzt
+[docs/IMPORT_EXPORT.md](../../IMPORT_EXPORT.md) ausschließlich um den
+**Arche-Nova-spezifischen Transfervertrag**.
+
+Allgemeines Envelope, Player-/Group-Matching, Resolve, Preview, Commit,
+Atomarität und native Ausgabeziele werden dort definiert.
+
+Aktueller Vertrag:
+
+```text
+BGT formatVersion = 1
+Arche Nova schemaVersion = 2
+```
+
+Das frühere Arche-Nova-Schema 1 wird im aktuellen Pre-Alpha-Stand vollständig
+abgelehnt; es gibt keinen dauerhaften Migrationspfad.
+
+## 2. `Game.data`
+
+```text
+specialCards: [{
+  id,
+  userName,
+  symbol1,
+  symbol2,
+  symbol3,
+  isArchived
+}]
+```
+
+`userName` ist Pflichtfeld mit nullable Wert:
+
+- `null`: keine Nutzerressource;
+- nicht-null: Nutzername dieser Karte.
+
+Bei einer selbst erstellten Karte ist ein Nutzername erforderlich.
+
+Mitgelieferte Namen und Sprachvarianten aus `content.json` werden nicht exportiert.
+Ein importierter Name wird ausschließlich als Nutzerressource behandelt und niemals
+als Änderung einer mitgelieferten Übersetzung.
+
+Die lokale Materialsprach-Preference wird nicht übertragen.
+
+## 3. `GameSession.data`
+
+```text
+players: [{
+  playerId,
+  color,
+  zooPlanOption1Number,
+  zooPlanOption2Number,
+  selectedZooPlanNumber,
+  attractiveness,
+  conservation,
+  reputation,
+  specialCardIds
+}]
+```
+
+`Attractiveness` und `Conservation` sind bei transferierten `Completed`-Sessions
+vorhanden; `Reputation` bleibt nullable.
+
+Farben und Kartensymbole verwenden ihre numerischen Domain-Enumwerte.
+
+Nullable Werte werden explizit als `null` geschrieben.
+
+Berechnete Punkte werden nicht transportiert.
+
+Arche-Nova-Gruppendefaults wie `ArkNovaGroupPlayer.DefaultColor` sind **nicht**
+Teil von Format v1. Beim Match bleibt der lokale Default erhalten; bei einer neu
+importierten Gruppe entsteht dadurch kein importierter Arche-Nova-Farbdefault.
+
+## 4. Validierung
+
+Zusätzlich zur allgemeinen `.bgt`-Validierung gilt:
+
+### Spieler und Zoopläne
+
+- höchstens vier Spieler;
+- `GameSession.data.players` enthält exakt dieselbe Player-Menge wie die allgemeine
+  Session;
+- Farben sind für Arche Nova gültig und innerhalb der Session eindeutig;
+- beide Zooplanangebote je Spieler sind gültig und verschieden;
+- Zooplannummern liegen in `1..14`;
+- über die gesamte Session wird kein angebotener Zooplan doppelt verwendet;
+- `selectedZooPlanNumber` ist eine der beiden angebotenen Optionen.
+
+### Wertung und Placement
+
+Die Domainvalidierung gilt unverändert:
+
+```text
+Attractiveness 0..113
+Conservation   0..41
+Reputation     null oder 1..15
+```
+
+Die importierten Placements müssen zu den aus den importierten Rohwerten
+berechneten Score-/Gleichstandsblöcken passen.
+
+### Spezialkarten
+
+- Karten-IDs sind nichtleer und innerhalb der Referenzmenge eindeutig;
+- Symbole müssen gültige `ArkNovaCardSymbol`-Werte bilden;
+- null bis drei geordnete Symbole, keine Lücken;
+- Wiederholungen sind erlaubt;
+- Nutzername, wenn vorhanden: nach Domainregel 1–120 Zeichen;
+- jede nicht mitgelieferte Karte benötigt einen Nutzernamen;
+- `specialCardIds` je Spieler sind eindeutig;
+- jede referenzierte Karten-ID muss in `Game.data.specialCards` vorhanden sein.
+
+## 5. Export der Spezialkarten
+
+Exportiert werden ausschließlich Spezialkarten, die von den tatsächlich
+ausgewählten Sessions referenziert werden.
+
+Für jede Karte werden transportiert:
+
+- stabile GUID;
+- aktueller Nutzername, falls vorhanden;
+- Symbol1–3;
+- Archivstatus.
+
+Ein Built-in-Kartendatensatz ist selbst keine Nutzerressource. Ohne lokalen
+Nutzernamen wird daher bei Built-in-Karten `userName: null` exportiert.
+
+Nicht referenzierte Spezialkarten werden nicht exportiert.
+
+## 6. Import und Matching der Spezialkarten
+
+Es gibt **kein Namensmatching** für Spezialkarten.
+
+Priorität:
+
+```text
+gleiche GUID → lokale Karte
+sonst → neue Karte mit importierter GUID
+```
+
+Nur Karten, die von einer tatsächlich neu importierten Session benötigt werden,
+werden verarbeitet.
+
+### Bereits vorhandene Karte
+
+Bei gleicher GUID gewinnen lokale Kartendaten:
+
+- Symbole werden nicht überschrieben;
+- Archivstatus wird nicht überschrieben.
+
+Für Nutzernamen gilt:
+
+- vorhandener lokaler Nutzername gewinnt;
+- existiert noch keine lokale Nutzerressource und der Import enthält `userName`,
+  wird dieser Nutzername angelegt;
+- das gilt auch für eine bereits lokal vorhandene Built-in-Karte.
+
+### Neue Karte
+
+Eine neue Karte übernimmt:
+
+- importierte GUID;
+- Symbole;
+- Archivstatus;
+- importierten Nutzernamen.
+
+Karte und Nutzername werden innerhalb derselben allgemeinen Importtransaktion
+gespeichert.
+
+## 7. Snapshot und Preview
+
+Der Arche-Nova-Modulsnapshot berücksichtigt:
+
+- Spezialkarten-ID;
+- Symbolwerte;
+- Archivstatus;
+- persistierte Spezialkarten-Nutzernamen.
+
+Ändert sich dieser Zustand zwischen Analyze und Commit, schlägt der allgemeine
+Snapshotvergleich fehl und eine erneute Analyse ist erforderlich.
+
+Preview zählt nur die für neue Sessions benötigten Spezialkarten als:
+
+```text
+vorhanden
+neu
+```
+
+## 8. Nicht übertragene Arche-Nova-Daten
+
+Nicht Bestandteil des aktuellen Transfers:
+
+- Materialsprache;
+- Built-in-Contentnamen/-übersetzungen;
+- Gruppendefaultfarben;
+- berechnete Punkte;
+- Foto-/CV-Daten oder Confidence;
+- Bilder;
+- nicht referenzierte Spezialkarten.
+
+Fachliche Dateninvarianten:
+[DATA_MODEL.md](DATA_MODEL.md).
+
+Produktverhalten:
+[PRODUCT_SPEC.md](PRODUCT_SPEC.md).
