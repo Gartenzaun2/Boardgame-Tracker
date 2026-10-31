@@ -20,9 +20,13 @@ Die aktuell wesentlichen fachlichen Bereiche sind:
 
 ```text
 Core/Games/ArkNova/
+  ArkNovaCardSymbol.cs
+  ArkNovaGame.cs
+  ArkNovaPlayerColors.cs
+  ArkNovaSpecialCard.cs
+  ArkNovaZooPlan.cs
   GameSessions/
   Groups/
-  SpecialCards/
 
 Application/Games/ArkNova/
   GameSessions/
@@ -54,11 +58,20 @@ Arche Nova implementiert das allgemeine Composition-Muster mit:
 - `ArkNovaGameSessionPlayer` für spielabhängige Partieteilnehmerdaten,
 - `ArkNovaGroupPlayer` für spielabhängige Gruppendaten.
 
-Beide ergänzen die allgemeinen Datensätze und besitzen keine Kopien allgemeiner
-Teilnehmer- oder Gruppenfelder.
+Beide ergänzen die allgemeinen Datensätze. Sie wiederholen nur den jeweils
+gemeinsamen Schlüssel als PK/FK (`GameSessionId + PlayerId` bzw.
+`GroupId + PlayerId`), aber keinen allgemeinen fachlichen Zustand wie Reihenfolge
+oder Platzierung.
 
 Konkrete Felder, Invarianten, IDs, Constraints und Referenzdaten stehen in
 [DATA_MODEL.md](../../DATA_MODEL.md).
+
+`BoardgameTrackerDbContext.ArkNova.cs` liegt unter
+`Application/Games/ArkNova/Persistence`, verwendet aber bewusst den allgemeinen
+Namespace `BoardgameTracker.Application.Persistence`, weil es denselben
+`partial BoardgameTrackerDbContext` erweitert. Das ist die allgemeine
+Partial-Type-Ausnahme aus `docs/ARCHITECTURE.md`; die Datei bleibt trotzdem
+Arche-Nova-owned.
 
 ## 4. Registrierung, Initialisierung und Navigation
 
@@ -199,7 +212,15 @@ Erkennungsforschung und Produktstatus:
 Native ABI, Hosts, Build- und Reproduktionsdetails:
 [NativeVisionSpike README](../../../tools/Games/ArkNova/NativeVisionSpike/README.md).
 
-## 11. Dokumente für Arche-Nova-Arbeit
+
+## 11. Bekannte Abweichungen
+
+Bekannte Abweichungen zwischen aktuellem Code und gewünschter Architektur werden
+nicht hier als Ausnahme legitimiert. Sie stehen in
+[`docs/TODO.md`](../../TODO.md) und sollen bei passenden Aufträgen gezielt
+abgebaut werden.
+
+## 12. Dokumente für Arche-Nova-Arbeit
 
 Nur das jeweils benötigte Dokument lesen:
 

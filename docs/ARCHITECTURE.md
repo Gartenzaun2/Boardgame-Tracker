@@ -19,7 +19,9 @@ Die zentrale Regel lautet:
 ## 2. Schichten und Abhängigkeiten
 
 ```text
-App -> Application -> Core
+App -> Application
+App -> Core
+Application -> Core
 Application -> EF Core
 App -> EF Core SQLite
 ```
@@ -32,6 +34,8 @@ App -> EF Core SQLite
   dort verboten.
 - **App** enthält MAUI, XAML, ViewModels, Navigation, Präsentationslogik,
   Plattformadapter, den Composition Root und die SQLite-Providerkonfiguration.
+  App darf Domain-Typen aus Core direkt verwenden; dafür wird keine zusätzliche
+  DTO-/Wrapper-Schicht eingeführt.
 
 ViewModels und Pages erhalten konkrete Use Cases oder Queries, niemals einen DbContext.
 
@@ -70,8 +74,11 @@ spielespezifisch ist.
 
 ### Ownership-Regeln
 
-- Dateien, Typdeklarationen und Namespaces eines konkreten Spiels gehören in dessen
-  `Games/<GameName>/`-Baum.
+- Dateien und Typdeklarationen eines konkreten Spiels gehören in dessen
+  `Games/<GameName>/`-Baum. Namespaces folgen grundsätzlich derselben Ownership.
+- Technisch notwendige Partial-Erweiterungen eines gemeinsamen Typs dürfen dessen
+  allgemeinen Namespace verwenden. Die Ownership bleibt dann durch den Dateipfad im
+  Spielmodul sichtbar; diese Ausnahme rechtfertigt keine allgemeinen Spielabhängigkeiten.
 - Allgemeiner Code außerhalb dieses Baums darf nicht von konkreten Spieltypen oder
   konkreten Spiel-Namespaces abhängen.
 - Ein Spielmodul darf allgemeinen Code verwenden.
@@ -205,9 +212,10 @@ GameSessionPlayer
 <GameName>GameSessionPlayer
 ```
 
-`<GameName>GameSessionPlayer` verwendet denselben fachlichen Teilnehmerbezug und
-enthält ausschließlich spielespezifische Daten. Allgemeine Felder wie Reihenfolge,
-Platzierung oder Player-Identität werden nicht erneut gespeichert.
+`<GameName>GameSessionPlayer` verwendet denselben fachlichen Teilnehmerbezug.
+Der gemeinsame Schlüssel darf als PK/FK wiederholt werden, damit die relationale
+1:1-Erweiterung eindeutig referenziert werden kann. Allgemeiner fachlicher Zustand
+wie Reihenfolge oder Platzierung wird nicht dupliziert.
 
 Dasselbe Prinzip gilt für Gruppenmitglieder:
 
@@ -219,6 +227,9 @@ GroupPlayer
         |
 <GameName>GroupPlayer
 ```
+
+Auch bei `<GameName>GroupPlayer` darf der gemeinsame `(GroupId, PlayerId)`-Schlüssel
+als PK/FK wiederholt werden; allgemeiner Gruppenmitgliedszustand wird nicht dupliziert.
 
 Ein Spiel darf daneben eigene Entities besitzen, wenn sie wirklich nur zu diesem
 Spiel gehören.
@@ -287,6 +298,13 @@ Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum.
 
 Spielrouten werden innerhalb des Spielmoduls registriert. Shell und allgemeine
 Navigation kennen keine konkreten Spielseiten.
+
+Composition Root und Host-Projektdatei sind erlaubte technische Integrationspunkte:
+Sie dürfen ein Spielmodul registrieren, paketieren oder dessen modul-eigene Buildassets
+einbinden. Dort gehört jedoch keine fachliche Spielentscheidung oder konkrete
+Feature-Orchestrierung außerhalb der öffentlichen Modulregistrierung hin. Wenn
+spielabhängige Buildkonfiguration umfangreicher wird, soll sie nach Möglichkeit in
+eine modul-eigene importierte Builddatei ausgelagert werden.
 
 Ein Erweiterungspunkt wird nur eingeführt, wenn allgemeiner Code tatsächlich mit
 einer austauschbaren oder spielabhängigen Implementierung arbeiten muss. Ein
@@ -398,9 +416,10 @@ Application-Slice-Tests verwenden für relationale Regeln echte EF-/SQLite-
 Datenbanken mit isolierter Lebensdauer und Cleanup; EF InMemory ersetzt keine
 Constraints, SQL-Übersetzung oder Transaktionen.
 
-Architekturtests schützen insbesondere:
+Architekturtests sollen insbesondere schützen:
 
-- die Abhängigkeitsrichtung `App -> Application -> Core`,
+- die erlaubten Abhängigkeiten `App -> Application`, `App -> Core` und
+  `Application -> Core`,
 - die Providergrenze,
 - EF-freie ViewModels,
 - die harte `Games/<GameName>/`-Ownership,
