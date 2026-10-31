@@ -36,22 +36,15 @@
                     </Grid>
                 </Border>
                 <Border Padding="16" Style="{StaticResource CardBorder}">
-                    <VerticalStackLayout Spacing="8">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="{x:Static res:AppResources.GameMaterial}" FontAttributes="Bold" VerticalOptions="Center" />
-                            <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnMaterialInfoClicked"
-                                         SemanticProperties.Description="{x:Static res:AppResources.GameMaterialHint}" ToolTipProperties.Text="{x:Static res:AppResources.GameMaterialHint}" />
+                            <Label Text="{x:Static res:AppResources.ContentLanguage}" FontAttributes="Bold" FontSize="17" VerticalOptions="Center" />
+                            <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}" 
+                                         Clicked="OnMaterialInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.GameMaterialHint}"
+                                         ToolTipProperties.Text="{x:Static res:AppResources.GameMaterialHint}" />
                         </Grid>
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                            <Label Text="{x:Static res:AppResources.ContentLanguage}" VerticalOptions="Center" />
-                            <Picker Grid.Column="1" Title="{x:Static res:AppResources.ContentLanguage}"
-                                    ItemsSource="{Binding ContentLanguages}" SelectedItem="{Binding SelectedContentLanguage}">
-                                <Picker.ItemDisplayBinding>
-                                    <Binding Path="Name" x:DataType="vm:ContentLanguageOption" />
-                                </Picker.ItemDisplayBinding>
-                            </Picker>
-                        </Grid>
-                    </VerticalStackLayout>
+                        <Button Text="{Binding SelectedContentLanguage.Name}" Grid.Row="1" Clicked="OnContentLanguageClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.ContentLanguage}" />
+                    </Grid>
                 </Border>
                 <Button Text="{x:Static res:AppResources.SpecialCardManagementTitle}" Style="{StaticResource SecondaryActionButton}" Clicked="OnSpecialCardsClicked" />
             </VerticalStackLayout>
