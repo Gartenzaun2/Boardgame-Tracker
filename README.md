@@ -35,9 +35,11 @@ statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzwe
 - Drei unmittelbar umschaltbare App-Themes: Deep Forest (Standard), Königsblau und Dunkel; Historie mit kompakten Filtern und Monatsgruppen.
 - Lokale Navigations- und Arche-Nova-Einstellungen werden über MAUI Preferences
   gespeichert.
-- Ark-Nova-CV-Forschung ist eingefroren. Native mobile Engine und Foto-Review sind
-  implementiert; fachliche Parität verhindert noch die Produktfreigabe.
-  iOS-Apple-Verifikation bleibt manuell offen. [Status](docs/ARK_NOVA_CV_STATUS.md).
+- Mobile Ark-Nova-CV ist fachlich für assistierte Wertung freigegeben. Native Mobile
+  ist Produktionspfad; Vorschläge werden vom Nutzer geprüft und ausdrücklich
+  bestätigt. Windows/OpenCvSharp bleibt Referenz-/Regressionstool. Keine weitere
+  CV-Optimierung geplant. Manueller Android-ARM64-Gerätelauf und iOS-Apple-
+  Verifikation bleiben offen. [Status](docs/ARK_NOVA_CV_STATUS.md).
 - Statistik ist ein geplanter späterer Slice.
 
 ## Architektur

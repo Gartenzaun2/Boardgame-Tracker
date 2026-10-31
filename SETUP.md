@@ -34,7 +34,8 @@ Device-/Simulator-Befehle stehen im
 [Native-README](tools/Games/ArkNova/NativeVisionSpike/README.md).
 Die App verwendet die daraus erzeugten lokalen Libraries; diese werden nicht
 versioniert. Auf Windows kompiliert das iOS-C#-Target ohne Apple-Linknachweis.
-Fachliche Parität und aktuelle Freigabegrenzen: [CV-Status](docs/ARK_NOVA_CV_STATUS.md).
+Fachliche Freigabe für assistierte Wertung, dokumentierte GT-Ergebnisse und
+offene manuelle Runtime-Nachweise: [CV-Status](docs/ARK_NOVA_CV_STATUS.md).
 
 Standard gemäß `AGENTS.md`: Code ändern → Build → automatisierte Tests → fertig.
 Restore bei Bedarf; automatisierte Tests dürfen sinnvoll ergänzt oder erweitert
