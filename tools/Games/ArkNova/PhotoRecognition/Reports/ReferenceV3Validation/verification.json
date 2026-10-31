@@ -1,0 +1,11 @@
+{
+  "historicalDecisions": 456,
+  "historicalValueOrConfidenceMismatches": 0,
+  "inputHashes": {
+    "artifacts/ResearchV3/dataset_v3/manifest_v3.json": "7c18ef4a854176fa1d107e7e7af4116962f1998cc903daa62dd0e2e824ca93f8",
+    "tools/Games/ArkNova/PhotoRecognition/Assets/scoring_ground_truth.json": "08dd41a1a257a1ee920b99fdf26d7c6370a58b5e9857bff85ad3436ea24d0da3",
+    "artifacts/ResearchV3/dataset_v3/ground_truth_v3.json": "e084d663405ca1aca8c120507384c4bbce2b9ffbf3ff1bf0514a4ddeec27d79a",
+    "tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2/split.json": "6fc29cff66d73934b3ec69871938c8b6d5aa324007930d7a560e1120bafcbc31",
+    "tools/Games/ArkNova/PhotoRecognition/Assets/ConfidenceV2/scoring_ground_truth_v2.json": "6e0556bba958efa45724301d15f38c684651276c458a9c7c9b8522b07ff4182e"
+  }
+}

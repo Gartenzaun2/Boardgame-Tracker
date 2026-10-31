@@ -1,0 +1,38 @@
+{
+  "protocol": "Paired hardened A_NoZero / unchanged Confidence E replay. Reused data, no independent holdout, no tuning. Present-value denominators include null and failed registrations. Absent-color decisions are separate.",
+  "baselineReferenceSha256": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114",
+  "baselineGeometrySha256": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910",
+  "candidateReferenceSha256": "689dc1d3bc383e2f8d6256f865146d564fd7dcb36d3e263a0b1ff0b90af40a0c",
+  "candidateGeometrySha256": "5f1137ed62682d4b04d7e727decf1cc3cf50032bbbaf4e84459b7dba80261606",
+  "sourceHashes": {
+    "ArkNovaBlackDiagnostics.cs": "85e6a30d0f799ab7b5c4204cd12479a27b6d80b8fd4d6eeb7cd9201738e5ee1d",
+    "ArkNovaConfidenceBenchmark.cs": "5b4cc218061e6154bfd6cc509437d183663b3764df6a85e658b374946d43c4ed",
+    "ArkNovaConfidencePolicy.cs": "2b7925e5b88a009f8fce45cb19df8956ee80a0b6b216de565ce9fa9ab91996de",
+    "ArkNovaMaskFraction.cs": "0cfe2517ad829756cd2282c21661e81f130ff46996475f5f69915c1754fd6ac9",
+    "ArkNovaNativeReference.cs": "ce0b0affdbb42c0b6e158061ce8621b7bc1c3ebdc4e04e3957638c0f4f624cd7",
+    "ArkNovaPhotoAnalyzer.cs": "bc66e69320bd57627b79fcfd01538b2a9f9a94d6c717c9d24634ec9ea88abe97",
+    "ArkNovaRankingCapture.cs": "440d90f45dfd7f660ea5e8d702331b1ffe1d34f2d662a7c60ea5983bcb4da6ae",
+    "ArkNovaRankingExperiment.cs": "cb0e0f2cb5b4e02004f93147ec2a0e0c196b4794566c0677ffeb447bfdfad931",
+    "ArkNovaRankingRules.cs": "134dd816997a3c90f0da0f7eaa845abba1258ab7183bd71f2c16c80bbf083c93",
+    "ArkNovaReferenceValidation.cs": "fec9bec5e899b71a14ba4ce7afadcb5aaa61b99c3cbdbd99affe2d77d9d827db",
+    "ArkNovaRegistrationChecks.cs": "3338714e4c732fd5e07c168f0ffbc863fe2519189af03c3c1a3be7b49115e7a1",
+    "Program.cs": "fc68a9b267b079b519b8c70bc3987af010c58550d439f1e3256dfcd8890c1c2b"
+  },
+  "missingStress": "IMG_4263.jpeg is absent from repository; historical 5/6 is not a new-reference measurement.",
+  "negatives": {
+    "baseline": {
+      "blankRejected": true,
+      "partialRejected": true,
+      "emptyReferenceNoHigh": true,
+      "passed": true
+    },
+    "candidate": {
+      "blankRejected": true,
+      "partialRejected": true,
+      "emptyReferenceNoHigh": true,
+      "passed": true
+    }
+  },
+  "summaries": [],
+  "photos": []
+}

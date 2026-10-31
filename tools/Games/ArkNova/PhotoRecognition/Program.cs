@@ -3,6 +3,22 @@ using System.Text.Json;
 using OpenCvSharp;
 using BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
+if (args.Length == 5 && args[0] == "compare-reference-c-boundsfix")
+    return ArkNovaReference3WayComparison.Run(args[1], args[2], args[4], args[3]);
+
+if (args.Length == 4 && args[0] == "compare-reference-3way")
+    return ArkNovaReference3WayComparison.Run(args[1], args[2], args[3]);
+
+if (args.Length == 4 && args[0] == "prepare-reference-4000")
+    return ArkNovaReference4000Ablation.Prepare(args[1], args[2], args[3]);
+if (args.Length == 4 && args[0] == "ablate-reference-4000")
+    return ArkNovaReference4000Ablation.Run(args[1], args[2], args[3]);
+
+if (args.Length == 4 && args[0] == "validate-reference-v3")
+    return ArkNovaReferenceValidation.Run(args[1], args[2], args[3]);
+if (args.Length == 4 && args[0] == "validate-reference-v3-negatives")
+    return ArkNovaReferenceValidation.Run(args[1], args[2], args[3], negativesOnly: true);
+
 if (args.Length == 3 && args[0] == "native-reference")
     return ArkNovaNativeReference.Export(args[1], args[2]);
 

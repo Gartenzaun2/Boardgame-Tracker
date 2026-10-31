@@ -4,7 +4,8 @@ namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
 internal static class ArkNovaRegistrationChecks
 {
-    public static RegistrationChecks Run(ArkNovaPhotoAnalyzer analyzer, string assets, string scratchDirectory, ConfidenceVariant policy)
+    public static RegistrationChecks Run(ArkNovaPhotoAnalyzer analyzer, string assets, string scratchDirectory, ConfidenceVariant policy,
+        string referenceFile = "board_reference_master_clean.png")
     {
         Directory.CreateDirectory(scratchDirectory);
         string path = Path.Combine(scratchDirectory, $"negative-{Guid.NewGuid():N}.png");
@@ -14,7 +15,7 @@ internal static class ArkNovaRegistrationChecks
             File.WriteAllBytes(path, blank.ImEncode(".png"));
             RecognitionResult empty = analyzer.Analyze(path);
             bool blankRejected = !empty.Registration.Success && empty.Colors.Count == 0;
-            string referencePath = Path.Combine(assets, "board_reference_master_clean.png");
+            string referencePath = Path.Combine(assets, referenceFile);
             RecognitionResult reference = analyzer.Analyze(referencePath);
             bool referenceNoHigh = reference.Registration.Success && reference.Colors.Values
                 .SelectMany(color => ArkNovaConfidencePolicy.Evaluate(color.Tracks, policy).Values)

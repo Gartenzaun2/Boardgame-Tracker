@@ -1,0 +1,60 @@
+{
+  "purpose": "Token-sparse 3-way Ark Nova reference comparison",
+  "variants": [
+    "A_current",
+    "B_new_scaled_4000x2800",
+    "C_rectified_scoring_4000"
+  ],
+  "files": [
+    {
+      "path": "CODEX_PROMPT.txt",
+      "bytes": 2644,
+      "sha256": "ab6cc5f6a04ec3e8958e0b39b37ff20ae195ca7457527b4481df686891059563"
+    },
+    {
+      "path": "A_current/board_reference_master_clean.png",
+      "bytes": 18168281,
+      "sha256": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114"
+    },
+    {
+      "path": "A_current/scoring_regions_v2.json",
+      "bytes": 133162,
+      "sha256": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910"
+    },
+    {
+      "path": "B_new_scaled_4000x2800/board_reference_single_shot_scaled_4000x2800.png",
+      "bytes": 17394487,
+      "sha256": "ebb573d815603c1d6f994dc11aed41c1bc7bd90a9332fe715afb0ea80ed79d71"
+    },
+    {
+      "path": "B_new_scaled_4000x2800/scoring_regions_v3_candidate5_scaled_4000x2800.json",
+      "bytes": 146761,
+      "sha256": "4b11268b1e091f0d6e9e7f684fce56279bf820446ad6e5060ce41b3f565255a8"
+    },
+    {
+      "path": "B_new_scaled_4000x2800/overlay_scaled_4000x2800.png",
+      "bytes": 18480072,
+      "sha256": "d3ae95accebb7b73495b8c8828e5158ed172ef798bfb50b7b898afaafd2f9d15"
+    },
+    {
+      "path": "C_rectified_scoring_4000/board_reference_rectified_scoringonly_overlay.png",
+      "bytes": 11251256,
+      "sha256": "b4a3a634a82d76dc76f48f3bcc2f1727a852d43b7e81f08860b3bf3dc4aff655"
+    },
+    {
+      "path": "C_rectified_scoring_4000/scoring_regions_v3_rectified_candidate5_scoringonly.json",
+      "bytes": 145769,
+      "sha256": "93e4622e66b506269241e87e5dcc528cd529460ed7f0262f8b79147cb725b25c"
+    },
+    {
+      "path": "C_rectified_scoring_4000/candidate5_rectified_spotcheck.png",
+      "bytes": 1663539,
+      "sha256": "4d89105ac2a4b42987ba9bd339768bd13ae775359e5046bed7e139ad46c45ab5"
+    },
+    {
+      "path": "C_rectified_scoring_4000/board_reference_rectified_scoringonly_4000.png",
+      "bytes": 12642617,
+      "sha256": "6247c2c9cc942ddeab073d03886eaed287f59cef0ee2130a203b9c6bafe445c8"
+    }
+  ]
+}

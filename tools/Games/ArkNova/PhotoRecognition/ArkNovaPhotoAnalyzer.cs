@@ -22,13 +22,14 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
     private readonly List<Field> _fields = [];
     private readonly Rect _scoringBounds;
     public double PreparationMilliseconds { get; }
+    internal Size AnalysisSize => _reference.Size();
 
-    public ArkNovaPhotoAnalyzer(string assetDirectory)
+    public ArkNovaPhotoAnalyzer(string assetDirectory, string geometryFile = "scoring_regions_v2.json")
     {
         Stopwatch timer = Stopwatch.StartNew();
-        using JsonDocument geometry = JsonDocument.Parse(File.ReadAllText(Path.Combine(assetDirectory, "scoring_regions_v2.json")));
-        using Mat master = ReadImage(Path.Combine(assetDirectory, "board_reference_master_clean.png"));
+        using JsonDocument geometry = JsonDocument.Parse(File.ReadAllText(Path.Combine(assetDirectory, geometryFile)));
         JsonElement reference = geometry.RootElement.GetProperty("reference");
+        using Mat master = ReadImage(Path.Combine(assetDirectory, reference.GetProperty("image").GetString()!));
         if (master.Width != reference.GetProperty("width_px").GetInt32()
             || master.Height != reference.GetProperty("height_px").GetInt32())
             throw new InvalidDataException("Reference image and polygon coordinate system do not match.");
