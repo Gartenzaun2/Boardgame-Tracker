@@ -249,6 +249,21 @@ Game-Preference gespeichert, unabhängig von den Ark-Nova-Wertungseinstellungen.
 „Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.“
 Vorhandene Einstellungskarten, Theme-Ressourcen und compiled bindings bleiben maßgeblich.
 
+Allgemeine Einstellungen ergänzen **Über / Rechtliches → Open-Source-Lizenzen**
+als bestehende Secondary-Aktion. Die Übersicht verwendet Header mit Zurück,
+HeaderDivider und kompakte Surface-/CardBorder-Einträge: Name/Version und darunter
+die Lizenzbezeichnung, ohne Volltexte. Die gesamte Eintragsfläche ist ein
+zugänglicher Button mit Komponenten-/Lizenzbeschreibung und Öffnen-Hinweis.
+Direkt über der Liste steht der obligatorische IJG-Satz unverdeckt.
+
+Ein Tap öffnet eine eigene Detailseite mit Zurück/Divider und einem begrenzten
+Scrollbereich für Version, Lizenzname, optionalen SPDX-Identifier, Attribution
+und den vollständigen lokalen Text samt ergänzenden Notices. Kein Browser/WebView,
+keine Checkbox. Alle Texte können umbrechen und skalieren mit der Systemschrift;
+keine feste Detailtexthöhe oder Abschneidung. Theme-Rollen bleiben dynamisch für
+Deep Forest, Königsblau und Dunkel. Busy-Layer liegt außerhalb des deaktivierten
+Seiteninhalts; fehlende Assets zeigen lokalisierte Fehler plus Wiederholen.
+
 Unter „Spezialkarten“: Header mit Zurück und Info-Icon, „Archivierte anzeigen“, scrollbare
 Kartenliste und „Neue Spezialkarte“ unten. Zeilen zeigen 0–3 Symbole in gespeicherter
 Reihenfolge vor dem Namen und das Bearbeiten-Icon direkt daneben ohne eigene

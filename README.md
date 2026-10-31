@@ -41,6 +41,10 @@ statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzwe
   CV-Optimierung geplant. Manueller Android-ARM64-Gerätelauf und iOS-Apple-
   Verifikation bleiben offen. [Status](docs/ARK_NOVA_CV_STATUS.md).
 - Statistik ist ein geplanter späterer Slice.
+- Offline-Lizenzanzeige unter **Einstellungen → Über / Rechtliches → Open-Source-Lizenzen**:
+  Komponentenübersicht und vollständige lokale Lizenz-/NOTICE-Texte, einschließlich
+  sichtbarem IJG-Hinweis. Keine neue Runtime-Webabhängigkeit, keine Änderung der
+  eigenen App-Lizenz. [Lizenzregeln](docs/THIRD_PARTY_LICENSE_POLICY.md).
 
 ## Architektur
 

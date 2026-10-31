@@ -435,6 +435,20 @@ Navigationseinstellungen und lokale Ark-Nova-Präferenzen werden über MAUI
 
 Alle Schlüssel für Shell-Navigationsparameter werden zentral als Konstanten in `src/BoardgameTracker.App/Navigation/NavigationParameters.cs` definiert, bevorzugt mit `nameof`. Sender (`ShellNavigationQueryParameters`) und Empfänger (`IQueryAttributable.ApplyQueryAttributes`, insbesondere `TryGetValue`) verwenden dieselbe Konstante, niemals separat ausgeschriebene String-Literale. Neue Parameter werden zuerst dort ergänzt. So können Schlüssel nicht unbemerkt nur auf einer Seite geändert werden.
 
+### Offline-Lizenzanzeige
+
+`App/Features/Settings/Licenses` trennt Katalog/Modell, `LicenseTextService`, den
+MAUI-Package-Adapter und ViewModels/Pages. Lesen über
+`FileSystem.OpenAppPackageFileAsync`, kein Runtime-Netzwerk und keine Datenbank.
+Das zentrale `Resources/Raw/ThirdPartyLicenses/catalog.json` fasst Bibliotheksfamilien
+zusammen und referenziert deduplizierte Texte. Die acht nativen Originaldateien
+unter `Games/ArkNova/PhotoRecognition/Native/licenses` bleiben unverändert.
+Source-generierte JSON-Metadaten unterstützen Trimming/AOT. Shell nutzt
+`NavigationParameters.LicenseComponentId`; compiled bindings und bestehende
+Styles bleiben maßgeblich. Fehlende Texte werden geloggt und als lokalisierter,
+wiederholbarer Fehler behandelt. Lizenzpflege gemäß
+[Third-Party-Policy](THIRD_PARTY_LICENSE_POLICY.md), kein automatischer Audit.
+
 ### Zentrales Theme-System
 
 App-Themes sind Präsentation und lokale Preferences, keine Domain-/SQLite-Daten. Der `AppNavigationSettings`-/Preferences-Port speichert die Theme-Auswahl; fehlende oder ungültige Werte fallen auf Deep Forest zurück. `App/Theming/ThemePalette` definiert reine semantische Farbwerte, `ThemeManager` ersetzt die MAUI-Ressourcen beim Start und Wechsel. XAML-Farben verwenden `DynamicResource`, keine Theme-Namen in Screens. Der globale `ContentPage`-Style setzt `ApplyToDerivedTypes="True"`, damit die tatsächlichen Page-Unterklassen den dynamischen AppBackground erben; keine separaten Page-Farbpaletten. Kleine plattformspezifische Shell-Appearance-Tracker ergänzen die vorhandene native TabBar um Kontur und Auswahlfläche; keine eigene Navigation. Fachliche Farben und Grafiken bleiben in ihren Spielmodulen.

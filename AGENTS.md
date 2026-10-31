@@ -178,6 +178,25 @@ Neue/geänderte Fachlogik geeignet testen. Tests niemals für einen grünen Lauf
 Keine Performance-Optimierungen auf Verdacht. Zuerst vorhandene strukturelle Regeln einhalten: compiled bindings, gezielte Read-Model-Projektionen, kurze DbContext-Lebensdauer und keine unnötige Layout-/Datenmaterialisierung. Größere Performance-Arbeiten nur bei gemessenem Problem oder ausdrücklichem Auftrag.
 
 ## Arbeitsmodus und Token-Effizienz
+
+### Scope hat Vorrang
+
+Ein Implementierungsauftrag darf nicht implizit zum Audit-, Forschungs- oder
+Vollprüfungsauftrag erweitert werden. „Produktionsreif“, „Designrichtlinien
+einhalten“, „sauber prüfen“, „korrekt integrieren“ und „relevante Abhängigkeiten
+berücksichtigen“ sind keine Freigabe für vollständige Dependency-/Security-/Lizenz-/
+Architektur-Audits, Downloads und Analysen des transitiven Paketbaums,
+SDK-/NDK-/Runtime-Inventuren oder zusätzliche Release-Matrizen. Ebenso wenig
+erlauben sie Emulator-/Geräteläufe, manuelles Durchklicken, Screenshots,
+Screenshotanalyse oder Theme-Sichtprüfungen. Solche Arbeiten benötigen einen
+ausdrücklichen Auftrag. Zusätzlichen Prüfbedarf im Abschlussbericht nennen,
+statt die Prüfung selbstständig auszuführen.
+
+UI-/Designprüfung bedeutet standardmäßig: vorhandene UI-Dokumentation lesen,
+XAML, Styles, Ressourcen, Bindings und Navigation entsprechend implementieren,
+Build und automatisierte Tests durchführen. Kein App-Start oder Screenshot;
+manuelle/visuelle Prüfung bleibt ausschließlich Opt-in.
+
 Standardmäßig auf kurze Durchlaufzeit, geringe Tool-Nutzung und möglichst wenig unnötigen Kontextverbrauch optimieren. Nur die Analyse und Werkzeuge einsetzen, die zur korrekten Umsetzung des aktuellen Auftrags und zu seiner codebasierten Verifikation nötig sind.
 
 Bei kleinen und klar abgegrenzten Aufgaben keine umfangreiche Voranalyse oder Implementierungsplanung erstellen. Zuerst die direkt betroffenen Dateien und die dafür maßgebliche Dokumentation prüfen und dann umsetzen. Die Repository-Erkundung nur erweitern, wenn Abhängigkeiten, Buildfehler oder Testfehler dies konkret erfordern.
@@ -197,6 +216,22 @@ Ohne ausdrücklichen Auftrag nicht:
 Auftragsfremde Auffälligkeiten kurz im Abschlussbericht nennen statt sie automatisch zu bearbeiten.
 
 ## Verifikation und Lieferung
+
+### Verifikationsbudget
+
+Die vollständige Standardverifikation für normale Aufgaben ist genau:
+ein Solution-Build, Core-Tests einmal und Application-Tests einmal. Nach Erfolg
+ist die normale Aufgabe abgeschlossen; es folgt nur der übliche Diff-/Statuscheck.
+Keine zusätzlichen ABI-/Plattform-Release-Builds, Trimming-Matrizen,
+APK-/IPA-Inhaltsanalysen, Emulator-/Geräteläufe oder alternativen Prüfmethoden
+ohne ausdrücklichen Auftrag. Eine konkret beauftragte Plattform-/Packaging-
+Eigenschaft kann eine dafür gezielte Prüfung erfordern, keinen automatischen
+Vollprüfungsauftrag.
+
+Schlägt eine Prüfung wegen einer vorgenommenen Änderung fehl, Ursache korrigieren
+und nur den betroffenen notwendigen Schritt wiederholen. Bereits erfolgreiche
+Prüfungen nicht erneut ausführen, nur weil anschließend Dokumentation oder andere
+davon unabhängige Dateien geändert wurden. Keine komplette Prüfmatrix neu starten.
 Die Standardverifikation ist codebasiert:
 
 ```text

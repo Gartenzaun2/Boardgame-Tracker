@@ -55,6 +55,8 @@
                     <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
                 </Grid>
             </Border>
+            <Label Text="{x:Static res:AppResources.AboutLegal}" FontAttributes="Bold" FontSize="17" Margin="0,8,0,0" SemanticProperties.HeadingLevel="Level2" />
+            <Button Text="{x:Static res:AppResources.OpenSourceLicenses}" Clicked="OnLicensesClicked" Style="{StaticResource SecondaryActionButton}" />
         </VerticalStackLayout>
         </ScrollView>
     </Grid>

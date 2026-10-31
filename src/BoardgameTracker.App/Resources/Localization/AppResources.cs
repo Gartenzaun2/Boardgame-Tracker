@@ -9,6 +9,14 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string OpenSourceLicenses => GetString(nameof(OpenSourceLicenses));
+    public static string AboutLegal => GetString(nameof(AboutLegal));
+    public static string LicenseOpenHint => GetString(nameof(LicenseOpenHint));
+    public static string LicenseVersionFormat => GetString(nameof(LicenseVersionFormat));
+    public static string LicenseSpdxFormat => GetString(nameof(LicenseSpdxFormat));
+    public static string LicenseAdditionalNotices => GetString(nameof(LicenseAdditionalNotices));
+    public static string LicensesLoadFailed => GetString(nameof(LicensesLoadFailed));
+    public static string LicensesRetry => GetString(nameof(LicensesRetry));
     public static string GameMaterial => GetString(nameof(GameMaterial));
     public static string ContentLanguage => GetString(nameof(ContentLanguage));
     public static string ContentLanguageGerman => GetString(nameof(ContentLanguageGerman));

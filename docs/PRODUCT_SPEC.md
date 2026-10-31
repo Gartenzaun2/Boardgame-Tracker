@@ -544,6 +544,35 @@ Neben speziell unterstützten Spielen wie Arche Nova sollen Benutzer später eig
 
 ## App-Darstellung
 
+### Open-Source-/Third-Party-Lizenzen
+
+Unter **Einstellungen → Über / Rechtliches → Open-Source-Lizenzen** öffnet eine
+kompakte, auswählbare Komponentenliste. Jeder Eintrag zeigt Name, eindeutig
+bekannte Version und Lizenzbezeichnung. Die Detailseite zeigt zusätzlich
+vorhandenen SPDX-Identifier, Copyright/Attribution und vollständige scrollbare
+Lizenz-/NOTICE-Texte. Kein WebView, keine Zustimmung/Checkbox, keine Internet-
+oder zusätzlichen Geräteberechtigungen erforderlich. Der IJG-Satz ist über der
+Übersicht und in den JPEG-Details unmittelbar sichtbar.
+
+Alle Texte kommen aus dem App-Paket. Die vorhandenen acht nativen Lizenzdateien
+bleiben unverändert und werden ohne Textduplikate referenziert: OpenCV, KleidiCV,
+Android CPU Features, Carotene, OpenJPEG, libjpeg-turbo, Independent JPEG Group
+und libpng. Ergänzt sind tatsächlich gebaute SoftFloat-/FDLIBM-/FLANN-Hinweise und
+die erforderlichen bereits vorliegenden LLVM-/Mono-/Bibliotheks-Lizenz- und
+NOTICE-Texte. Bibliotheksfamilien werden kompakt zusammengefasst; ihre jeweiligen
+Attributionen und Texte bleiben erhalten. Maßgeblich ist
+`docs/THIRD_PARTY_LICENSE_POLICY.md`.
+
+Unerwartet fehlende Texte zeigen eine verständliche Meldung mit Wiederholen;
+technische Details bleiben im Logging. Die Oberfläche funktioniert mit allen
+vorhandenen Themes und verwendet dieselben Navigation-/Typografie-/Kartenmuster.
+Die Attributionen sind getrennt von der Lizenz des eigenen App-Codes; diese wird
+nicht automatisch geändert. Die Lizenzanzeige macht die App nicht Open Source
+und schließt kommerziellen/Closed-Source-Vertrieb nicht grundsätzlich aus.
+Die jeweiligen Lizenzbedingungen bleiben maßgeblich; keine rechtliche Garantie.
+
+### Themes
+
 Allgemeine Einstellungen bieten Deep Forest (Standard), Königsblau und Dunkel. Die Auswahl wird lokal in Preferences gespeichert und sofort angewendet. Sie ist spielunabhängig, verändert keine historischen Daten und folgt der verbindlichen Palette in `UI_DESIGN_GUIDE.md`. Historie zeigt Monatsgruppen ohne notwendige Sticky-Überschriften und kompakte Spiel-/Gruppenfilter.
 
 ## Partien importieren und exportieren

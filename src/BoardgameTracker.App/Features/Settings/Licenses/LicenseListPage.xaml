@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.Licenses" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:Class="BoardgameTracker.App.Features.Settings.Licenses.LicenseListPage" x:DataType="local:LicenseListViewModel"
+    Title="{x:Static res:AppResources.OpenSourceLicenses}" Shell.NavBarIsVisible="False">
+    <Grid Padding="18">
+        <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+            <VerticalStackLayout Spacing="8">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                    <Label Grid.Column="1" Text="{x:Static res:AppResources.OpenSourceLicenses}" FontAttributes="Bold" FontSize="24" VerticalOptions="Center" SemanticProperties.HeadingLevel="Level1" />
+                </Grid>
+                <BoxView Style="{StaticResource HeaderDivider}" />
+            </VerticalStackLayout>
+            <Label Grid.Row="1" Text="{Binding IjgAttribution}" FontSize="12" LineBreakMode="WordWrap" />
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Components}" SelectionMode="None">
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:ThirdPartyLicense">
+                        <Border Style="{StaticResource CardBorder}">
+                            <Grid MinimumHeightRequest="76">
+                                <VerticalStackLayout Padding="16,12" Spacing="4" InputTransparent="True" AutomationProperties.IsInAccessibleTree="False">
+                                    <Label Text="{Binding DisplayTitle}" FontSize="17" FontAttributes="Bold" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding LicenseDisplayName}" FontSize="12" TextColor="{DynamicResource TextSecondary}" LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                                <Button Style="{StaticResource TextActionButton}" Clicked="OnLicenseClicked" CommandParameter="{Binding Id}"
+                                        SemanticProperties.Description="{Binding OverviewText}" SemanticProperties.Hint="{x:Static res:AppResources.LicenseOpenHint}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <VerticalStackLayout Grid.Row="3" IsVisible="{Binding HasError}" Spacing="8">
+                <Label Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+                <Button Text="{x:Static res:AppResources.LicensesRetry}" Clicked="OnRetryClicked" Style="{StaticResource SecondaryActionButton}" />
+            </VerticalStackLayout>
+        </Grid>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

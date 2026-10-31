@@ -4,6 +4,17 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.26
+
+- Scope-/Opt-in-Regeln und Verifikationsbudget in AGENTS, Setup und Third-Party-License-Policy präzisiert: normale Verifikation einmal Solution, Core und Application; keine automatischen Audits, Release-Matrizen oder manuellen UI-Prüfungen.
+- Lokalen Lizenzstand bereinigt: Audit-/Herkunfts-/Prüfsummenberichte, Download-/Inventarisierungswerkzeug und temporäre Analyse-/Paketdateien entfernt. Katalog auf 19 nutzerseitige Einträge mit Bibliotheksfamilien reduziert; sämtliche benötigten Lizenz-/NOTICE-Texte und Attributionen erhalten. App-Version 0.10.0.26 / ApplicationVersion 63. Kein Commit oder Push.
+- Genau einmal Standardverifikation: Solution-Build ohne Warnungen/Fehler, 73 Core- und 216 Application-Tests bestanden. Keine weiteren Builds, Audits oder manuellen Prüfungen.
+
+## 0.10.0.25
+
+- Offline-Lizenzanzeige unter Einstellungen → Über / Rechtliches → Open-Source-Lizenzen mit Übersicht, scrollbarer Detailseite, sichtbarem IJG-Hinweis und lokalisierten Fehler-/Retry-Zuständen implementiert. Zentraler Katalog und MAUI-Package-Reader, keine neue Dependency oder Runtime-Webabhängigkeit.
+- Native Originaltexte unverändert; erforderliche SoftFloat-/FDLIBM-/FLANN-, statische LLVM-C++-Runtime- und vorhandene Bibliotheks-Lizenz-/NOTICE-Inhalte offline mitgeliefert. Bestehende Themes, Styles, Navigation und notwendige Code-Tests wiederverwendet. Eigene App-Lizenz und Ark-Nova-CV unverändert. App-Version 0.10.0.25 / ApplicationVersion 62.
+
 ## 0.10.0.24
 
 - Ausdrückliches fachliches GO: Native Mobile-CV ist Produktionspfad und für assistierte Ark-Nova-Wertung freigegeben. Plattformabweichungen gegenüber Windows A bewusst akzeptiert: keine neuen False-High-Fälle/High-Phantome, verpflichtende Nutzerprüfung/Korrektur und explizite Bestätigung vor Speicherung. Keine automatische Wertung.

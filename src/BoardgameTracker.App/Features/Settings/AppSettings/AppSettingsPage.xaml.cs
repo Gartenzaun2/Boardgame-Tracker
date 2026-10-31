@@ -4,6 +4,7 @@ using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.App.Features.Players.ListPlayers;
+using BoardgameTracker.App.Features.Settings.Licenses;
 
 namespace BoardgameTracker.App.Features.Settings.AppSettings;
 
@@ -61,6 +62,21 @@ public partial class AppSettingsPage : ContentPage
         try
         {
             await Shell.Current.GoToAsync(nameof(PlayerListPage));
+        }
+        finally
+        {
+            _choosing = false;
+        }
+    }
+
+    private async void OnLicensesClicked(object? sender, EventArgs e)
+    {
+        if (_choosing)
+            return;
+        _choosing = true;
+        try
+        {
+            await Shell.Current.GoToAsync(nameof(LicenseListPage));
         }
         finally
         {
