@@ -57,6 +57,7 @@ Vor relevanten Änderungen die zuständigen Dokumente lesen:
 |---|---|
 | Produktverhalten und Anforderungen | `docs/PRODUCT_SPEC.md` |
 | Architektur und Abhängigkeiten | `docs/ARCHITECTURE.md` |
+| Drittanbieter-Abhängigkeiten und Lizenzanforderungen | `docs/THIRD_PARTY_LICENSE_POLICY.md` |
 | Domain und Persistenzmodell | `docs/DATA_MODEL.md` |
 | UI-Regeln | `docs/UI_DESIGN_GUIDE.md` |
 | Screens und Navigation | `docs/UI_WIREFRAME.md` |
@@ -170,7 +171,7 @@ Vor jeder Änderung betroffene Dateien und relevante Dokumentation lesen, die Im
 
 Fehler, Ungereimtheiten und Verbesserungsmöglichkeiten außerhalb des aktuellen Auftrags nur benennen und mit dem Benutzer besprechen; nicht automatisch korrigieren oder als beiläufige Bereinigung aufnehmen. Solche Änderungen erst nach ausdrücklicher Beauftragung umsetzen. Ist eine auftragsfremde Korrektur Voraussetzung für die Aufgabe, die Abhängigkeit erklären und vor der Umsetzung abstimmen.
 
-Keine Architektur-, Persistenz- oder Paketänderungen außerhalb des Auftrags; neue NuGet-Pakete nur bei klarem Bedarf. Kleine technische Entscheidungen innerhalb bestehender Spezifikation selbstständig treffen. Vor Änderungen an Architekturgrundsätzen, grundlegendem Datenmodell, Persistenzstrategie/Migration, wesentlichen Benutzerabläufen, größeren Abhängigkeiten oder bestehenden Anforderungen nachfragen; ebenso bei nicht spezifiziertem Fachverhalten.
+Keine Architektur-, Persistenz- oder Paketänderungen außerhalb des Auftrags. Neue Third-Party-Abhängigkeiten – einschließlich NuGet-Paketen, nativen Bibliotheken und ausgelieferten Drittanbieter-Assets – nur bei klarem Bedarf und nach Lizenzprüfung gemäß `docs/THIRD_PARTY_LICENSE_POLICY.md`. Kleine technische Entscheidungen innerhalb bestehender Spezifikation selbstständig treffen. Vor Änderungen an Architekturgrundsätzen, grundlegendem Datenmodell, Persistenzstrategie/Migration, wesentlichen Benutzerabläufen, größeren Abhängigkeiten oder bestehenden Anforderungen nachfragen; ebenso bei nicht spezifiziertem Fachverhalten.
 
 Neue/geänderte Fachlogik geeignet testen. Tests niemals für einen grünen Lauf entfernen, abschwächen oder umgehen. UI-Änderungen anhand beider UI-Dokumente prüfen.
 
