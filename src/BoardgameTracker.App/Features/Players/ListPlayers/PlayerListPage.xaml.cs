@@ -27,17 +27,6 @@ public partial class PlayerListPage : ContentPage
             await _viewModel.LoadAsync();
     }
 
-    private async void OnGuestsChanged(object? sender, ToggledEventArgs e)
-    {
-        _viewModel.IncludeGuests = e.Value;
-        await _viewModel.LoadAsync();
-    }
-
-    private async void OnArchivedChanged(object? sender, ToggledEventArgs e)
-    {
-        _viewModel.IncludeArchived = e.Value;
-        await _viewModel.LoadAsync();
-    }
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_navigating && !_viewModel.IsBusy)

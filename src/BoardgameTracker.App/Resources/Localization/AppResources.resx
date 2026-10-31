@@ -675,9 +675,6 @@
   <data name="SpecialCardName" xml:space="preserve">
     <value>Name</value>
   </data>
-  <data name="ShowArchivedCards" xml:space="preserve">
-    <value>Archivierte anzeigen</value>
-  </data>
   <data name="ArchiveCard" xml:space="preserve">
     <value>Archivieren</value>
   </data>

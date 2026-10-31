@@ -22,27 +22,36 @@ public partial class PlayerListViewModel(ListPlayersQuery query, IEnumerable<IGa
     public bool HasError => ErrorMessage is not null;
     public bool IsIdle => !IsBusy;
     public bool IsEmpty => Players.Count == 0 && !IsBusy && !HasError;
+    private bool _reloadRequested;
 
-    public async Task LoadAsync(CancellationToken cancellationToken = default)
-    {
-        if (IsBusy)
+    partial void OnIncludeGuestsChanged(bool value) => _ = LoadAsync();
+    partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
+
+    public async Task LoadAsync(CancellationToken cancellationToken = default) {
+        if(IsBusy) {
+            _reloadRequested = true;
             return;
-        IsBusy = true;
-        ErrorMessage = null;
-        try
-        {
-            IReadOnlyList<PlayerListItem> rows = await query.ListPlayersAsync(IncludeGuests, IncludeArchived, cancellationToken);
-            Players.Clear();
-            foreach (PlayerListItem row in rows)
-                Players.Add(new(row));
         }
-        catch (Exception exception)
-        {
+
+        try {
+            IsBusy = true;
+
+            do {
+                _reloadRequested = false;
+                ErrorMessage = null;
+
+                IReadOnlyList<PlayerListItem> rows = await query.ListPlayersAsync(IncludeGuests, IncludeArchived, cancellationToken);
+                Players.Clear();
+
+                foreach(PlayerListItem row in rows) {
+                    Players.Add(new PlayerListRow(row));
+                }
+            }
+            while(_reloadRequested && !cancellationToken.IsCancellationRequested);
+        } catch(Exception exception) {
             logger.LogError(exception, "Could not load players.");
             ErrorMessage = AppResources.PlayersLoadFailed;
-        }
-        finally
-        {
+        } finally {
             IsBusy = false;
             OnPropertyChanged(nameof(IsEmpty));
         }

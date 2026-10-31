@@ -27,7 +27,7 @@
                 <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
-                <Label Text="{x:Static res:AppResources.ShowArchivedCards}" VerticalOptions="Center" />
+                <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
                 <Switch Grid.Column="1" IsToggled="{Binding ShowArchived}" IsEnabled="{Binding IsIdle}" />
             </Grid>
             <CollectionView Grid.Row="2" ItemsSource="{Binding Cards}" SelectionMode="None">

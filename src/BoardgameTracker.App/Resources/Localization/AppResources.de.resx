@@ -418,7 +418,6 @@
   <data name="NewSpecialCard" xml:space="preserve"><value>Neue Spezialkarte</value></data>
   <data name="EditSpecialCard" xml:space="preserve"><value>Spezialkarte bearbeiten</value></data>
   <data name="SpecialCardName" xml:space="preserve"><value>Name</value></data>
-  <data name="ShowArchivedCards" xml:space="preserve"><value>Archivierte anzeigen</value></data>
   <data name="ArchiveCard" xml:space="preserve"><value>Archivieren</value></data>
   <data name="UnarchiveCard" xml:space="preserve"><value>Entarchivieren</value></data>
   <data name="SpecialCardNameValidation" xml:space="preserve"><value>Bitte einen Namen mit 1–120 Zeichen eingeben.</value></data>
@@ -453,8 +452,6 @@
   <data name="SpecialCardUsageHint" xml:space="preserve"><value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value></data>
   <data name="NavigationAfterSaveFailed" xml:space="preserve"><value>Die Wertung wurde gespeichert. Die nächste Ansicht konnte nicht geöffnet werden. Bitte zurückgehen und die Partie erneut öffnen.</value></data>
   <data name="Players" xml:space="preserve"><value>Spieler</value></data>
-  <data name="ShowGuests" xml:space="preserve"><value>Gäste anzeigen</value></data>
-  <data name="PlayersShowArchived" xml:space="preserve"><value>Archivierte anzeigen</value></data>
   <data name="EditPlayer" xml:space="preserve"><value>Spieler bearbeiten</value></data>
   <data name="PlayerCreatedFormat" xml:space="preserve"><value>Erstellt {0}</value></data>
   <data name="PlayerLastPlayedFormat" xml:space="preserve"><value>Zuletzt gespielt {0}</value></data>
