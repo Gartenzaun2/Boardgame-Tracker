@@ -1,0 +1,3181 @@
+{
+  "passed": false,
+  "images": 54,
+  "decisions": 648,
+  "differentRegistration": 0,
+  "differentRaw": 30,
+  "differentE": 27,
+  "windowsReplayDifferentSections": 0,
+  "platform": "Android API 30 x86_64 / OpenCV 4.13.0 / NDK r30",
+  "inputContract": "Windows-oriented BGR encoded losslessly as PNG; all existing Reference3WayComparison inputs",
+  "sourceAndAssetHashes": {
+    "src/BoardgameTracker.App/Games/ArkNova/PhotoRecognition/Native/src/arknova_vision.cpp": "3ca81cc69a4ba806a5a92c6305725641b6cfeb74e659afdfc22eefc6a8dd8cab",
+    "src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/PhotoRecognition/ArkNovaRankingRules.cs": "86c34b9d0eca8a075ed74977b93ca6d89c4776eb2054d464d2df7736696c5b81",
+    "src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/PhotoRecognition/ArkNovaConfidencePolicy.cs": "dce3b66829f4d1b9173ada3d233b91f4d4719d6566879be5807c81bc59d99264",
+    "tools/Games/ArkNova/PhotoRecognition/Assets/board_reference_master_clean.png": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114",
+    "tools/Games/ArkNova/PhotoRecognition/Assets/scoring_regions_v2.json": "83ced14fd2a046c39805a445a8371275c802de8532bce149549893477e46d910"
+  },
+  "photos": [
+    {
+      "id": "000",
+      "name": "IMG_4265.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1582,
+        "inliers": 1082,
+        "reprojectionP95": 2.211931568833618,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.9693660773242485,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.010819301374105366,
+        -1.385481456768834,
+        2084.8882111960934,
+        1.4949872487577678,
+        0.20746186449714699,
+        -251.58569079666074,
+        -2.963959223401134E-05,
+        0.00024392247492946561,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1583,
+        "inliers": 1169,
+        "p95": 2.509591999470525,
+        "visibility": 1,
+        "spread": 2.044392478352286,
+        "homography": [
+          0.012320080312882276,
+          -1.386792751819594,
+          2092.2811459946643,
+          1.5045962662729906,
+          0.20920837522357555,
+          -253.3904831905504,
+          -2.7937174357790745E-05,
+          0.00025450936617983053,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 7.392934798570877,
+      "warpCompared": true,
+      "warpMae": 9.14792130952381,
+      "warpMax": 184,
+      "maxFractionDelta": 0.1444767441860465,
+      "differences": []
+    },
+    {
+      "id": "001",
+      "name": "IMG_4266.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1178,
+        "inliers": 813,
+        "reprojectionP95": 2.1714127529445597,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.0087067518836854,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.15537509866305785,
+        -0.9941314591161943,
+        1688.419174019236,
+        1.052747864062854,
+        0.11042718425983826,
+        -354.56502367438935,
+        -0.00038350067751660065,
+        0.00012773435875805308,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1177,
+        "inliers": 773,
+        "p95": 2.105692670319731,
+        "visibility": 1,
+        "spread": 0.708987518930119,
+        "homography": [
+          -0.15220378695734513,
+          -0.9985960321003617,
+          1688.0939022355897,
+          1.0513637615775848,
+          0.10960105837171655,
+          -353.71994748344594,
+          -0.0003793754101841501,
+          0.000121631405426446,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.8450761909434163,
+      "warpCompared": true,
+      "warpMae": 8.338598809523809,
+      "warpMax": 213,
+      "maxFractionDelta": 0.06573130886027295,
+      "differences": []
+    },
+    {
+      "id": "002",
+      "name": "IMG_4267.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 807,
+        "inliers": 472,
+        "reprojectionP95": 2.4727855524019526,
+        "minimumTrackVisibility": 0.9863981356525215,
+        "inlierSpread": 1.5367704695439721,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3127077470804869,
+        0.8670717639850543,
+        228.86489938106556,
+        -1.2840163396687483,
+        -0.020162059272412797,
+        1380.8514859408497,
+        -0.0003498036350776652,
+        -1.3269077052898217E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 807,
+        "inliers": 530,
+        "p95": 2.4954282705544,
+        "visibility": 0.9857151871844855,
+        "spread": 1.5576845060272868,
+        "homography": [
+          -0.31580719392164947,
+          0.8727846917858063,
+          228.69463520008597,
+          -1.2886436781344377,
+          -0.013990065505339495,
+          1381.017839426693,
+          -0.000352576144024458,
+          -8.229414324846598E-06,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.1702641809795864,
+      "warpCompared": true,
+      "warpMae": 9.066115476190475,
+      "warpMax": 237,
+      "maxFractionDelta": 0.1849677040516735,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 113,
+          "rawAfter": 113,
+          "eValueBefore": 113,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "conservation",
+          "rawBefore": 20,
+          "rawAfter": null,
+          "eValueBefore": 20,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "reputation",
+          "rawBefore": 11,
+          "rawAfter": 11,
+          "eValueBefore": 11,
+          "eValueAfter": null,
+          "eClassBefore": "High",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "003",
+      "name": "IMG_4269.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1158,
+        "inliers": 822,
+        "reprojectionP95": 2.4290105741998302,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.9860853198561108,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.1403006532191656,
+        2.7407580837788768,
+        -617.6273946933009,
+        -2.110701108643144,
+        0.46461347634608563,
+        1852.1001525478982,
+        -0.00011507572097081439,
+        0.0005046496812323604,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1158,
+        "inliers": 799,
+        "p95": 2.1273773208201354,
+        "visibility": 1,
+        "spread": 1.730776440462099,
+        "homography": [
+          -0.127297164108245,
+          2.771132303701741,
+          -638.9275415051669,
+          -2.1185983102498223,
+          0.46979125178264053,
+          1857.8325603293251,
+          -0.00010509453175222456,
+          0.0005099503781285084,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 21.300146811866057,
+      "warpCompared": true,
+      "warpMae": 8.371478452380952,
+      "warpMax": 185,
+      "maxFractionDelta": 0.1518518518518519,
+      "differences": []
+    },
+    {
+      "id": "004",
+      "name": "IMG_4270.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 931,
+        "inliers": 545,
+        "reprojectionP95": 2.1099241322990245,
+        "minimumTrackVisibility": 0.99545159194282,
+        "inlierSpread": 1.4854185982622499,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.4539979392555786,
+        1.1035286085254907,
+        219.17573898754497,
+        -1.4607874286153284,
+        0.007939187217581982,
+        1522.6979867884995,
+        -0.00036216020785918406,
+        6.896521322959736E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 931,
+        "inliers": 543,
+        "p95": 2.157000159717491,
+        "visibility": 0.9955374993752186,
+        "spread": 1.5640690335148542,
+        "homography": [
+          -0.4540867994522041,
+          1.099770533943215,
+          221.13732379995596,
+          -1.458856901828249,
+          0.0066138916568181765,
+          1521.7860416259975,
+          -0.0003621513122833977,
+          6.747151888212812E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.9615848124109903,
+      "warpCompared": true,
+      "warpMae": 2.9825415476190478,
+      "warpMax": 227,
+      "maxFractionDelta": 0.054495412844036695,
+      "differences": []
+    },
+    {
+      "id": "005",
+      "name": "IMG_4271.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 928,
+        "inliers": 657,
+        "reprojectionP95": 2.1897748877467076,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.5563688569561327,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.1612260237383531,
+        -1.7112206766767646,
+        2737.7260458904593,
+        1.855129444219148,
+        0.36540588915163874,
+        -364.62775532925446,
+        -0.00017892290564580927,
+        0.0008102419809679111,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 928,
+        "inliers": 652,
+        "p95": 2.104039949779103,
+        "visibility": 1,
+        "spread": 1.5349340815797896,
+        "homography": [
+          -0.1603068905587063,
+          -1.7323857658314556,
+          2773.278610478514,
+          1.8869496823993068,
+          0.374731685870383,
+          -374.1649556420949,
+          -0.00017422177432792666,
+          0.0008370125052066226,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 35.55256458805479,
+      "warpCompared": true,
+      "warpMae": 7.867697976190477,
+      "warpMax": 221,
+      "maxFractionDelta": 0.14432348367029546,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 39,
+          "rawAfter": null,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "006",
+      "name": "IMG_4273.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1366,
+        "inliers": 1015,
+        "reprojectionP95": 2.417411585346907,
+        "minimumTrackVisibility": 0.9979907948309436,
+        "inlierSpread": 1.8879737231879452,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.078809035026828,
+        2.2012996089422767,
+        -161.16516060488914,
+        -1.6046582608431819,
+        0.27740965684925123,
+        1597.8139982161626,
+        -2.8016464999771067E-05,
+        0.0004333975937822327,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1365,
+        "inliers": 1014,
+        "p95": 2.3237964785696623,
+        "visibility": 0.9979111347141087,
+        "spread": 2.028959667520097,
+        "homography": [
+          -0.08032904529612983,
+          2.197577744769216,
+          -158.79243133897256,
+          -1.6036105861738092,
+          0.2772067969342087,
+          1596.7714276914191,
+          -2.9369446125203067E-05,
+          0.00043267647055034435,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.3727292659165755,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.049259259259259336,
+      "differences": []
+    },
+    {
+      "id": "007",
+      "name": "IMG_4274.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1241,
+        "inliers": 891,
+        "reprojectionP95": 2.6388793838033013,
+        "minimumTrackVisibility": 0.9396968729410178,
+        "inlierSpread": 1.869932052017864,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.24750681496017962,
+        0.949106943649111,
+        56.93382928844496,
+        -1.252757354229073,
+        -0.07469055344209992,
+        1438.6439147969134,
+        -0.0002687877105181065,
+        -2.4050434009054724E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1241,
+        "inliers": 856,
+        "p95": 2.2302138341740125,
+        "visibility": 0.9385594903184178,
+        "spread": 1.819519960443214,
+        "homography": [
+          -0.24981268331640538,
+          0.9577212618991439,
+          53.70284918408836,
+          -1.2594438587320633,
+          -0.06932977657210926,
+          1439.9331388230542,
+          -0.0002707414700199841,
+          -1.9429578144684545E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 3.230980104356604,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.23592592592592593,
+      "differences": [
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": null,
+          "rawAfter": 5,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "008",
+      "name": "IMG_4276.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1060,
+        "inliers": 672,
+        "reprojectionP95": 2.3944753351252137,
+        "minimumTrackVisibility": 0.9995579672114759,
+        "inlierSpread": 1.795594320283,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3341158385663556,
+        1.0079026834965377,
+        209.68279413608423,
+        -1.3533963056237523,
+        0.0025683368684241647,
+        1442.2803519481356,
+        -0.0003197384151036989,
+        1.8157647076339003E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1060,
+        "inliers": 699,
+        "p95": 2.1341778370165754,
+        "visibility": 0.999581396511221,
+        "spread": 1.8209726628322895,
+        "homography": [
+          -0.3354842635542373,
+          1.001618300816872,
+          213.60820924205964,
+          -1.3510440264072492,
+          -0.0014303642969776462,
+          1442.8043650492255,
+          -0.0003204392011374008,
+          1.597607322785391E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 3.925415105975418,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.17556281771968046,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 1,
+          "rawAfter": 113,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "009",
+      "name": "IMG_4278.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1339,
+        "inliers": 986,
+        "reprojectionP95": 2.2051844744157014,
+        "minimumTrackVisibility": 0.9985801844354476,
+        "inlierSpread": 1.943882655445371,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.27532248705827433,
+        -1.4799592185575112,
+        2265.633330403936,
+        1.9076403245064206,
+        0.24611909747053576,
+        -378.8971203834008,
+        0.00029555894034611637,
+        0.0001935940696779565,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1339,
+        "inliers": 989,
+        "p95": 2.3370329262567875,
+        "visibility": 0.9984146173839157,
+        "spread": 1.9490412672835902,
+        "homography": [
+          0.2781300627951527,
+          -1.4803409056153627,
+          2266.218648935855,
+          1.9120307073759957,
+          0.24579137332402207,
+          -379.75871665256983,
+          0.00029822962628021183,
+          0.0001939596479971872,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.8615962691690129,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.05279898218829518,
+      "differences": []
+    },
+    {
+      "id": "010",
+      "name": "IMG_4279.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 885,
+        "inliers": 551,
+        "reprojectionP95": 2.4829619456217054,
+        "minimumTrackVisibility": 0.9999047208477033,
+        "inlierSpread": 1.7566992028209323,
+        "failure": null
+      },
+      "windowsHomography": [
+        1.832547115128944,
+        0.8745208033848645,
+        -456.57644251187804,
+        -0.05459276254770943,
+        2.5393486923449062,
+        -393.17617319388535,
+        7.569810742243047E-05,
+        0.0006799022632166396,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 885,
+        "inliers": 533,
+        "p95": 2.18771691633327,
+        "visibility": 0.9999859424201529,
+        "spread": 1.5543647334695805,
+        "homography": [
+          1.8237212045675208,
+          0.8603604199864545,
+          -450.8255986103098,
+          -0.05077152549396062,
+          2.5176083563096823,
+          -391.11322016139667,
+          7.328998945577253E-05,
+          0.0006684302707253802,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 5.75084390156826,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.15468409586056653,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 113,
+          "rawAfter": 39,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "011",
+      "name": "IMG_4280.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1248,
+        "inliers": 958,
+        "reprojectionP95": 1.9512075287466926,
+        "minimumTrackVisibility": 0.9696137920718518,
+        "inlierSpread": 1.781661955309599,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.10983936095947486,
+        3.048536763561095,
+        -726.6220636777731,
+        -2.0557902773354053,
+        0.2697041228796577,
+        1859.362766552238,
+        1.2863413277826775E-05,
+        0.0007068175170355398,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1247,
+        "inliers": 966,
+        "p95": 1.9323096969797258,
+        "visibility": 0.9699201288796085,
+        "spread": 1.843942244390394,
+        "homography": [
+          -0.10423516062964029,
+          3.0431645587711795,
+          -726.2250234801602,
+          -2.0522075755805704,
+          0.26893061112390115,
+          1856.9169875785706,
+          1.734759300624374E-05,
+          0.0007029149057901999,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.4457789736675295,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.0688595142944974,
+      "differences": []
+    },
+    {
+      "id": "012",
+      "name": "IMG_4281.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1137,
+        "inliers": 851,
+        "reprojectionP95": 2.3256666588250665,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.3806862318620345,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.47047662491994474,
+        -1.0530223373029801,
+        1933.0817002149706,
+        0.8561098729906294,
+        -0.084316010197371,
+        -79.65472726826964,
+        -0.0003236769430588404,
+        -0.00012255133898108082,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1136,
+        "inliers": 854,
+        "p95": 1.952524488577166,
+        "visibility": 1,
+        "spread": 0.9198744402155026,
+        "homography": [
+          -0.4821386215176857,
+          -1.0482488401411703,
+          1930.887570190664,
+          0.8542209675937752,
+          -0.08439328655103343,
+          -79.3732697382934,
+          -0.0003346290643860138,
+          -0.00012034255381359941,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.19413002430656,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.222608024691358,
+      "differences": []
+    },
+    {
+      "id": "013",
+      "name": "IMG_4282.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1115,
+        "inliers": 789,
+        "reprojectionP95": 2.292844898156371,
+        "minimumTrackVisibility": 0.9931696460946724,
+        "inlierSpread": 1.5057613803002867,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3124278173472696,
+        2.5332133479431334,
+        -285.6947141470037,
+        -1.8089924686293992,
+        0.4292918557933685,
+        1597.6093411421193,
+        -0.00018828557854772246,
+        0.0005946948042030582,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1115,
+        "inliers": 783,
+        "p95": 2.4043128577498565,
+        "visibility": 0.9951208572572686,
+        "spread": 1.4675971916724757,
+        "homography": [
+          -0.3049461123822098,
+          2.495539771083046,
+          -273.53702656787436,
+          -1.7890802683846068,
+          0.4203555780546031,
+          1584.3175313197364,
+          -0.0001825171827340258,
+          0.0005758941745162666,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 13.291809822382902,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.16230936819172115,
+      "differences": []
+    },
+    {
+      "id": "014",
+      "name": "IMG_4283.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 527,
+        "inliers": 299,
+        "reprojectionP95": 2.3579914899508427,
+        "minimumTrackVisibility": 0.9965996276303294,
+        "inlierSpread": 1.3825838588164507,
+        "failure": null
+      },
+      "windowsHomography": [
+        2.0834028933554234,
+        1.1491933811917154,
+        -648.9081761584686,
+        0.027641515937896644,
+        3.2843202885325327,
+        -844.1613783269167,
+        6.702720370581846E-05,
+        0.0010521757775562189,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 527,
+        "inliers": 291,
+        "p95": 2.143036147215724,
+        "visibility": 0.9963637726795622,
+        "spread": 1.3901118174403688,
+        "homography": [
+          2.11969490737857,
+          1.1668801824254382,
+          -668.5165585503714,
+          0.04033660180093204,
+          3.326225734180315,
+          -866.1949391002895,
+          7.926923063948862E-05,
+          0.0010678576966844145,
+          0.9999999999999999
+        ]
+      },
+      "maxHomographyCoefficientDelta": 22.033560773372756,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.14015225453835645,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 55,
+          "rawAfter": 55,
+          "eValueBefore": 55,
+          "eValueAfter": 55,
+          "eClassBefore": "Medium",
+          "eClassAfter": "High"
+        }
+      ]
+    },
+    {
+      "id": "015",
+      "name": "IMG_4284.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1435,
+        "inliers": 1144,
+        "reprojectionP95": 2.359836470817116,
+        "minimumTrackVisibility": 0.9894957494648281,
+        "inlierSpread": 2.093210643792805,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.027984562238964533,
+        -1.2922845908675558,
+        2186.854802778447,
+        1.4505384142780233,
+        0.26807356877763194,
+        -176.53941524679658,
+        -6.864702043364506E-05,
+        0.00033379824072464015,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1434,
+        "inliers": 1058,
+        "p95": 1.9334985149184398,
+        "visibility": 0.9910528310283708,
+        "spread": 1.9673676111455416,
+        "homography": [
+          -0.03043502481021899,
+          -1.2915185413473456,
+          2179.0081500804476,
+          1.4403090296280125,
+          0.26437336041466497,
+          -174.00505724423508,
+          -7.191381925122651E-05,
+          0.00032324577710189103,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 7.846652697999161,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.2564814814814815,
+      "differences": [
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": 58,
+          "rawAfter": 58,
+          "eValueBefore": 58,
+          "eValueAfter": 58,
+          "eClassBefore": "High",
+          "eClassAfter": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "016",
+      "name": "IMG_4285.jpg",
+      "batch": "calibration",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1062,
+        "inliers": 832,
+        "reprojectionP95": 1.9393851295174047,
+        "minimumTrackVisibility": 0.9930680052587546,
+        "inlierSpread": 1.1682861184657765,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3735114454917163,
+        -0.9950957208103997,
+        1850.0357366100257,
+        1.0213732661528303,
+        0.028753342886818054,
+        -129.12232149824638,
+        -0.0004830884620217089,
+        0.00011016436911907004,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1062,
+        "inliers": 833,
+        "p95": 2.18524663139769,
+        "visibility": 0.9927478700336355,
+        "spread": 1.41090121735306,
+        "homography": [
+          -0.37063668734110755,
+          -0.9958174627257937,
+          1852.9154536098004,
+          1.024130051127565,
+          0.028966814908292803,
+          -129.32573415271693,
+          -0.00048182079721966094,
+          0.00011399287088838058,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.8797169997747005,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.08777777777777779,
+      "differences": [
+        {
+          "color": "black",
+          "track": "conservation",
+          "rawBefore": 23,
+          "rawAfter": null,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "017",
+      "name": "IMG_4268.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1161,
+        "inliers": 801,
+        "reprojectionP95": 2.4176485786687723,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.4364815088012102,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.22747643793846284,
+        2.3727502650969936,
+        -113.63838973287407,
+        -1.6744194465481248,
+        0.391257900497852,
+        1547.958809068989,
+        -0.00013448001622636463,
+        0.0005335564630133875,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1160,
+        "inliers": 847,
+        "p95": 2.3593696939998985,
+        "visibility": 1,
+        "spread": 1.504349258280602,
+        "homography": [
+          -0.22675943643910257,
+          2.4007132869143692,
+          -121.5161776762005,
+          -1.6808851168519654,
+          0.39494644984968585,
+          1553.5280177138268,
+          -0.00012887967721677616,
+          0.0005421570417368042,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 7.877787943326425,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.23111782477341386,
+      "differences": []
+    },
+    {
+      "id": "018",
+      "name": "IMG_4272.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 911,
+        "inliers": 671,
+        "reprojectionP95": 2.4621639100569706,
+        "minimumTrackVisibility": 0.9522865670862473,
+        "inlierSpread": 0.7353913488285856,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.4643798476058562,
+        1.5242831302178923,
+        -218.17584299337355,
+        -1.5729800162148777,
+        -0.14395541088452665,
+        1729.4515311665434,
+        0.0008247817060628417,
+        -0.00010512668978469056,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 910,
+        "inliers": 653,
+        "p95": 2.2988396414059395,
+        "visibility": 0.952085422898136,
+        "spread": 0.9063736570364336,
+        "homography": [
+          0.46076081853892326,
+          1.524444323570585,
+          -223.351495319592,
+          -1.5618846516499854,
+          -0.14284206422269244,
+          1717.594265348126,
+          0.0008061510923504884,
+          -9.739712752425875E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 11.857265818417318,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.36,
+      "differences": [
+        {
+          "color": "red",
+          "track": "reputation",
+          "rawBefore": 15,
+          "rawAfter": 11,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "conservation",
+          "rawBefore": 29,
+          "rawAfter": 2,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "019",
+      "name": "IMG_4275.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1228,
+        "inliers": 834,
+        "reprojectionP95": 2.1473190228084302,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.7489280941482943,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.16069243750429543,
+        2.847605071825577,
+        -536.5991408392982,
+        -2.0481111534865497,
+        0.44643635014999034,
+        1811.2485902500323,
+        -9.318343212171689E-05,
+        0.000574449315941405,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1226,
+        "inliers": 783,
+        "p95": 2.5647768276281346,
+        "visibility": 1,
+        "spread": 1.3918872427249214,
+        "homography": [
+          -0.160597958970192,
+          2.8164909752386524,
+          -525.4703529525409,
+          -2.029911250302701,
+          0.44210314944341794,
+          1795.5194032852935,
+          -9.628443788730799E-05,
+          0.0005637120538321586,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 15.729186964738801,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.1139764406240051,
+      "differences": []
+    },
+    {
+      "id": "020",
+      "name": "IMG_4277.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1242,
+        "inliers": 902,
+        "reprojectionP95": 2.3664951574310913,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.891089248338153,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.18549356331499764,
+        -1.1765552331421303,
+        1830.5933829949938,
+        1.1536811031332095,
+        0.08617829308650196,
+        -147.920012839375,
+        -0.00039496167217810624,
+        0.00018509980705682703,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1241,
+        "inliers": 892,
+        "p95": 2.1923516812489967,
+        "visibility": 1,
+        "spread": 1.6871882525019781,
+        "homography": [
+          -0.18851752469246968,
+          -1.1748443029414766,
+          1828.473392116034,
+          1.1496327253302858,
+          0.08701079534483057,
+          -148.04357794006694,
+          -0.00039698443965344724,
+          0.0001830779652004195,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.119990878959925,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.07026143790849673,
+      "differences": []
+    },
+    {
+      "id": "021",
+      "name": "IMG_4286.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1512,
+        "inliers": 1177,
+        "reprojectionP95": 2.5572221525978147,
+        "minimumTrackVisibility": 0.9670877256755119,
+        "inlierSpread": 1.9487245039947318,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.06943259936371551,
+        -1.1810211315995969,
+        1917.3483682656895,
+        1.353204842857832,
+        0.19497752065593082,
+        -96.51223059771489,
+        5.672579909116461E-05,
+        0.00019583382098265682,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1512,
+        "inliers": 1208,
+        "p95": 2.1673705049238072,
+        "visibility": 0.9678621840189989,
+        "spread": 2.049914394520045,
+        "homography": [
+          0.06670395983837893,
+          -1.181816096410685,
+          1918.7428284557363,
+          1.350740402115894,
+          0.19572716034299864,
+          -96.23919613068415,
+          5.477157929733646E-05,
+          0.00019749546124419053,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.394460190046857,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.10518518518518521,
+      "differences": [
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": 54,
+          "rawAfter": 54,
+          "eValueBefore": 54,
+          "eValueAfter": 54,
+          "eClassBefore": "Medium",
+          "eClassAfter": "High"
+        }
+      ]
+    },
+    {
+      "id": "022",
+      "name": "IMG_4287.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 461,
+        "inliers": 290,
+        "reprojectionP95": 2.4377602035673975,
+        "minimumTrackVisibility": 0.9874489683327817,
+        "inlierSpread": 1.416254914408029,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.2640550922397202,
+        0.7550224516257112,
+        237.05014331818086,
+        -1.3151187000809688,
+        0.02864755839536097,
+        1336.2938622800623,
+        -0.00041663611561143396,
+        -4.104632162828983E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 461,
+        "inliers": 283,
+        "p95": 2.6251363159640344,
+        "visibility": 0.9875409172827246,
+        "spread": 1.4557228922011944,
+        "homography": [
+          -0.26329312651094494,
+          0.7588664309464271,
+          235.5283957043527,
+          -1.317250796340284,
+          0.03339209347590016,
+          1334.9082716938515,
+          -0.00041621204502786724,
+          -3.8943097626345494E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.521747613828154,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.15575998327409574,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 113,
+          "rawAfter": 39,
+          "eValueBefore": 113,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "conservation",
+          "rawBefore": 24,
+          "rawAfter": 24,
+          "eValueBefore": 24,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "reputation",
+          "rawBefore": 12,
+          "rawAfter": 12,
+          "eValueBefore": 12,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "023",
+      "name": "IMG_4288.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1158,
+        "inliers": 827,
+        "reprojectionP95": 2.5396546191863734,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.9434022268518274,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3238532627260198,
+        2.4392232395302993,
+        -100.45106017907749,
+        -1.7284894812488598,
+        0.3058256297179159,
+        1625.77558470881,
+        -0.00014717456389103217,
+        0.0005304479673568322,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1157,
+        "inliers": 820,
+        "p95": 2.3272190051007313,
+        "visibility": 1,
+        "spread": 1.416361689809819,
+        "homography": [
+          -0.3175816952214975,
+          2.459577512564028,
+          -112.91791995529198,
+          -1.7330303777967386,
+          0.3104925899570907,
+          1628.2118818380677,
+          -0.0001438557925256981,
+          0.0005361783458855323,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 12.466859776214491,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.17431192660550465,
+      "differences": [
+        {
+          "color": "black",
+          "track": "reputation",
+          "rawBefore": 10,
+          "rawAfter": null,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "024",
+      "name": "IMG_4289.jpg",
+      "batch": "holdout",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1070,
+        "inliers": 778,
+        "reprojectionP95": 2.5667499930837345,
+        "minimumTrackVisibility": 0.9433794659127515,
+        "inlierSpread": 1.3996464861418543,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.34451516532905224,
+        -0.9529563865764571,
+        1832.8712600602887,
+        0.7539696450221819,
+        -0.05499126469817649,
+        -47.520796916911095,
+        -0.00026215166148012547,
+        -0.00011537633842453055,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1070,
+        "inliers": 806,
+        "p95": 2.4015227578383564,
+        "visibility": 0.9435462735451753,
+        "spread": 1.4052748567771007,
+        "homography": [
+          -0.34001566434704167,
+          -0.9550727958249567,
+          1826.5135198496746,
+          0.7462248304357844,
+          -0.054043109974703296,
+          -47.052566756214674,
+          -0.0002594139450042756,
+          -0.00012412252099220776,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 6.357740210614111,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.2636815920398009,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "conservation",
+          "rawBefore": 21,
+          "rawAfter": 40,
+          "eValueBefore": 21,
+          "eValueAfter": 40,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 35,
+          "rawAfter": null,
+          "eValueBefore": 35,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "reputation",
+          "rawBefore": 12,
+          "rawAfter": 12,
+          "eValueBefore": 12,
+          "eValueAfter": 12,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "High"
+        }
+      ]
+    },
+    {
+      "id": "025",
+      "name": "Empty1Links.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 883,
+        "inliers": 585,
+        "reprojectionP95": 2.518431067173913,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.5407075445481024,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.00886700267220468,
+        -1.569905656185886,
+        2254.8508894843235,
+        1.709120545684193,
+        0.47523114525030646,
+        -382.23471851737327,
+        -3.327693109226151E-06,
+        0.0006688710611548464,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 882,
+        "inliers": 587,
+        "p95": 2.573003260865687,
+        "visibility": 1,
+        "spread": 1.5476662756107653,
+        "homography": [
+          0.009470243456061575,
+          -1.569917207553693,
+          2254.727540057312,
+          1.7092997774850431,
+          0.4744772083457365,
+          -381.78085589129114,
+          -2.9037495234871723E-06,
+          0.0006686773836387923,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.45386262608212746,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.11558366877515813,
+      "differences": []
+    },
+    {
+      "id": "026",
+      "name": "Empty1Rechts.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1218,
+        "inliers": 869,
+        "reprojectionP95": 2.2974516863434453,
+        "minimumTrackVisibility": 0.9875022127810231,
+        "inlierSpread": 1.8311298887547163,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.1369018118244658,
+        2.221059048988825,
+        3.3307920721024953,
+        -1.5255276345386697,
+        0.242732108979873,
+        1729.7041755583866,
+        -6.231686698919367E-06,
+        0.00047805399105171393,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1218,
+        "inliers": 874,
+        "p95": 2.3151865162132412,
+        "visibility": 0.9867410161090459,
+        "spread": 1.9079898580204737,
+        "homography": [
+          -0.1395900123515268,
+          2.2370948281880354,
+          0.2591983544403942,
+          -1.5345846652621866,
+          0.2454214951844922,
+          1738.400312776782,
+          -7.1437090926005805E-06,
+          0.0004861160971853587,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 8.696137218395279,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.13295165394402036,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": null,
+          "rawAfter": 39,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "black",
+          "track": "conservation",
+          "rawBefore": null,
+          "rawAfter": 1,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "027",
+      "name": "Empty1Senkrecht.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1929,
+        "inliers": 1579,
+        "reprojectionP95": 1.9070589690506918,
+        "minimumTrackVisibility": 0.9957249070631972,
+        "inlierSpread": 2.238403197868464,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.0488355554345685,
+        1.2339869936327983,
+        57.504607751451935,
+        -1.2379061317288775,
+        0.015486400616800821,
+        1452.5741209180508,
+        -3.896639901868337E-05,
+        2.998537863960047E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1929,
+        "inliers": 1592,
+        "p95": 1.9090131992867816,
+        "visibility": 0.9960169941582581,
+        "spread": 2.237807128120291,
+        "homography": [
+          -0.04910955807348073,
+          1.2303295471182212,
+          59.096808476190965,
+          -1.2364868279658614,
+          0.014341220655201685,
+          1451.7415061657496,
+          -3.9260894503667474E-05,
+          2.8414916293032978E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.5922007247390297,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.05722222222222223,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 113,
+          "rawAfter": null,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "028",
+      "name": "Empty1Vorne.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 871,
+        "inliers": 570,
+        "reprojectionP95": 2.4417758345135887,
+        "minimumTrackVisibility": 0.9846146655274428,
+        "inlierSpread": 1.6158527506650175,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.37970716689154377,
+        0.9162885490339285,
+        337.1387877308437,
+        -1.3086927913737405,
+        0.00896566803446804,
+        1480.363327614296,
+        -0.00034339290643487137,
+        2.9320624681182504E-05,
+        0.9999999999999999
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 871,
+        "inliers": 557,
+        "p95": 2.63016097472983,
+        "visibility": 0.9843971791476757,
+        "spread": 1.5331298989500983,
+        "homography": [
+          -0.38214274144276333,
+          0.918147819444846,
+          337.9514338807482,
+          -1.3112286383014036,
+          0.011017752510909659,
+          1480.6944443776056,
+          -0.0003453995422165017,
+          3.1511972015903914E-05,
+          0.9999999999999999
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.8126461499044808,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.09335674568334795,
+      "differences": [
+        {
+          "color": "red",
+          "track": "attractiveness",
+          "rawBefore": 109,
+          "rawAfter": null,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "029",
+      "name": "Empty2Gegenueber.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1073,
+        "inliers": 766,
+        "reprojectionP95": 2.5504318630508536,
+        "minimumTrackVisibility": 0.9901221455124801,
+        "inlierSpread": 1.541963875647171,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.28983695003948634,
+        -1.0716909578706333,
+        1758.4929168410854,
+        1.0229553962183153,
+        0.0401046926252648,
+        -134.9319319877442,
+        -0.00040468033162705035,
+        2.8188713711318634E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1072,
+        "inliers": 759,
+        "p95": 2.247009349721833,
+        "visibility": 0.9931138254558329,
+        "spread": 1.249748627709081,
+        "homography": [
+          -0.2995386189577673,
+          -1.067916862182792,
+          1757.889181248894,
+          1.0224419398464162,
+          0.03980641726130475,
+          -134.41221684471225,
+          -0.0004201890098015212,
+          3.358075575547228E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.6037355921914696,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.24221961244862006,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 40,
+          "rawAfter": 43,
+          "eValueBefore": 40,
+          "eValueAfter": 43,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "blue",
+          "track": "reputation",
+          "rawBefore": 5,
+          "rawAfter": 7,
+          "eValueBefore": 5,
+          "eValueAfter": 7,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "030",
+      "name": "Empty2Links.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 821,
+        "inliers": 563,
+        "reprojectionP95": 2.4948598367827834,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.4085319978309776,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.0325769736819638,
+        -1.4897363048101402,
+        2153.4270400869195,
+        1.6031884599558632,
+        0.3448901617483927,
+        -303.15413720769413,
+        -3.678780735973915E-05,
+        0.0005681829202654725,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 820,
+        "inliers": 552,
+        "p95": 2.4515403049837494,
+        "visibility": 1,
+        "spread": 1.4127911332652583,
+        "homography": [
+          -0.03283930835808435,
+          -1.4841196622104882,
+          2144.1680941590225,
+          1.5943316094196711,
+          0.34167419250717934,
+          -300.32970627061127,
+          -3.860115134724949E-05,
+          0.0005589572721805072,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 9.258945927897003,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.0731481481481481,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "conservation",
+          "rawBefore": null,
+          "rawAfter": 39,
+          "eValueBefore": null,
+          "eValueAfter": 39,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "031",
+      "name": "Empty2Rechts.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1050,
+        "inliers": 700,
+        "reprojectionP95": 2.2671664942650946,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.0010092399430677,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.2801481836002003,
+        2.031325945878623,
+        116.52777309207573,
+        -1.5177547828178697,
+        0.24013700452162717,
+        1562.291836530023,
+        -0.00012481538548523712,
+        0.0004152906232764564,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1050,
+        "inliers": 763,
+        "p95": 2.243224827308048,
+        "visibility": 1,
+        "spread": 1.325294984686353,
+        "homography": [
+          -0.2945084677601629,
+          2.0170364194499473,
+          131.40584805425812,
+          -1.5108017271555518,
+          0.23812760570309027,
+          1555.287401602511,
+          -0.00013206705795926579,
+          0.00041309806566872695,
+          0.9999999999999999
+        ]
+      },
+      "maxHomographyCoefficientDelta": 14.878074962182382,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.10101613867304243,
+      "differences": [
+        {
+          "color": "red",
+          "track": "reputation",
+          "rawBefore": 14,
+          "rawAfter": 10,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "032",
+      "name": "Empty2Senkrecht.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1500,
+        "inliers": 1181,
+        "reprojectionP95": 1.9727771505217633,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.1147582742576363,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.005382935270382062,
+        1.4006111222398172,
+        -86.58225513504271,
+        -1.3625904297723603,
+        0.030101277270902498,
+        1540.9199001931352,
+        6.0403398318506716E-06,
+        3.8002396054018594E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1500,
+        "inliers": 1170,
+        "p95": 1.8240461542824826,
+        "visibility": 1,
+        "spread": 2.02217428199112,
+        "homography": [
+          0.0063699749013063555,
+          1.4046741841931034,
+          -88.73136506021565,
+          -1.364699073560911,
+          0.030941933213491972,
+          1542.6903732664746,
+          6.689613212472271E-06,
+          3.962706117282138E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.1491099251729366,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.039131248829807175,
+      "differences": []
+    },
+    {
+      "id": "033",
+      "name": "Empty2Vorne.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 944,
+        "inliers": 641,
+        "reprojectionP95": 2.2097184200442372,
+        "minimumTrackVisibility": 0.9788730359468526,
+        "inlierSpread": 1.6678380798871553,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.31441644279828435,
+        0.9464933447841424,
+        289.24221065279477,
+        -1.266729083074395,
+        0.02140222893329608,
+        1423.2493908666347,
+        -0.00030310378408216946,
+        2.9214721889285672E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 944,
+        "inliers": 649,
+        "p95": 2.369637742805331,
+        "visibility": 0.978532501831906,
+        "spread": 1.669381945920945,
+        "homography": [
+          -0.3163705796316708,
+          0.9447844370093471,
+          291.3994333403617,
+          -1.2670082105383196,
+          0.020468911280739004,
+          1424.0548778796447,
+          -0.00030452614379541487,
+          2.951916355036732E-05,
+          0.9999999999999999
+        ]
+      },
+      "maxHomographyCoefficientDelta": 2.157222687566957,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.09150326797385627,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 76,
+          "rawAfter": 78,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "034",
+      "name": "Empty1Gegenueber.jpg",
+      "batch": "v3_empty",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1291,
+        "inliers": 902,
+        "reprojectionP95": 2.458596505790897,
+        "minimumTrackVisibility": 0.9668466223698783,
+        "inlierSpread": 1.5775146626777206,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.18037269984056545,
+        -0.9879723048562311,
+        1668.3287633092516,
+        0.9503032684119058,
+        0.0810616173007744,
+        -178.41517376989998,
+        -0.0003268358168822119,
+        4.9530094599112474E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1291,
+        "inliers": 836,
+        "p95": 2.41851102785108,
+        "visibility": 0.9660299003322259,
+        "spread": 0.9065351146262532,
+        "homography": [
+          -0.1678849616399927,
+          -0.9922610390659786,
+          1668.7466807014002,
+          0.9547337523424144,
+          0.08063932019704227,
+          -179.21361880220329,
+          -0.0003170230826060232,
+          4.654469377472154E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.7984450323033059,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.16995305164319235,
+      "differences": [
+        {
+          "color": "red",
+          "track": "reputation",
+          "rawBefore": 10,
+          "rawAfter": 11,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": null,
+          "rawAfter": 39,
+          "eValueBefore": null,
+          "eValueAfter": null,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "035",
+      "name": "Fall1Gegenueber.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1057,
+        "inliers": 825,
+        "reprojectionP95": 2.2521077302235586,
+        "minimumTrackVisibility": 0.9775535493007611,
+        "inlierSpread": 1.3288064099067254,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.33329139216103293,
+        -0.9973252866704614,
+        1738.0136692747071,
+        0.9602655940150763,
+        0.010634708461923903,
+        -79.03020697998947,
+        -0.0004313059988543368,
+        4.883481473148763E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1056,
+        "inliers": 797,
+        "p95": 2.268835494887798,
+        "visibility": 0.977226057709329,
+        "spread": 1.0272081570079277,
+        "homography": [
+          -0.319481564549174,
+          -0.9993558066146215,
+          1739.3692513160547,
+          0.9695838426667364,
+          0.010604610113924814,
+          -80.61313739216693,
+          -0.00042056303713429807,
+          4.958514700486356E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.5829304121774612,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.10341444270015698,
+      "differences": []
+    },
+    {
+      "id": "036",
+      "name": "Fall1Links.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 757,
+        "inliers": 478,
+        "reprojectionP95": 2.587325283913774,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.19412633901739,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.01685454711821505,
+        -1.6263726099196762,
+        2300.245148181574,
+        1.6801810220659397,
+        0.5395259491195598,
+        -366.08830208196343,
+        -5.654512177155907E-05,
+        0.0007180810965952942,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 756,
+        "inliers": 514,
+        "p95": 2.5304578318503075,
+        "visibility": 1,
+        "spread": 1.479727281406546,
+        "homography": [
+          0.012164220272903193,
+          -1.6397492405161818,
+          2333.4843318938665,
+          1.7213887972857358,
+          0.559246270182088,
+          -380.0543392378768,
+          -6.324729148854122E-05,
+          0.0007646033132857034,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 33.23918371229229,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.2496924969249692,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 53,
+          "rawAfter": 39,
+          "eValueBefore": 53,
+          "eValueAfter": 39,
+          "eClassBefore": "Medium",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "037",
+      "name": "Fall1Rechts.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 651,
+        "inliers": 438,
+        "reprojectionP95": 2.318395241327472,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.2155865497473584,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.1435239495911912,
+        4.507109363904005,
+        -889.6296785904025,
+        -2.228584330021165,
+        0.8184541574917266,
+        2018.8054648347124,
+        -1.6497784441516387E-05,
+        0.0013273924490205043,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 649,
+        "inliers": 440,
+        "p95": 2.445686654274065,
+        "visibility": 1,
+        "spread": 1.143728994608189,
+        "homography": [
+          -0.13820765692165443,
+          4.507071939337857,
+          -897.5883495334632,
+          -2.22514415948273,
+          0.817924471121038,
+          2015.429104723896,
+          -1.540759451115411E-05,
+          0.0013232629141600612,
+          0.9999999999999999
+        ]
+      },
+      "maxHomographyCoefficientDelta": 7.958670943060724,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.13691860465116273,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 17,
+          "rawAfter": 17,
+          "eValueBefore": 17,
+          "eValueAfter": 17,
+          "eClassBefore": "High",
+          "eClassAfter": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "038",
+      "name": "Fall1Senkrecht.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1745,
+        "inliers": 1418,
+        "reprojectionP95": 2.342726736965799,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.12284293507817,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.064103756055773,
+        1.36130188430587,
+        -25.932615286468906,
+        -1.294357745990321,
+        0.014130425512902677,
+        1317.8405477395133,
+        7.154463031630191E-05,
+        3.1759829470141144E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1745,
+        "inliers": 1409,
+        "p95": 2.3406155156178685,
+        "visibility": 1,
+        "spread": 2.1228429939778857,
+        "homography": [
+          0.06427783671240841,
+          1.3629912618838091,
+          -26.44865544046233,
+          -1.295847755098309,
+          0.013732692005814597,
+          1319.635895935001,
+          7.178051927070728E-05,
+          3.255283200869435E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.795348195487577,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.05009174311926606,
+      "differences": []
+    },
+    {
+      "id": "039",
+      "name": "Fall1Vorne.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 683,
+        "inliers": 423,
+        "reprojectionP95": 2.470568832677499,
+        "minimumTrackVisibility": 0.9705600877214715,
+        "inlierSpread": 1.6237151280836588,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.35893509334113366,
+        0.84947328528838,
+        254.25255869747392,
+        -1.2968723890713287,
+        -0.0025696614078430705,
+        1353.8037634034852,
+        -0.0003895196889857301,
+        6.742495912929275E-06,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 683,
+        "inliers": 461,
+        "p95": 2.4028630937207653,
+        "visibility": 0.9706372554098085,
+        "spread": 1.5952993328909995,
+        "homography": [
+          -0.3603079194262384,
+          0.8434502053931376,
+          258.4042137938884,
+          -1.2943374119091777,
+          -0.004750033624395643,
+          1353.223221077797,
+          -0.0003902941144230597,
+          4.894876637192654E-06,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 4.151655096414487,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.17229484386347133,
+      "differences": []
+    },
+    {
+      "id": "040",
+      "name": "Fall2Gegenueber.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1192,
+        "inliers": 899,
+        "reprojectionP95": 2.232527550595604,
+        "minimumTrackVisibility": 0.9973181093998937,
+        "inlierSpread": 1.4961747514177486,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.38235641898021344,
+        -1.047962580958031,
+        1828.805786335288,
+        1.036441745278256,
+        -0.04546563752841059,
+        -84.39408328885195,
+        -0.000405829823899104,
+        7.115538590527738E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1192,
+        "inliers": 839,
+        "p95": 2.436657346606613,
+        "visibility": 0.999778721897681,
+        "spread": 1.5762572681354028,
+        "homography": [
+          -0.38474342402433415,
+          -1.050161394130215,
+          1837.5966884410466,
+          1.043353670760733,
+          -0.045663674030499896,
+          -84.67478899619192,
+          -0.0004078452214859428,
+          8.098389206688277E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 8.790902105758505,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.1965811965811966,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "conservation",
+          "rawBefore": 41,
+          "rawAfter": 22,
+          "eValueBefore": 41,
+          "eValueAfter": 22,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": 61,
+          "rawAfter": 61,
+          "eValueBefore": 61,
+          "eValueAfter": 61,
+          "eClassBefore": "Medium",
+          "eClassAfter": "High"
+        }
+      ]
+    },
+    {
+      "id": "041",
+      "name": "Fall2Links.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 877,
+        "inliers": 634,
+        "reprojectionP95": 2.007869985331135,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.2042278088813798,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.013732479889412834,
+        -1.6351069771058597,
+        2548.6440209633574,
+        1.8464210550999371,
+        0.5624597805676294,
+        -449.5036340633999,
+        -2.548666508585503E-05,
+        0.000752710082243507,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 876,
+        "inliers": 652,
+        "p95": 2.060669569324271,
+        "visibility": 1,
+        "spread": 1.6003891821933538,
+        "homography": [
+          0.010899570674386542,
+          -1.6403853892767,
+          2561.255491999904,
+          1.858090414067504,
+          0.567597820661407,
+          -453.383063086844,
+          -3.288077494880732E-05,
+          0.0007680348166699618,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 12.61147103654639,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.20356703567035672,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "reputation",
+          "rawBefore": 7,
+          "rawAfter": 7,
+          "eValueBefore": 7,
+          "eValueAfter": 7,
+          "eClassBefore": "Medium",
+          "eClassAfter": "High"
+        }
+      ]
+    },
+    {
+      "id": "042",
+      "name": "Fall2Rechts.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 760,
+        "inliers": 523,
+        "reprojectionP95": 2.515704907995022,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.214958167117944,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.3948690036123471,
+        2.6556282237562754,
+        154.11989910895215,
+        -1.6095945250319181,
+        0.5250581799760051,
+        1483.3148747087369,
+        -0.00020090255224044476,
+        0.000690714266629885,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 759,
+        "inliers": 515,
+        "p95": 2.5594234463464014,
+        "visibility": 1,
+        "spread": 1.1678560960621083,
+        "homography": [
+          -0.39625677279457705,
+          2.6761299095159763,
+          147.50180038523615,
+          -1.615819546558594,
+          0.5294719508742942,
+          1487.31384883439,
+          -0.00020175679861466356,
+          0.0006993034765994211,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 6.6180987237160025,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.08906249999999999,
+      "differences": []
+    },
+    {
+      "id": "043",
+      "name": "Fall2Senkrecht.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1685,
+        "inliers": 1345,
+        "reprojectionP95": 2.018497680768599,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.272554577050782,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.027003725199348523,
+        1.3749168230791904,
+        -53.322945382968044,
+        -1.336467465301994,
+        0.026307342216339256,
+        1392.9298202129708,
+        2.1761521528046244E-05,
+        2.656106228773108E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1685,
+        "inliers": 1230,
+        "p95": 2.0895932055779336,
+        "visibility": 1,
+        "spread": 2.0428272457780445,
+        "homography": [
+          0.026259387472379304,
+          1.3913366832485967,
+          -59.51545407623573,
+          -1.3452968789636164,
+          0.030475438397841344,
+          1398.5251679123533,
+          2.076397589760983E-05,
+          3.4739760295416035E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 6.192508693267683,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.18583579881656798,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "attractiveness",
+          "rawBefore": 38,
+          "rawAfter": 39,
+          "eValueBefore": 38,
+          "eValueAfter": 39,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        },
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": 61,
+          "rawAfter": 61,
+          "eValueBefore": 61,
+          "eValueAfter": 61,
+          "eClassBefore": "High",
+          "eClassAfter": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "044",
+      "name": "Fall2Unten.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 974,
+        "inliers": 630,
+        "reprojectionP95": 2.497116390777305,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.7927719334878984,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.29624271517606937,
+        0.9970198703817382,
+        148.43036407216724,
+        -1.4160670162547018,
+        -0.006749926945787183,
+        1497.922989101674,
+        -0.0003287820622198995,
+        -6.132737182194609E-06,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 974,
+        "inliers": 602,
+        "p95": 2.35115424651443,
+        "visibility": 1,
+        "spread": 1.7397950291264024,
+        "homography": [
+          -0.293147472146826,
+          0.9930249848310667,
+          148.3364553614709,
+          -1.4139107835561804,
+          -0.01012221454422056,
+          1498.0141051964902,
+          -0.00032604733530648943,
+          -9.568380387476582E-06,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.09390871069632567,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.1366695932104185,
+      "differences": []
+    },
+    {
+      "id": "045",
+      "name": "Fall3Senkrecht.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1904,
+        "inliers": 1546,
+        "reprojectionP95": 2.35795467814806,
+        "minimumTrackVisibility": 0.9766527691255975,
+        "inlierSpread": 2.082438979687666,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.001199747299199685,
+        1.2608684107646029,
+        -1.4662511131824787,
+        -1.2325788902194172,
+        0.005715967689100618,
+        1313.8533146281272,
+        1.1509005009961966E-05,
+        2.4144321568758436E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1904,
+        "inliers": 1506,
+        "p95": 2.2869894720622677,
+        "visibility": 0.9778177317068886,
+        "spread": 2.1168172541213925,
+        "homography": [
+          -0.0008087363306643042,
+          1.2607309363342196,
+          -1.6097554519858979,
+          -1.231013968248868,
+          0.004706344215048829,
+          1313.2781828801783,
+          1.2977115275284779E-05,
+          2.2657953017770267E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.5751317479489444,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.07966820987654316,
+      "differences": [
+        {
+          "color": "black",
+          "track": "attractiveness",
+          "rawBefore": 38,
+          "rawAfter": 110,
+          "eValueBefore": 38,
+          "eValueAfter": 110,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "046",
+      "name": "Fall4Senkrecht.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1779,
+        "inliers": 1422,
+        "reprojectionP95": 2.379691396803717,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.1820286653803014,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.08884442674214806,
+        1.4260681320286785,
+        -69.87957327737918,
+        -1.3515673415082323,
+        0.023671144030333838,
+        1375.7845236216115,
+        8.64796920465435E-05,
+        3.2738166225629036E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1779,
+        "inliers": 1430,
+        "p95": 2.632107950089152,
+        "visibility": 1,
+        "spread": 2.1587386949062424,
+        "homography": [
+          0.08992407947104479,
+          1.43198026519594,
+          -73.29552521159759,
+          -1.3546757755490548,
+          0.025012281618459493,
+          1377.8244126442692,
+          8.682743670032988E-05,
+          3.493964858806011E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 3.4159519342184126,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.09999999999999998,
+      "differences": [
+        {
+          "color": "yellow",
+          "track": "attractiveness",
+          "rawBefore": 93,
+          "rawAfter": 93,
+          "eValueBefore": 93,
+          "eValueAfter": 93,
+          "eClassBefore": "High",
+          "eClassAfter": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "047",
+      "name": "Fall5Senkrecht.jpg",
+      "batch": "v3",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1870,
+        "inliers": 1518,
+        "reprojectionP95": 2.4758301146157886,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.2247264490318175,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.09702124464860314,
+        1.4056803324621525,
+        -38.13551833380805,
+        -1.3200507972283755,
+        0.01835889556776418,
+        1384.3906758124085,
+        9.943971148498156E-05,
+        3.725116712665446E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1869,
+        "inliers": 1467,
+        "p95": 2.1619795962433987,
+        "visibility": 1,
+        "spread": 2.1300292631733933,
+        "homography": [
+          0.09655953286520588,
+          1.4006766429848672,
+          -36.98276011964183,
+          -1.3195219040129582,
+          0.018216270414407387,
+          1383.5379814487524,
+          9.823469002755325E-05,
+          3.4975790025732025E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 1.1527582141662194,
+      "warpCompared": false,
+      "warpMae": 0,
+      "warpMax": 0,
+      "maxFractionDelta": 0.09645839331989636,
+      "differences": [
+        {
+          "color": "red",
+          "track": "reputation",
+          "rawBefore": 12,
+          "rawAfter": 14,
+          "eValueBefore": 12,
+          "eValueAfter": 14,
+          "eClassBefore": "Medium",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "048",
+      "name": "IMG_4257.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 415,
+        "inliers": 288,
+        "reprojectionP95": 2.418401158289848,
+        "minimumTrackVisibility": 0.9889244682728393,
+        "inlierSpread": 1.6088724811536828,
+        "failure": null
+      },
+      "windowsHomography": [
+        2.0081514505963747,
+        0.533797616621883,
+        -511.47412158541704,
+        0.1653714555923067,
+        3.4220704125020243,
+        -1404.5805323526993,
+        -0.00011409095082241496,
+        0.0012235441682710354,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 415,
+        "inliers": 274,
+        "p95": 2.3938570444760487,
+        "visibility": 0.9902045534063079,
+        "spread": 1.385096679042015,
+        "homography": [
+          1.9899420953040012,
+          0.538894190628936,
+          -506.3558543963333,
+          0.1569899995975314,
+          3.4123872639760955,
+          -1395.0955559418862,
+          -0.00012604071591272868,
+          0.001227251763182592,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 9.484976410813033,
+      "warpCompared": true,
+      "warpMae": 8.35414238095238,
+      "warpMax": 250,
+      "maxFractionDelta": 0.284593023255814,
+      "differences": [
+        {
+          "color": "blue",
+          "track": "conservation",
+          "rawBefore": 17,
+          "rawAfter": 27,
+          "eValueBefore": 17,
+          "eValueAfter": 27,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Uncertain"
+        }
+      ]
+    },
+    {
+      "id": "049",
+      "name": "IMG_4258.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 971,
+        "inliers": 707,
+        "reprojectionP95": 2.398075737048108,
+        "minimumTrackVisibility": 0.9644295167539976,
+        "inlierSpread": 1.1039849961059038,
+        "failure": null
+      },
+      "windowsHomography": [
+        0.9767042138617534,
+        0.1411602283112316,
+        -73.21269778320756,
+        -0.12249591158340273,
+        1.4079933156488436,
+        -278.9279713262611,
+        -0.00025645426903000236,
+        0.0003975556681534019,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 971,
+        "inliers": 722,
+        "p95": 2.5031521230652602,
+        "visibility": 0.9628594195344835,
+        "spread": 1.4094053792005496,
+        "homography": [
+          0.9845401104125397,
+          0.14490217318485815,
+          -77.07053361636953,
+          -0.1222769582524904,
+          1.4179445260720949,
+          -282.1698448484982,
+          -0.0002542420336901233,
+          0.0004044989430638478,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 3.857835833161971,
+      "warpCompared": true,
+      "warpMae": 5.27727880952381,
+      "warpMax": 243,
+      "maxFractionDelta": 0.20140927774515555,
+      "differences": [
+        {
+          "color": "red",
+          "track": "reputation",
+          "rawBefore": 11,
+          "rawAfter": 10,
+          "eValueBefore": 11,
+          "eValueAfter": 10,
+          "eClassBefore": "Uncertain",
+          "eClassAfter": "Medium"
+        }
+      ]
+    },
+    {
+      "id": "050",
+      "name": "IMG_4259.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1743,
+        "inliers": 1411,
+        "reprojectionP95": 1.7867174466493703,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 2.244918809813303,
+        "failure": null
+      },
+      "windowsHomography": [
+        -0.12898122757666783,
+        1.0412275478284907,
+        84.06601233093362,
+        -1.2418981836402139,
+        0.027810899354434683,
+        1332.1870316168263,
+        -0.00019443068643949717,
+        -1.8815336421567584E-05,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1743,
+        "inliers": 1408,
+        "p95": 1.9746828516768424,
+        "visibility": 1,
+        "spread": 2.242603901077978,
+        "homography": [
+          -0.1293114387429631,
+          1.0428808597896229,
+          83.55051499005485,
+          -1.2428801106436427,
+          0.028637209282925326,
+          1332.496535338955,
+          -0.00019484899591340468,
+          -1.786410669463322E-05,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 0.5154973408787669,
+      "warpCompared": true,
+      "warpMae": 2.272190238095238,
+      "warpMax": 154,
+      "maxFractionDelta": 0.07983927323549964,
+      "differences": []
+    },
+    {
+      "id": "051",
+      "name": "IMG_4260.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 754,
+        "inliers": 544,
+        "reprojectionP95": 2.2904633130474097,
+        "minimumTrackVisibility": 0.9583519473050993,
+        "inlierSpread": 1.7733757803433665,
+        "failure": null
+      },
+      "windowsHomography": [
+        1.3886319611532738,
+        0.36308014657754034,
+        -23.85163263097496,
+        0.18855524663615905,
+        2.18420680322315,
+        -404.7101865797878,
+        -2.174048920685262E-05,
+        0.0006848389053317483,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 754,
+        "inliers": 559,
+        "p95": 2.4441377531217716,
+        "visibility": 0.9585620631778093,
+        "spread": 1.8425815598255297,
+        "homography": [
+          1.3843558330510841,
+          0.3620750679501207,
+          -23.041505499217237,
+          0.18463304557244825,
+          2.1784978545845917,
+          -400.6087486910402,
+          -2.421337917067721E-05,
+          0.0006829142221481138,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 4.101437888747569,
+      "warpCompared": true,
+      "warpMae": 4.965540833333334,
+      "warpMax": 229,
+      "maxFractionDelta": 0.15678214914856134,
+      "differences": []
+    },
+    {
+      "id": "052",
+      "name": "IMG_4261.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1510,
+        "inliers": 1191,
+        "reprojectionP95": 1.9847751009233736,
+        "minimumTrackVisibility": 1,
+        "inlierSpread": 1.7634987315000024,
+        "failure": null
+      },
+      "windowsHomography": [
+        -1.975407150934652,
+        0.6615713225448157,
+        2385.9025215688926,
+        -0.18161274764959442,
+        -1.6911141184513694,
+        2060.8523190794212,
+        -9.646042530746426E-05,
+        0.0005172815905296449,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1508,
+        "inliers": 1252,
+        "p95": 1.8505016283916074,
+        "visibility": 1,
+        "spread": 2.134060699284237,
+        "homography": [
+          -1.9580760000921207,
+          0.6482533752295243,
+          2370.883755178894,
+          -0.18052000154995668,
+          -1.6757335612684863,
+          2042.5221279044115,
+          -9.792923268337542E-05,
+          0.0005041158232368296,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 18.33019117500976,
+      "warpCompared": true,
+      "warpMae": 9.66107892857143,
+      "warpMax": 199,
+      "maxFractionDelta": 0.2444108761329305,
+      "differences": []
+    },
+    {
+      "id": "053",
+      "name": "IMG_4262.JPG",
+      "batch": "legacy6",
+      "windowsRegistration": {
+        "success": true,
+        "matches": 1184,
+        "inliers": 965,
+        "reprojectionP95": 2.1722325371119684,
+        "minimumTrackVisibility": 0.9304334212325222,
+        "inlierSpread": 1.7898136036241423,
+        "failure": null
+      },
+      "windowsHomography": [
+        -1.8479546081505993,
+        0.9929507030996078,
+        2228.9815298068634,
+        -0.21695449311186737,
+        -1.6091010340015166,
+        2023.360758171915,
+        -9.43211583302226E-05,
+        0.0008120588739280956,
+        1
+      ],
+      "nativeRegistration": {
+        "status": 0,
+        "matches": 1184,
+        "inliers": 963,
+        "p95": 2.1581158277312418,
+        "visibility": 0.9301962432015971,
+        "spread": 1.7709071800743277,
+        "homography": [
+          -1.8429741618839297,
+          0.9844902685263321,
+          2225.634431598218,
+          -0.21627653436010819,
+          -1.6040434413884332,
+          2016.6371092113648,
+          -9.631946951574433E-05,
+          0.0008057836102184951,
+          1
+        ]
+      },
+      "maxHomographyCoefficientDelta": 6.723648960550236,
+      "warpCompared": true,
+      "warpMae": 4.1352617857142855,
+      "warpMax": 250,
+      "maxFractionDelta": 0.05262237762237759,
+      "differences": []
+    }
+  ]
+}

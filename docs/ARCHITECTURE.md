@@ -583,18 +583,25 @@ maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini
 
 ## Bewusste technische Entscheidungen
 
-### Arche-Nova-Fotoanalyseprototyp
+### Arche-Nova-Fotoanalyse
 
 Aktuelle Abschlussentscheidung: [CV-Status](ARK_NOVA_CV_STATUS.md).
 Erkennungsforschung eingefroren, gehärtetes A bleibt Referenz/Basis; keine C3-Fusion.
-Vor mobiler Produktintegration steht auf ausdrückliche Folgeanweisung der separate
-`tools/Games/ArkNova/NativeVisionSpike`: MAUI/C# → kleine `IArkNovaVisionEngine`-
-Grenze → C-ABI → gemeinsamer C++-OpenCV-Kern. Keine OpenCvSharp-Pakete in der App.
-Die Schnittstelle bleibt vorerst im Werkzeug, bis das Paritätsgate erfüllt ist.
-Android ARM64 baut und Android-x64-Interop läuft, ist aber numerisch nicht äquivalent
-zur Windows-Referenz. iOS vorerst nur dokumentarisch geprüft. Kein voller A-Port
-oder Produktworkflow wird als umgesetzt betrachtet. Ranking, Confidence und reine
-Feld-/Konfliktlogik sollen in C# bleiben. Frühere Forschungsempfehlungen unten und
+MAUI/C# → `IArkNovaVisionEngine` in Application → C-ABI → gemeinsamer C++-OpenCV-Kern
+unter `App/Games/ArkNova/PhotoRecognition/Native`. Keine OpenCvSharp-Pakete in der App.
+Native Evidenz enthält nur Registrierung und Feldmesswerte; unverändertes Ranking
+A_NoZero/Confidence E bleiben in Application. SafeHandle besitzt den serialisierten
+nativen Kontext, aufrufereigene Puffer werden nur synchron geliehen. Beide Hosts
+verwenden dieselben Quellen, Referenzassets und ABI. Android paketiert eine `.so`,
+iOS ein zusammengeführtes statisches Archiv mit `NativeReference`/`__Internal`.
+Der implementierte iOS-Host benötigt noch manuelle Apple-Build-/Link-/Runtimeprüfung.
+
+Kamera/Systempicker liefern denselben Service-Input. Foto-Review verwendet eigene
+Entwurfsobjekte ohne Autosave-Bindungen und verändert keine persistierten Werte.
+Erst ausdrückliche Bestätigung ruft einen validierenden Application-Use-Case mit
+einem atomaren `SaveChangesAsync` auf. Fehler lassen die bisherigen Werte bestehen.
+Android Release/Trimming und x64-App-Workflow werden geprüft; die Produktfreigabe
+ist wegen abweichender nativer Entscheidungen noch offen. Frühere Empfehlungen
 in historischen Reports lösen keine weitere CV-Forschung aus.
 
 `tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
@@ -605,10 +612,12 @@ referenziert. Core, Application und App enthalten keine CV-Paketreferenzen.
 Die reinen experimentellen Feld-/Confidence-Regeln liegen im Arche-Nova-Scoring-Slice
 in Application. Das Werkzeug liefert Diagnostik-JSON und schreibt keine Partiewerte.
 
-Die Referenztafel und Testfotos sind ausschließlich Entwicklungsassets im Werkzeug.
-Ein Analyzer berechnet Referenzfeatures einmal beim Aufbau und verwendet sie für
-weitere Fotos wieder. Ein serialisierter Featurecache und mobile Paketierung fehlen
-noch. Benchmark, Grenzen und Aufruf stehen im README des Werkzeugs.
+Die kanonische Referenztafel/v2-Geometrie liegen im Werkzeug und werden als
+verlinkte MAUI-Assets paketiert; Testfotos und B/C-Forschungsassets bleiben außen vor.
+Der Windows-Analyzer berechnet Referenzfeatures einmal beim Aufbau. Der native
+Kontext besitzt Referenz/Masken, die Registrierung berechnet Features je Aufruf;
+ein serialisierter Featurecache wird nicht eingeführt. Benchmark und Grenzen
+stehen im README des Werkzeugs.
 
 Die Registrierung verlangt ausreichende Matches/Inlier, begrenzten Projektionsfehler,
 räumlich verteilte Inlier, eine plausible konvexe Bildprojektion und mindestens 75 %
@@ -723,10 +732,10 @@ Alle 48 registrierten Frames wurden identisch reproduziert, 564 zuvor erfolgreic
 Kandidaten und Confidence-Werte bleiben erhalten. Historische Quellhashes bleiben
 unverändert gespeichert und können unter dem gehärteten Code deshalb ablehnen.
 
-Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
-Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
-Kamera-Handler bleibt ein Platzhalter; eine spätere Anbindung verwendet denselben
-Scoring-Entwurf und dieselben manuellen Wertungsfelder. Es gibt keine neue Persistenz.
+Die mobile Bibliothek ist der gemeinsame native OpenCV-Kern. Die Windows-Parität
+ist noch nicht erfüllt; erfolgreiche Builds allein erlauben keine Produktfreigabe.
+Foto-Review bestätigt dieselben fachlichen Wertungsfelder, ohne neue Tabellen oder
+gespeicherte Bild-/Confidence-Daten. Technische Details: NativeVisionSpike-README.
 
 SQLite kann die verwendeten DateTimeOffset-Sortierungen nicht zuverlässig übersetzen.
 Die lokalen Listen projizieren deshalb nur benötigte Partiemetadaten und sortieren sie

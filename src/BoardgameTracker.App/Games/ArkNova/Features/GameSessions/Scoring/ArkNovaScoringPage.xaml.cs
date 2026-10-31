@@ -9,6 +9,7 @@ using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.Players;
+using BoardgameTracker.App.Games.ArkNova.PhotoRecognition;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
@@ -207,10 +208,15 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
     }
 
-    private async void OnCameraClicked(object? sender, EventArgs e)
+    private void OnCameraClicked(object? sender, EventArgs e) => _viewModel.OpenPhotoSource();
+    private async void OnTakePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Camera);
+    private async void OnChoosePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Library);
+    private async void OnConfirmPhotoClicked(object? sender, EventArgs e) => await _viewModel.ConfirmPhotoReviewAsync();
+    private void OnCancelPhotoClicked(object? sender, EventArgs e) => _viewModel.CancelPhotoReview();
+    private async void OnPhotoInfoClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
-            await AppDialogPage.ShowAsync(this, AppResources.PhotoRecognition, AppResources.PhotoRecognitionPending, AppResources.Ok);
+            await AppDialogPage.ShowAsync(this, AppResources.PhotoHelpTitle, AppResources.PhotoHelpMessage, AppResources.Ok);
     }
 
     private async void OnSettingsClicked(object? sender, EventArgs e)
@@ -232,6 +238,11 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         if (_viewModel.IsSpecialCardPickerVisible)
         {
             _viewModel.CloseSpecialCardPicker();
+            return true;
+        }
+        if (_viewModel.IsPhotoSourceVisible || _viewModel.IsPhotoReviewVisible)
+        {
+            _viewModel.CancelPhotoReview();
             return true;
         }
 

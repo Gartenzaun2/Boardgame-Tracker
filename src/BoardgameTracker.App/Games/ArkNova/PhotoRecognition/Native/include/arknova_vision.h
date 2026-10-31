@@ -45,6 +45,30 @@ ANV_API int32_t anv_abi_version(void);
    warp must be ignored. No exception crosses this ABI. Calls are independent. */
 ANV_API int32_t anv_probe(const anv_image* reference, const anv_image* photo,
                          anv_probe_result* result, uint8_t* warp, uint64_t capacity);
+
+/* Coordinates are the existing C# Math.Round(polygon * 0.5) analysis pixels.
+   Track: 0 attractiveness, 1 conservation, 2 reputation. Color: red/blue/yellow/black. */
+typedef struct anv_point { int32_t x, y; } anv_point;
+typedef struct anv_field { int32_t track, value, first_vertex, vertex_count; } anv_field;
+typedef struct anv_evidence {
+    int32_t color, track, value, reserved;
+    double full, core, difference, core_difference, grown, visibility, track_visibility;
+} anv_evidence;
+typedef struct anv_analysis_result {
+    int32_t success, matches, inliers, width, height, evidence_count;
+    double reprojection_p95, minimum_visibility, spread;
+    double homography[9];
+} anv_analysis_result;
+
+/* Handle owns reference/masks; input bytes are borrowed only for each call.
+   Encoded input is JPEG/PNG decoded BGR8 with EXIF orientation by OpenCV.
+   A handle is serialized by the managed owner; destroy only after calls finish. */
+ANV_API int32_t anv_engine_create(const uint8_t* reference, uint64_t reference_length,
+    const anv_field* fields, int32_t field_count, const anv_point* points, int32_t point_count, void** handle);
+ANV_API void anv_engine_destroy(void* handle);
+ANV_API int32_t anv_engine_analyze(void* handle, const uint8_t* photo, uint64_t photo_length,
+    anv_evidence* evidence, int32_t capacity, anv_analysis_result* result,
+    uint8_t* optional_warp, uint64_t warp_capacity);
 #ifdef __cplusplus
 }
 #endif

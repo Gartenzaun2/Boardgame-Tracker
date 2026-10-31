@@ -22,6 +22,7 @@ public partial class ArkNovaScoringViewModel(
     ArkNovaScoringUseCase scoringUseCase,
     ArkNovaHistoryCorrectionUseCase correction,
     IArkNovaSettingsStore settingsStore,
+    ArkNovaPhotoReviewFlow photoReview,
     ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
 {
     private IReadOnlyList<ArkNovaSpecialCardData> _cardCatalog = [];
@@ -42,7 +43,7 @@ public partial class ArkNovaScoringViewModel(
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool IsSaving { get; set; }
     public bool IsIdle => !IsBusy && !IsSaving;
-    public bool IsScoringContentEnabled => IsIdle && !IsSpecialCardPickerVisible;
+    public bool IsScoringContentEnabled => IsIdle && !IsSpecialCardPickerVisible && !IsPhotoSourceVisible && !IsPhotoReviewVisible;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool CompletionSaved { get; private set; }

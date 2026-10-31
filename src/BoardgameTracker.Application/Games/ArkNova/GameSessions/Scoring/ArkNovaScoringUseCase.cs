@@ -44,6 +44,24 @@ public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbCo
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    /// <summary>Applies only an explicitly confirmed photo draft; one SaveChanges commits all players atomically.</summary>
+    public async Task SaveConfirmedPhotoScoresAsync(Guid gameSessionId, IReadOnlyList<ArkNovaConfirmedPhotoScore> scores,
+        CancellationToken cancellationToken = default)
+    {
+        if (scores.Count == 0 || scores.Select(score => score.PlayerId).Distinct().Count() != scores.Count)
+            throw new ArgumentException("Confirmed photo scores must identify distinct players.", nameof(scores));
+        await EnsureScoringGameSessionAsync(gameSessionId, cancellationToken);
+        await using BoardgameTrackerDbContext dbContext = await contextFactory.CreateDbContextAsync(cancellationToken);
+        Guid[] ids = scores.Select(score => score.PlayerId).ToArray();
+        List<ArkNovaGameSessionPlayer> players = await dbContext.ArkNovaGameSessionPlayers
+            .Where(player => player.GameSessionId == gameSessionId && ids.Contains(player.PlayerId)).ToListAsync(cancellationToken);
+        if (players.Count != scores.Count)
+            throw new InvalidOperationException("A confirmed photo player no longer belongs to this GameSession.");
+        foreach (ArkNovaConfirmedPhotoScore score in scores)
+            players.Single(player => player.PlayerId == score.PlayerId).SetScoreValues(score.Attractiveness, score.Conservation, score.Reputation);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task AssignSpecialCardAsync(
         Guid gameSessionId,
         Guid playerId,
@@ -234,3 +252,4 @@ public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbCo
         }
     }
 }
+public sealed record ArkNovaConfirmedPhotoScore(Guid PlayerId, int? Attractiveness, int? Conservation, int? Reputation);

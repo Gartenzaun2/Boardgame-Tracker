@@ -26,6 +26,8 @@ using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.Groups.Colors;
 using Microsoft.Extensions.DependencyInjection;
+using BoardgameTracker.App.Games.ArkNova.PhotoRecognition;
+using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring.PhotoRecognition;
 
 namespace BoardgameTracker.App.Games.ArkNova;
 
@@ -47,6 +49,17 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaRunningGameSessionQuery>();
         services.AddTransient<ArkNovaGameSessionResultQuery>();
         services.AddTransient<ArkNovaScoringUseCase>();
+        services.AddSingleton<IArkNovaVisionEngine>(_ => new NativeArkNovaVisionEngine(async name =>
+        {
+            using Stream input = await FileSystem.OpenAppPackageFileAsync(name);
+            using MemoryStream output = new();
+            await input.CopyToAsync(output);
+            return output.ToArray();
+        }));
+        services.AddSingleton<IMediaPicker>(MediaPicker.Default);
+        services.AddSingleton<IArkNovaPhotoInput, MauiArkNovaPhotoInput>();
+        services.AddTransient<ArkNovaPhotoRecognition>();
+        services.AddTransient<ArkNovaPhotoReviewFlow>();
         services.AddSingleton<IArkNovaSettingsStore, MauiArkNovaSettingsStore>();
         services.AddTransient<ArkNovaHistoryCorrectionUseCase>();
         services.AddTransient<ArkNovaPreparationViewModel>();

@@ -42,6 +42,11 @@ public partial class ArkNovaSettingsPage : ContentPage {
         await Shell.Current.GoToAsync("..");
     }
 
+    private async void OnMaterialInfoClicked(object? sender, EventArgs e)
+    {
+        await AppDialogPage.ShowAsync(this, AppResources.GameMaterial, AppResources.GameMaterialHint, AppResources.Ok);
+    }
+
     private async void OnContentLanguageClicked(object? sender, EventArgs e) {
         if(_choosing)
             return;

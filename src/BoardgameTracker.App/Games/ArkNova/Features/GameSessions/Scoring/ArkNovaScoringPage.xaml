@@ -13,7 +13,7 @@
         <!-- Keep modal and busy layers outside the content they disable. -->
         <Grid x:Name="PageContent" RowDefinitions="Auto,*,Auto" RowSpacing="10" IsEnabled="{Binding IsScoringContentEnabled}">
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="6">
                     <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                         <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
@@ -21,7 +21,9 @@
                         <Label Text="{Binding DateText}" FontSize="11" TextColor="{DynamicResource TextPrimary}" />
                     </VerticalStackLayout>
                     <ImageButton Grid.Column="2" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
-                    <ImageButton Grid.Column="3" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
+                    <ImageButton Grid.Column="3" IsVisible="{Binding IsLiveScoring}" Clicked="OnPhotoInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                        SemanticProperties.Description="{x:Static res:AppResources.PhotoHelpTitle}" />
+                    <ImageButton Grid.Column="4" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
                 </Grid>
                 <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
@@ -123,6 +125,62 @@
             </Border>
         </Grid>
 
+        <Grid IsVisible="{Binding IsPhotoSourceVisible}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <Border Style="{StaticResource SelectionDialog}" IsEnabled="{Binding IsIdle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{x:Static res:AppResources.PhotoRecognition}" FontAttributes="Bold" FontSize="20" />
+                    <Button Text="{x:Static res:AppResources.PhotoTake}" Clicked="OnTakePhotoClicked" Style="{StaticResource PrimaryCompactButton}" />
+                    <Button Text="{x:Static res:AppResources.PhotoChoose}" Clicked="OnChoosePhotoClicked" Style="{StaticResource SecondaryActionButton}" />
+                    <Button Text="{x:Static res:AppResources.Cancel}" Clicked="OnCancelPhotoClicked" Style="{StaticResource SecondaryActionButton}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+        <Grid IsVisible="{Binding IsPhotoReviewVisible}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <Border Style="{StaticResource SelectionDialog}" IsEnabled="{Binding IsIdle}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{x:Static res:AppResources.PhotoReviewTitle}" FontAttributes="Bold" FontSize="20" />
+                    <Label Text="{x:Static res:AppResources.PhotoReviewHint}" FontSize="12" />
+                    <CollectionView ItemsSource="{Binding PhotoPlayers}" HeightRequest="350" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ArkNovaPhotoReviewPlayer">
+                                <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*,80" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="4">
+                                        <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                        <Label Grid.Row="1" Text="{x:Static res:AppResources.Attractiveness}" VerticalOptions="Center" />
+                                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding AttractivenessText}" Keyboard="Numeric" MaxLength="3" />
+                                        <Label Grid.Row="2" Text="{Binding AttractivenessStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding AttractivenessConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding AttractivenessConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Label Grid.Row="3" Text="{x:Static res:AppResources.Conservation}" VerticalOptions="Center" />
+                                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding ConservationText}" Keyboard="Numeric" MaxLength="2" />
+                                        <Label Grid.Row="4" Text="{Binding ConservationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding ConservationConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding ConservationConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <Label Grid.Row="5" IsVisible="{Binding ShowReputation}" Text="{x:Static res:AppResources.Reputation}" VerticalOptions="Center" />
+                                        <Entry Grid.Row="5" Grid.Column="1" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationText}" Keyboard="Numeric" MaxLength="2" />
+                                        <Label Grid.Row="6" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding ReputationConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding ReputationConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label Text="{Binding PhotoError}" TextColor="{DynamicResource Danger}" FontSize="12" />
+                    <Button Text="{x:Static res:AppResources.PhotoConfirm}" Clicked="OnConfirmPhotoClicked" Style="{StaticResource PrimaryCompactButton}" />
+                    <Button Text="{x:Static res:AppResources.Cancel}" Clicked="OnCancelPhotoClicked" Style="{StaticResource SecondaryActionButton}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator Color="{DynamicResource BusyIndicator}" IsRunning="True" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

@@ -5,8 +5,9 @@ namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
 internal static class ArkNovaRankingExperiment
 {
-    internal static readonly string[] FrozenSources = ["ArkNovaRankingRules.cs", "ArkNovaRankingCapture.cs", "ArkNovaPhotoAnalyzer.cs",
-        "ArkNovaConfidencePolicy.cs", "ArkNovaRankingExperiment.cs", "Program.cs", "Assets/scoring_regions_v2.json",
+    internal const string SharedRecognitionSources = "../../../../src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/PhotoRecognition/";
+    internal static readonly string[] FrozenSources = [SharedRecognitionSources + "ArkNovaRankingRules.cs", "ArkNovaRankingCapture.cs", "ArkNovaPhotoAnalyzer.cs",
+        SharedRecognitionSources + "ArkNovaConfidencePolicy.cs", "ArkNovaRankingExperiment.cs", "Program.cs", "Assets/scoring_regions_v2.json",
         "Assets/ConfidenceV2/scoring_ground_truth_v2.json", "Assets/ConfidenceV2/manifest.json",
         "../../../../src/BoardgameTracker.Application/Games/ArkNova/GameSessions/Scoring/ArkNovaFieldOccupancy.cs"];
 
@@ -34,7 +35,8 @@ internal static class ArkNovaRankingExperiment
         {
             using JsonDocument freeze = JsonDocument.Parse(File.ReadAllText(Path.Combine(tool, "ranking-selection.json")));
             foreach (string source in FrozenSources)
-                if (freeze.RootElement.GetProperty("sourceHashes").GetProperty(source).GetString() != Hash(Path.Combine(tool, source)))
+                if (!freeze.RootElement.GetProperty("sourceHashes").TryGetProperty(source, out JsonElement hash)
+                    || hash.GetString() != Hash(Path.Combine(tool, source)))
                     throw new InvalidDataException($"Frozen source changed: {source}");
             if (freeze.RootElement.GetProperty("splitSha256").GetString() != Hash(Path.Combine(dataset, "split.json")))
                 throw new InvalidDataException("Frozen split changed.");

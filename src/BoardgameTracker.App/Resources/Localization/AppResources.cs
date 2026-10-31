@@ -442,4 +442,17 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string PlayerNavigationFailed => GetString(nameof(PlayerNavigationFailed));
     public static string PlayerNameRequired => GetString(nameof(PlayerNameRequired));
     public static string PlayersInfo => GetString(nameof(PlayersInfo));
+    public static string PhotoTake => GetString(nameof(PhotoTake));
+    public static string PhotoChoose => GetString(nameof(PhotoChoose));
+    public static string PhotoReviewTitle => GetString(nameof(PhotoReviewTitle));
+    public static string PhotoReviewHint => GetString(nameof(PhotoReviewHint));
+    public static string PhotoConfirm => GetString(nameof(PhotoConfirm));
+    public static string PhotoConfidenceHigh => GetString(nameof(PhotoConfidenceHigh));
+    public static string PhotoConfidenceMedium => GetString(nameof(PhotoConfidenceMedium));
+    public static string PhotoConfidenceUncertain => GetString(nameof(PhotoConfidenceUncertain));
+    public static string PhotoHelpTitle => GetString(nameof(PhotoHelpTitle));
+    public static string PhotoHelpMessage => GetString(nameof(PhotoHelpMessage));
+    public static string PhotoBoardNotRecognized => GetString(nameof(PhotoBoardNotRecognized));
+    public static string PhotoAnalysisFailed => GetString(nameof(PhotoAnalysisFailed));
+    public static string PhotoValuesInvalid => GetString(nameof(PhotoValuesInvalid));
 }

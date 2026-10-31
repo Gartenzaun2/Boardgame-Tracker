@@ -7,6 +7,8 @@ internal sealed class ArkNovaRankingCapture(string? diagnosticDirectory = null, 
 {
     public List<RankingObservation> Observations { get; } = [];
     public Action<ArkNovaBlackDiagnostics.Frame>? FrameObserver { get; init; }
+    // Synchronous read-only observer; the analyzer owns the borrowed matrix.
+    public Action<Mat>? RegistrationObserver { get; init; }
 
     public void Capture(ArkNovaBlackDiagnostics.Frame frame, CaptureField[] fields, Mat[] masks, Mat[] relaxed,
         Dictionary<string, double> trackVisibility)

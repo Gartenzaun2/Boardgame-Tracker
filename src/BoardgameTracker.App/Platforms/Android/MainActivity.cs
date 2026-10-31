@@ -25,11 +25,44 @@ public class MainActivity : MauiAppCompatActivity
 {
     private ActivityResultLauncher? _exportLauncher;
     private TaskCompletionSource<Android.Net.Uri?>? _pendingExport;
+    private ActivityResultLauncher? _photoLauncher;
+    private TaskCompletionSource<bool>? _pendingPhoto;
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
         _exportLauncher = RegisterForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ExportDocumentCallback(this));
+        _photoLauncher = RegisterForActivityResult(new ActivityResultContracts.TakePicture(), new CapturePhotoCallback(this));
+    }
+
+    public async Task<byte[]?> CaptureArkNovaPhotoAsync(CancellationToken cancellationToken)
+    {
+        if (_pendingPhoto is not null)
+            throw new InvalidOperationException("A camera capture is already open.");
+        PermissionStatus permission = await Permissions.RequestAsync<Permissions.Camera>();
+        if (permission != PermissionStatus.Granted)
+            throw new PermissionException("Camera permission denied.");
+        string path = Path.Combine(FileSystem.CacheDirectory, Guid.NewGuid().ToString("N") + ".jpg");
+        TaskCompletionSource<bool> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        _pendingPhoto = completion;
+        try
+        {
+            using Java.IO.File file = new(path);
+            using Android.Net.Uri uri = AndroidX.Core.Content.FileProvider.GetUriForFile(this, PackageName + ".fileProvider", file)
+                ?? throw new InvalidOperationException("Camera file URI unavailable.");
+            // The system camera receives a grant for this one cache file. Unlike
+            // MAUI's pre-33 capture helper, no storage/library permission is needed.
+            (_photoLauncher ?? throw new InvalidOperationException("Camera is not registered.")).Launch(uri);
+            bool captured = await completion.Task;
+            cancellationToken.ThrowIfCancellationRequested();
+            return captured ? await File.ReadAllBytesAsync(path, cancellationToken) : null;
+        }
+        finally
+        {
+            _pendingPhoto = null;
+            if (File.Exists(path))
+                File.Delete(path);
+        }
     }
 
     public async Task<Android.Net.Uri?> CreateExportDocumentAsync(string fileName)
@@ -56,6 +89,7 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnDestroy()
     {
         _pendingExport?.TrySetCanceled();
+        _pendingPhoto?.TrySetCanceled();
         base.OnDestroy();
     }
 
@@ -65,6 +99,14 @@ public class MainActivity : MauiAppCompatActivity
         {
             if (value is ActivityResult result)
                 owner._pendingExport?.TrySetResult((int)result.ResultCode == (int)Result.Ok ? result.Data?.Data : null);
+        }
+    }
+
+    private sealed class CapturePhotoCallback(MainActivity owner) : Java.Lang.Object, IActivityResultCallback
+    {
+        public void OnActivityResult(Java.Lang.Object? value)
+        {
+            owner._pendingPhoto?.TrySetResult(value is Java.Lang.Boolean result && result.BooleanValue());
         }
     }
 }
