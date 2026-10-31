@@ -64,7 +64,7 @@ gemeinsamen Schlüssel als PK/FK (`GameSessionId + PlayerId` bzw.
 oder Platzierung.
 
 Konkrete Felder, Invarianten, IDs, Constraints und Referenzdaten stehen in
-[DATA_MODEL.md](../../DATA_MODEL.md).
+[DATA_MODEL.md](DATA_MODEL.md).
 
 `BoardgameTrackerDbContext.ArkNova.cs` liegt unter
 `Application/Games/ArkNova/Persistence`, verwendet aber bewusst den allgemeinen
@@ -103,7 +103,7 @@ Black
 `ArkNovaGroupColorPersistence` persistiert die Arche-Nova-spezifischen
 Gruppendefaults innerhalb des Spielmoduls.
 
-Persistenzdetails und Invarianten: [DATA_MODEL.md](../../DATA_MODEL.md).
+Persistenzdetails und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
 
 ## 6. Game Sessions, Scoring und Historie
 
@@ -122,7 +122,7 @@ Historische Korrektur ersetzt die erlaubten Ergebniswerte, Placements und
 Kartenzuordnungen atomar. Setup- und Teilnehmerdaten bleiben außerhalb dieses
 Korrekturpfads.
 
-Fachliche Werte und Invarianten: [DATA_MODEL.md](../../DATA_MODEL.md).
+Fachliche Werte und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
 Produktverhalten: [PRODUCT_SPEC.md](../../PRODUCT_SPEC.md).
 
 ## 7. Spezialkarten
@@ -143,7 +143,7 @@ archivierte Karten bleiben referenzierbar und können entfernt, aber nicht neu
 zugeordnet werden.
 
 Details zu Karten, Assignments, Referenz-IDs und Nutzerinhalten:
-[DATA_MODEL.md](../../DATA_MODEL.md).
+[DATA_MODEL.md](DATA_MODEL.md).
 
 ## 8. Arche-Nova-Game-Content
 
@@ -171,7 +171,7 @@ Domain-/Persistenztypen.
 Die Auflösung verwendet die allgemeine Content-Fallbackkette aus
 `docs/ARCHITECTURE.md`.
 
-Detailliertes Persistenzmodell: [DATA_MODEL.md](../../DATA_MODEL.md).
+Detailliertes Persistenzmodell: [DATA_MODEL.md](DATA_MODEL.md).
 Produktregeln: [PRODUCT_SPEC.md](../../PRODUCT_SPEC.md).
 
 ## 9. History-Transfer
@@ -229,7 +229,8 @@ Nur das jeweils benötigte Dokument lesen:
 | allgemeine Architektur | `docs/ARCHITECTURE.md` |
 | Arche-Nova-Modularchitektur | `docs/Games/ArkNova/ARCHITECTURE.md` |
 | CV-Produkt-/Forschungsstatus | `docs/Games/ArkNova/CV_STATUS.md` |
-| Domain-/Persistenzdetails | `docs/DATA_MODEL.md` |
+| allgemeines Domainmodell | `docs/DATA_MODEL.md` |
+| Arche-Nova-Datenmodell | `docs/Games/ArkNova/DATA_MODEL.md` |
 | Produktverhalten | `docs/PRODUCT_SPEC.md` |
 | Import/Export | `docs/IMPORT_EXPORT.md` |
 | allgemeine UI-Regeln | `docs/UI_DESIGN_GUIDE.md` |

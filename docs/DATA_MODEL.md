@@ -1,48 +1,95 @@
-# Boardgame Tracker – Fachliches Datenmodell
+# Boardgame Tracker – Allgemeines Datenmodell
 
-## 1. Grundprinzip
+## 1. Geltungsbereich
 
-Allgemeine Daten bleiben spielunabhängig. Spielspezifische Ergebnisse,
-Regeln und Einstellungen sind stark typisiert.
+Diese Datei beschreibt ausschließlich das **spielübergreifende fachliche Datenmodell**
+und seine allgemeinen Persistenzinvarianten.
 
-Der allgemeine Kern kennt Spieler, Gruppen, Spiele und Partien. Ein konkretes Spiel wie Arche Nova ergänzt ausschließlich
-seine eigenen Daten.
+Spielspezifische Entities, Ergebniswerte, Referenzdaten und Invarianten stehen unter:
 
-Berechnete Werte werden nicht redundant gespeichert, wenn sie
-zuverlässig aus Rohdaten abgeleitet werden können.
+```text
+docs/Games/<GameName>/DATA_MODEL.md
+```
 
-------------------------------------------------------------------------
+Bei Arbeiten an einem konkreten Spiel gelten dieses allgemeine Datenmodell und
+ergänzend das Datenmodell des Spiels.
 
-## 2. Aggregate und Grenzen
+Grundprinzipien:
 
-### Player
+- allgemeine Daten bleiben spielunabhängig;
+- spielabhängige Daten ergänzen allgemeine Aggregate über Composition;
+- berechenbare Werte werden nicht redundant gespeichert;
+- historische Datensätze referenzieren stabile Identitäten statt lokalisierter
+  Anzeigenamen oder anderer ableitbarer Snapshots.
 
-`Player` ist ein eigenes Aggregate Root.
+Architektur und Modulgrenzen: [ARCHITECTURE.md](ARCHITECTURE.md).
 
-``` text
+## 2. Identitäten und Namen
+
+### GUIDs
+
+Neue reguläre Benutzer-/Partie-Entities erhalten ihre ID in C# über
+`Guid.CreateVersion7()`:
+
+- `Player`
+- `Group`
+- `GameSession`
+
+Wo Import die Identität einer solchen Entity übernimmt, bleibt jede gültige,
+nichtleere importierte GUID erhalten.
+
+Feste Referenzdaten eines Spielmoduls dürfen deterministische Identitäten besitzen.
+Diese werden im jeweiligen Spiel-Datenmodell dokumentiert.
+
+### Entity-Namen
+
+`Player.Name` und `Group.Name` verwenden dieselbe Semantik:
+
+```text
+Trim()
+Vergleich: StringComparer.OrdinalIgnoreCase
+Länge: 1..100
+```
+
+Es gibt keine Fuzzy-, Akzent-, Satzzeichen- oder
+innere-Leerzeichen-Normalisierung.
+
+Player-Namen sind unter allen Playern einschließlich archivierter Player eindeutig.
+Group-Namen sind unter allen Groups einschließlich archivierter Groups eindeutig.
+Die Eindeutigkeit gilt **je Entity-Typ**; Player- und Group-Namen teilen keinen
+gemeinsamen Namensraum.
+
+SQLite schützt dieselbe Semantik über eindeutige Namensindizes mit der
+`BGT_NAME`-Collation.
+
+## 3. Player
+
+`Player` ist ein eigenständiges Aggregate Root.
+
+```text
 Player
 - Id
 - Name
 - IsGuest
 - IsArchived
-- CreatedAt (DateTimeOffset, UTC-Anlagezeitpunkt)
+- CreatedAt
 ```
 
 Regeln:
 
-- Gast und reguläre Spieler verwenden denselben Datentyp.
-- Ein Spieler kann später von Gast zu regulär wechseln, ohne seine ID
-  oder Historie zu verlieren.
-- `IsArchived` ist ein boolescher Zustand.
-- `CreatedAt` wird beim Erzeugen eines Spielers gesetzt und durch Bearbeiten,
-  Archivieren oder Reaktivieren nicht verändert. Kein abgeleitetes Datum.
-- Player- und Group-Namen sind global eindeutig nach `Trim()` und `StringComparer.OrdinalIgnoreCase`.
+- Gast und regulärer Spieler verwenden denselben Datentyp.
+- `IsGuest` kann geändert werden, ohne ID oder Historie zu verändern.
+- `IsArchived` beschreibt den Archivzustand.
+- `CreatedAt` ist der tatsächliche UTC-Anlagezeitpunkt.
+- `CreatedAt` ändert sich durch Bearbeiten, Archivieren oder Reaktivieren nicht.
+- Spieler werden nicht physisch gelöscht, nur weil eine Gruppe oder Partie
+  entfernt wird.
 
-### Group
+## 4. Group und GroupPlayer
 
 `Group` ist Aggregate Root für eine feste Gruppenzusammensetzung.
 
-``` text
+```text
 Group
 - Id
 - Name
@@ -51,9 +98,9 @@ Group
 - Players
 ```
 
-`GroupPlayer` ist Bestandteil dieses Aggregats:
+`GroupPlayer` gehört zum Aggregate:
 
-``` text
+```text
 GroupPlayer
 - GroupId
 - PlayerId
@@ -62,49 +109,53 @@ GroupPlayer
 
 Invarianten:
 
-- eine Gruppe besitzt mindestens einen Spieler,
-- derselbe Spieler kommt höchstens einmal vor,
-- `DefaultOrder` ist innerhalb einer Gruppe eindeutig,
-- die Reihenfolge ist lückenlos `1..n`,
-- eine andere Spielerzusammensetzung repräsentiert fachlich eine andere
-  Gruppe.
+- eine Gruppe besitzt mindestens einen Spieler;
+- derselbe Spieler kommt höchstens einmal vor;
+- `DefaultOrder` ist positiv;
+- `DefaultOrder` ist innerhalb der Gruppe eindeutig;
+- die Reihenfolge ist lückenlos `1..n`;
+- eine andere Spielerzusammensetzung ist fachlich eine andere Gruppe.
 
-Eine bestehende Gruppe kann daher nicht beliebig um Spieler erweitert
-oder verkleinert werden.
+Eine bestehende Gruppe ändert ihre Mitgliedermenge daher nicht.
 
 Bearbeitbar sind:
 
 - Name,
 - Default-Reihenfolge der bestehenden Spieler,
 - Archivstatus,
-- bei einer temporären Gruppe die einmalige Transition zu permanent.
+- einmalig `IsTemporary: true -> false`.
 
-Eine permanente Gruppe kann nicht nachträglich temporär gemacht werden.
+Eine permanente Gruppe wird nicht wieder temporär.
 
-### Game
+`GroupPlayer` referenziert `Player` mit Restrict-Verhalten; Löschen der Group
+entfernt ihre `GroupPlayer`-Einträge kaskadierend, nicht die Player.
 
-``` text
+## 5. Game
+
+```text
 Game
 - Id
 - Key
 ```
 
-`Key` ist stabil und sprachneutral, zum Beispiel:
+`Game.Key` ist die stabile, sprachneutrale technische Kennung eines unterstützten
+Spiels. Sie ist eindeutig und maximal 100 Zeichen lang.
 
-``` text
-ark-nova
-```
+`Game.Id` ist die lokale relationale Identität. Der Anzeigename ist keine Identität
+und wird nicht in `Game` gespeichert.
 
-`Id` ist die stabile Identität eines Spiels; `Key` erkennt ein eingebautes
-Spielmodul. Der Anzeigename ist nicht die Identität. Namen eingebauter Spiele
-werden lokalisiert. Benutzerdefinierte Spiele und ihre spätere Ergebniskonfiguration
-sind Zielbild gemäß `PRODUCT_SPEC.md`, noch kein implementierter Slice.
+Bekannte Spielmodule verwenden ihren stabilen `Key` für Modulzuordnung,
+Navigation, Preferences und Austauschlogik. Lokalisierte Anzeigenamen bleiben
+Presentation-/Contentdaten.
 
-### GameSession
+Custom Games sind noch nicht implementiert. Das Zielbild steht in
+[PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+
+## 6. GameSession und GameSessionPlayer
 
 `GameSession` ist Aggregate Root für eine gestartete Partie.
 
-``` text
+```text
 GameSession
 - Id
 - GameId
@@ -116,9 +167,9 @@ GameSession
 - Players
 ```
 
-`GameSessionPlayer` gehört zum `GameSession`-Aggregat:
+`GameSessionPlayer` gehört zum Aggregate:
 
-``` text
+```text
 GameSessionPlayer
 - GameSessionId
 - PlayerId
@@ -128,417 +179,259 @@ GameSessionPlayer
 
 Invarianten:
 
-- eine gestartete Partie besitzt mindestens einen Spieler,
-- jeder Spieler kommt höchstens einmal vor,
-- die Reihenfolge ist eindeutig und lückenlos,
-- `Order = 1` ist der Startspieler,
-- `Placement` ist während der laufenden Partie nullable,
-- mehrere Spieler dürfen bei echtem Gleichstand dieselbe Platzierung
-  haben.
+- eine gestartete Partie besitzt mindestens einen Spieler;
+- jeder Spieler kommt höchstens einmal vor;
+- `Order` ist positiv, eindeutig und lückenlos;
+- `Order = 1` ist der Startspieler;
+- `Placement` ist nullable und muss gesetzt positiv sein;
+- mehrere Spieler dürfen dieselbe Platzierung besitzen, wenn das Spiel dies
+  fachlich zulässt;
+- `Placement = 1` bedeutet Gewinner.
 
 Statusübergänge:
 
-``` text
+```text
 Running -> Scoring -> Completed
 ```
 
 Andere Übergänge sind nicht erlaubt.
 
-`EndedAt` darf nicht vor `StartedAt` liegen.
+`BeginScoring` setzt `EndedAt` und `ModifiedAt`. `Completed` ist der fachlich
+abgeschlossene Zustand. `ModifiedAt` darf nicht vor `StartedAt` und beim Abschluss
+nicht vor `EndedAt` liegen.
 
-Die Partievorbereitung wird im MVP nicht persistiert. Eine `GameSession`
-entsteht erst beim Start der Partie.
+Die Partievorbereitung wird allgemein nicht als `GameSession` persistiert.
+Eine `GameSession` entsteht erst beim tatsächlichen Start.
 
-------------------------------------------------------------------------
+Während `GameSession.Status = Scoring` dürfen spielabhängige Ergebnisdaten
+bereits unvollständig persistiert werden. Welche Felder für `Completed`
+verpflichtend sind und welche Wertebereiche gelten, entscheidet das jeweilige
+Spielmodul.
 
-## 3. Cross-Aggregate-Referenzen
+`GameSession` referenziert `Game` und `Group` mit Restrict-Verhalten.
+`GameSessionPlayer` referenziert `Player` mit Restrict-Verhalten.
+Löschen einer `GameSession` entfernt ihre `GameSessionPlayer`-Einträge
+kaskadierend, niemals Player, Group oder Game.
 
-Aggregate referenzieren andere Aggregate bevorzugt über IDs.
+## 7. Cross-Aggregate-Referenzen
+
+Aggregate referenzieren andere Aggregate bevorzugt über stabile IDs.
 
 Beispiele:
 
-``` text
+```text
 GroupPlayer -> PlayerId
-GameSession -> GroupId
 GameSession -> GameId
+GameSession -> GroupId
 GameSessionPlayer -> PlayerId
 ```
 
-Öffentliche Navigation Properties werden nicht nur für
-EF-Core-Bequemlichkeit angelegt.
+Öffentliche Navigation Properties werden nicht nur für EF-Core-Bequemlichkeit
+angelegt.
 
 Navigationen bleiben dort erhalten, wo sie Teil des Aggregats sind:
 
-``` text
+```text
 Group -> Players
 GameSession -> Players
 ```
 
-EF Core konfiguriert die übrigen Beziehungen über Foreign Keys.
+Spielspezifische Ergänzungen referenzieren den allgemeinen Datensatz über dessen
+Schlüssel und duplizieren keinen allgemeinen fachlichen Zustand. Das genaue
+Composition-Muster steht in [ARCHITECTURE.md](ARCHITECTURE.md).
 
-------------------------------------------------------------------------
 
-## 4. Gruppen- und Spieleranlage
+## 8. Game Content, Materialsprache und historische Identitäten
 
-Der Use Case `CreateGroup` darf:
+App-Lokalisierung und physischer Spielinhalt sind getrennte Bereiche.
 
-- vorhandene aktive Spieler auswählen,
-- neue Spieler innerhalb des Workflows erfassen,
-- einen neuen Spieler als Gast markieren,
-- die Default-Reihenfolge festlegen,
-- optionale Farbdefaults für das aktuelle Spiel nach dessen erlaubter Teilmenge wählen.
+Allgemeine Datenmodellregeln:
 
-Neue Spieler werden erst gemeinsam mit der Gruppe gespeichert.
+- spielabhängige Built-in-Inhalte werden über stabile, sprachneutrale Identitäten
+  adressiert;
+- lokalisierte Anzeigenamen sind keine historische Identität;
+- historische Partiedaten speichern stabile IDs, keine lokalisierten Namenssnapshots;
+- Built-in-Content wird nicht allein für Lokalisierung in SQLite gespiegelt;
+- veränderliche Nutzerinhalte dürfen separat persistent gespeichert werden;
+- die Materialsprache ist eine lokale Preference pro stabilem `Game.Key`;
+- es gibt keine Content-Sprach-Entity nur zur Abbildung dieser Preference;
+- die Materialsprache wird nicht als Feld einer `GameSession` oder eines
+  spielabhängigen Ergebnisdatensatzes gespeichert.
+
+Welche Identitäten ein Spiel verwendet und welche Nutzerinhalte es erlaubt, steht
+im jeweiligen Spiel-Datenmodell.
+
+
+## 9. Gruppenanlage und -bearbeitung
+
+### Anlage
+
+Der allgemeine Create-Group-Use-Case darf:
+
+- vorhandene aktive Player auswählen;
+- neue Player innerhalb desselben Workflows anlegen;
+- neue Player als Gast markieren;
+- die Default-Reihenfolge festlegen;
+- optionale spielabhängige Defaults über allgemeine Erweiterungspunkte
+  entgegennehmen.
+
+Neue Player, Group, GroupPlayer und registrierte spielabhängige Gruppendefaults
+werden atomar gespeichert.
 
 Daraus folgt:
 
-- Abbruch der Gruppenerstellung erzeugt keinen verwaisten Spieler,
-- vorhandene Spieler können in mehreren Gruppen wiederverwendet werden,
-- der Create-Group-Use-Case darf Spielerdaten verwenden, ohne selbst
-  ein Players-Feature zu werden.
+- Abbruch erzeugt keinen verwaisten neuen Player;
+- bestehende Player können in mehreren Groups wiederverwendet werden;
+- der Gruppen-Use-Case darf Player-Daten verwenden, ohne selbst ein
+  Players-Feature zu werden.
 
-------------------------------------------------------------------------
+### Bearbeitung
 
-## 5. Gruppenbearbeitung
+`EditGroup` verändert nur den erlaubten Zustand der bestehenden Group:
 
-`EditGroup` verändert ausschließlich den bestehenden
-Group-Aggregatzustand:
-
-``` text
+```text
 Name
 IsArchived
 DefaultOrder
 optional: IsTemporary true -> false
 ```
 
-Die Spielermenge bleibt unverändert. `IsTemporary` ist kein frei
-editierbarer Schalter: erlaubt ist nur `temporary -> permanent`.
+Die Mitgliedermenge bleibt unverändert.
 
-Spielspezifische Gruppeneinstellungen werden separat modelliert. Die
-Arche-Nova-Defaultfarben werden beim Anlegen und Bearbeiten über denselben allgemeinen UI-Bereich gepflegt.
+Spielspezifische Gruppendaten werden separat modelliert und über allgemeine
+Modulgrenzen gelesen bzw. gespeichert.
 
-------------------------------------------------------------------------
+## 10. Gemeinsame Spielerfarben
 
-## 6. Arche-Nova-Gruppendaten
-
-### Gemeinsame Farben und spielabhängige Defaults
-
-`PlayerColor` gehört zum gemeinsamen Kern und definiert zwölf fachliche Farbkategorien ohne UI-Hexwerte. Spiele wählen eine erlaubte Teilmenge; für Arche Nova gilt die unten aufgeführte Auswahl. Spielobjekte validieren die Teilmenge auch dann, wenn ein Wert im globalen Enum definiert ist.
-
-Farbdefaults bleiben pro Spiel, Gruppe und Mitglied gespeichert. Die `ArkNovaGroupPlayer.DefaultColor`-Spalte und die Farbspalte der Partieteilnehmer verwenden diesen gemeinsamen Typ. Die Integerwerte bleiben unverändert: Blau=1, Gelb=2, Rot=3, Schwarz=4. Diese numerischen Werte sind persistierte Identitäten und bleiben stabil. Es wird keine globale Spielerfarbe auf `Player` eingeführt. Zusätzliche Spielmodule besitzen ihre eigenen fachlichen Defaults und Persistenzabbildungen.
-
-### ArkNovaGroupPlayer
-
-``` text
-ArkNovaGroupPlayer
-- GroupId
-- PlayerId
-- DefaultColor
-```
-
-Die Standardfarbe ist abhängig von:
-
-- Gruppe,
-- Spiel,
-- Spieler.
-
-Die Beziehung `(GroupId, PlayerId)` verweist auf eine bestehende
-`GroupPlayer`-Zuordnung.
-
-Innerhalb einer Arche-Nova-Gruppe dürfen gesetzte Defaultfarben nicht doppelt
-vergeben werden. Ohne gespeicherten Default existiert für dieses Mitglied kein
-`ArkNovaGroupPlayer`-Eintrag; `DefaultColor` selbst ist nicht nullable.
-
-Arche Nova verwendet im MVP:
-
-``` text
-Blue
-Yellow
-Red
-Black
-```
-
-------------------------------------------------------------------------
-
-## 7. Arche-Nova-Partiedaten
-
-### ArkNovaGameSessionPlayer
-
-``` text
-ArkNovaGameSessionPlayer
-- GameSessionId
-- PlayerId
-- Color
-- ZooPlanOption1Number
-- ZooPlanOption2Number
-- SelectedZooPlanNumber
-- Attractiveness?
-- Conservation?
-- Reputation?
-```
-
-Die Beziehung `(GameSessionId, PlayerId)` verweist auf einen bestehenden
-`GameSessionPlayer`.
-
-Regeln:
-
-- die beiden angebotenen Zoopläne müssen verschieden sein,
-- `SelectedZooPlanNumber` muss einer der beiden angebotenen Pläne sein,
-- `SelectedZooPlanNumber` ist für eine persistierte laufende Partie
-  verpflichtend,
-- die Farbe ist innerhalb einer Partie eindeutig.
-
-`Attractiveness`, `Conservation` und `Reputation` bleiben nullable,
-solange die Wertung noch nicht vollständig erfasst ist.
-
-### GameSession-weite Zooplanregel
-
-Jeder Zooplan darf innerhalb einer Partie insgesamt nur einmal angeboten
-werden.
-
-Diese Regel gilt für die gesamte GameSession und wird von der
-Arche-Nova-Vorbereitungs-/Startlogik geschützt, nicht von einem
-einzelnen `ArkNovaGameSessionPlayer`.
-
-------------------------------------------------------------------------
-
-## 8. Arche-Nova-Zoopläne
-
-``` text
-ArkNovaZooPlan
-- Number
-```
-
-MVP-Pläne:
-
-1.  Aussichtsplattform
-2.  Freilaufflächen
-3.  Silbersee
-4.  Handelshafen
-5.  Parkrestaurant
-6.  Forschungsinstitut
-7.  Eisdielen
-8.  Hollywood Hills
-9.  Geozoo
-10. Auffangstation
-11. Höhlen
-12. Künstliche Intelligenz
-13. Reißbrett
-14. Lagune
-
-`Number` ist die natürliche, stabile Identität und der Primärschlüssel.
-Eine künstliche ZooPlan-ID wird nicht verwendet. Der persistierte Katalog
-enthält nur Nummern; sprachabhängige Namen sind Content-Metadaten aus
-Games/ArkNova/Content/content.json, adressiert über Number. Bestehende
-sprachneutrale Skizzen bleiben App-Ressourcen. Keine zusätzlichen Content-Keys.
-
-Jeder Spieler erhält genau zwei verschiedene Pläne und wählt einen
-davon.
-
-------------------------------------------------------------------------
-
-## 9. Arche-Nova-Spezialkarten
-
-`ArkNovaSpecialCard` ist eine persistierte Entity mit stabiler GUID, kein Enum:
+`PlayerColor` ist ein gemeinsamer semantischer Farbtyp:
 
 ```text
-ArkNovaSpecialCard
-- Id (Guid, nicht leer)
-- Symbol1? / Symbol2? / Symbol3? (geordnet, ohne Lücken)
-- IsArchived
-
-ArkNovaGameSessionSpecialCardAssignment
-- GameSessionId
-- PlayerId
-- SpecialCardId
-PK: (GameSessionId, PlayerId, SpecialCardId)
+Blue = 1
+Yellow = 2
+Red = 3
+Black = 4
+Green = 5
+White = 6
+Orange = 7
+Brown = 8
+Purple = 9
+Pink = 10
+Turquoise = 11
+Gray = 12
 ```
 
-`ArkNovaCardSymbol` enthält die festen Referenzwerte Africa, America, Asia,
-Australia, Europe, Bear, Bird, Herbivore, PettingAnimal, Predator, Primate,
-Reptile, SeaAnimal und Science. Null bis drei Symbole sind erlaubt; Wiederholungen sind
-zulässig. Symbole und Archivstatus bleiben global editierbarer Fachzustand der
-Karte. Der sichtbare Name ist Content-Metadatum, kein persistiertes Kartenfeld.
-Die UI zeigt Symbol1 → Symbol2 → Symbol3 → aktuellen Namen; keine historischen
-Name-/Symbol-Snapshots und keine Hexwerte/Bilddateien im Domainmodell.
+Die Integerwerte sind persistierte semantische Identitäten und bleiben stabil.
 
-Der Karten-FK verwendet Restrict; Karten werden in der normalen UI ausschließlich
-archiviert/entarchiviert. Session-Löschung entfernt Assignments über den
-bestehenden GameSessionPlayer-FK, niemals globale Karten. Dieselbe Karte darf
-mehreren Spielern zugeordnet werden; nur derselbe Spieler darf sie nicht doppelt haben.
+`PlayerColor` enthält keine UI-Hexwerte und keine Erkennungsparameter.
 
-Aktive Karten dürfen neu zugeordnet werden. Archivierte Karten bleiben in alten
-Partien referenzierbar und können dort entfernt, aber nicht neu hinzugefügt werden.
-Der Korrekturentwurf und der atomare Speicherpfad prüfen dies; beim Speichern
-wird der aktuelle Archivzustand erneut berücksichtigt.
+Es gibt keine globale Farbe auf `Player`. Ein Spiel, das diese gemeinsamen Farben
+verwendet, definiert seine erlaubte Teilmenge über `GamePlayerColorRules`.
+Eine leere Teilmenge bedeutet: Das Spiel verwendet keine PlayerColor-Auswahl.
 
-Die Initialisierung legt fehlende Standardkarten mit stabilen IDs und Defaultsymbolen
-idempotent an. Ihre Namen liegen ausschließlich im versionierten Content:
+Spielabhängige Farbdefaults gehören fachlich zu Spiel + Group + Player und werden
+in einem spielabhängigen Modell gespeichert. Konkrete Teilmengen und Entities
+stehen im jeweiligen Spiel-Datenmodell.
 
-| Nr. | GUID | Mitgelieferter Content-Name / geordnete Defaultsymbole |
-|---|---|---|
-| 1 | `a11c0001-0000-4000-8000-000000000001` | Afrikanischer Elefant / Africa, Africa, Herbivore |
-| 2 | `a11c0001-0000-4000-8000-000000000002` | Asiatischer Elefant / Asia, Asia, Herbivore |
-| 3 | `a11c0001-0000-4000-8000-000000000003` | Weißkopfseeadler / America, Bird |
-| 4 | `a11c0001-0000-4000-8000-000000000004` | Steinadler / Europe, Bird |
-| 5 | `a11c0001-0000-4000-8000-000000000005` | Malaienbär / Asia, Bear, Predator |
+## 11. Nicht redundant gespeicherte allgemeine Daten
 
-Bearbeitete oder archivierte Standardkarten werden beim Seeding nicht zurückgesetzt.
-Die fachlichen Kartenfelder sind SQLite-Referenzdaten, keine Preferences.
-Mitgelieferte Namen werden nicht geseedet oder in Translation-Tabellen gespiegelt.
-Die bestehende Karten-GUID adressiert den Content; kein NameKey, CustomName oder
-zusätzlicher Localization-Key am Domainobjekt.
-
-### ArkNovaUserContent
-
-Eine kleine gemeinsame Abbildung innerhalb des Ark-Nova-Moduls speichert ausschließlich
-veränderliche Nutzernamen:
-
-~~~text
-ArkNovaUserContent
-- ResourceType (special-card oder zoo-plan)
-- ObjectId (kanonische Karten-GUID bzw. Zooplannummer als Text)
-- Name (Trim, 1–120 Zeichen)
-PK: (ResourceType, ObjectId)
-~~~
-
-Der Ressourcentyp unterscheidet nur vorhandene Objektarten; er erzeugt keine neue
-Domainidentität. „Nutzer“ ist eine logische Quelle ohne Sprachfeld. Neue Karten
-und ihr Nutzername werden gemeinsam gespeichert. Eine Namensänderung aktualisiert
-diese Ressource; Symboländerungen ausschließlich ArkNovaSpecialCard. Entfernen einer
-Nutzerressource würde nur den Namen auf die Fallbackkette zurückführen, niemals
-Symbole oder Archivstatus. Ein Reset-UI ist nicht Bestandteil des aktuellen Slice.
-
-Die Spielmaterial-Sprache ist eine allgemeine lokale Preference pro Game.Key,
-kein Feld von ArkNovaSettings, GameSession oder Ergebnissen. Es existiert keine
-Content-Sprach-Entity und keine historischen Namenssnapshots.
-
-------------------------------------------------------------------------
-
-## 10. Wertung und Platzierung
-
-Während `GameSession.Status = Scoring` dürfen Wertungszwischenstände bereits
-automatisch persistiert werden. Fachlich abgeschlossen ist die Partie erst mit
-`GameSession.Status = Completed`; nur abgeschlossene Partien gehören in
-Historie und Statistik. Ein zusätzlicher „Spieler fertig“-Status existiert
-nicht.
-
-Dauerhaft gespeichert werden die Rohwerte:
-
-``` text
-Attractiveness?   0..113
-Conservation?     0..41
-Reputation?       null oder 1..15
-Placement?
-```
-
-Zum Abschluss müssen Attraktivität und Artenschutz für jeden Spieler gesetzt
-sein. Ruf und Spezialkarten bleiben optional.
-
-Die neue Punkteanzeige wird ausschließlich aus den Rohwerten berechnet:
-
-``` text
-NewScore = Attractiveness + ConservationAddend[Conservation]
-OldScore = NewScore - 100
-```
-
-Berechnete Punkte werden nicht redundant gespeichert.
-
-`Placement` wird nach der gegebenenfalls nötigen Gleichstandsauflösung
-persistiert, weil die tatsächliche Platzierung bei Punktgleichheit nicht allein
-aus den Punkten rekonstruierbar ist. Geteilte Plätze sind erlaubt. Automatische
-Ausgangsplatzierungen verwenden Competition Ranking; die manuelle Arche-Nova-
-Platzwahl darf jeden Platz des eigenen Punktegleichstandsblocks verwenden,
-auch gemeinsame höhere Plätze wie `1,3,3,4`, ohne Ranglücken zu schließen.
-
-Gleichstandsblöcke werden zur Laufzeit aus Scores und aktueller Platzierung
-abgeleitet, nicht separat persistiert. Jeder Block besitzt seine Teilnehmer,
-einen lückenlosen erlaubten Platzbereich entsprechend seiner Größe und eine
-Zuordnung, die geteilte Plätze erlaubt. Die Auswahl ändert nur den Rang des
-gewählten Spielers. Platzgruppen sind eine UI-Projektion der aktuellen Zuordnung,
-keine zusätzlichen Entities. Blöcke überschneiden sich nicht; Spieler mit
-unterschiedlichen Punkten können nicht gegeneinander verschoben werden.
-Jeder Spieler mit `Placement = 1` gilt als Gewinner.
-
-Die globalen Arche-Nova-Präferenzen `Ruf erfassen` und `alte/neue
-Punkteanzeige` sind keine historischen Spieldaten und werden deshalb über den
-nativen MAUI-Preferences-Speicher gespeichert, nicht in SQLite.
-
-------------------------------------------------------------------------
-
-### Historische Korrekturen
-
-Completed-Partien sind über einen expliziten Korrektur-Anwendungsfall bearbeitbar; keine Transition zurück zu Scoring. Rohwerte, besondere Karten und neu validierte Placements werden atomar gespeichert. Spiel-, Gruppen-, Teilnehmer- und Setupdaten sowie Start-/Endzeit bleiben unverändert. Spieler- und Gruppennamen werden über aktuelle Player-/Group-Referenzen aufgelöst. Kartennamen und Symbole werden über die aktuelle Spezialkarten-ID aufgelöst. Löschen einer Completed-Partie entfernt alle abhängigen Partiedaten kaskadierend, niemals Spieler oder Gruppen. Keine Namens-Snapshots; Spezialkarten referenzieren die in Abschnitt 9 beschriebenen aktuellen Karten.
-
-------------------------------------------------------------------------
-
-## 11. Nicht redundant gespeicherte Daten
-
-Nicht als autoritative Felder speichern:
+Nicht als autoritative Felder speichern, wenn sie aus Rohdaten zuverlässig
+berechnet werden können, beispielsweise:
 
 - Partiedauer,
 - Gewinner,
 - Anzahl Siege,
 - Gewinnquote,
-- durchschnittliche Platzierung,
-- alte Punkte,
-- neue Punkte,
-- Häufigkeiten je Spezialkarte.
+- durchschnittliche Platzierung.
 
-Diese Werte werden aus den gespeicherten Rohdaten berechnet.
+Spielspezifische abgeleitete Werte werden im jeweiligen Spiel-Datenmodell
+dokumentiert.
 
-------------------------------------------------------------------------
+## 12. Historische Korrekturen
 
-## 12. Persistenzregeln
+Wenn ein Spiel historische Korrekturen unterstützt, bleibt die `GameSession`
+fachlich `Completed`. Es gibt keine Rücktransition zu `Scoring`.
 
-Datenbank-Constraints ergänzen die Domain-Invarianten.
+Allgemein stabil bleiben:
 
-Beispiele:
+- `GameSession.Id`,
+- `GameId`,
+- `GroupId`,
+- Teilnehmermenge,
+- `StartedAt`,
+- `EndedAt`.
 
-- Composite Key für `GroupPlayer(GroupId, PlayerId)`,
-- Unique Index für `(GroupId, DefaultOrder)`,
-- Composite Key für `GameSessionPlayer(GameSessionId, PlayerId)`,
-- Unique Index für Arche-Nova-Farben je Gruppe bzw. Partie,
-- Check Constraint für verschiedene Zooplanoptionen,
-- Check Constraint, dass der gewählte Zooplan angeboten wurde,
-- Check Constraints für Attraktivität, Artenschutz und Ruf,
-- Composite Key für Spezialkarten `(GameSessionId, PlayerId, SpecialCardId)`.
+Nur ausdrücklich korrekturfähige Ergebnisdaten werden atomar geändert.
+Welche Ergebnisfelder dazu gehören und welche Validierung gilt, entscheidet das
+jeweilige Spielmodul.
 
-Die Datenbank ist eine zusätzliche Schutzlinie. Die fachlichen Regeln
-bleiben im Core bzw. in GameSession-weiten Application-/Domainregeln.
+Aktuelle Player-, Group- und Contentnamen werden weiterhin über ihre stabilen
+Identitäten aufgelöst; historische Korrektur erzeugt keine Namenssnapshots.
 
-------------------------------------------------------------------------
+## 13. Nicht-historische Spielpräferenzen
 
-## 13. Erweiterbarkeit
+Nicht-historische spielabhängige Einstellungen gehören nicht in `GameSession`,
+Ergebnisdaten oder andere historische Tabellen.
 
-Weitere Spiele erhalten eigene stark typisierte Modelle:
+Sie werden als Host-/Preference-Zustand pro Spiel gehalten, sofern keine
+fachliche Historisierung ausdrücklich erforderlich ist.
 
-``` text
-Games/
-  ArkNova/
-  TerraformingMars/
-  ...
+Konkrete Preferences stehen im jeweiligen Spiel-Datenmodell oder Produktdokument.
+
+## 14. Referenzdaten-Seeding
+
+Feste Referenzdaten eines Spielmoduls dürfen beim Datenbankstart idempotent
+ergänzt werden.
+
+Allgemeine Regeln:
+
+- fehlende feste Referenzdatensätze dürfen angelegt werden;
+- stabile Referenz-IDs bleiben unverändert;
+- vorhandener veränderlicher fachlicher Zustand wird beim Start nicht auf
+  Defaultwerte zurückgesetzt;
+- lokalisierte Built-in-Namen werden nicht allein für Anzeigezwecke in
+  Referenztabellen gespiegelt.
+
+Konkrete Referenzdaten und Seed-IDs gehören in das jeweilige Spiel-Datenmodell.
+
+## 15. Allgemeine Persistenzregeln
+
+Die Datenbank ergänzt Domain-Invarianten als zusätzliche Schutzlinie.
+
+Wichtige relationale Regeln:
+
+- `Player.Name`: eindeutiger Index mit `BGT_NAME`;
+- `Group.Name`: eindeutiger Index mit `BGT_NAME`;
+- `Game.Key`: eindeutiger Index;
+- `GroupPlayer`: PK `(GroupId, PlayerId)`;
+- `GroupPlayer`: eindeutiger Index `(GroupId, DefaultOrder)`;
+- `GameSessionPlayer`: PK `(GameSessionId, PlayerId)`;
+- `GameSessionPlayer`: eindeutiger Index `(GameSessionId, Order)`;
+- positive Checks für `DefaultOrder`, `Order` und gesetztes `Placement`;
+- Restrict für Referenzen auf langlebige Stammdaten;
+- Cascade nur für echte Aggregate-/Composition-Kinder.
+
+Datenbank-Constraints ersetzen Domain- und Use-Case-Regeln nicht.
+
+Provider-, DbContext- und Initialisierungsarchitektur:
+[ARCHITECTURE.md](ARCHITECTURE.md).
+
+## 16. Spielmodule
+
+Ein Spiel ergänzt das allgemeine Modell ausschließlich in seinem eigenen Modul:
+
+```text
+Core/Games/<GameName>/
+Application/Games/<GameName>/
 ```
 
-Der allgemeine Kern bleibt frei von Arche-Nova-Sonderfällen.
+Das zugehörige Datenmodell steht unter:
 
-## Identität und Namenseindeutigkeit
+```text
+docs/Games/<GameName>/DATA_MODEL.md
+```
 
-Neue reguläre Entities erhalten ihre ID in C# über `Guid.CreateVersion7()`.
-Bestehende IDs bleiben gültig; Import übernimmt jede gültige, nichtleere GUID
-unverändert. Deterministische IDs fester Referenzdaten bleiben unverändert.
-Player.IsArchived ist false für aktive und true für archivierte Spieler; es gibt
-keine inverse Aktivitätsproperty. Die feste Group-Zusammensetzung bleibt erhalten.
+Für Arche Nova:
+[Games/ArkNova/DATA_MODEL.md](Games/ArkNova/DATA_MODEL.md).
 
-Player- und Group-Namen sind einschließlich archivierter Datensätze global eindeutig.
-Create, Rename und Import verwenden Trim + OrdinalIgnoreCase. SQLite erzwingt dies
-auch über eindeutige Namensindizes mit derselben Collation. Keine Fuzzy-, Akzent-,
-Satzzeichen- oder innere-Leerzeichen-Normalisierung.
-
-Bekannte Spiele behalten Game.Key als sprachneutrale technische Identität und
-lokalisierte Anzeigenamen. Aktuell gibt es nur Arche Nova. Custom Games und damit
-benutzerdefinierte Game-Namen/-Ergebnisfelder sind noch nicht implementiert und
-werden vom Import abgelehnt. Ihre spätere Namensprüfung muss auch die lokalisierten
-Namen bekannter Spiele reservieren; Anzeigenamen werden dadurch keine Identität.
-
-Austauschmodell und Referenzintegrität stehen in IMPORT_EXPORT.md.
+Austauschmodell, Matching und Import-Referenzintegrität:
+[IMPORT_EXPORT.md](IMPORT_EXPORT.md).
