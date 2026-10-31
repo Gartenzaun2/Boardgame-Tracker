@@ -2,7 +2,7 @@ using System.Text.Json;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
-using BoardgameTracker.Core.Names;
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.History;
 using Microsoft.EntityFrameworkCore;
@@ -12,19 +12,26 @@ namespace BoardgameTracker.Application.Games.ArkNova.History.Transfer;
 public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
 {
     public string GameKey => ArkNovaGame.Key;
-    public int SchemaVersion => 1;
+    public int SchemaVersion => 2;
     public async Task<JsonElement> ReadSnapshotAsync(BoardgameTrackerDbContext db, CancellationToken cancellationToken)
     {
         var cards = await db.ArkNovaSpecialCards.AsNoTracking().OrderBy(card => card.Id)
-            .Select(card => new { card.Id, card.Name, card.Symbol1, card.Symbol2, card.Symbol3, card.IsArchived }).ToArrayAsync(cancellationToken);
-        return JsonSerializer.SerializeToElement(cards, BgtFormat.JsonOptions);
+            .Select(card => new { card.Id, card.Symbol1, card.Symbol2, card.Symbol3, card.IsArchived }).ToArrayAsync(cancellationToken);
+        var names = await db.ArkNovaUserContent.AsNoTracking().Where(value => value.ResourceType == ArkNovaUserContent.SpecialCard)
+            .OrderBy(value => value.ObjectId).Select(value => new { value.ObjectId, value.Name }).ToArrayAsync(cancellationToken);
+        return JsonSerializer.SerializeToElement(new { Cards = cards, UserNames = names }, BgtFormat.JsonOptions);
     }
     public async Task<JsonElement> ExportReferencesAsync(BoardgameTrackerDbContext db, Guid[] gameSessionIds, CancellationToken cancellationToken)
     {
         Guid[] ids = await db.ArkNovaGameSessionSpecialCardAssignments.AsNoTracking().Where(assignment => gameSessionIds.Contains(assignment.GameSessionId))
             .Select(assignment => assignment.SpecialCardId).Distinct().ToArrayAsync(cancellationToken);
-        ArkNovaTransferCard[] cards = await db.ArkNovaSpecialCards.AsNoTracking().Where(card => ids.Contains(card.Id))
-            .Select(card => new ArkNovaTransferCard(card.Id, card.Name, card.Symbol1, card.Symbol2, card.Symbol3, card.IsArchived)).ToArrayAsync(cancellationToken);
+        var rows = await db.ArkNovaSpecialCards.AsNoTracking().Where(card => ids.Contains(card.Id))
+            .Select(card => new { card.Id, card.Symbol1, card.Symbol2, card.Symbol3, card.IsArchived }).ToArrayAsync(cancellationToken);
+        Dictionary<string, string> names = await db.ArkNovaUserContent.AsNoTracking()
+            .Where(value => value.ResourceType == ArkNovaUserContent.SpecialCard)
+            .ToDictionaryAsync(value => value.ObjectId, value => value.Name, cancellationToken);
+        ArkNovaTransferCard[] cards = rows.Select(card => new ArkNovaTransferCard(card.Id,
+            names.GetValueOrDefault(card.Id.ToString()), card.Symbol1, card.Symbol2, card.Symbol3, card.IsArchived)).ToArray();
         return JsonSerializer.SerializeToElement(new ArkNovaTransferReferences(cards), BgtFormat.JsonOptions);
     }
     public async Task<IReadOnlyDictionary<Guid, JsonElement>> ExportGameSessionsAsync(BoardgameTrackerDbContext db, Guid[] gameSessionIds, CancellationToken cancellationToken)
@@ -52,16 +59,12 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
     public async Task<(int Existing, int New)> PreviewAsync(BoardgameTrackerDbContext db, BgtGame game, IReadOnlyList<BgtGameSession> gameSessions, CancellationToken cancellationToken)
     {
         HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(gameSession.Data).Players).SelectMany(player => player.SpecialCardIds).ToHashSet();
-        var local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => new { card.Id, card.Name }).ToArrayAsync(cancellationToken);
+        Guid[] local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => card.Id).ToArrayAsync(cancellationToken);
         int existing = 0;
         int added = 0;
         foreach (ArkNovaTransferCard input in ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(game.Data).SpecialCards.Where(card => needed.Contains(card.Id)))
         {
-            bool exact = local.Any(card => card.Id == input.Id);
-            int matches = local.Count(card => EntityName.Equals(card.Name, input.Name));
-            if (!exact && matches > 1)
-                throw new InvalidDataException("AmbiguousSpecialCard");
-            if (exact || matches == 1)
+            if (local.Contains(input.Id))
                 existing++;
             else
                 added++;
@@ -74,22 +77,21 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
         ArkNovaTransferReferences references = ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(game.Data);
         HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(gameSession.Data).Players)
             .SelectMany(player => player.SpecialCardIds).ToHashSet();
-        var local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => new { card.Id, card.Name }).ToArrayAsync(cancellationToken);
-        Dictionary<Guid, Guid> cards = [];
+        Guid[] local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => card.Id).ToArrayAsync(cancellationToken);
+        HashSet<string> localNames = (await db.ArkNovaUserContent.AsNoTracking()
+            .Where(value => value.ResourceType == ArkNovaUserContent.SpecialCard)
+            .Select(value => value.ObjectId).ToArrayAsync(cancellationToken)).ToHashSet(StringComparer.Ordinal);
         foreach (ArkNovaTransferCard input in references.SpecialCards.Where(card => needed.Contains(card.Id)))
         {
-            var exact = local.SingleOrDefault(card => card.Id == input.Id);
-            var matches = local.Where(card => EntityName.Equals(card.Name, input.Name)).ToArray();
-            if (exact is null && matches.Length > 1)
-                throw new InvalidDataException("AmbiguousSpecialCard");
-            Guid id = exact?.Id ?? matches.SingleOrDefault()?.Id ?? input.Id;
-            cards.Add(input.Id, id);
-            if (exact is null && matches.Length == 0)
+            if (!local.Contains(input.Id))
             {
-                ArkNovaSpecialCard card = new(input.Id, input.Name, input.Symbol1, input.Symbol2, input.Symbol3);
+                ArkNovaSpecialCard card = new(input.Id, input.Symbol1, input.Symbol2, input.Symbol3);
                 card.SetArchived(input.IsArchived);
                 db.ArkNovaSpecialCards.Add(card);
             }
+            // A shipped card row does not itself provide user content. Existing user names win.
+            if (input.UserName is not null && !localNames.Contains(input.Id.ToString()))
+                db.ArkNovaUserContent.Add(new(ArkNovaUserContent.SpecialCard, input.Id.ToString(), input.UserName));
         }
         foreach (BgtGameSession gameSession in gameSessions)
         {
@@ -100,7 +102,7 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
                     input.ZooPlanOption2Number, input.SelectedZooPlanNumber);
                 player.SetScoreValues(input.Attractiveness, input.Conservation, input.Reputation);
                 db.ArkNovaGameSessionPlayers.Add(player);
-                foreach (Guid card in input.SpecialCardIds.Select(id => cards[id]).Distinct())
+                foreach (Guid card in input.SpecialCardIds)
                     db.ArkNovaGameSessionSpecialCardAssignments.Add(new(gameSession.Id, playerId, card));
             }
         }

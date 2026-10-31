@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
+using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
 using System.Text.Json;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -8,7 +10,7 @@ using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Application.Games.ArkNova.History.Transfer;
 
 public sealed record ArkNovaTransferReferences(ArkNovaTransferCard[] SpecialCards);
-public sealed record ArkNovaTransferCard(Guid Id, string Name, ArkNovaCardSymbol? Symbol1, ArkNovaCardSymbol? Symbol2, ArkNovaCardSymbol? Symbol3, bool IsArchived);
+public sealed record ArkNovaTransferCard(Guid Id, string? UserName, ArkNovaCardSymbol? Symbol1, ArkNovaCardSymbol? Symbol2, ArkNovaCardSymbol? Symbol3, bool IsArchived);
 public sealed record ArkNovaTransferGameSession(ArkNovaTransferPlayer[] Players);
 public sealed record ArkNovaTransferPlayer(Guid PlayerId, PlayerColor Color, int ZooPlanOption1Number, int ZooPlanOption2Number,
     int SelectedZooPlanNumber, int Attractiveness, int Conservation, int? Reputation, Guid[] SpecialCardIds);
@@ -16,14 +18,21 @@ public sealed record ArkNovaTransferPlayer(Guid PlayerId, PlayerColor Color, int
 public sealed class ArkNovaTransferSchema : IGameTransferSchema
 {
     public string GameKey => ArkNovaGame.Key;
-    public int SchemaVersion => 1;
+    public int SchemaVersion => 2;
     public static T Read<T>(JsonElement data) => data.Deserialize<T>(BgtFormat.JsonOptions) ?? throw new InvalidDataException("InvalidGameData");
     public void Validate(BgtGame game, IReadOnlyList<BgtGameSession> gameSessions)
     {
         ArkNovaTransferReferences references = Read<ArkNovaTransferReferences>(game.Data);
         BgtFormat.CheckIds(references.SpecialCards.Select(card => card.Id));
+        HashSet<Guid> builtInIds = ArkNovaSpecialCardDefaults.Create().Select(card => card.Id).ToHashSet();
         foreach (ArkNovaTransferCard card in references.SpecialCards)
-            _ = new ArkNovaSpecialCard(card.Id, card.Name, card.Symbol1, card.Symbol2, card.Symbol3);
+        {
+            _ = new ArkNovaSpecialCard(card.Id, card.Symbol1, card.Symbol2, card.Symbol3);
+            if (card.UserName is not null)
+                _ = new ArkNovaUserContent(ArkNovaUserContent.SpecialCard, card.Id.ToString(), card.UserName);
+            else if (!builtInIds.Contains(card.Id))
+                throw new InvalidDataException("MissingUserCardName");
+        }
         HashSet<Guid> cards = references.SpecialCards.Select(card => card.Id).ToHashSet();
         foreach (BgtGameSession gameSession in gameSessions)
         {

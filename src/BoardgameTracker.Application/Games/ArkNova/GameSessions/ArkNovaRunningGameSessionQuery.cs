@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace BoardgameTracker.Application.Games.ArkNova.GameSessions;
 /// EF Core projection for the running Ark Nova screen, mapped to Application read models after provider-side materialization.
 /// </summary>
 public sealed class ArkNovaRunningGameSessionQuery(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory, ArkNovaContent content)
 {
     public async Task<ArkNovaRunningGameSessionData?> GetRunningGameSessionAsync(
         Guid gameSessionId,
@@ -61,6 +62,7 @@ public sealed class ArkNovaRunningGameSessionQuery(
             })
             .ToArrayAsync(cancellationToken);
 
+        IReadOnlyDictionary<int, string> zooPlanNames = await content.ReadZooPlanNamesAsync(dbContext, cancellationToken);
         IReadOnlyList<ArkNovaRunningGameSessionPlayer> players =
         [
             .. playerRows.Select(player => new ArkNovaRunningGameSessionPlayer(
@@ -68,7 +70,7 @@ public sealed class ArkNovaRunningGameSessionQuery(
                 player.Name,
                 player.Order,
                 player.Color,
-                player.ZooPlanNumber))
+                player.ZooPlanNumber, zooPlanNames[player.ZooPlanNumber]))
         ];
 
         return new ArkNovaRunningGameSessionData(
@@ -100,4 +102,5 @@ public sealed record ArkNovaRunningGameSessionPlayer(
     string Name,
     int Order,
     PlayerColor Color,
-    int ZooPlanNumber);
+    int ZooPlanNumber,
+    string ZooPlanName);

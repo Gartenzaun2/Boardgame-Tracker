@@ -328,7 +328,9 @@ MVP-Pläne:
 
 `Number` ist die natürliche, stabile Identität und der Primärschlüssel.
 Eine künstliche ZooPlan-ID wird nicht verwendet. Der persistierte Katalog
-enthält nur Nummern; lokalisierter Name und Skizze sind Presentation-Metadaten.
+enthält nur Nummern; sprachabhängige Namen sind Content-Metadaten aus
+Games/ArkNova/Content/content.json, adressiert über Number. Bestehende
+sprachneutrale Skizzen bleiben App-Ressourcen. Keine zusätzlichen Content-Keys.
 
 Jeder Spieler erhält genau zwei verschiedene Pläne und wählt einen
 davon.
@@ -342,7 +344,6 @@ davon.
 ```text
 ArkNovaSpecialCard
 - Id (Guid, nicht leer)
-- Name (Trim, 1–120 Zeichen; nicht global eindeutig)
 - Symbol1? / Symbol2? / Symbol3? (geordnet, ohne Lücken)
 - IsArchived
 
@@ -356,7 +357,8 @@ PK: (GameSessionId, PlayerId, SpecialCardId)
 `ArkNovaCardSymbol` enthält die festen Referenzwerte Africa, America, Asia,
 Australia, Europe, Bear, Bird, Herbivore, PettingAnimal, Predator, Primate,
 Reptile, SeaAnimal und Science. Null bis drei Symbole sind erlaubt; Wiederholungen sind
-zulässig. Namen und Symbole einer Karte sind global für Arche Nova editierbar.
+zulässig. Symbole und Archivstatus bleiben global editierbarer Fachzustand der
+Karte. Der sichtbare Name ist Content-Metadatum, kein persistiertes Kartenfeld.
 Die UI zeigt Symbol1 → Symbol2 → Symbol3 → aktuellen Namen; keine historischen
 Name-/Symbol-Snapshots und keine Hexwerte/Bilddateien im Domainmodell.
 
@@ -370,9 +372,10 @@ Partien referenzierbar und können dort entfernt, aber nicht neu hinzugefügt we
 Der Korrekturentwurf und der atomare Speicherpfad prüfen dies; beim Speichern
 wird der aktuelle Archivzustand erneut berücksichtigt.
 
-Die Initialisierung legt fehlende Standardkarten mit stabilen IDs idempotent an:
+Die Initialisierung legt fehlende Standardkarten mit stabilen IDs und Defaultsymbolen
+idempotent an. Ihre Namen liegen ausschließlich im versionierten Content:
 
-| Nr. | GUID | Startname / geordnete Symbole |
+| Nr. | GUID | Mitgelieferter Content-Name / geordnete Defaultsymbole |
 |---|---|---|
 | 1 | `a11c0001-0000-4000-8000-000000000001` | Afrikanischer Elefant / Africa, Africa, Herbivore |
 | 2 | `a11c0001-0000-4000-8000-000000000002` | Asiatischer Elefant / Asia, Asia, Herbivore |
@@ -381,7 +384,34 @@ Die Initialisierung legt fehlende Standardkarten mit stabilen IDs idempotent an:
 | 5 | `a11c0001-0000-4000-8000-000000000005` | Malaienbär / Asia, Bear, Predator |
 
 Bearbeitete oder archivierte Standardkarten werden beim Seeding nicht zurückgesetzt.
-Es gibt kein altes Kartenenum und keinen Upgradepfad für Integer-Assignments. Spezialkarten sind SQLite-Referenzdaten, keine Preferences.
+Die fachlichen Kartenfelder sind SQLite-Referenzdaten, keine Preferences.
+Mitgelieferte Namen werden nicht geseedet oder in Translation-Tabellen gespiegelt.
+Die bestehende Karten-GUID adressiert den Content; kein NameKey, CustomName oder
+zusätzlicher Localization-Key am Domainobjekt.
+
+### ArkNovaUserContent
+
+Eine kleine gemeinsame Abbildung innerhalb des Ark-Nova-Moduls speichert ausschließlich
+veränderliche Nutzernamen:
+
+~~~text
+ArkNovaUserContent
+- ResourceType (special-card oder zoo-plan)
+- ObjectId (kanonische Karten-GUID bzw. Zooplannummer als Text)
+- Name (Trim, 1–120 Zeichen)
+PK: (ResourceType, ObjectId)
+~~~
+
+Der Ressourcentyp unterscheidet nur vorhandene Objektarten; er erzeugt keine neue
+Domainidentität. „Nutzer“ ist eine logische Quelle ohne Sprachfeld. Neue Karten
+und ihr Nutzername werden gemeinsam gespeichert. Eine Namensänderung aktualisiert
+diese Ressource; Symboländerungen ausschließlich ArkNovaSpecialCard. Entfernen einer
+Nutzerressource würde nur den Namen auf die Fallbackkette zurückführen, niemals
+Symbole oder Archivstatus. Ein Reset-UI ist nicht Bestandteil des aktuellen Slice.
+
+Die Spielmaterial-Sprache ist eine allgemeine lokale Preference pro Game.Key,
+kein Feld von ArkNovaSettings, GameSession oder Ergebnissen. Es existiert keine
+Content-Sprach-Entity und keine historischen Namenssnapshots.
 
 ------------------------------------------------------------------------
 

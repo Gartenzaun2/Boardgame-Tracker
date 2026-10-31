@@ -108,7 +108,11 @@ public partial class ArkNovaScoringViewModel(
                 }
                 Draft ??= await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 Draft.RefreshCardCatalog(data.CardCatalog);
-                data = Draft.Data with { Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() };
+                data = Draft.Data with
+                {
+                    Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray(),
+                    ZooPlanNames = data.ZooPlanNames
+                };
             }
             Mode = data.Status == GameSessionStatus.Completed ? ArkNovaScoringMode.HistoryCorrection : ArkNovaScoringMode.Live;
             ArkNovaSettings settings = settingsStore.Get();
@@ -128,7 +132,7 @@ public partial class ArkNovaScoringViewModel(
                     player,
                     cards,
                     settings.ScoringDisplayMode,
-                    settings.CaptureReputation));
+                    settings.CaptureReputation, data.ZooPlanNames[player.ZooPlanNumber]));
             }
 
             OnPropertyChanged(nameof(CanComplete));
@@ -306,12 +310,13 @@ public sealed class ArkNovaScoringPlayerViewModel
         ArkNovaGameSessionResultPlayerData data,
         IReadOnlyList<Guid> specialCards,
         ArkNovaScoringDisplayMode displayMode,
-        bool showReputation)
+        bool showReputation, string zooPlanName)
     {
         PlayerId = data.PlayerId;
         Name = data.Placement is int placement ? $"{placement}. {data.Name}" : data.Name;
         Color = data.Color;
         ZooPlanNumber = data.ZooPlanNumber;
+        ZooPlanText = zooPlanName;
         Attractiveness = data.Attractiveness;
         Conservation = data.Conservation;
         Reputation = data.Reputation;
@@ -335,7 +340,7 @@ public sealed class ArkNovaScoringPlayerViewModel
     public Microsoft.Maui.Graphics.Color PlayerTextColor => PlayerColorPresentation.GetText(Color);
     public string ColorText => PlayerColorPresentation.GetName(Color);
     public Microsoft.Maui.Graphics.Color Tint => PlayerColorPresentation.GetBackground(Color);
-    public string ZooPlanText => ArkNovaZooPlanPresentation.GetName(ZooPlanNumber);
+    public string ZooPlanText { get; }
     public string Subtitle => $"{ColorText} · {ZooPlanText}";
     public string RawValuesText =>
         string.Format(AppResources.RawScoreFormat, Attractiveness?.ToString() ?? "–", Conservation?.ToString() ?? "–");

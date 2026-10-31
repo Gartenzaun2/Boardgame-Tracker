@@ -1,0 +1,105 @@
+{
+  "defaultLanguage": "de",
+  "supportedLanguages": [
+    "de"
+  ],
+  "specialCards": {
+    "a11c0001-0000-4000-8000-000000000001": {
+      "name": {
+        "de": "Afrikanischer Elefant"
+      }
+    },
+    "a11c0001-0000-4000-8000-000000000002": {
+      "name": {
+        "de": "Asiatischer Elefant"
+      }
+    },
+    "a11c0001-0000-4000-8000-000000000003": {
+      "name": {
+        "de": "Weißkopfseeadler"
+      }
+    },
+    "a11c0001-0000-4000-8000-000000000004": {
+      "name": {
+        "de": "Steinadler"
+      }
+    },
+    "a11c0001-0000-4000-8000-000000000005": {
+      "name": {
+        "de": "Malaienbär"
+      }
+    }
+  },
+  "zooPlans": {
+    "1": {
+      "name": {
+        "de": "Aussichtsplattform"
+      }
+    },
+    "2": {
+      "name": {
+        "de": "Freilaufflächen"
+      }
+    },
+    "3": {
+      "name": {
+        "de": "Silbersee"
+      }
+    },
+    "4": {
+      "name": {
+        "de": "Handelshafen"
+      }
+    },
+    "5": {
+      "name": {
+        "de": "Parkrestaurant"
+      }
+    },
+    "6": {
+      "name": {
+        "de": "Forschungsinstitut"
+      }
+    },
+    "7": {
+      "name": {
+        "de": "Eisdielen"
+      }
+    },
+    "8": {
+      "name": {
+        "de": "Hollywood Hills"
+      }
+    },
+    "9": {
+      "name": {
+        "de": "Geozoo"
+      }
+    },
+    "10": {
+      "name": {
+        "de": "Auffangstation"
+      }
+    },
+    "11": {
+      "name": {
+        "de": "Höhlen"
+      }
+    },
+    "12": {
+      "name": {
+        "de": "Künstliche Intelligenz"
+      }
+    },
+    "13": {
+      "name": {
+        "de": "Reißbrett"
+      }
+    },
+    "14": {
+      "name": {
+        "de": "Lagune"
+      }
+    }
+  }
+}

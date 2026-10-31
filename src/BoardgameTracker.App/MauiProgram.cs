@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.Settings;
+using BoardgameTracker.App.Features.Settings;
 using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
@@ -55,6 +57,8 @@ public static class MauiProgram
 
         builder.Services.AddBoardgameTrackerSqlite(databasePath);
 
+        builder.Services.AddSingleton<IGameContentLanguageStore, MauiGameContentLanguageStore>();
+        builder.Services.AddSingleton<GameContentLanguagePreference>();
         builder.Services.AddArkNova();
         builder.Services.AddSingleton<BgtFormat>();
         builder.Services.AddTransient<HistoryTransferUseCase>();

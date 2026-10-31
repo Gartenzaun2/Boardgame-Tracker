@@ -91,7 +91,7 @@ public sealed class NumberWheelTests
     public async Task ReputationVisibility_FollowsGameSettings(bool captureReputation)
     {
         await using ScoringDatabase data = await ScoringDatabase.CreateAsync(null, null, null);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(captureReputation), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data, TestGameContent.Create())), new SettingsStore(captureReputation), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal(captureReputation, viewModel.IsReputationVisible);
         Assert.Null(viewModel.ReputationValue);
@@ -127,7 +127,7 @@ public sealed class NumberWheelTests
     public async Task OpeningEmptyPlayer_DoesNotSaveDisplayedSuggestions()
     {
         await using ScoringDatabase data = await ScoringDatabase.CreateAsync(null, null, null);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal("57", viewModel.AttractivenessSuggestion);
         Assert.Equal("21", viewModel.ConservationSuggestion);
@@ -154,7 +154,7 @@ public sealed class NumberWheelTests
     public async Task OpeningSavedPlayer_SelectsStoredValuesAndConfirmationPreservesThem()
     {
         await using ScoringDatabase data = await ScoringDatabase.CreateAsync(73, 19, 11);
-        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        ArkNovaPlayerScoringViewModel viewModel = new(new ArkNovaScoringUseCase(data, new(data, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, TestContext.Current.CancellationToken);
         Assert.Equal(73, viewModel.AttractivenessValue);
         Assert.Equal(19, viewModel.ConservationValue);
@@ -170,7 +170,7 @@ public sealed class NumberWheelTests
     public async Task FinalFlush_WaitsForActiveAutosave_ThenSavesLatestInput()
     {
         await using ScoringDatabase data = await ScoringDatabase.CreateAsync(70, 20, null, blockFirstSave: true);
-        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         CancellationToken token = TestContext.Current.CancellationToken;
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, token);
         viewModel.AttractivenessValue = 80;
@@ -201,7 +201,7 @@ public sealed class NumberWheelTests
     public async Task FailedFinalFlush_PropagatesFailureAndReleasesSaveGateForRetry()
     {
         await using ScoringDatabase data = await ScoringDatabase.CreateAsync(70, 20, null, failNextSave: true);
-        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         CancellationToken token = TestContext.Current.CancellationToken;
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, token);
         await Assert.ThrowsAsync<InvalidOperationException>(() => viewModel.FlushAsync(token));
@@ -267,7 +267,7 @@ public sealed class NumberWheelTests
     private static ArkNovaPlayerScoringViewModel CreateViewModel()
     {
         UnopenedContextFactory factory = new();
-        return new(new(factory, new(factory)), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
+        return new(new(factory, new(factory, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
     }
 
     private sealed class SettingsStore(bool captureReputation = false) : IArkNovaSettingsStore

@@ -124,7 +124,7 @@ public sealed class TieResolutionTests
         await using TieDatabase database = await TieDatabase.CreateAsync();
         SaveProbe data = new() { BlockFirstSave = true };
         database.SaveInterceptor = data;
-        ArkNovaTieResolutionViewModel viewModel = new(new(database, new(database)), database.Correction);
+        ArkNovaTieResolutionViewModel viewModel = new(new(database, new(database, TestGameContent.Create())), database.Correction);
         await viewModel.LoadAsync(database.Session.Id, Token);
         Task completion = viewModel.CompleteAsync(Token);
         await data.FirstSaveStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), Token);
@@ -212,8 +212,8 @@ public sealed class TieResolutionTests
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         public Player[] Players { get; } = [new("Anna"), new("Bernd"), new("Clara"), new("Dirk")];
         public GameSession Session { get; private set; } = null!;
-        public ArkNovaGameSessionResultQuery Scoring => new(this);
-        public ArkNovaHistoryCorrectionUseCase Correction => new(this, new(this));
+        public ArkNovaGameSessionResultQuery Scoring => new(this, TestGameContent.Create());
+        public ArkNovaHistoryCorrectionUseCase Correction => new(this, new(this, TestGameContent.Create()));
         public ArkNovaTieResolutionViewModel CreateViewModel() => new(new(this, Scoring), Correction);
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).AddInterceptors(SaveInterceptor).Options);
 

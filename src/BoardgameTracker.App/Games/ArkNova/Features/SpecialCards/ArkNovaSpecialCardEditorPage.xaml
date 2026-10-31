@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.SpecialCards"
-    xmlns:core="clr-namespace:BoardgameTracker.Core.Games.ArkNova;assembly=BoardgameTracker.Core"
+    xmlns:content="clr-namespace:BoardgameTracker.Application.Games.ArkNova.Content;assembly=BoardgameTracker.Application"
     xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:DataType="vm:ArkNovaSpecialCardEditorViewModel" Shell.NavBarIsVisible="False">
@@ -20,7 +20,7 @@
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Spacing="16">
                     <Label Text="{x:Static res:AppResources.SpecialCardName}" FontAttributes="Bold" />
-                    <Entry Text="{Binding NameText}" MaxLength="{x:Static core:ArkNovaSpecialCard.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
+                    <Entry Text="{Binding NameText}" MaxLength="{x:Static content:ArkNovaUserContent.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
                     <Border Style="{StaticResource CardBorder}" Padding="12"><ark:ArkNovaSpecialCardView Card="{Binding Preview}" /></Border>
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                         <Image Source="{Binding Symbol1Image}" IsVisible="{Binding HasSymbol1}" WidthRequest="32" HeightRequest="32" />

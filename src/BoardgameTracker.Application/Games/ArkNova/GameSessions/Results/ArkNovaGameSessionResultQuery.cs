@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -9,7 +10,7 @@ using BoardgameTracker.Application.Persistence;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 
-public sealed class ArkNovaGameSessionResultQuery(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+public sealed class ArkNovaGameSessionResultQuery(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, ArkNovaContent content)
 {
     public async Task<ArkNovaGameSessionResultData?> LoadGameSessionResultAsync(
         Guid gameSessionId,
@@ -71,10 +72,8 @@ public sealed class ArkNovaGameSessionResultQuery(IDbContextFactory<BoardgameTra
             players,
             specialCards)
         {
-            CardCatalog = await dbContext.ArkNovaSpecialCards.AsNoTracking()
-                .OrderBy(c => c.Name)
-                .Select(c => new ArkNovaSpecialCardData(c.Id, c.Name, c.Symbol1, c.Symbol2, c.Symbol3, c.IsArchived))
-                .ToArrayAsync(cancellationToken)
+            CardCatalog = await content.ReadCardCatalogAsync(dbContext, true, cancellationToken),
+            ZooPlanNames = await content.ReadZooPlanNamesAsync(dbContext, cancellationToken)
         };
     }
 }

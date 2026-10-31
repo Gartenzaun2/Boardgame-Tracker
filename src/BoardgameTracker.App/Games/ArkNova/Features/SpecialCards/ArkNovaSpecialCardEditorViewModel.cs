@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using System.Collections.ObjectModel;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
 using BoardgameTracker.App.Resources.Localization;
@@ -35,7 +36,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     public bool IsEditing => _id.HasValue;
     [ObservableProperty] public partial bool IsArchived { get; set; }
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-    public bool CanSave => IsEditorContentEnabled && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaSpecialCard.MaximumNameLength;
+    public bool CanSave => IsEditorContentEnabled && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaUserContent.MaximumNameLength;
     public string Title => _id.HasValue ? AppResources.EditSpecialCard : AppResources.NewSpecialCard;
     public ArkNovaSpecialCardData Preview => new(_id ?? Guid.Empty, string.IsNullOrWhiteSpace(NameText) ? AppResources.NewSpecialCard : NameText,
         _symbols.Count > 0 ? _symbols[0] : null, _symbols.Count > 1 ? _symbols[1] : null, _symbols.Count > 2 ? _symbols[2] : null, false);

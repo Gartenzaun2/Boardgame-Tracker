@@ -12,10 +12,10 @@ public static class ArkNovaSpecialCardDefaults
 
     public static IReadOnlyList<ArkNovaSpecialCard> Create() =>
     [
-        new(AfricanElephant, "Afrikanischer Elefant", ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Herbivore),
-        new(AsianElephant, "Asiatischer Elefant", ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Herbivore),
-        new(BaldEagle, "Weißkopfseeadler", ArkNovaCardSymbol.America, ArkNovaCardSymbol.Bird),
-        new(GoldenEagle, "Steinadler", ArkNovaCardSymbol.Europe, ArkNovaCardSymbol.Bird),
-        new(SunBear, "Malaienbär", ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Bear, ArkNovaCardSymbol.Predator)
+        new(AfricanElephant, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Africa, ArkNovaCardSymbol.Herbivore),
+        new(AsianElephant, ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Herbivore),
+        new(BaldEagle, ArkNovaCardSymbol.America, ArkNovaCardSymbol.Bird),
+        new(GoldenEagle, ArkNovaCardSymbol.Europe, ArkNovaCardSymbol.Bird),
+        new(SunBear, ArkNovaCardSymbol.Asia, ArkNovaCardSymbol.Bear, ArkNovaCardSymbol.Predator)
     ];
 }

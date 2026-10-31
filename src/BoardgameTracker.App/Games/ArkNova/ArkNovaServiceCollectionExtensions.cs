@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.Application.Games.ArkNova.Persistence;
 
@@ -32,6 +33,8 @@ public static class ArkNovaServiceCollectionExtensions
 {
     public static IServiceCollection AddArkNova(this IServiceCollection services)
     {
+        services.AddSingleton(ArkNovaContentCatalog.LoadBuiltIn());
+        services.AddSingleton<ArkNovaContent>();
         services.AddSingleton<IGameTransferSchema, ArkNovaTransferSchema>();
         services.AddSingleton<IGameTransferPersistence, ArkNovaTransferPersistence>();
         services.AddTransient<IGameSessionNavigationHandler, ArkNovaGameSessionNavigationHandler>();

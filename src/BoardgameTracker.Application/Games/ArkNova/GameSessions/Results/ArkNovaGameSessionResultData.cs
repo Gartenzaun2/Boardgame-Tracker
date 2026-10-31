@@ -15,6 +15,7 @@ public sealed record ArkNovaGameSessionResultData(
     IReadOnlyList<ArkNovaGameSessionResultPlayerData> Players,
     IReadOnlyList<ArkNovaSpecialCardAssignmentData> SpecialCards)
 {
+    public IReadOnlyDictionary<int, string> ZooPlanNames { get; init; } = new Dictionary<int, string>();
     public IReadOnlyList<ArkNovaSpecialCardData> CardCatalog { get; init; } = [];
 }
 

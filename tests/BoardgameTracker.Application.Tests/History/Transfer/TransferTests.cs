@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.Application.Tests.Persistence;
 using System.Text;
@@ -23,7 +25,7 @@ public sealed class TransferTests
     private static BgtFormat Format => new([new ArkNovaTransferSchema()]);
     private static JsonElement Empty => JsonSerializer.SerializeToElement(new { });
     private static BgtFile File(BgtPlayer[] players, BgtGroup[] groups, BgtGameSession[] gameSessions) => new(1, "test", DateTimeOffset.UtcNow,
-        [new(GameId, "ark-nova", 1, JsonSerializer.SerializeToElement(new ArkNovaTransferReferences([]), BgtFormat.JsonOptions))], players, groups, gameSessions);
+        [new(GameId, "ark-nova", 2, JsonSerializer.SerializeToElement(new ArkNovaTransferReferences([]), BgtFormat.JsonOptions))], players, groups, gameSessions);
     private static readonly Guid GameId = Guid.NewGuid();
     private static BgtPlayer Player(string name) => new(Guid.NewGuid(), name, false, false, DateTimeOffset.UtcNow);
     private static BgtGroup Group(string name, params BgtPlayer[] players) => new(Guid.NewGuid(), name, false, false,
@@ -203,14 +205,15 @@ public sealed class TransferTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task SpecialCardMatchingKeepsLocalStateAndRejectsAmbiguousNames(bool sameId)
+    public async Task SpecialCardsMatchOnlyByIdAndKeepLocalState(bool sameId)
     {
         await using Database source = await Database.CreateAsync();
         Guid id = await source.SeedAsync();
         Guid foreignCard = Guid.NewGuid();
         await using (BoardgameTrackerDbContext db = source.CreateDbContext())
         {
-            db.ArkNovaSpecialCards.Add(new(foreignCard, "Card", ArkNovaCardSymbol.Africa));
+            db.ArkNovaSpecialCards.Add(new(foreignCard, ArkNovaCardSymbol.Africa));
+            db.ArkNovaUserContent.Add(new(ArkNovaUserContent.SpecialCard, foreignCard.ToString(), "Card"));
             Guid player = await db.GameSessionPlayers.Select(player => player.PlayerId).FirstAsync(Token);
             db.ArkNovaGameSessionSpecialCardAssignments.Add(new(id, player, foreignCard));
             await db.SaveChangesAsync(Token);
@@ -221,29 +224,37 @@ public sealed class TransferTests
         Guid localCard = sameId ? foreignCard : Guid.NewGuid();
         await using (BoardgameTrackerDbContext db = target.CreateDbContext())
         {
-            ArkNovaSpecialCard card = new(localCard, " CARD ");
+            ArkNovaSpecialCard card = new(localCard);
             card.SetArchived(true);
             db.ArkNovaSpecialCards.Add(card);
+            db.ArkNovaUserContent.Add(new(ArkNovaUserContent.SpecialCard, localCard.ToString(), " CARD "));
             await db.SaveChangesAsync(Token);
         }
         ImportPlan plan = ImportPlanner.Analyze(file, await target.Store.ReadSnapshotAsync(Token));
         TransferPreview preview = await target.Store.PreviewAsync(plan, Token);
-        Assert.Equal(1, preview.ReferencesExisting);
+        Assert.Equal(sameId ? 1 : 0, preview.ReferencesExisting);
+        Assert.Equal(sameId ? 0 : 1, preview.ReferencesNew);
         await target.Store.CommitAsync(plan, Token);
         await using (BoardgameTrackerDbContext db = target.CreateDbContext())
         {
-            Assert.True((await db.ArkNovaSpecialCards.SingleAsync(Token)).IsArchived);
-            Assert.Equal(localCard, (await db.ArkNovaGameSessionSpecialCardAssignments.SingleAsync(Token)).SpecialCardId);
+            Assert.True((await db.ArkNovaSpecialCards.SingleAsync(card => card.Id == localCard, Token)).IsArchived);
+            Assert.Equal(foreignCard, (await db.ArkNovaGameSessionSpecialCardAssignments.SingleAsync(Token)).SpecialCardId);
+            Assert.Equal(sameId ? "CARD" : "Card", (await db.ArkNovaUserContent.SingleAsync(value => value.ObjectId == foreignCard.ToString(), Token)).Name);
         }
         await using Database ambiguous = await Database.CreateAsync();
         await using (BoardgameTrackerDbContext db = ambiguous.CreateDbContext())
         {
-            db.ArkNovaSpecialCards.AddRange(new ArkNovaSpecialCard(Guid.NewGuid(), "Card"), new ArkNovaSpecialCard(Guid.NewGuid(), "card"));
+            ArkNovaSpecialCard first = new(Guid.NewGuid());
+            ArkNovaSpecialCard second = new(Guid.NewGuid());
+            db.ArkNovaSpecialCards.AddRange(first, second);
+            db.ArkNovaUserContent.AddRange(new("special-card", first.Id.ToString(), "Card"),
+                new("special-card", second.Id.ToString(), "card"));
             await db.SaveChangesAsync(Token);
         }
-        ImportPlan invalid = ImportPlanner.Analyze(file, await ambiguous.Store.ReadSnapshotAsync(Token));
-        await Assert.ThrowsAsync<InvalidDataException>(() => ambiguous.Store.PreviewAsync(invalid, Token));
-        Assert.Equal(0, await ambiguous.CountAsync());
+        ImportPlan separateCards = ImportPlanner.Analyze(file, await ambiguous.Store.ReadSnapshotAsync(Token));
+        Assert.Equal(1, (await ambiguous.Store.PreviewAsync(separateCards, Token)).ReferencesNew);
+        await ambiguous.Store.CommitAsync(separateCards, Token);
+        Assert.Equal(1, await ambiguous.CountAsync());
     }
     [Fact]
     public void ValidationRejectsUnknownGamesVersionsDuplicateNamesAndMissingReferences()
@@ -252,7 +263,7 @@ public sealed class TransferTests
         BgtGroup group = Group("Group", player);
         BgtFile file = File([player], [group], []);
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { Key = "unknown" }] }));
-        Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { SchemaVersion = 2 }] }));
+        Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { SchemaVersion = 3 }] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Players = [player, Player(" anna ")] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Groups = [group, group with { Id = Guid.NewGuid() }] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Players = [] }));
@@ -291,13 +302,85 @@ public sealed class TransferTests
         ImportPlan plan = ImportPlanner.Analyze(file, await target.Store.ReadSnapshotAsync(Token));
         await using (BoardgameTrackerDbContext db = target.CreateDbContext())
         {
-            db.ArkNovaSpecialCards.Add(new(Guid.NewGuid(), "New local card"));
+            db.ArkNovaSpecialCards.Add(new(Guid.NewGuid()));
             await db.SaveChangesAsync(Token);
         }
         await Assert.ThrowsAsync<InvalidOperationException>(() => target.Store.CommitAsync(plan, Token));
         await using BoardgameTrackerDbContext verify = target.CreateDbContext();
         Assert.Empty(await verify.Players.ToArrayAsync(Token));
     }
+    [Fact]
+    public async Task TransferCarriesOnlyReferencedUserNamesAndImportsOverrideForExistingBuiltInCard()
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid sessionId = await source.SeedAsync();
+        Guid eagle = ArkNovaSpecialCardDefaults.GoldenEagle;
+        Guid bear = ArkNovaSpecialCardDefaults.SunBear;
+        await using (BoardgameTrackerDbContext db = source.CreateDbContext())
+        {
+            db.ArkNovaSpecialCards.AddRange(ArkNovaSpecialCardDefaults.Create());
+            db.ArkNovaUserContent.Add(new("special-card", eagle.ToString(), "My eagle"));
+            db.ArkNovaUserContent.Add(new("special-card", ArkNovaSpecialCardDefaults.AsianElephant.ToString(), "Unreferenced"));
+            Guid playerId = await db.GameSessionPlayers.Select(player => player.PlayerId).FirstAsync(Token);
+            db.ArkNovaGameSessionSpecialCardAssignments.AddRange(new(sessionId, playerId, eagle), new(sessionId, playerId, bear));
+            await db.SaveChangesAsync(Token);
+        }
+        BgtFile exported = await source.Store.ExportAsync([sessionId], "test", Token);
+        Format.Validate(exported);
+        BgtGame game = Assert.Single(exported.Games);
+        Assert.Equal(1, exported.FormatVersion);
+        Assert.Equal(2, game.SchemaVersion);
+        ArkNovaTransferCard[] references = ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(game.Data).SpecialCards;
+        Assert.Equal(2, references.Length);
+        Assert.Equal("My eagle", references.Single(card => card.Id == eagle).UserName);
+        Assert.Null(references.Single(card => card.Id == bear).UserName);
+        string json = JsonSerializer.Serialize(exported, BgtFormat.JsonOptions);
+        Assert.DoesNotContain("Steinadler", json);
+        Assert.DoesNotContain("Malaienbär", json);
+        Assert.DoesNotContain("Unreferenced", json);
+        Assert.DoesNotContain("supportedLanguages", json);
+        Assert.DoesNotContain("contentLanguage", json, StringComparison.OrdinalIgnoreCase);
+        await using Database target = await Database.CreateAsync();
+        await using (BoardgameTrackerDbContext db = target.CreateDbContext())
+        {
+            db.ArkNovaSpecialCards.AddRange(ArkNovaSpecialCardDefaults.Create());
+            await db.SaveChangesAsync(Token);
+        }
+        ImportPlan plan = ImportPlanner.Analyze(exported, await target.Store.ReadSnapshotAsync(Token));
+        await target.Store.CommitAsync(plan, Token);
+        await using BoardgameTrackerDbContext check = target.CreateDbContext();
+        Assert.Equal("My eagle", (await check.ArkNovaUserContent.SingleAsync(Token)).Name);
+        Assert.Equal("Steinadler", ArkNovaContentCatalog.LoadBuiltIn().ResolveName("special-card", eagle.ToString(), null, "de", "de"));
+        ArkNovaTransferReferences again = ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(
+            (await target.Store.ExportAsync([sessionId], "test", Token)).Games.Single().Data);
+        Assert.Equal("My eagle", again.SpecialCards.Single(card => card.Id == eagle).UserName);
+        Assert.Throws<InvalidDataException>(() => Format.Validate(exported with { Games = [game with { SchemaVersion = 1 }] }));
+    }
+
+    [Fact]
+    public async Task UserNameChangesInvalidateAnalyzedImportSnapshot()
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid sessionId = await source.SeedAsync();
+        BgtFile file = await source.Store.ExportAsync([sessionId], "test", Token);
+        await using Database target = await Database.CreateAsync();
+        Guid id = Guid.NewGuid();
+        await using (BoardgameTrackerDbContext db = target.CreateDbContext())
+        {
+            db.ArkNovaSpecialCards.Add(new(id));
+            db.ArkNovaUserContent.Add(new("special-card", id.ToString(), "Before"));
+            await db.SaveChangesAsync(Token);
+        }
+        ImportPlan plan = ImportPlanner.Analyze(file, await target.Store.ReadSnapshotAsync(Token));
+        await using (BoardgameTrackerDbContext db = target.CreateDbContext())
+        {
+            (await db.ArkNovaUserContent.SingleAsync(Token)).SetName("After");
+            await db.SaveChangesAsync(Token);
+        }
+        await Assert.ThrowsAsync<InvalidOperationException>(() => target.Store.CommitAsync(plan, Token));
+        Assert.Equal(0, await target.CountAsync());
+    }
+
     private sealed class Database : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");

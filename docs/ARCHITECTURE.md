@@ -339,20 +339,64 @@ Neuinstallation und Datenverlust stehen in `SETUP.md`.
 
 ### Spezialkarten-Slice
 
-`Core/Games/ArkNova/ArkNovaSpecialCard` schützt Identität, Name, geordnete Symbole
+`Core/Games/ArkNova/ArkNovaSpecialCard` schützt Identität, geordnete Symbole
 und Archivstatus. Der feste Symbolkatalog ist ein Enum, die Kartenidentität eine GUID.
 `Application/Games/ArkNova/SpecialCards` enthält Verwaltung und Leseprojektion mit direktem EF-Zugriff.
 Verwaltungsdaten gehören nicht in `IArkNovaSettingsStore` oder Preferences.
 Die UI unter `App/Games/ArkNova/Features/SpecialCards` verwendet einen gemeinsamen
 Editor für Create/Edit und dieselbe ikonbasierte Kartenansicht wie die Wertung.
 Die Symbol-Präsentation ordnet ausschließlich feste Symboltypen auf Bildressourcen
-und lokalisierte Accessibility-Namen ab. Kartennamen kommen aus SQLite.
+und lokalisierte Accessibility-Namen ab. Kartennamen kommen aus der unten
+beschriebenen Game-Content-Auflösung.
 
 Scoring arbeitet weiterhin ausschließlich mit Scoring-Sessions; die Korrektur
 bleibt ein eigener Completed-Pfad. Katalogdaten werden aktuell gelesen und
 Entwürfe beim Wiederöffnen aktualisiert. Neue Assignments setzen eine aktive
 Karte voraus; archivierte bestehende Assignments bleiben erhalten oder werden
 entfernt. Application und transaktionaler Persistenzpfad prüfen dies beim Speichern.
+
+### App-Lokalisierung und Game Content
+
+Es gibt zwei fachliche Lokalisierungsbereiche:
+
+~~~text
+App Localization → AppResources/.resx (aktuelle App-Sprache)
+Game Content → spielmodulspezifisches content.json + persistente Nutzerressourcen
+~~~
+
+Application/Games/ArkNova/Content/content.json ist die einzige mitgelieferte
+Content-Datei des Moduls und als EmbeddedResource paketiert. Sie deklariert
+supportedLanguages/defaultLanguage sowie Namen unter specialCards (GUID) und
+zooPlans (Number). Derzeit nur de; fehlende verifizierte Übersetzungen werden nicht
+ersetzt oder erfunden. Bestehende sprachneutrale Skizzen bleiben App-Bildressourcen.
+
+ArkNovaContentCatalog liest die Datei einmal bei Modulregistrierung; ArkNovaContent
+führt Nutzerquelle und Built-in-Quelle zusammen. Die einzige Auflösungsregel lautet:
+Nutzer → ausgewählte Materialsprache → unterstützte App-Sprache → Default →
+stabiler [missing:ark-nova/.../name]-Marker mit Debug-Diagnose. Kein First-Fallback.
+Tests prüfen sämtliche erwarteten Defaultressourcen und bekannte IDs/Nummern.
+JSON und SQLite sind Speicherquellen desselben Game Content, keine eigenständigen
+Lokalisierungsarchitekturen. Built-in-Content wird nicht in SQLite gespiegelt.
+
+GameContentLanguagePreference verwendet den vorhandenen Hostgrenzentyp eines
+Preferences-Ports: IGameContentLanguageStore, implementiert durch
+App/Features/Settings/MauiGameContentLanguageStore. Der native Schlüssel lautet
+Game.{Game.Key}.ContentLanguage. Beim ersten Lesen wird eine unterstützte App-Sprache,
+sonst DefaultContentLanguage initialisiert und gespeichert. Kein CurrentUICulture-Wechsel.
+Das Modul registriert seine Sprachdeklaration über den Content-Katalog; die gemeinsame
+Preference kennt keine Ark-Nova-Details und ist unabhängig von ArkNovaSettings.
+
+ArkNovaUserContent ist eine kleine modulinterne relationale Namensabbildung mit
+(ResourceType, ObjectId) als Schlüssel. Vorhandene Domainidentitäten werden direkt
+verwendet; keine redundanten Content-Keys oder Content-Entity pro Objektart. Lesen
+und Schreiben bleiben bei konkreten EF-Slices. Kartenverwaltung, Ergebnisse und
+laufende Partie verwenden dieselbe Auflösung; ViewModels erhalten Read Models.
+Symbole sind Domainzustand, ihre sprachlichen Accessibility-Labels bleiben .resx.
+
+Es gibt keine generische Game-Content-Engine, Repository-Hierarchie oder Übersetzungs-
+Plattform. Erst reale Anforderungen weiterer Spiele könnten gemeinsame Extraktion
+begründen. Historische Assignments bleiben GUID-Referenzen auf aktuelle Kartendaten;
+Namen und Materialsprachen werden nicht historisiert oder an Partien gespeichert.
 
 ## 9. Domänenaggregate
 

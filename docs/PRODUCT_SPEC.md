@@ -61,6 +61,31 @@ festgelegt werden.
 Im MVP existiert zunächst nur **Arche Nova**. Weitere Spiele können
 später eigene typisierte Datenmodelle erhalten.
 
+## App-Sprache und Spielmaterial-Sprache
+
+App-Texte (Navigation, Buttons, Hilfen, Wertungsbegriffe und Accessibility) folgen
+weiterhin der App-Sprache über AppResources/.resx. Davon unabhängig besitzt jedes
+Spiel eine lokale Spielmaterial-Sprachpräferenz. Ohne gespeicherte Auswahl wird die
+App-Sprache gewählt, sofern vom Spiel unterstützt, sonst dessen Default. Diese
+Auswahl wird anschließend gespeichert; ein späterer App-Sprachwechsel setzt sie nicht zurück.
+
+Arche Nova deklariert derzeit ausschließlich Deutsch (de), zugleich Default, da nur
+diese Materialnamen im Projekt belegt sind. Es werden keine Übersetzungen oder
+sprachabhängigen Assets erfunden. Der Selektor in den Spieleinstellungen zeigt
+nur unterstützte Sprachen; „Nutzer“ ist eine Content-Quelle, keine Sprache.
+
+Spielmaterialnamen werden in genau dieser Reihenfolge aufgelöst: Nutzerressource →
+gewählte Materialsprache → unterstützte aktuelle App-Sprache → Spiel-Default →
+deterministischer Missing-Content-Hinweis. Nutzerressourcen gewinnen unabhängig
+von der Sprache. Die Materialsprache ändert weder CurrentUICulture noch Karten,
+Symbole, Partien oder Ergebnisse. Sie wird nicht mit Partien exportiert.
+
+Mitgelieferte Spezialkartennamen und Zooplannamen liegen im versionierten
+Ark-Nova-Content. Karten-GUID und Zooplannummer bleiben ihre Identität. Bestehende
+sprachneutrale Zooplanskizzen bleiben unverändert. Historische Ansichten verwenden
+aktuelle Content-Auflösung und aktuellen Karten-Fachzustand; keine Namens- oder
+Sprachsnapshots in Partien.
+
 ## App-Start und Navigationskontext
 
 Die Hauptnavigation lautet **Spiele · Gruppen · Historie · Einstellungen**.
@@ -391,8 +416,9 @@ standardmäßig aktive Karten, optional „Archivierte anzeigen“. Nutzer könn
 Karten anlegen, bearbeiten, archivieren und wieder entarchivieren; keine normale
 Löschaktion. Create und Edit verwenden denselben Editor. Die Liste zeigt das Bearbeiten-Icon direkt neben der Kartenansicht und keine Archivierungsaktion. Der Switch „Archiviert“ ist nur beim Bearbeiten vorhanden; Speichern übernimmt den gewählten Status über den bestehenden Archivierungsanwendungsfall, Verlassen ohne Speichern verwirft die Statusänderung. Das Info-Icon im Listenkopf erklärt die Zuordnung zu Spielern und Partien sowie die spätere Auswertung.
 
-Eine Karte hat einen Namen (1–120 Zeichen nach Trim) und null bis drei geordnete
-Symbole aus dem festen Katalog. Die Anzeige lautet immer Symbol1 → Symbol2 →
+Eine Karte besitzt eine stabile GUID und null bis drei geordnete Symbole aus dem
+festen Katalog. Ihr sichtbarer Name wird über Game Content aufgelöst; eingegebene
+Nutzernamen haben 1–120 Zeichen nach Trim. Die Anzeige lautet immer Symbol1 → Symbol2 →
 Symbol3 → Name. Wiederholungen sind ausdrücklich erlaubt, z. B. Africa · Africa
 · Herbivore. Das Leeren einer Position rückt nachfolgende Symbole nach links;
 neue Positionen werden lückenlos angeboten. Die Auswahl zeigt echte Symbolgrafiken.
@@ -404,8 +430,14 @@ Asiatischer Elefant, Weißkopfseeadler, Steinadler und Malaienbär; die anfängl
 Symbolkombinationen und stabilen IDs stehen in `DATA_MODEL.md`. Auch diese Karten
 sind danach frei editierbar und archivierbar; Initialisierung setzt sie nicht zurück.
 
+Neue Karten erhalten eine neue GUID und einen persistenten Nutzernamen. Der Editor
+zeigt den aufgelösten Namen; eine Namensänderung speichert eine Nutzerressource für
+dieselbe GUID. Reine Symboländerungen erzeugen keine Nutzerressource und verändern
+keine ID. Archivstatus bleibt Kartenzustand. Die mitgelieferte Content-Datei wird
+durch Bearbeiten nicht geändert. Es gibt keinen vollständigen Kartenreset.
+
 Die Wertungsauswahl lädt persistierte Karten und zeigt ihre Symbole vor dem
-aktuellen Namen. Der Zuordnungsstatus wird ohne sichtbare Statuszeile dargestellt:
+aktuell aufgelösten Namen. Der Zuordnungsstatus wird ohne sichtbare Statuszeile dargestellt:
 SelectedSurface kennzeichnet die Zuordnung zum Zielspieler, ein gestrichelter
 Theme-Rahmen in Danger die Zuordnung zu einem anderen Spieler. Ist die Karte
 beiden zugeordnet, gelten beide Markierungen. Für Screenreader
