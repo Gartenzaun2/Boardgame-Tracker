@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "35f33031288064c9e9bac41165d7a1ec577a219e",
+  "appDisplayVersion": "0.10.0.15",
+  "appVersion": 52,
+  "solutionBuild": {
+    "warnings": 0,
+    "command": "dotnet build BoardgameTracker.sln",
+    "errors": 0,
+    "success": true
+  },
+  "coreTests": {
+    "passed": 75,
+    "command": "dotnet test --project tests/BoardgameTracker.Core.Tests",
+    "failed": 0
+  },
+  "applicationTests": {
+    "passed": 178,
+    "command": "dotnet test --project tests/BoardgameTracker.Application.Tests",
+    "includes": "Existing CV confidence/ranking and mask-fraction hardening regressions",
+    "failed": 0
+  },
+  "nativeAndroid": {
+    "x64ApkBytes": 46672739,
+    "arm64ApkBytes": 46177201,
+    "openCv": "4.13.0",
+    "exports": [
+      "anv_abi_version",
+      "anv_probe"
+    ],
+    "ndk": "30.0.16248370",
+    "trimMode": "full",
+    "managedX64ReleaseBuild": true,
+    "arm64ReleaseBuild": true,
+    "arm64LibrarySha256": "32f44533fb70582c7b865b5929918677c8fe5a1ae35431d07036010b83cd1a08",
+    "managedX64RuntimeExecuted": true,
+    "nativeAbiChecksPassed": 6,
+    "parityReport": "parity-android-x64.json",
+    "arm64LibraryBytes": 4818408,
+    "publishTrimmed": true,
+    "x64ReleaseBuild": true,
+    "arm64ApkSha256": "6aaf6e1b9d0bdc215e78e0280dc20b980fd77cadbcb80f95cea7e7dfee0248ec",
+    "arm64RuntimeTested": false,
+    "api": 30,
+    "dependencies": [
+      "libz.so",
+      "libdl.so",
+      "libm.so",
+      "liblog.so",
+      "libc.so"
+    ],
+    "parityPassed": false,
+    "elfMachine": "AArch64",
+    "uncompressedFixtureBytes": 51437927,
+    "managedArm64ReleaseBuild": true
+  },
+  "ios": {
+    "releaseLinkingVerified": false,
+    "deviceBuildExecuted": false,
+    "userInstruction": "Skip actual Apple build for now; cross-check documentation",
+    "msbuildProjectEvaluated": true,
+    "runtimeExecuted": false,
+    "packageSizeBytes": null,
+    "shellSyntaxChecked": true,
+    "documentationCrossChecked": true
+  },
+  "stress": {
+    "registrationSuccess": true,
+    "correct": 5,
+    "analyzerExecutions": 1,
+    "image": "IMG_4263.jpeg",
+    "parametersChanged": false,
+    "missing": 0,
+    "wrong": 1,
+    "greenErrors": 0
+  },
+  "unchanged": [
+    "ArkNovaPhotoAnalyzer",
+    "ArkNovaMaskFraction.ClampRoundoff",
+    "ArkNovaRankingRules",
+    "ArkNovaConfidencePolicy",
+    "Historical freeze/selection files"
+  ],
+  "productIntegration": "Not started: native numerical parity gate failed; iOS build explicitly deferred",
+  "productionUiTests": "Not applicable yet: camera/gallery/review/confirmation/info workflow is not integrated"
+}

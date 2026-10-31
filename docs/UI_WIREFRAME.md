@@ -259,6 +259,18 @@ Häkchen im SelectionDialog. Schließen/System-Zurück verwirft nur die Auswahl.
 Wiederholungen sind wählbar. Busy-Overlays blockieren Eingaben; Fehler sind nur
 bei vorhandenem Text sichtbar.
 
+## Fotoerkennung – verbindlicher Zielstand, Integration gesperrt
+
+Foto aufnehmen oder vorhandenes Foto wählen → gemeinsame Analyse → editierbare
+Vorschläge mit `✓ Sicher`, `! Prüfen`, `? Unsicher` und Grün/Gelb/Rot → explizit
+bestätigen → speichern. Info-Icon im Wertungsheader erklärt die Status im
+AppDialogPage. Native eingebettete Picker bei stabiler Plattformunterstützung,
+sonst normale Systemauswahl; keine eigene Galerie. Analysefehler erhalten die
+gespeicherten Werte, Abbruch bleibt neutral. Dieser Ablauf ist noch **nicht**
+implementiert: Die vorgelagerte native Backend-Parität ist offen, iOS vorerst nur
+dokumentarisch geprüft. Der Kamera-Platzhalter in der folgenden Dialogtabelle
+bleibt deshalb aktuell. Details: [CV-Status](ARK_NOVA_CV_STATUS.md).
+
 ## Dialogübersicht
 
 Page-interne Auswahlen (besondere Karten, Kartensymbole, vorhandene Spieler und

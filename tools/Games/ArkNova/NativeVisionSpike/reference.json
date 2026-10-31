@@ -1,0 +1,18 @@
+{
+  "fixture": "IMG_4257.JPG",
+  "openCv": "4.13.0",
+  "referenceSha256": "a0264a2bf33d0bf55e0c429d3b59766697da50a8b911fe88656df33be6783114",
+  "photoSha256": "baf27fc37a3de49ce2b4545008e71a88092af837c74fa3fa266dbc873c417b09",
+  "registration": {
+    "success": true,
+    "matches": 415,
+    "inliers": 288,
+    "reprojectionP95": 2.418401158289848,
+    "minimumTrackVisibility": 0.9889244682728393,
+    "inlierSpread": 1.6088724811536828,
+    "failure": null
+  },
+  "warpSha256": "43cdfcae6ab17dd7ebaf32545cda677efd5fe9dfb9c6eb9b23bde34dbdfcaeb9",
+  "warpBytes": 8400000,
+  "scope": "Normalized BGR input; existing A registration and warp only. No stress re-evaluation or threshold changes."
+}

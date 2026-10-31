@@ -1,0 +1,87 @@
+{
+  "scope": "Present GT values only; null is separate, not counted as wrong. Confidence E may abstain after raw A. Stress analyze output contains E only, so no second raw evaluation.",
+  "sources": [
+    "C3RefinementV5/calibration.json",
+    "C3RefinementV5/old_holdout_reused.json",
+    "C3RefinementV5/v3_reused.json",
+    "FinalAcceptance/result.json"
+  ],
+  "batches": [
+    {
+      "batch": "calibration",
+      "presentValues": 123,
+      "hardenedARaw": {
+        "correct": 94,
+        "wrong": 12,
+        "null": 17
+      },
+      "proposals": {
+        "correct": 87,
+        "wrong": 9,
+        "null": 27,
+        "green": 38,
+        "yellow": 23,
+        "red": 62,
+        "greenErrors": 0,
+        "errorsInYellowRed": 9,
+        "errorFractionInYellowRed": 1
+      }
+    },
+    {
+      "batch": "old_holdout_reused",
+      "presentValues": 60,
+      "hardenedARaw": {
+        "correct": 45,
+        "wrong": 8,
+        "null": 7
+      },
+      "proposals": {
+        "correct": 41,
+        "wrong": 5,
+        "null": 14,
+        "green": 12,
+        "yellow": 11,
+        "red": 37,
+        "greenErrors": 0,
+        "errorsInYellowRed": 5,
+        "errorFractionInYellowRed": 1
+      }
+    },
+    {
+      "batch": "v3_reused",
+      "presentValues": 156,
+      "hardenedARaw": {
+        "correct": 113,
+        "wrong": 30,
+        "null": 13
+      },
+      "proposals": {
+        "correct": 109,
+        "wrong": 28,
+        "null": 19,
+        "green": 48,
+        "yellow": 32,
+        "red": 76,
+        "greenErrors": 8,
+        "errorsInYellowRed": 20,
+        "errorFractionInYellowRed": 0.7142857142857143
+      }
+    },
+    {
+      "batch": "stress",
+      "presentValues": 6,
+      "hardenedARaw": null,
+      "proposals": {
+        "correct": 5,
+        "wrong": 1,
+        "null": 0,
+        "green": 3,
+        "yellow": 0,
+        "red": 3,
+        "greenErrors": 0,
+        "errorsInYellowRed": 1,
+        "errorFractionInYellowRed": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <ApplicationId>de.boardgametracker.vision.spike</ApplicationId>
+    <ApplicationTitle>Ark Nova Native Spike</ApplicationTitle>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15</SupportedOSPlatformVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <AndroidPackageFormats>apk</AndroidPackageFormats>
+    <AndroidNativeAbi Condition="'$(AndroidNativeAbi)' == ''">arm64-v8a</AndroidNativeAbi>
+    <EnableDefaultAndroidItems>false</EnableDefaultAndroidItems>
+    <NativeBuildDirectory Condition="'$(NativeBuildDirectory)' == ''">$(MSBuildThisFileDirectory)../../../../../artifacts/native-spike/android-arm64</NativeBuildDirectory>
+    <ParityDirectory Condition="'$(ParityDirectory)' == ''">$(MSBuildThisFileDirectory)../../../../../artifacts/native-spike/parity</ParityDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Interop/*.cs" Link="Interop/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Remove="iOS.cs" />
+    <AndroidNativeLibrary Include="$(NativeBuildDirectory)/libarknova_vision.so" Abi="$(AndroidNativeAbi)" />
+    <AndroidAsset Include="$(ParityDirectory)/*.bgr;$(ParityDirectory)/reference.json" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <Compile Remove="Android.cs" />
+    <NativeReference Include="$(NativeBuildDirectory)/libarknova_vision_full.a">
+      <Kind>Static</Kind><ForceLoad>true</ForceLoad><SmartLink>false</SmartLink>
+      <LinkerFlags>-lc++ -lz</LinkerFlags>
+    </NativeReference>
+    <BundleResource Include="$(ParityDirectory)/*.bgr;$(ParityDirectory)/reference.json" Link="%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

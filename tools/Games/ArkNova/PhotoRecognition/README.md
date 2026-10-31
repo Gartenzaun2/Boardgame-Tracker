@@ -1,5 +1,16 @@
 # Arche-Nova-Fotoanalyse – technischer Prototyp, Phase 1A
 
+**Aktuelle Entscheidung: Erkennungsforschung ABGESCHLOSSEN / FROZEN.**
+Gehärtetes A bleibt Basis, C1/C2 verworfen, C3 research-only, keine F1/F2-Fusion
+und keine C3-Warnregel. [Kanonischer Status](../../../../docs/ARK_NOVA_CV_STATUS.md),
+[Abschlussmetriken und letztes Stressfoto](Reports/FinalAcceptance/README.md).
+Die nachfolgenden Forschungsstände sind historisch; ihre früheren Empfehlungen
+öffnen keine neue Forschungsrunde. Der vorgelagerte
+[native Backend-Spike](../NativeVisionSpike/README.md) baut für Android ARM64,
+verfehlt aber noch das Paritätsgate. Mobile Produktintegration bleibt offen;
+OpenCvSharp ist kein Android-/iOS-Produktionsweg. iOS wurde vorerst nur gegen
+Dokumentation geprüft. Keine Schwellen-/Confidence-Änderung aus dem Stressfoto.
+
 Ausführbares .NET-10-Werkzeug für Windows x64. Es verarbeitet eine Bilddatei lokal
 und liefert Registrierung, zwölf Feldkandidaten, Confidence, mögliche Nachbarwerte
 und Stufenzeiten als JSON. Es ist noch keine mobile Kamera-Funktion.
@@ -191,17 +202,14 @@ Quellen: [OpenCvSharp-Plattformen und Profile](https://github.com/shimat/opencvs
 [OpenCvSharp-Lizenz](https://github.com/shimat/opencvsharp/blob/main/LICENSE),
 [OpenCV-Lizenz](https://opencv.org/license/).
 
-Vor Phase 1B/1C sind nötig:
+Der weitere Integrationsweg ist im [CV-Status](../../../../docs/ARK_NOVA_CV_STATUS.md)
+und im [nativen Build-Spike](../NativeVisionSpike/README.md) festgelegt. Keine
+weitere Forschungs-/Threshold-Runde und kein neues Holdout als Voraussetzung
+für manuell bestätigte Vorschläge. Zunächst muss der technische Backend-Spike
+seine Paritätsgates erfüllen. Android ARM64 baut; die numerische Parität ist noch
+offen, iOS vorerst nur dokumentarisch geprüft. Kamera, Galerie-Systempicker,
+Review, Confidence-Anzeige und Bestätigung vor Persistenz sind danach umzusetzen.
 
-1. Mobile CV-Bibliothek mit Feature-Matching/Homographie für Android und iOS
-   auswählen und Release-/Trimming-/Paketgrößenverhalten nachweisen.
-2. Referenzfeatures als versioniertes Asset vorberechnen; Laufzeit und Speicher auf
-   echtem Mittelklassegerät messen. Die 2-/4-/5-Sekunden-Vorgaben sind bisher
-   ausschließlich Ziele; ein harter mobiler 5-Sekunden-Abbruch ist nicht implementiert.
-3. Die in Confidence V2 sichtbaren Rohfehler beheben und anschließend einen neuen
-   unabhängigen Holdout mit kontrolliert dokumentierten Kamerapositionen auswerten.
-4. Erst dann den bestehenden Kamera-Handler anbinden und Ergebnisse nach Spielerfarbe
-   in den vorhandenen Scoring-Entwurf übernehmen; manuelle Korrektur bleibt möglich.
-
-Keine neue Kameraoberfläche, kein paralleler Scoring-Flow und kein zusätzliches
-Produktionsprojekt wurden angelegt.
+OpenCvSharp bleibt Windows-Forschungs-/Referenzcode. Der gemeinsame native
+OpenCV-C++-Kern soll den mobilen Produktpfad übernehmen; reine Ranking-/Confidence-
+Logik bleibt C#. Es gibt derzeit noch keine funktionsfähige mobile Fotoanalyse.

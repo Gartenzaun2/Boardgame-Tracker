@@ -541,6 +541,18 @@ maßgeblich sind Ownership und derselbe Änderungsgrund. Keine künstlichen Mini
 
 ### Arche-Nova-Fotoanalyseprototyp
 
+Aktuelle Abschlussentscheidung: [CV-Status](ARK_NOVA_CV_STATUS.md).
+Erkennungsforschung eingefroren, gehärtetes A bleibt Referenz/Basis; keine C3-Fusion.
+Vor mobiler Produktintegration steht auf ausdrückliche Folgeanweisung der separate
+`tools/Games/ArkNova/NativeVisionSpike`: MAUI/C# → kleine `IArkNovaVisionEngine`-
+Grenze → C-ABI → gemeinsamer C++-OpenCV-Kern. Keine OpenCvSharp-Pakete in der App.
+Die Schnittstelle bleibt vorerst im Werkzeug, bis das Paritätsgate erfüllt ist.
+Android ARM64 baut und Android-x64-Interop läuft, ist aber numerisch nicht äquivalent
+zur Windows-Referenz. iOS vorerst nur dokumentarisch geprüft. Kein voller A-Port
+oder Produktworkflow wird als umgesetzt betrachtet. Ranking, Confidence und reine
+Feld-/Konfliktlogik sollen in C# bleiben. Frühere Forschungsempfehlungen unten und
+in historischen Reports lösen keine weitere CV-Forschung aus.
+
 `tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
 für Phase 1A, kein viertes Produktionsprojekt. Es rekonstruiert die Bildpipeline aus
 dem Forschungs-Handoff; die früheren Python-Implementierungen lagen nicht vor.

@@ -1,0 +1,63 @@
+cmake_minimum_required(VERSION 3.24)
+project(ArkNovaVisionSpike LANGUAGES C CXX)
+
+# Spike only: official OpenCV sources remain an external, pinned build input.
+set(OPENCV_SOURCE_DIR "" CACHE PATH "OpenCV 4.13.0 source checkout")
+if(NOT EXISTS "${OPENCV_SOURCE_DIR}/CMakeLists.txt")
+  message(FATAL_ERROR "Set OPENCV_SOURCE_DIR to the official OpenCV 4.13.0 checkout")
+endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_LIST core,imgproc,imgcodecs,features2d,calib3d CACHE STRING "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_PERF_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_opencv_apps OFF CACHE BOOL "" FORCE)
+set(BUILD_JAVA OFF CACHE BOOL "" FORCE)
+set(BUILD_ANDROID_PROJECTS OFF CACHE BOOL "" FORCE)
+set(BUILD_ANDROID_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_opencv_python2 OFF CACHE BOOL "" FORCE)
+set(BUILD_opencv_python3 OFF CACHE BOOL "" FORCE)
+set(WITH_IPP OFF CACHE BOOL "" FORCE)
+set(WITH_OPENCL OFF CACHE BOOL "" FORCE)
+set(WITH_LAPACK OFF CACHE BOOL "" FORCE)
+set(WITH_EIGEN OFF CACHE BOOL "" FORCE)
+set(WITH_ITT OFF CACHE BOOL "" FORCE)
+set(WITH_PROTOBUF OFF CACHE BOOL "" FORCE)
+set(WITH_FFMPEG OFF CACHE BOOL "" FORCE)
+set(WITH_GSTREAMER OFF CACHE BOOL "" FORCE)
+set(WITH_AVFOUNDATION OFF CACHE BOOL "" FORCE)
+set(WITH_VTK OFF CACHE BOOL "" FORCE)
+set(WITH_OPENEXR OFF CACHE BOOL "" FORCE)
+set(WITH_WEBP OFF CACHE BOOL "" FORCE)
+set(WITH_TIFF OFF CACHE BOOL "" FORCE)
+set(OPENCV_ENABLE_NONFREE OFF CACHE BOOL "" FORCE)
+add_subdirectory("${OPENCV_SOURCE_DIR}" opencv EXCLUDE_FROM_ALL)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  add_library(arknova_vision STATIC src/arknova_vision.cpp)
+else()
+  add_library(arknova_vision SHARED src/arknova_vision.cpp)
+endif()
+target_include_directories(arknova_vision PUBLIC include)
+target_include_directories(arknova_vision PRIVATE
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_CURRENT_BINARY_DIR}/opencv"
+  "${OPENCV_SOURCE_DIR}/modules/core/include"
+  "${OPENCV_SOURCE_DIR}/modules/imgproc/include"
+  "${OPENCV_SOURCE_DIR}/modules/features2d/include"
+  "${OPENCV_SOURCE_DIR}/modules/flann/include"
+  "${OPENCV_SOURCE_DIR}/modules/calib3d/include")
+target_link_libraries(arknova_vision PRIVATE opencv_core opencv_imgproc opencv_features2d opencv_calib3d)
+set_target_properties(arknova_vision PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
+if(ANDROID)
+  target_link_options(arknova_vision PRIVATE "-Wl,-z,max-page-size=16384" "-Wl,--exclude-libs,ALL")
+endif()
+
+option(ANV_BUILD_RUNNER "Build command-line parity runner" OFF)
+if(ANV_BUILD_RUNNER)
+  add_executable(arknova_probe src/probe_main.cpp)
+  target_link_libraries(arknova_probe PRIVATE arknova_vision)
+endif()
