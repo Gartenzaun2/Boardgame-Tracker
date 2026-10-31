@@ -1,87 +1,96 @@
 # Boardgame Tracker
 
-Boardgame Tracker ist eine .NET-MAUI-App für Android und iOS zum Verwalten von
-Brettspielgruppen und Partien. Erstes vollständig unterstütztes Spiel ist
-**Arche Nova**.
+Boardgame Tracker ist eine .NET-MAUI-App für Android und iOS zum Verwalten,
+Fortsetzen und Auswerten von Brettspielpartien. Spieler, Gruppen, Historie und
+Navigation sind spielübergreifend; konkrete Spiele ergänzen Vorbereitung, Wertung
+und weitere Fachfunktionen als eigene Module.
 
-Boardgame Tracker ist zugleich ein Lernprojekt. Architektur und Code sollen korrekt,
-wartbar und nachvollziehbar sein. Nicht offensichtliche fachliche und technische
-Entscheidungen werden bewusst dokumentiert; Kommentare erklären bevorzugt das Warum
-statt den unmittelbar sichtbaren Code. Zusätzliche Patterns sind kein Selbstzweck.
+Aktuell vollständig unterstütztes Spiel: **Arche Nova**.
 
-## Aktueller Funktionsstand
+Das Projekt ist zugleich ein Lernprojekt. Architektur und Code sollen verständlich,
+wartbar und nachvollziehbar bleiben; zusätzliche Abstraktionen oder Patterns sind
+kein Selbstzweck.
 
-- Hauptnavigation: `Spiele · Gruppen · Historie · Einstellungen`.
-- Gruppen werden im Kontext eines ausgewählten Spiels angezeigt.
-- Gruppen können angelegt, bearbeitet, permanent gemacht und archiviert werden.
-- Spieler können gruppenübergreifend wiederverwendet oder beim Erstellen einer
-  Gruppe neu angelegt werden.
-- Spielabhängige Farbdefaults können bereits bei Gruppenanlage und -bearbeitung
-  festgelegt werden; Arche Nova erlaubt Blau, Gelb, Rot und Schwarz.
-- Partievorbereitung bleibt bis `Starten` nicht persistent.
-- Startspieler und Zoopläne können ausgelost werden; jeder Spieler wählt einen
-  der zwei angebotenen Zoopläne.
-- Beim Start werden `GameSession`, `GameSessionPlayer` und
-  `ArkNovaGameSessionPlayer` atomar persistiert.
-- Laufende Partien können fortgesetzt, verworfen oder in die Wertung überführt
-  werden.
-- Arche-Nova-Wertung unterstützt Attraktivität, Artenschutz, optional Ruf,
-  besondere Karten, Gleichstände und Ergebnisanzeige.
-- Zahlenräder für Attraktivität/Artenschutz, optionaler horizontaler Ruf-Regler
-  und direkte numerische Eingabe.
-- Benutzerverwaltbare Arche-Nova-Spezialkarten mit GUID, Namen, 0–3 geordneten
-  Symbolen und Archivstatus; 14 feste Symboltypen einschließlich Forschung.
-- Historie abgeschlossener Partien mit Spiel-/Gruppenfiltern, Wertungskorrektur und bestätigtem Löschen. Statistik folgt separat.
-- Drei unmittelbar umschaltbare App-Themes: Deep Forest (Standard), Königsblau und Dunkel; Historie mit kompakten Filtern und Monatsgruppen.
-- Lokale Navigations- und Arche-Nova-Einstellungen werden über MAUI Preferences
-  gespeichert.
-- Mobile Ark-Nova-CV ist fachlich für assistierte Wertung freigegeben. Native Mobile
-  ist Produktionspfad; Vorschläge werden vom Nutzer geprüft und ausdrücklich
-  bestätigt. Windows/OpenCvSharp bleibt Referenz-/Regressionstool. Keine weitere
-  CV-Optimierung geplant. Manueller Android-ARM64-Gerätelauf und iOS-Apple-
-  Verifikation bleiben offen. [Status](docs/ARK_NOVA_CV_STATUS.md).
-- Statistik ist ein geplanter späterer Slice.
-- Offline-Lizenzanzeige unter **Einstellungen → Über / Rechtliches → Open-Source-Lizenzen**:
-  Komponentenübersicht und vollständige lokale Lizenz-/NOTICE-Texte, einschließlich
-  sichtbarem IJG-Hinweis. Keine neue Runtime-Webabhängigkeit, keine Änderung der
-  eigenen App-Lizenz. [Lizenzregeln](docs/THIRD_PARTY_LICENSE_POLICY.md).
+## Aktueller Umfang
 
-## Architektur
+Boardgame Tracker unterstützt unter anderem:
 
-Modularer Monolith mit pragmatischen Vertical Slices und Composition:
-`App → Application → Core`. Core enthält die technologieunabhängige Domain;
-Application enthält Vertical Slices mit direktem EF-Core-Zugriff. App enthält
-MAUI, den Composition Root und die SQLite-Providerkonfiguration.
-Allgemeine Domänenbegriffe bleiben `Game`, `GameSession`, `Group` und `Player`;
-Spielcode liegt unter `Games/<GameName>/`. Details stehen in
-[Architektur](docs/ARCHITECTURE.md) und [Datenmodell](docs/DATA_MODEL.md).
+- wiederverwendbare Spieler und feste Gruppen;
+- spielbezogene Gruppendefaults und Partievorbereitung;
+- laufende Partien, Wertung und abgeschlossene Ergebnisse;
+- Historie mit Korrektur sowie lokalem Import/Export;
+- App- und spielbezogene Einstellungen;
+- mehrere Themes und eine lokale Open-Source-Lizenzanzeige.
 
-## Datenbank
+Arche Nova ergänzt unter anderem Zoopläne, Spielerfarben, Attraktivität,
+Artenschutz, optionalen Ruf, Spezialkarten, Gleichstandsauflösung und assistierte
+Fotoerkennung.
 
-Neue Entwicklungsdatenbanken entstehen mit `EnsureCreatedAsync()`. Bis zum ersten
-Deployment sind keine Migrationsstrategien oder Kompatibilitätspfade für ältere
-Entwicklungsstände vorgesehen. Erfordert eine inkompatible Änderung eine
-Neuinstallation mit Verlust lokaler Entwicklungsdaten, wird ausdrücklich darauf
-hingewiesen. Details stehen in [SETUP.md](SETUP.md).
+Der vollständige aktuelle Produktstand steht in
+[docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) und
+[docs/Games/ArkNova/PRODUCT_SPEC.md](docs/Games/ArkNova/PRODUCT_SPEC.md).
 
-## Dokumentation und Einstieg in einen neuen Chat
+## Technologie
 
-[AGENTS.md](AGENTS.md) ist der Einstieg für Mitwirkende und Coding-Agenten und
-ordnet jeder Frage das kanonische Dokument zu. Befehle laufen im Verzeichnis
-mit `BoardgameTracker.sln`; in diesem Workspace ist das der Unterordner
-`BoardgameTracker/`, nicht dessen übergeordneter Ordner mit den Quellgrafiken.
-Für einen frischen Chat:
+```text
+.NET 10
+.NET MAUI
+EF Core 10
+SQLite
+Android 11+
+iOS 15+
+```
 
-1. `git status` prüfen und vorhandene Änderungen bewahren.
-2. AGENTS und die für den Auftrag relevanten Spezifikationen lesen.
-3. UI-Stand und bekannte Codeabweichungen im [Wireframe](docs/UI_WIREFRAME.md)
-   berücksichtigen; dokumentierte Abweichungen sind nicht automatisch zur Korrektur freigegeben.
-4. Build und automatisierte Tests gemäß [Setup](SETUP.md) ausführen.
-   Geräte-/UI-Smoke-Tests nur auf ausdrücklichen Auftrag oder im Rahmen einer
-   ausdrücklich geplanten Installations-/Releaseprüfung. Maßgeblich für die
-   Arbeits- und Verifikationspolicy bleibt [AGENTS.md](AGENTS.md).
+Die Anwendung ist als modularer Monolith mit pragmatischen Vertical Slices
+organisiert. Allgemeiner Code bleibt spielunabhängig; spielbezogener Code liegt
+unter `Games/<GameName>/`.
 
-Die Spezifikationen unter `docs/` beschreiben den gültigen Stand einschließlich
-klar gekennzeichneter späterer Slices. Die [Versionshistorie](CHANGELOG.md)
-ist historische Information, keine konkurrierende aktuelle Spezifikation.
-Keine zusätzlichen Übergabe-/Kontextkopien anlegen.
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Schnellstart
+
+Vorausgesetzt werden .NET 10, die .NET-MAUI-Workload sowie die gewünschte
+Android- und/oder iOS-Toolchain.
+
+Vom Solution-Root:
+
+```powershell
+dotnet restore BoardgameTracker.sln
+dotnet build BoardgameTracker.sln --no-restore
+dotnet test --project tests/BoardgameTracker.Core.Tests --no-restore
+dotnet test --project tests/BoardgameTracker.Application.Tests --no-restore
+```
+
+Plattformspezifische Voraussetzungen, Entwicklungsdatenbank, Versionierung und
+Lieferregeln stehen in [SETUP.md](SETUP.md).
+
+## Dokumentation
+
+| Thema | Quelle |
+|---|---|
+| Dokumentationslandkarte | [docs/README.md](docs/README.md) |
+| Produktverhalten | [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) |
+| Architektur | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Domain- und Persistenzmodell | [docs/DATA_MODEL.md](docs/DATA_MODEL.md) |
+| Codekonventionen | [docs/CODE_GUIDELINES.md](docs/CODE_GUIDELINES.md) |
+| UI-Design und Interaktion | [docs/UI_DESIGN_GUIDE.md](docs/UI_DESIGN_GUIDE.md) |
+| Screens und Navigation | [docs/UI_WIREFRAME.md](docs/UI_WIREFRAME.md) |
+| Import / Export | [docs/IMPORT_EXPORT.md](docs/IMPORT_EXPORT.md) |
+| Drittanbieter-Lizenzen | [docs/THIRD_PARTY_LICENSE_POLICY.md](docs/THIRD_PARTY_LICENSE_POLICY.md) |
+| bekannte technische Schulden | [docs/TODO.md](docs/TODO.md) |
+| Arche-Nova-Dokumente | [docs/Games/ArkNova/](docs/Games/ArkNova/) |
+| Entwicklungs- und Verifikationsregeln | [AGENTS.md](AGENTS.md) |
+| Versionshistorie | [CHANGELOG.md](CHANGELOG.md) |
+
+Für Arche-Nova-Fotoerkennung sind Produktstatus und bekannte Grenzen in
+[docs/Games/ArkNova/CV_STATUS.md](docs/Games/ArkNova/CV_STATUS.md) dokumentiert;
+technische Reproduktion und native Builds liegen beim jeweiligen Tool.
+
+## Quellen der Wahrheit
+
+Die Spezifikationen unter `docs/` beschreiben den aktuellen gewünschten Zustand.
+Bekannte Abweichungen stehen in `docs/TODO.md`; historische Änderungen in
+`CHANGELOG.md`.
+
+`AGENTS.md` enthält Arbeits- und Routingregeln für Coding Agents und verweist auf
+die jeweils zuständige kanonische Quelle.

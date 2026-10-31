@@ -1,73 +1,55 @@
-# Boardgame Tracker – Setup und Entwicklungsregeln
+# Boardgame Tracker – Setup und Entwicklung
 
-## Voraussetzungen
+## 1. Zweck
+
+Diese Datei ist die kanonische Quelle für **Entwicklungsumgebung, Build/Test,
+Entwicklungsdatenbank, Versionierung und Lieferung**.
+
+Nicht hierher gehören Produktstatus, Softwarearchitektur, UI-Regeln, Forschungsstände
+oder historische Schemaänderungen. Dafür gelten die jeweils zuständigen Dokumente
+unter `docs/`.
+
+Arbeits- und Verifikationspolicy: [`AGENTS.md`](AGENTS.md).
+
+## 2. Voraussetzungen
 
 - .NET 10
 - .NET MAUI
 - EF Core 10
 - SQLite
-- Visual Studio mit .NET-MAUI-Workload
-- Android und/oder iOS Toolchain
+- Visual Studio bzw. passende .NET-MAUI-Toolchain
+- Android- und/oder iOS-Toolchain für die jeweilige Zielplattform
 
-macOS/iOS-spezifische Toolchain-Konfiguration kann lokal unter `.local/` liegen.
-Dieser Entwicklerbereich wird nicht versioniert und nicht von Codex verwaltet.
-Persönliche Signing- und Device-Daten gehören niemals ins Repository.
-
-## Quellen und Architektur
-
-Projektüberblick und Einstieg: `README.md`; Zuständigkeiten und Arbeitsregeln:
-`AGENTS.md`; Projektgrenzen und Slice-Organisation: `docs/ARCHITECTURE.md`.
-Hier stehen ausschließlich Umgebungs-, Build-, Datenbank- und Lieferregeln.
-
-Die drei Produktionsprojekte sind Core, Application und App. Application referenziert
-EF Core und EF Core Relational; App und Application-Tests referenzieren zusätzlich
-den SQLite-Provider. Die Versionen bleiben zentral in Directory.Packages.props.
-DatabaseInitializer und spielabhängiges Seeding liegen in Application; der App-Host
-registriert DbContextFactory, SQLite und BGT_NAME in App/Persistence/SQLite.
-Integrationstests verwenden denselben Provider-/Collation-Code mit isolierten Datenbanken.
-
-## Lokaler Entwicklungsablauf
-
-Die In-App-Lizenzanzeige liest ausschließlich MAUI-Assets offline. Vorhandene
-native Texte bleiben unter ihren `ArkNovaVision/licenses/`-LogicalNames; Manifest
-und deduplizierte Zusatztexte werden vom bestehenden `Resources/Raw/**`-Glob
-paketiert. Kein zusätzlicher Build-/Runtime-Download und keine neue Dependency.
-Bei konkret geänderten App-Abhängigkeiten die Lizenzhinweise gemäß
-[Lizenzpolicy](docs/THIRD_PARTY_LICENSE_POLICY.md) pflegen. Fehlende oder nicht
-referenzierte Textassets werden von den Application-Tests erkannt.
-
-Die mobile Ark-Nova-Fotoerkennung benötigt vor dem App-Build den gemeinsamen
-nativen OpenCV-Build. Gepinnte Abhängigkeiten, Android-ARM64/x64- und iOS-
-Device-/Simulator-Befehle stehen im
-[Native-README](tools/Games/ArkNova/NativeVisionSpike/README.md).
-Die App verwendet die daraus erzeugten lokalen Libraries; diese werden nicht
-versioniert. Auf Windows kompiliert das iOS-C#-Target ohne Apple-Linknachweis.
-Fachliche Freigabe für assistierte Wertung, dokumentierte GT-Ergebnisse und
-offene manuelle Runtime-Nachweise: [CV-Status](docs/ARK_NOVA_CV_STATUS.md).
-
-Standard gemäß `AGENTS.md`: Code ändern → Build → automatisierte Tests → fertig.
-Restore bei Bedarf; automatisierte Tests dürfen sinnvoll ergänzt oder erweitert
-werden. Eine manuelle Geräte-/UI-Prüfung gehört nicht zum Standardabschluss.
-
-Für normale Entwicklungsaufträge ist die vollständige Standardverifikation:
+Unterstützte Mindestplattformen gemäß App-Projekt:
 
 ```text
-1x Solution-Build
-1x Core-Tests
-1x Application-Tests
+Android 11 / API 30
+iOS 15
 ```
 
-Zusätzliche Android-x64-/ARM64-/iOS-Release-Builds, Trimming-Matrizen,
-APK-/IPA-Inhaltsanalysen, Emulator-/Gerätetests, Screenshots und Theme-
-Sichtprüfungen nur bei ausdrücklichem Auftrag oder wenn genau diese Plattform-/
-Packaging-Eigenschaft Gegenstand der Änderung ist. Ein normaler UI-Slice
-rechtfertigt keine automatische manuelle UI-Prüfung; die strengeren Opt-in-
-Regeln aus AGENTS bleiben maßgeblich. Nach erfolgreichem Build und Tests stoppen.
-Bei Fehlern nur die für die Korrektur notwendige fehlgeschlagene Prüfung
-wiederholen; erfolgreiche Läufe nach unabhängigen Dokumentationsänderungen
-nicht wiederholen.
+Lokale macOS-/iOS-Konfiguration darf unter `.local/` liegen. Dieser Bereich wird
+nicht versioniert. Persönliche Signing-, Zertifikats- und Gerätedaten gehören
+niemals ins Repository.
 
-Ab dem Solution-Root:
+Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
+
+## 3. Native Arche-Nova-Abhängigkeit
+
+Die produktive Arche-Nova-Fotoerkennung benötigt vor einem entsprechenden
+Android-/iOS-App-Build die lokal gebaute native Bibliothek.
+
+Buildpfade, gepinnte Abhängigkeiten und Plattformbefehle stehen ausschließlich in:
+
+`tools/Games/ArkNova/NativeVisionSpike/README.md`
+
+Die erzeugten nativen Libraries werden nicht versioniert.
+
+Produktstatus der Fotoerkennung:
+`docs/Games/ArkNova/CV_STATUS.md`.
+
+## 4. Build und automatisierte Tests
+
+Vom Verzeichnis mit `BoardgameTracker.sln`:
 
 ```powershell
 dotnet restore BoardgameTracker.sln
@@ -76,31 +58,22 @@ dotnet test --project tests/BoardgameTracker.Core.Tests --no-restore
 dotnet test --project tests/BoardgameTracker.Application.Tests --no-restore
 ```
 
-Normale Codearbeit kann inkrementell gebaut werden. Für gelieferte Updatearchive
-gilt der vollständige Übernahmeablauf im folgenden Abschnitt.
+Die Tests verwenden xUnit v3 mit Microsoft Testing Platform; deshalb wird
+`dotnet test --project` verwendet.
 
-Die Tests verwenden xUnit v3/Microsoft Testing Platform; deshalb `--project`.
-Der unterstützte Mindeststand ist Android 11 (API 30) bzw. iOS 15 gemäß App-Projekt.
-Für iOS-Gerätetests ist die passende Apple-Toolchain erforderlich.
+Welcher Teil davon für einen konkreten Auftrag tatsächlich ausgeführt werden soll,
+richtet sich nach `AGENTS.md`. Geräte-/Emulator-/UI-Prüfungen sind dort ausdrücklich
+geregelt und werden nicht durch diese Datei erweitert.
 
-Bei gesperrter `BoardgameTracker.App.dll` zuerst die laufende App/Debug-Sitzung
-beenden und den Build wiederholen. Visual Studio kann zunächst geöffnet bleiben;
-bei fortbestehender Sperre die Solution schließen. Keinen DB-Reset als Buildfix
-verwenden.
+### Gesperrte App-Assembly
 
-## Übernahme eines Entwicklungs-Updatepakets
+Ist `BoardgameTracker.App.dll` gesperrt:
 
-1. Update-ZIP in den Repository-Root entpacken/übernehmen.
-2. Wenn `UPDATE_FILES.txt` oder `DELETE_FILES.txt` enthalten ist,
-   `APPLY_UPDATE.cmd` im Repository-Root starten.
-3. `bin` und `obj` vollständig bereinigen, ausschließlich unter dieser Solution.
-4. NuGet Restore.
-5. Rebuild Solution.
-6. Tests ausführen.
-7. Nur bei ausdrücklich beauftragter Geräte-/Installations-/Releaseprüfung:
-   zusätzlich relevante Smoke-Tests im Emulator/Gerät durchführen.
+1. laufende App bzw. Debug-Sitzung beenden und Build wiederholen;
+2. bei fortbestehender Sperre die Solution schließen;
+3. keinen Datenbankreset als Buildfix verwenden.
 
-## Datenbankstrategie in der Pre-Alpha-Phase
+## 5. Entwicklungsdatenbank
 
 Der Runtime-Start verwendet:
 
@@ -108,33 +81,28 @@ Der Runtime-Start verwendet:
 Database.EnsureCreatedAsync()
 ```
 
-Anschließend werden notwendige Referenzdaten idempotent angelegt.
+Danach werden notwendige Referenzdaten idempotent ergänzt.
 
-Bis zum ersten Deployment werden keine Migrationsstrategien geplant und keine
-Kompatibilitätspfade für ältere Entwicklungsstände eingeführt oder beibehalten.
-Das gilt auch für einmalige Schema-Upgrades und Compatibility-Aliase.
+Für die aktuelle Pre-Alpha-Phase gilt:
 
-`EnsureCreated` migriert ein älteres Schema nicht. Bei inkompatiblen Änderungen
-ist eine Neuinstallation bzw. ein Neuaufbau der Entwicklungsdatenbank zulässig.
-Den Benutzer ausdrücklich informieren, wenn dies erforderlich ist und dabei
-lokale Entwicklungsdaten verloren gehen. App-Daten nicht ungefragt löschen.
+- keine EF-Migrationsstrategie;
+- keine Schema-Upgrades für ältere Entwicklungsdatenbanken;
+- keine Compatibility-Aliase nur zum Erhalt alter Entwicklungsschemata;
+- `EnsureCreated` migriert vorhandene Schemas nicht;
+- bei inkompatiblen Schemaänderungen ist ein bewusster Neuaufbau bzw. eine
+  Neuinstallation der Entwicklungsdatenbank zulässig;
+- vor einem notwendigen Neuaufbau ausdrücklich auf möglichen lokalen Datenverlust
+  hinweisen;
+- vorhandene App-Daten niemals ungefragt löschen;
+- vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
 
-Installationen mit dem alten Integer-Spezialkartenschema (vor Version 0.9)
-benötigen eine Neuinstallation; ihre lokalen Daten werden nicht übernommen.
-Ab Version 0.9.0.10 benötigt `Player.CreatedAt` eine neue Entwicklungsdatenbank
-bzw. Neuinstallation. Ältere Datenbanken besitzen diese erforderliche Spalte nicht;
-lokale Entwicklungsdaten gehen beim Neuaufbau verloren. Es gibt keine Übernahme
-oder automatische Löschung bestehender Daten durch die App.
-Der aktuelle Content-Slice entfernt ArkNovaSpecialCard.Name und ergänzt
-ArkNovaUserContent. Auch dafür ist eine frische Entwicklungsdatenbank bzw.
-Neuinstallation erforderlich: EnsureCreated aktualisiert bestehende Tabellen nicht.
-Beim bewussten Neuaufbau gehen lokale Entwicklungsdaten verloren. Bestehende Daten
-werden weder automatisch gelöscht noch migriert. Alte .bgt-Dateien mit Ark-Nova-
-Schema 1 werden nicht übernommen; das aktuelle Spielschema ist 2.
-Es gibt keine EF-Migrationswerkzeuge oder versionsgebundenen Upgrade-Skripte.
-Vor dem ersten Deployment wird die Datenbankstrategie neu festgelegt.
+Historische einzelne Schemaumbrüche gehören in `CHANGELOG.md`, nicht dauerhaft in
+diese Setup-Anleitung.
 
-## Versionsregel
+Kompatibilität von `.bgt`-Dateien und Spielschemas steht in
+`docs/IMPORT_EXPORT.md`.
+
+## 6. Versionsregel
 
 In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
 
@@ -143,27 +111,35 @@ In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
 <ApplicationVersion>n</ApplicationVersion>
 ```
 
-- Jeder abgeschlossene Änderungsauftrag erhöht `ApplicationDisplayVersion` und `ApplicationVersion`, auch bei reinen Dokumentations-, Test- oder Konfigurationsänderungen.
-- Die Erhöhung erfolgt vor Abschluss der Arbeit, unabhängig von Commit, Push, Verpackung oder Installation. Mehrere Dateien und Korrekturschritte innerhalb desselben Auftrags benötigen keine getrennten Erhöhungen.
-- Ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte Komponente von `ApplicationDisplayVersion` um eins; `ApplicationVersion` steigt ebenfalls um eins. Beide Werte müssen gegenüber dem Auftragsbeginn erhöht sein.
-- `ApplicationDisplayVersion` entspricht dem aktuellen Entwicklungsstand und bei Auslieferung exakt der ausgelieferten Version.
-- Vor jedem Abschluss werden beide Werte und der zugehörige Changelog-Eintrag geprüft; vor dem Verpacken werden sie erneut geprüft.
-- Versionshistorie steht ausschließlich in `CHANGELOG.md`.
+Für jeden abgeschlossenen Änderungsauftrag gilt:
 
-## Lieferregel für Entwicklungs-Updates
+- `ApplicationDisplayVersion` und `ApplicationVersion` werden beide erhöht;
+- dies gilt auch für reine Dokumentations-, Test- oder Konfigurationsänderungen;
+- mehrere Dateien und Korrekturschritte desselben Auftrags erzeugen keine
+  zusätzlichen Erhöhungen;
+- ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte
+  Komponente von `ApplicationDisplayVersion` um eins;
+- `ApplicationVersion` steigt ebenfalls um eins;
+- beide Werte müssen gegenüber dem Auftragsbeginn erhöht sein;
+- bei Auslieferung entspricht `ApplicationDisplayVersion` exakt der ausgelieferten
+  Version;
+- vor Abschluss werden beide Werte und der zugehörige `CHANGELOG.md`-Eintrag geprüft;
+- vor einer Verpackung werden sie erneut geprüft.
 
-Standardmäßig wird ein **Delta-Paket** geliefert, kein vollständiges Repository.
+Versionshistorie steht ausschließlich in `CHANGELOG.md`.
+
+## 7. Entwicklungs-Updatepakete
+
+Standardlieferung ist ein **Delta-Paket**, kein vollständiges Repository.
 
 Ein Delta enthält nur:
 
-- geänderte Dateien,
-- neue Dateien,
+- geänderte und neue Dateien;
 - `UPDATE_FILES.txt` bzw. kompatibel `DELETE_FILES.txt`, wenn Dateien gelöscht,
-  verschoben oder umbenannt werden,
-- bei jeder Operationsdatei immer `APPLY_UPDATE.cmd` und `APPLY_UPDATE.ps1`.
+  verschoben oder umbenannt werden;
+- bei jeder Operationsdatei `APPLY_UPDATE.cmd` und `APPLY_UPDATE.ps1`.
 
-Die Skripte bleiben generisch. Update-spezifische Operationen stehen nur in der
-TXT-Datei.
+Nicht enthalten werden `bin/`, `obj/` oder andere generierte Build-Artefakte.
 
 Unterstützte Operationen:
 
@@ -173,62 +149,41 @@ MOVE|alter/pfad|neuer/pfad
 RENAME|alter/pfad|neuer/pfad
 ```
 
-Einfache Pfadzeilen in `DELETE_FILES.txt` werden aus Kompatibilitätsgründen als
-`DELETE` interpretiert.
+Einfache Pfadzeilen in `DELETE_FILES.txt` gelten aus Kompatibilitätsgründen als
+`DELETE`.
 
-Die Skripte müssen:
+Die Apply-Skripte bleiben generisch. Sie müssen:
 
-- alle Pfade relativ zum Repository-Root behandeln,
-- Pfade außerhalb des Repositorys ablehnen,
-- fehlende Dateien bei `DELETE` tolerieren,
-- Zielordner für MOVE/RENAME anlegen,
+- alle Pfade relativ zum Repository-Root behandeln;
+- Pfade außerhalb des Repositorys ablehnen;
+- fehlende Dateien bei `DELETE` tolerieren;
+- Zielordner für `MOVE`/`RENAME` anlegen;
 - bei echten Fehlern mit Fehlercode abbrechen.
 
-Nicht ins Update gehören `bin/`, `obj/` oder andere generierte Build-Artefakte.
+### Updatepaket übernehmen
 
-## Dokumentationsregel
+1. Update-ZIP in den Repository-Root entpacken bzw. übernehmen.
+2. Falls `UPDATE_FILES.txt` oder `DELETE_FILES.txt` enthalten ist,
+   `APPLY_UPDATE.cmd` im Repository-Root ausführen.
+3. `bin` und `obj` ausschließlich unter dieser Solution bereinigen.
+4. NuGet Restore.
+5. Solution neu bauen.
+6. erforderliche automatisierte Tests ausführen.
+7. Geräte-/Installations-/Releaseprüfung nur gemäß `AGENTS.md`.
 
-Die kanonischen Spezifikationen beschreiben immer den aktuellen Zustand.
-Überholte Entscheidungen werden ersetzt statt als Versionsanhang stehen zu
-bleiben. Versionshistorie gehört ausschließlich in `CHANGELOG.md`.
+## 8. Abhängigkeiten und Lizenzen
 
-## Codebasierte Abschlussprüfung
+Bei Änderungen an Drittanbieterabhängigkeiten gelten die Regeln aus
+[`docs/THIRD_PARTY_LICENSE_POLICY.md`](docs/THIRD_PARTY_LICENSE_POLICY.md).
 
-Für normale Implementierungsaufgaben gelten Build und relevante automatisierte
-Tests als Standardverifikation gemäß `AGENTS.md`. Nur tatsächlich ausgeführte
-Prüfungen als erfolgreich melden; nicht ausführbare Builds/Tests ausdrücklich
-benennen. Nach erfolgreicher codebasierter Prüfung keine zusätzliche manuelle
-Prüfphase automatisch starten.
+Lizenzanzeige, Produktverhalten und konkrete Assetstruktur werden hier nicht
+dupliziert.
 
-## Explizit beauftragte Geräte-/UI-Smoke-Tests
+## 9. Weiterführende Quellen
 
-Ein Build ersetzt technisch keinen MAUI-XAML-Laufzeit- oder Gerätetest. Daraus
-folgt keine automatische Geräteprüfung für normale Implementierungsaufgaben.
-Manuelle und visuelle Prüfungen sind Opt-in: nur auf ausdrücklichen Auftrag,
-bei konkret verlangtem Geräte-/UI-Smoke-Test oder im Rahmen einer ausdrücklich
-angeforderten Installations-/Releaseprüfung durchführen.
-
-Ohne solchen Auftrag weder die App zur Sichtprüfung starten noch Oberflächen
-manuell durchklicken, Screenshots erstellen/analysieren, Bildanalyse durchführen
-oder alle Themes manuell prüfen. Eine nicht ausgeführte visuelle Prüfung ist
-kein Fehler; sie kann bei Bedarf als nicht ausgeführte optionale Prüfung benannt
-werden. Maßgeblich für die Verifikationspolicy bleibt `AGENTS.md`.
-
-Bei ausdrücklich beauftragter Geräteprüfung zunächst relevante Builds und beide
-Testsuiten ausführen. Anschließend passend zum Prüfauftrag auf dem Zielgerät prüfen:
-
-- Navigation, neue Screens und Dialoge einschließlich Android-Zurück,
-- alle drei Themes, große Schrift, Tastatur und Zahlenrad-/Slider-Bedienung,
-- aktive Kartenwahl, Archivieren/Entarchivieren und historische Korrekturen,
-- bei inkompatiblen Änderungen den Start nach Neuinstallation mit frischer Datenbank.
-
-Für iOS-Gerätetests ist die passende Apple-Toolchain erforderlich. Nur tatsächlich
-ausgeführte Geräteprüfungen als erfolgreich melden.
-
-## Entwicklungsdatenbank nach Import-/Export-Schemaänderung
-
-Die Umstellung auf Player.IsArchived und eindeutige Player-/Group-Namensindizes
-ist mit bisherigen Entwicklungsdatenbanken inkompatibel. Vor Installation dieses
-Stands ist eine Neuinstallation bzw. ein bewusster Neuaufbau der Entwicklungsdatenbank
-notwendig. Dabei gehen lokale Entwicklungsdaten verloren. Die App löscht oder migriert
-bestehende Daten nicht automatisch. Keine persistenten Import-Aliase und keine DB-Migrationen.
+- Arbeitsweise und Verifikation: `AGENTS.md`
+- Dokumentationszuständigkeiten: `docs/README.md`
+- Softwarearchitektur: `docs/ARCHITECTURE.md`
+- Import/Export: `docs/IMPORT_EXPORT.md`
+- Drittanbieter-Lizenzen: `docs/THIRD_PARTY_LICENSE_POLICY.md`
+- historische Änderungen: `CHANGELOG.md`
