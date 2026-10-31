@@ -652,6 +652,21 @@ unabhängiger Holdout. Auswahl erfolgt auf alter Calibration, mit neuen Quellen-
 Inputhashes vor dem Vergleich. Ergebnisse und Entscheidungsgrenzen stehen unter
 `PhotoRecognition/Reports/ClassicCvResearchV4`; historische Freezes bleiben erhalten.
 
+`tools/Games/ArkNova/C3Refinement` begrenzt die Folgearbeit auf vorhandene
+Empty-SVD-/Sparse-Evidenz, Attraktivitäts-Feld-Floors, lokalen Farb-Readout und zwei
+feste Track-Fusionen. Mehrere Farben dürfen unabhängig Kontaktpixel desselben Feldes
+stützen. Auswahl erfolgt nur auf alter Calibration/Empty; wiederverwendete Vergleiche
+führen zu keiner Regeländerung. Die Qualitätsziele werden nicht erreicht; keine Fusion
+wird in den App-Workflow übernommen. Ergebnisse: `PhotoRecognition/Reports/C3RefinementV5`.
+
+Davon getrennt begrenzt `ArkNovaMaskFraction.ClampRoundoff` ausschließlich Rundungs-
+abweichungen bis 1e−12 an den mathematischen [0,1]-Grenzen der A-Maskenanteile.
+Größere/fachlich ungültige Werte bleiben Fehler. Analyzer und Ranking-Capture nutzen
+denselben reinen Guard; Masken, Scoreformeln, Confidence und Domain bleiben gleich.
+Alle 48 registrierten Frames wurden identisch reproduziert, 564 zuvor erfolgreiche
+Kandidaten und Confidence-Werte bleiben erhalten. Historische Quellhashes bleiben
+unverändert gespeichert und können unter dem gehärteten Code deshalb ablehnen.
+
 Die mobile CV-Bibliothek ist noch nicht festgelegt. Erst mobile Registrierung,
 Release-/Trimming-Prüfung und Gerätebenchmarks erlauben Phase 1B/1C. Der bestehende
 Kamera-Handler bleibt ein Platzhalter; eine spätere Anbindung verwendet denselben

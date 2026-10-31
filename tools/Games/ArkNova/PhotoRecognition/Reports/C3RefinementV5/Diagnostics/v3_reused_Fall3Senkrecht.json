@@ -1,0 +1,1760 @@
+{
+  "field": {
+    "track": "reputation",
+    "value": 7,
+    "score": 0.3339606227106227,
+    "pixelThreshold": 0.04587242752313614,
+    "occupancyThreshold": 0.08210848527838979,
+    "candidate": true,
+    "visibility": 1,
+    "contact": 1137,
+    "core": 801,
+    "colors": [
+      {
+        "color": "red",
+        "seeds": 0,
+        "contact": 0,
+        "core": 0,
+        "outside": 0,
+        "density": 0,
+        "coreFraction": 0,
+        "supported": false,
+        "strong": false,
+        "veryStrong": false
+      },
+      {
+        "color": "blue",
+        "seeds": 53,
+        "contact": 53,
+        "core": 53,
+        "outside": 0,
+        "density": 0.04661389621811785,
+        "coreFraction": 0.023296703296703296,
+        "supported": false,
+        "strong": false,
+        "veryStrong": false
+      },
+      {
+        "color": "yellow",
+        "seeds": 0,
+        "contact": 0,
+        "core": 0,
+        "outside": 0,
+        "density": 0,
+        "coreFraction": 0,
+        "supported": false,
+        "strong": false,
+        "veryStrong": false
+      },
+      {
+        "color": "black",
+        "seeds": 647,
+        "contact": 760,
+        "core": 563,
+        "outside": 140,
+        "density": 0.6684256816182937,
+        "coreFraction": 0.24747252747252746,
+        "supported": true,
+        "strong": true,
+        "veryStrong": true
+      }
+    ]
+  },
+  "rows": [
+    {
+      "color": "red",
+      "track": "attractiveness",
+      "expected": 60,
+      "legacyA": null,
+      "a": {
+        "value": 60,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9846483912031957,
+        "margin": 0.5886941119666547,
+        "fullColor": 0.463493883792049,
+        "coreColor": 0.5970228601807549,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.5703363914373089,
+        "neighbors": [
+          {
+            "value": 59,
+            "grownFraction": 0.07227111027897397,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 61,
+            "grownFraction": 0.02022093240966111,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 109,
+        "runnerUpScore": 0.3959542792365411,
+        "runnerUpFullColor": 0.053720735785953176,
+        "runnerUpCoreColor": 0.07594562647754137
+      },
+      "confidence": {
+        "value": 60,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9846483912031957,
+        "margin": 0.5886941119666547,
+        "fullColor": 0.463493883792049,
+        "coreColor": 0.5970228601807549,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.5703363914373089,
+        "neighbors": [
+          {
+            "value": 59,
+            "grownFraction": 0.07227111027897397,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 61,
+            "grownFraction": 0.02022093240966111,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 109,
+        "runnerUpScore": 0.3959542792365411,
+        "runnerUpFullColor": 0.053720735785953176,
+        "runnerUpCoreColor": 0.07594562647754137
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 60,
+          "top3": [
+            60,
+            109,
+            100
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": 60,
+          "top3": [
+            60
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 60,
+          "top3": [
+            60
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.19829877724614567,
+          "hypotheses": [
+            {
+              "value": 60,
+              "occupancy": 0.19104827853620707,
+              "coreFraction": 0.19829877724614567,
+              "density": 0.8487858719646799,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        },
+        "P1": {
+          "value": 60,
+          "top3": [
+            60
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.19829877724614567,
+          "hypotheses": [
+            {
+              "value": 60,
+              "occupancy": 0.19104827853620707,
+              "coreFraction": 0.19829877724614567,
+              "density": 0.8487858719646799,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        },
+        "P2": {
+          "value": 60,
+          "top3": [
+            60
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.19829877724614567,
+          "hypotheses": [
+            {
+              "value": 60,
+              "occupancy": 0.19104827853620707,
+              "coreFraction": 0.19829877724614567,
+              "density": 0.8487858719646799,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        }
+      },
+      "shared": false,
+      "dense": true
+    },
+    {
+      "color": "red",
+      "track": "conservation",
+      "expected": 12,
+      "legacyA": null,
+      "a": {
+        "value": 12,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.5935498801061783,
+        "margin": 0.41532826618154906,
+        "fullColor": 0.1014799154334038,
+        "coreColor": 0.09511993382961124,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.15952335191235822,
+        "neighbors": [
+          {
+            "value": 11,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 13,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 9,
+        "runnerUpScore": 0.1782216139246292,
+        "runnerUpFullColor": 0,
+        "runnerUpCoreColor": 0
+      },
+      "confidence": {
+        "value": 12,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "unvalidated_conservation_evidence",
+        "score": 0.5935498801061783,
+        "margin": 0.41532826618154906,
+        "fullColor": 0.1014799154334038,
+        "coreColor": 0.09511993382961124,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.15952335191235822,
+        "neighbors": [
+          {
+            "value": 11,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 13,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 9,
+        "runnerUpScore": 0.1782216139246292,
+        "runnerUpFullColor": 0,
+        "runnerUpCoreColor": 0
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 12,
+          "top3": [
+            12,
+            9,
+            41
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 12,
+          "top3": [
+            12
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.07747449682933553,
+          "hypotheses": [
+            {
+              "value": 12,
+              "occupancy": 0.21803371482836803,
+              "coreFraction": 0.07747449682933553,
+              "density": 0.3035019455252918,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "red",
+      "track": "reputation",
+      "expected": 3,
+      "legacyA": null,
+      "a": {
+        "value": 3,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9998495594240275,
+        "margin": 0.03159552995619341,
+        "fullColor": 0.5106382978723404,
+        "coreColor": 0.6044242029928433,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.5751128304319794,
+        "neighbors": [
+          {
+            "value": 2,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 4,
+            "grownFraction": 0.013997308209959623,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.9682540294678341,
+        "runnerUpFullColor": 0.5478489903424056,
+        "runnerUpCoreColor": 0.5831775700934579
+      },
+      "confidence": {
+        "value": 3,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "weak_or_ambiguous_core",
+        "score": 0.9998495594240275,
+        "margin": 0.03159552995619341,
+        "fullColor": 0.5106382978723404,
+        "coreColor": 0.6044242029928433,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.5751128304319794,
+        "neighbors": [
+          {
+            "value": 2,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 4,
+            "grownFraction": 0.013997308209959623,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.9682540294678341,
+        "runnerUpFullColor": 0.5478489903424056,
+        "runnerUpCoreColor": 0.5831775700934579
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 3,
+          "top3": [
+            3,
+            15,
+            14
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 3,
+          "top3": [
+            3
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.12687052700065063,
+          "hypotheses": [
+            {
+              "value": 3,
+              "occupancy": 0.4401551961145809,
+              "coreFraction": 0.12687052700065063,
+              "density": 0.2732774674115456,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P1": {
+          "value": 3,
+          "top3": [
+            3
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.12687052700065063,
+          "hypotheses": [
+            {
+              "value": 3,
+              "occupancy": 0.4401551961145809,
+              "coreFraction": 0.12687052700065063,
+              "density": 0.2732774674115456,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P2": {
+          "value": 3,
+          "top3": [
+            3
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.12687052700065063,
+          "hypotheses": [
+            {
+              "value": 3,
+              "occupancy": 0.4401551961145809,
+              "coreFraction": 0.12687052700065063,
+              "density": 0.2732774674115456,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "blue",
+      "track": "attractiveness",
+      "expected": 58,
+      "legacyA": null,
+      "a": {
+        "value": null,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "weak_zero_replacement",
+        "score": 0.6721053658393475,
+        "margin": 0.23395441310779186,
+        "fullColor": 0.13384615384615386,
+        "coreColor": 0.08695652173913043,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2734615384615384,
+        "neighbors": [
+          {
+            "value": 112,
+            "grownFraction": 0.12443438914027151,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 40,
+        "runnerUpScore": 0.4381509527315557,
+        "runnerUpFullColor": 0.07152218685639394,
+        "runnerUpCoreColor": 0.05413105413105413
+      },
+      "confidence": {
+        "value": null,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "weak_or_ambiguous_core",
+        "score": 0.6721053658393475,
+        "margin": 0.23395441310779186,
+        "fullColor": 0.13384615384615386,
+        "coreColor": 0.08695652173913043,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2734615384615384,
+        "neighbors": [
+          {
+            "value": 112,
+            "grownFraction": 0.12443438914027151,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 40,
+        "runnerUpScore": 0.4381509527315557,
+        "runnerUpFullColor": 0.07152218685639394,
+        "runnerUpCoreColor": 0.05413105413105413
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": null,
+          "top3": [
+            113,
+            40,
+            36
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 113,
+          "top3": [
+            113
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": [
+            {
+              "value": 113,
+              "occupancy": 0.08483497623657807,
+              "coreFraction": 0,
+              "density": 0,
+              "strong": false,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "blue",
+      "track": "conservation",
+      "expected": 9,
+      "legacyA": null,
+      "a": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9782216139246293,
+        "margin": 0.160483519306183,
+        "fullColor": 0.25330464186904394,
+        "coreColor": 0.29737206085753803,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.3074085459575776,
+        "neighbors": [
+          {
+            "value": 8,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 10,
+            "grownFraction": 0,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 41,
+        "runnerUpScore": 0.8177380946184463,
+        "runnerUpFullColor": 0.17738631708316263,
+        "runnerUpCoreColor": 0.08856502242152466
+      },
+      "confidence": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "unvalidated_conservation_evidence",
+        "score": 0.9782216139246293,
+        "margin": 0.160483519306183,
+        "fullColor": 0.25330464186904394,
+        "coreColor": 0.29737206085753803,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.3074085459575776,
+        "neighbors": [
+          {
+            "value": 8,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 10,
+            "grownFraction": 0,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 41,
+        "runnerUpScore": 0.8177380946184463,
+        "runnerUpFullColor": 0.17738631708316263,
+        "runnerUpCoreColor": 0.08856502242152466
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 9,
+          "top3": [
+            9,
+            41,
+            40
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 9,
+          "top3": [
+            9
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0.10511756569847856,
+          "hypotheses": [
+            {
+              "value": 9,
+              "occupancy": 0.5517534121427368,
+              "coreFraction": 0.10511756569847856,
+              "density": 0.17950236966824645,
+              "strong": false,
+              "veryStrong": false
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "blue",
+      "track": "reputation",
+      "expected": 7,
+      "legacyA": null,
+      "a": {
+        "value": 7,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9588641636141637,
+        "margin": 0.7539633029428698,
+        "fullColor": 0.2916666666666667,
+        "coreColor": 0.3701098901098901,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.36694444444444446,
+        "neighbors": [
+          {
+            "value": 6,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 8,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.20490086067129387,
+        "runnerUpFullColor": 0.01434006438396254,
+        "runnerUpCoreColor": 0
+      },
+      "confidence": {
+        "value": 7,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9588641636141637,
+        "margin": 0.7539633029428698,
+        "fullColor": 0.2916666666666667,
+        "coreColor": 0.3701098901098901,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.36694444444444446,
+        "neighbors": [
+          {
+            "value": 6,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 8,
+            "grownFraction": 0,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.20490086067129387,
+        "runnerUpFullColor": 0.01434006438396254,
+        "runnerUpCoreColor": 0
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 7,
+          "top3": [
+            7,
+            15,
+            3
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": 7,
+          "top3": [
+            7
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 7,
+          "top3": [
+            7
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0.023296703296703296,
+          "hypotheses": [
+            {
+              "value": 7,
+              "occupancy": 0.3339606227106227,
+              "coreFraction": 0.023296703296703296,
+              "density": 0.04661389621811785,
+              "strong": false,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P1": {
+          "value": 7,
+          "top3": [
+            7
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0.023296703296703296,
+          "hypotheses": [
+            {
+              "value": 7,
+              "occupancy": 0.3339606227106227,
+              "coreFraction": 0.023296703296703296,
+              "density": 0.04661389621811785,
+              "strong": false,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P2": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "yellow",
+      "track": "attractiveness",
+      "expected": 61,
+      "legacyA": null,
+      "a": {
+        "value": 61,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.981429894798178,
+        "margin": 0.1515183992382907,
+        "fullColor": 0.489795918367347,
+        "coreColor": 0.6114996114996116,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.6088747425575735,
+        "neighbors": [
+          {
+            "value": 60,
+            "grownFraction": 0.03058103975535168,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 62,
+            "grownFraction": 0.2703613555513949,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 5,
+        "runnerUpScore": 0.8299114955598873,
+        "runnerUpFullColor": 0.15648148148148147,
+        "runnerUpCoreColor": 0.1855811403508772
+      },
+      "confidence": {
+        "value": 61,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.981429894798178,
+        "margin": 0.1515183992382907,
+        "fullColor": 0.489795918367347,
+        "coreColor": 0.6114996114996116,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.6088747425575735,
+        "neighbors": [
+          {
+            "value": 60,
+            "grownFraction": 0.03058103975535168,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 62,
+            "grownFraction": 0.2703613555513949,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 5,
+        "runnerUpScore": 0.8299114955598873,
+        "runnerUpFullColor": 0.15648148148148147,
+        "runnerUpCoreColor": 0.1855811403508772
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 61,
+          "top3": [
+            61,
+            5,
+            62
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": 61,
+          "top3": [
+            61
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 61,
+          "top3": [
+            61
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.22533022533022534,
+          "hypotheses": [
+            {
+              "value": 61,
+              "occupancy": 0.2244543234058306,
+              "coreFraction": 0.22533022533022534,
+              "density": 0.8723599632690542,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        },
+        "P1": {
+          "value": 61,
+          "top3": [
+            61
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.22533022533022534,
+          "hypotheses": [
+            {
+              "value": 61,
+              "occupancy": 0.2244543234058306,
+              "coreFraction": 0.22533022533022534,
+              "density": 0.8723599632690542,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        },
+        "P2": {
+          "value": 61,
+          "top3": [
+            61
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.22533022533022534,
+          "hypotheses": [
+            {
+              "value": 61,
+              "occupancy": 0.2244543234058306,
+              "coreFraction": 0.22533022533022534,
+              "density": 0.8723599632690542,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        }
+      },
+      "shared": false,
+      "dense": true
+    },
+    {
+      "color": "yellow",
+      "track": "conservation",
+      "expected": 12,
+      "legacyA": null,
+      "a": {
+        "value": 12,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.8881031308897367,
+        "margin": 0.7098815169651075,
+        "fullColor": 0.1627906976744186,
+        "coreColor": 0.1872070581748001,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2596578896790313,
+        "neighbors": [
+          {
+            "value": 11,
+            "grownFraction": 0.01950078003120125,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 13,
+            "grownFraction": 0.011068702290076336,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 9,
+        "runnerUpScore": 0.1782216139246292,
+        "runnerUpFullColor": 0,
+        "runnerUpCoreColor": 0
+      },
+      "confidence": {
+        "value": 12,
+        "confidence": "Uncertain",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": "unvalidated_conservation_evidence",
+        "score": 0.8881031308897367,
+        "margin": 0.7098815169651075,
+        "fullColor": 0.1627906976744186,
+        "coreColor": 0.1872070581748001,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2596578896790313,
+        "neighbors": [
+          {
+            "value": 11,
+            "grownFraction": 0.01950078003120125,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 13,
+            "grownFraction": 0.011068702290076336,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 9,
+        "runnerUpScore": 0.1782216139246292,
+        "runnerUpFullColor": 0,
+        "runnerUpCoreColor": 0
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 12,
+          "top3": [
+            12,
+            9,
+            41
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": 12,
+          "top3": [
+            12
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.06644609870416322,
+          "hypotheses": [
+            {
+              "value": 12,
+              "occupancy": 0.21803371482836803,
+              "coreFraction": 0.06644609870416322,
+              "density": 0.36186770428015563,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P1": {
+          "value": 12,
+          "top3": [
+            12
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.06644609870416322,
+          "hypotheses": [
+            {
+              "value": 12,
+              "occupancy": 0.21803371482836803,
+              "coreFraction": 0.06644609870416322,
+              "density": 0.36186770428015563,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        },
+        "P2": {
+          "value": 12,
+          "top3": [
+            12
+          ],
+          "strong": true,
+          "veryStrong": false,
+          "gap": 0.06644609870416322,
+          "hypotheses": [
+            {
+              "value": 12,
+              "occupancy": 0.21803371482836803,
+              "coreFraction": 0.06644609870416322,
+              "density": 0.36186770428015563,
+              "strong": true,
+              "veryStrong": false
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "yellow",
+      "track": "reputation",
+      "expected": 3,
+      "legacyA": null,
+      "a": {
+        "value": 3,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9998495594240275,
+        "margin": 0.6667781347622437,
+        "fullColor": 0.31399097356544164,
+        "coreColor": 0.3243331164606376,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.34235976789168276,
+        "neighbors": [
+          {
+            "value": 2,
+            "grownFraction": 0.08346581875993642,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 4,
+            "grownFraction": 0.007806191117092866,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 2,
+        "runnerUpScore": 0.33307142466178385,
+        "runnerUpFullColor": 0.04709856915739269,
+        "runnerUpCoreColor": 0.02781888132583605
+      },
+      "confidence": {
+        "value": 3,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9998495594240275,
+        "margin": 0.6667781347622437,
+        "fullColor": 0.31399097356544164,
+        "coreColor": 0.3243331164606376,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.34235976789168276,
+        "neighbors": [
+          {
+            "value": 2,
+            "grownFraction": 0.08346581875993642,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 4,
+            "grownFraction": 0.007806191117092866,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 2,
+        "runnerUpScore": 0.33307142466178385,
+        "runnerUpFullColor": 0.04709856915739269,
+        "runnerUpCoreColor": 0.02781888132583605
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 3,
+          "top3": [
+            3,
+            2,
+            6
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": 3,
+          "top3": [
+            3
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 3,
+          "top3": [
+            3
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.2830188679245283,
+          "hypotheses": [
+            {
+              "value": 3,
+              "occupancy": 0.4401551961145809,
+              "coreFraction": 0.2830188679245283,
+              "density": 0.6182495344506518,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "black",
+      "track": "attractiveness",
+      "expected": 58,
+      "legacyA": null,
+      "a": {
+        "value": 38,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": null,
+        "score": 0.5060400963829327,
+        "margin": 0.0058676648861304415,
+        "fullColor": 0.08962962962962963,
+        "coreColor": 0.06578947368421052,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.14037037037037037,
+        "neighbors": [
+          {
+            "value": 37,
+            "grownFraction": 0.09882842025699169,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 39,
+            "grownFraction": 0.03062678062678063,
+            "fieldVisibility": 0.43037749287749294
+          }
+        ],
+        "runnerUpValue": 110,
+        "runnerUpScore": 0.5001724314968022,
+        "runnerUpFullColor": 0.08019230769230769,
+        "runnerUpCoreColor": 0.08638443935926773
+      },
+      "confidence": {
+        "value": 38,
+        "confidence": "Uncertain",
+        "originalConfidence": "Uncertain",
+        "alternative": null,
+        "warning": "weak_or_ambiguous_core",
+        "score": 0.5060400963829327,
+        "margin": 0.0058676648861304415,
+        "fullColor": 0.08962962962962963,
+        "coreColor": 0.06578947368421052,
+        "trackVisibility": 0.9950033113410306,
+        "fieldVisibility": 1,
+        "grownFraction": 0.14037037037037037,
+        "neighbors": [
+          {
+            "value": 37,
+            "grownFraction": 0.09882842025699169,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 39,
+            "grownFraction": 0.03062678062678063,
+            "fieldVisibility": 0.43037749287749294
+          }
+        ],
+        "runnerUpValue": 110,
+        "runnerUpScore": 0.5001724314968022,
+        "runnerUpFullColor": 0.08019230769230769,
+        "runnerUpCoreColor": 0.08638443935926773
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 38,
+          "top3": [
+            38,
+            110,
+            40
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 96,
+          "top3": [
+            96
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0.0025195968645016797,
+          "hypotheses": [
+            {
+              "value": 96,
+              "occupancy": 0.1157879482872484,
+              "coreFraction": 0.0025195968645016797,
+              "density": 0.1291390728476821,
+              "strong": false,
+              "veryStrong": false
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "black",
+      "track": "conservation",
+      "expected": 9,
+      "legacyA": null,
+      "a": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": "incomplete_track",
+        "score": 0.9782216139246293,
+        "margin": 0.09389124427511053,
+        "fullColor": 0.18290808484475868,
+        "coreColor": 0.2554172429691102,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2523824162311712,
+        "neighbors": [
+          {
+            "value": 8,
+            "grownFraction": 0.00390625,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 10,
+            "grownFraction": 0,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 2,
+        "runnerUpScore": 0.8843303696495187,
+        "runnerUpFullColor": 0.152673950546291,
+        "runnerUpCoreColor": 0.1628205128205128
+      },
+      "confidence": {
+        "value": 9,
+        "confidence": "Uncertain",
+        "originalConfidence": "Medium",
+        "alternative": null,
+        "warning": "unvalidated_conservation_evidence",
+        "score": 0.9782216139246293,
+        "margin": 0.09389124427511053,
+        "fullColor": 0.18290808484475868,
+        "coreColor": 0.2554172429691102,
+        "trackVisibility": 0.9766527691255975,
+        "fieldVisibility": 1,
+        "grownFraction": 0.2523824162311712,
+        "neighbors": [
+          {
+            "value": 8,
+            "grownFraction": 0.00390625,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 10,
+            "grownFraction": 0,
+            "fieldVisibility": 0.9999999999999999
+          }
+        ],
+        "runnerUpValue": 2,
+        "runnerUpScore": 0.8843303696495187,
+        "runnerUpFullColor": 0.152673950546291,
+        "runnerUpCoreColor": 0.1628205128205128
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 9,
+          "top3": [
+            9,
+            2,
+            28
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 9,
+          "top3": [
+            9
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.3065928999538958,
+          "hypotheses": [
+            {
+              "value": 9,
+              "occupancy": 0.5517534121427368,
+              "coreFraction": 0.3065928999538958,
+              "density": 0.4863744075829384,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    },
+    {
+      "color": "black",
+      "track": "reputation",
+      "expected": 7,
+      "legacyA": null,
+      "a": {
+        "value": 7,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9588641636141637,
+        "margin": 0.23576353799326077,
+        "fullColor": 0.18777777777777777,
+        "coreColor": 0.20835164835164838,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.23944444444444443,
+        "neighbors": [
+          {
+            "value": 6,
+            "grownFraction": 0.01763005780346821,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 8,
+            "grownFraction": 0.0551481372836609,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.7231006256209029,
+        "runnerUpFullColor": 0.11647644132279779,
+        "runnerUpCoreColor": 0.12102803738317756
+      },
+      "confidence": {
+        "value": 7,
+        "confidence": "High",
+        "originalConfidence": "High",
+        "alternative": null,
+        "warning": null,
+        "score": 0.9588641636141637,
+        "margin": 0.23576353799326077,
+        "fullColor": 0.18777777777777777,
+        "coreColor": 0.20835164835164838,
+        "trackVisibility": 1,
+        "fieldVisibility": 1,
+        "grownFraction": 0.23944444444444443,
+        "neighbors": [
+          {
+            "value": 6,
+            "grownFraction": 0.01763005780346821,
+            "fieldVisibility": 1
+          },
+          {
+            "value": 8,
+            "grownFraction": 0.0551481372836609,
+            "fieldVisibility": 1
+          }
+        ],
+        "runnerUpValue": 15,
+        "runnerUpScore": 0.7231006256209029,
+        "runnerUpFullColor": 0.11647644132279779,
+        "runnerUpCoreColor": 0.12102803738317756
+      },
+      "predictions": {
+        "A_legacy": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_hardened": {
+          "value": 7,
+          "top3": [
+            7,
+            15,
+            14
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "A_accepted": {
+          "value": 7,
+          "top3": [
+            7
+          ],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P0": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P1": {
+          "value": null,
+          "top3": [],
+          "strong": false,
+          "veryStrong": false,
+          "gap": 0,
+          "hypotheses": []
+        },
+        "P2": {
+          "value": 7,
+          "top3": [
+            7
+          ],
+          "strong": true,
+          "veryStrong": true,
+          "gap": 0.24747252747252746,
+          "hypotheses": [
+            {
+              "value": 7,
+              "occupancy": 0.3339606227106227,
+              "coreFraction": 0.24747252747252746,
+              "density": 0.6684256816182937,
+              "strong": true,
+              "veryStrong": true
+            }
+          ]
+        }
+      },
+      "shared": true,
+      "dense": false
+    }
+  ]
+}

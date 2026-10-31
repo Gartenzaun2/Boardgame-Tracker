@@ -1,0 +1,416 @@
+{
+  "hashesVerified": 366,
+  "partitions": {
+    "calibration": {
+      "selectedFusion": "F2",
+      "qualityTargetMet": false,
+      "localComplementary": [
+        {
+          "image": "IMG_4265.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 20,
+          "a": null,
+          "local": 20
+        },
+        {
+          "image": "IMG_4266.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 20,
+          "a": null,
+          "local": 20
+        },
+        {
+          "image": "IMG_4267.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 21,
+          "a": 113,
+          "local": 21
+        },
+        {
+          "image": "IMG_4279.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 66,
+          "a": 113,
+          "local": 66
+        },
+        {
+          "image": "IMG_4281.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 21,
+          "a": 41,
+          "local": 21
+        },
+        {
+          "image": "IMG_4281.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 66,
+          "a": null,
+          "local": 66
+        },
+        {
+          "image": "IMG_4283.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 23,
+          "a": null,
+          "local": 23
+        },
+        {
+          "image": "IMG_4283.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 10,
+          "a": null,
+          "local": 10
+        },
+        {
+          "image": "IMG_4285.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 10,
+          "a": null,
+          "local": 10
+        }
+      ],
+      "selectedFusionErrors": [
+        {
+          "image": "IMG_4269.jpg",
+          "color": "yellow",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "IMG_4270.jpg",
+          "color": "yellow",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "IMG_4271.jpg",
+          "color": "yellow",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "IMG_4273.jpg",
+          "color": "red",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "IMG_4274.jpg",
+          "color": "red",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        }
+      ],
+      "meanCombinedMilliseconds": 255.10684117647062
+    },
+    "old_holdout_reused": {
+      "selectedFusion": "F2",
+      "qualityTargetMet": false,
+      "localComplementary": [
+        {
+          "image": "IMG_4287.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 56,
+          "a": 39,
+          "local": 56
+        },
+        {
+          "image": "IMG_4287.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 62,
+          "a": 113,
+          "local": 62
+        }
+      ],
+      "selectedFusionErrors": [
+        {
+          "image": "IMG_4272.jpg",
+          "color": "yellow",
+          "track": "conservation",
+          "expected": 20,
+          "fusion": 21,
+          "aConfidence": "Uncertain"
+        }
+      ],
+      "meanCombinedMilliseconds": 291.925275
+    },
+    "v3_reused": {
+      "selectedFusion": "F2",
+      "qualityTargetMet": false,
+      "localComplementary": [
+        {
+          "image": "Fall1Gegenueber.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 8,
+          "a": 41,
+          "local": 8
+        },
+        {
+          "image": "Fall1Senkrecht.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 8,
+          "a": null,
+          "local": 8
+        },
+        {
+          "image": "Fall1Vorne.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 17,
+          "a": 113,
+          "local": 17
+        },
+        {
+          "image": "Fall2Gegenueber.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 22,
+          "a": 41,
+          "local": 22
+        },
+        {
+          "image": "Fall2Gegenueber.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 23,
+          "a": null,
+          "local": 23
+        },
+        {
+          "image": "Fall2Gegenueber.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 6,
+          "a": null,
+          "local": 6
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "red",
+          "track": "reputation",
+          "expected": 5,
+          "a": 4,
+          "local": 5
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 58,
+          "a": 59,
+          "local": 58
+        },
+        {
+          "image": "Fall2Rechts.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 6,
+          "a": 5,
+          "local": 6
+        },
+        {
+          "image": "Fall2Unten.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 23,
+          "a": null,
+          "local": 23
+        },
+        {
+          "image": "Fall2Unten.jpg",
+          "color": "black",
+          "track": "reputation",
+          "expected": 6,
+          "a": null,
+          "local": 6
+        },
+        {
+          "image": "Fall4Senkrecht.jpg",
+          "color": "blue",
+          "track": "conservation",
+          "expected": 21,
+          "a": 24,
+          "local": 21
+        },
+        {
+          "image": "Fall5Senkrecht.jpg",
+          "color": "black",
+          "track": "attractiveness",
+          "expected": 56,
+          "a": null,
+          "local": 56
+        }
+      ],
+      "selectedFusionErrors": [
+        {
+          "image": "Fall1Gegenueber.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 63,
+          "fusion": 61,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Gegenueber.jpg",
+          "color": "yellow",
+          "track": "reputation",
+          "expected": 1,
+          "fusion": 2,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Links.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 63,
+          "fusion": 61,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Links.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 55,
+          "fusion": 53,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Links.jpg",
+          "color": "yellow",
+          "track": "reputation",
+          "expected": 1,
+          "fusion": 2,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Links.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 12,
+          "fusion": 10,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "Fall1Rechts.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 63,
+          "fusion": 61,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Rechts.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 55,
+          "fusion": 53,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Rechts.jpg",
+          "color": "yellow",
+          "track": "reputation",
+          "expected": 1,
+          "fusion": 2,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Rechts.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 12,
+          "fusion": 10,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "Fall1Senkrecht.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 63,
+          "fusion": 61,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Senkrecht.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 55,
+          "fusion": 53,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Senkrecht.jpg",
+          "color": "yellow",
+          "track": "reputation",
+          "expected": 1,
+          "fusion": 2,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Senkrecht.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 12,
+          "fusion": 10,
+          "aConfidence": "Uncertain"
+        },
+        {
+          "image": "Fall1Vorne.jpg",
+          "color": "red",
+          "track": "attractiveness",
+          "expected": 63,
+          "fusion": 61,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Vorne.jpg",
+          "color": "blue",
+          "track": "attractiveness",
+          "expected": 55,
+          "fusion": 53,
+          "aConfidence": "Medium"
+        },
+        {
+          "image": "Fall1Vorne.jpg",
+          "color": "yellow",
+          "track": "reputation",
+          "expected": 1,
+          "fusion": 2,
+          "aConfidence": "High"
+        },
+        {
+          "image": "Fall1Vorne.jpg",
+          "color": "black",
+          "track": "conservation",
+          "expected": 12,
+          "fusion": 10,
+          "aConfidence": "Uncertain"
+        }
+      ],
+      "meanCombinedMilliseconds": 275.12210769230774
+    }
+  }
+}

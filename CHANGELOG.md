@@ -4,6 +4,14 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.14
+
+- Begrenzter C3-Abschlussversuch V5 ohne neue Detektorfamilien: Attraktivitäts-Feld-Floors aus Empty-LOO, lokaler Sparse-Farbreadout mit bestehender A-Maskenevidenz/seeded Schwarz und unabhängiger Mehrfarbzuordnung sowie zwei feste Track-Fusionsregeln.
+- Auswahl nur auf alter Calibration: Feld-Floors entfernen 13 von 111 Attraktivitäts-FP ohne Recallverlust, bleiben aber unter dem vorab festgelegten Auswahlgate. Lokaler Readout gewinnt acht schwarze und drei gemeinsame-Feld-Treffer, erzeugt fünf zusätzliche Phantome und wird nicht ausgewählt. Beste C3-Auswahl bleibt P0; F2 gewinnt den Fusionsvergleich, verfehlt aber bereits auf Calibration das 98-%-Accuracy-Ziel.
+- V2/V3 ausschließlich wiederverwendet verglichen; keine Nachoptimierung. Auf V3 F2 104/156 richtige Werte bei 78,2 % Coverage und 85,2 % Ausgabe-Accuracy. Keine automatische Übernahme; echter neuer Holdout erforderlich, aber ohne Lösung bestehender Fehlakzeptanzen allein nicht ausreichend. Drei Diagnosepatches und vollständige Farb-/Track-/View-/Mehrfachbelegungsmetriken dokumentiert, historische Reports und Freezes erhalten.
+- Strikt separate technische A-Härtung: ausschließlich Maskenanteil-Rundungsfehler bis 1e−12 an [0,1] begrenzen, echte Bereichsfehler/NaN bleiben Exceptions. Keine Änderung von Masken, Scoreformeln, Ranking, Confidence oder Domain. Alle 48 Warps identisch, 564 zuvor erfolgreiche Entscheidungen erhalten; Fall3Senkrecht läuft nun ohne Exception. A-V3-Rohwerte 103→113/156, separat vom C3-Nutzen ausgewiesen.
+- Solution-Build ohne Warnungen/Fehler, 75 Core- und 178 Application-Tests einschließlich drei numerischer Regressionstests sowie acht fokussierte Forschungschecks bestanden. Keine App-/Kamera-/Persistenz-/Scoringintegration. App-Versionsmetadaten 0.10.0.14 / ApplicationVersion 51.
+
 ## 0.10.0.13
 
 - Separater klassischer Ark-Nova-CV-Research-Batch V4: geometrisches Directional Chamfer, 5×5-Census ohne/mit auf vier Pixel begrenzter Track-ECC sowie approximative Low-Rank/Sparse-Projektion über Empty-SVD. Keine neuronalen Modelle, externen Gewichte oder Änderungen an Algorithmus A, Produktionslogik, Geometrie und globaler Registrierung.

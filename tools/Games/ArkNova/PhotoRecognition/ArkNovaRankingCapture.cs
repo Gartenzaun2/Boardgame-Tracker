@@ -122,7 +122,7 @@ internal sealed class ArkNovaRankingCapture(string? diagnosticDirectory = null, 
     private static double Fraction(Mat source, CaptureField field, Point origin, bool core = false)
     {
         using Mat region = new(source, new Rect(field.Bounds.X - origin.X, field.Bounds.Y - origin.Y, field.Bounds.Width, field.Bounds.Height));
-        return Cv2.Mean(region, core ? field.Core : field.Mask).Val0 / 255;
+        return ArkNovaMaskFraction.ClampRoundoff(Cv2.Mean(region, core ? field.Core : field.Mask).Val0 / 255);
     }
 
     private static Mat SmoothChannel(Mat image, int channel)

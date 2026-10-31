@@ -1,0 +1,9 @@
+{
+  "useFieldFloors": false,
+  "useLocal": false,
+  "selectedC3": "P0",
+  "selectedFusion": "F2",
+  "blackGain": 8,
+  "sharedGain": 3,
+  "discipline": "Old calibration only; P0/P1 occupancy gate, then one localized-color ablation, then two fixed fusion rules. No V3 tuning."
+}

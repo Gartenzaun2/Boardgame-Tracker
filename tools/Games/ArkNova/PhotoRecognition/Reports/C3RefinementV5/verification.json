@@ -1,0 +1,32 @@
+{
+  "baseCommit": "295022bd3f2dfe855f663e449c1b8059a0b887e9",
+  "branch": "master",
+  "solutionBuild": {
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0
+  },
+  "coreTestsPassed": 75,
+  "applicationTestsPassed": 178,
+  "researchChecksPassed": 8,
+  "frozenSourceInputHashesVerified": 366,
+  "historicalFilesUnchanged": true,
+  "domainAndScoringUnchanged": true,
+  "technicalAHardeningOnly": [
+    "ArkNovaMaskFraction.ClampRoundoff",
+    "ArkNovaPhotoAnalyzer.Fraction",
+    "ArkNovaRankingCapture.Fraction"
+  ],
+  "identicalFrames": 48,
+  "unchangedPreviouslySuccessfulDecisions": 564,
+  "applicationDisplayVersion": "0.10.0.14",
+  "applicationVersion": 51,
+  "selectedC3": "P0",
+  "selectedFusion": "F2",
+  "qualityTargetMet": false,
+  "independentHoldoutClaim": false,
+  "pngCount": 3,
+  "stagedFiles": [],
+  "committed": false,
+  "pushed": false
+}

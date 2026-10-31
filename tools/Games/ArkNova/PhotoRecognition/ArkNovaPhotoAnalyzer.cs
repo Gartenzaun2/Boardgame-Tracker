@@ -290,7 +290,7 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
     {
         using Mat region = new(image, new Rect(field.Bounds.X - origin.X, field.Bounds.Y - origin.Y, field.Bounds.Width, field.Bounds.Height));
         Mat mask = core ? field.Core : field.Mask;
-        return Cv2.Mean(region, mask).Val0 / 255;
+        return ArkNovaMaskFraction.ClampRoundoff(Cv2.Mean(region, mask).Val0 / 255);
     }
 
     private static Mat Resize(Mat image, double scale)
