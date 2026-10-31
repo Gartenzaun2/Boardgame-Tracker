@@ -476,8 +476,8 @@ Ersatz für Constraints, Übersetzung oder Transaktionen. Architekturtests schü
 Providergrenze, EF-freie ViewModels sowie Gruppen- und Spielmodul-Ownership.
 Kleine ausschließlich slice-eigene Begleittypen stehen standardmäßig beim Haupttyp;
 Tests spiegeln die fachliche Gruppierung ohne unnötige Ein-Datei-Unterordner.
-XAML, DI und EF zählen als Verwendung. Die konkreten C#-Stilregeln zu Typdeklarationen,
-`var`, Klammern und mehrzeiligen Blöcken stehen ausschließlich in `AGENTS.md`.
+XAML, DI und EF zählen als Verwendung. Projektweite C#-, Async-, Benennungs- und
+Kommentarregeln stehen in [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
 Bei Refactorings werden alte Domänensynonyme nicht als Compatibility-Aliase
 weitergeführt.
 
@@ -522,7 +522,10 @@ Beide Gruppenformulare bleiben unter `App/Features/Groups`. `GroupColorSelection
 
 ## UI-Bindings und Fehlerdiagnose
 
-Die App aktiviert `MauiStrictXamlCompilation` und `MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 sind Buildfehler. Bei geändertem BindingContext wird `x:DataType` angegeben. Command-Bindings über `x:Reference` verwenden eine typisierte ViewModel-Property der Page statt des untypisierten BindingContext. Keine Unterdrückung durch `x:Object`.
+Die App aktiviert `MauiStrictXamlCompilation` und
+`MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 sind Buildfehler.
+Die verbindlichen Regeln für compiled bindings, `x:DataType`, `DataTemplate` und
+`x:Reference` stehen in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 
 Abgefangene technische Fehler in Historie und Wertungsansichten werden über injiziertes `ILogger<T>` mit Exception und relevantem ID-Kontext protokolliert; sichtbare Meldungen bleiben lokalisiert. Im Debug-Build gibt der Microsoft-Debug-Provider die Meldungen bei angeschlossenem Debugger aus. Es werden keine dauerhaften Protokolldateien oder Telemetriedienste eingeführt.
 
@@ -566,8 +569,9 @@ Austauschmodell noch die Importpipeline. Details stehen in IMPORT_EXPORT.md.
 - `UseCase`: Application-Orchestrierung, die Domainregeln und Persistenzoperationen für einen fachlichen Ablauf verbindet.
 - `Handler`: Dispatch-/Routing-/Navigations- oder Transportentscheidung. Kein allgemeiner Service-Ersatz.
 
-`DataAccess` ist kein bevorzugter Standardname. Konkrete Benennungs- und Kommentarregeln
-stehen in AGENTS.md; objektive Produktions-Namingregeln in .editorconfig.
+`DataAccess` ist kein bevorzugter Standardname. Projektweite Benennungs-,
+Kommentar- und C#-Regeln stehen in [CODE_GUIDELINES.md](CODE_GUIDELINES.md);
+objektive Produktions-Namingregeln zusätzlich in `.editorconfig`.
 
 Scoring und historische Korrektur verwenden EF Core direkt in getrennten Use Cases.
 Sie teilen ausschließlich die konkrete ArkNovaGameSessionResultQuery ohne Interface.

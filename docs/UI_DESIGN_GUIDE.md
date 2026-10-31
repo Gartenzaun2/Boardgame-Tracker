@@ -352,6 +352,33 @@ Die Theme-Umschaltung ersetzt bzw. aktualisiert diese Ressourcen zentral.
 
 Neue Screens müssen automatisch mit allen Themes funktionieren, wenn sie ausschließlich die semantischen Ressourcen verwenden.
 
+## XAML-Bindings und ViewModels
+
+Neue oder geänderte XAML-Bindings werden grundsätzlich als compiled bindings
+implementiert.
+
+- `x:DataType` auf dem Scope setzen, auf dem der jeweilige `BindingContext` gilt.
+- Jedes `DataTemplate` separat mit dem Typ seines Template-Elements typisieren.
+- Ändert sich der `BindingContext` innerhalb eines Scopes, dort den passenden
+  `x:DataType` setzen.
+- Command- oder Property-Bindings über `x:Reference` verwenden eine typisierte
+  Page-/ViewModel-Property statt eines untypisierten `BindingContext`.
+- String-basierte Bindings nur verwenden, wenn compiled bindings technisch nicht
+  sinnvoll möglich sind.
+- Bestehende Strict-XAML-/Binding-Compiler-Warnungen nicht durch `x:Object`,
+  `x:Null`, `NoWarn` oder das Abschalten der Compileroptionen umgehen.
+- Keine EF-Entities oder EF-Navigation-Properties direkt an die UI binden;
+  Pages und ViewModels arbeiten mit Domain-/Application-Modellen oder expliziten
+  Read Models.
+
+Das Projekt aktiviert `MauiStrictXamlCompilation` und
+`MauiEnableXamlCBindingWithSourceCompilation`; XC0022 bis XC0025 werden als
+Buildfehler behandelt.
+
+ViewModel-Konstruktoren führen keine Datenbankzugriffe, Navigation oder asynchrones
+Laden aus. Allgemeine Async-/Nebenläufigkeitsregeln stehen in
+[CODE_GUIDELINES.md](CODE_GUIDELINES.md).
+
 ## Bedienung und Layout
 
 - Zielgerät: 6,1 Zoll, Hochformat, 1170 × 2532 px. Ruhige Informationshierarchie und einhändige Bedienung haben Vorrang vor Dekoration.
