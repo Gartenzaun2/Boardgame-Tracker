@@ -1,9 +1,24 @@
 # Gemeinsamer nativer Ark-Nova-CV-Kern und Mobile-Host
 
-**Implementiert, fachliche Parität noch nicht erfüllt – keine Produktfreigabe.**
+**Native Mobile-CV fachlich freigegeben für assistierte Wertung.**
 Erkennungsforschung bleibt eingefroren. A nutzt weiterhin die alte Referenz,
 v2-Geometrie, A_NoZero, Confidence E, RegistrationEdge 1600 und AnalysisScale 0,5.
 B/C/C3 sind keine mobilen Produktionsassets.
+
+Die [direkte Ground-Truth-Abnahme](NativeGroundTruthAcceptance.md) des bestehenden
+Runs ergibt nach E 294 statt 297/411 richtige Werte und 11 statt 10/120
+Empty-Phantome. V3 False High bleibt 8, keine neuen falschen Highs.
+Die dokumentierten Plattformabweichungen sind durch ausdrückliches fachliches
+GO akzeptiert: keine neuen False Highs oder High-Phantome, Nutzerprüfung/Korrektur
+und ausdrückliche Bestätigung vor Speicherung. Das frühere GT-Gate-FAIL bleibt
+historisch dokumentiert; es blockiert die assistierte Produktfreigabe nicht mehr.
+Native Mobile ist Produktionspfad, Windows/OpenCvSharp Referenz-/Regressionstool.
+Keine neue CV-Ausführung, Ursachenforschung, Optimierung oder Parameteränderung.
+Nach E: 115 High (107 richtig/8 falsch), 77 Medium (72 richtig/5 falsch),
+219 Uncertain einschließlich 68 ohne Wert. Alle Ergebnisse bleiben Vorschläge.
+Keine weitere CV-Forschung geplant. Offen sind ausschließlich die manuellen
+Runtime-Nachweise: echter Android-ARM64-Gerätelauf und
+`iOS build/link/runtime verification pending manual user verification`.
 
 ## Architektur und aktueller Nachweis
 
@@ -28,7 +43,8 @@ verständliche Meldungen übersetzt. Technische Details gehen ins Plattformlog.
 | MAUI Android ARM64/x64 Release, vollständiges Trimming | baut; EF-/JSON-Trimwarnungen bleiben |
 | Android API 30 x64 | tatsächlicher App-/Interop-/Picker-/Review-/Persistenzlauf, isoliertes Testpaket |
 | 54 bekannte Regressionfotos, 648 Entscheidungen | Registrierung 54/54, **30 Rohwert- und 27 E-Abweichungen** |
-| Funktionales Paritätsgate | **fehlgeschlagen**, kein Anheben von Toleranzen |
+| Fachliche Produktentscheidung | **GO für assistierte Wertung**; Plattformabweichungen bewusst akzeptiert |
+| Historischer Paritäts-/GT-Gatevergleich | fehlgeschlagen, Messwerte unverändert; durch fachliches GO als Freigabeblocker aufgehoben |
 | iOS C# auf Windows | kompiliert; kein Apple-Link-/Runtime-Nachweis |
 | ARM64-Gerät | nicht ausgeführt |
 

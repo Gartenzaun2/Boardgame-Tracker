@@ -600,9 +600,11 @@ Kamera/Systempicker liefern denselben Service-Input. Foto-Review verwendet eigen
 Entwurfsobjekte ohne Autosave-Bindungen und verändert keine persistierten Werte.
 Erst ausdrückliche Bestätigung ruft einen validierenden Application-Use-Case mit
 einem atomaren `SaveChangesAsync` auf. Fehler lassen die bisherigen Werte bestehen.
-Android Release/Trimming und x64-App-Workflow werden geprüft; die Produktfreigabe
-ist wegen abweichender nativer Entscheidungen noch offen. Frühere Empfehlungen
-in historischen Reports lösen keine weitere CV-Forschung aus.
+Android Release/Trimming und x64-App-Workflow sind geprüft; Native Mobile ist
+fachlich für assistierte Wertung freigegebener Produktionspfad. Dokumentierte
+Plattformabweichungen sind bewusst akzeptiert. Windows/OpenCvSharp bleibt
+Referenz-/Regressionstool. Frühere Empfehlungen in historischen Reports lösen
+keine weitere CV-Forschung aus.
 
 `tools/Games/ArkNova/PhotoRecognition` ist ein Windows-x64-Entwicklungswerkzeug
 für Phase 1A, kein viertes Produktionsprojekt. Es rekonstruiert die Bildpipeline aus
@@ -732,8 +734,12 @@ Alle 48 registrierten Frames wurden identisch reproduziert, 564 zuvor erfolgreic
 Kandidaten und Confidence-Werte bleiben erhalten. Historische Quellhashes bleiben
 unverändert gespeichert und können unter dem gehärteten Code deshalb ablehnen.
 
-Die mobile Bibliothek ist der gemeinsame native OpenCV-Kern. Die Windows-Parität
-ist noch nicht erfüllt; erfolgreiche Builds allein erlauben keine Produktfreigabe.
+Die mobile Produktionsbibliothek ist der gemeinsame native OpenCV-Kern.
+Das fachliche GO für assistierte Wertung akzeptiert die dokumentierten
+Plattformabweichungen bewusst; historische Paritäts-/GT-Gate-FAILs und Messwerte
+bleiben erhalten. Alle Vorschläge benötigen Nutzerprüfung und Bestätigung.
+Offen bleiben die manuellen Runtime-Nachweise auf echtem Android ARM64 und iOS.
+Keine weitere CV-Optimierung geplant.
 Foto-Review bestätigt dieselben fachlichen Wertungsfelder, ohne neue Tabellen oder
 gespeicherte Bild-/Confidence-Daten. Technische Details: NativeVisionSpike-README.
 

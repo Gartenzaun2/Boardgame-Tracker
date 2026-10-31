@@ -381,12 +381,15 @@ im vorhandenen App-Dialog. Ruf bleibt gemäß globaler Einstellung optional.
 CV liefert für Attraktivität/Artenschutz 0 weiterhin keinen Kandidaten; manuelle
 0-Eingabe bleibt gültig. Keine automatischen Nachbarwertkorrekturen.
 
-**Implementiert, Produktfreigabe offen:** Gemeinsamer nativer OpenCV-C++-Kern,
+**Fachlich freigegeben für assistierte Wertung:** Gemeinsamer nativer OpenCV-C++-Kern,
 Kamera/Systempicker und isolierter Review sind in der App angebunden. Erst die
 explizite Bestätigung speichert alle bestätigten Spielerwerte atomar. Android
-Release/Trimming baut für ARM64/x64; fachliche Windows-Parität ist noch nicht
-erreicht. iOS besitzt den vollständigen Code-/Buildpfad; Apple-Build/Link/Runtime
-bleiben manuell zu verifizieren. Aktuelle Nachweise und Grenzen im CV-Status.
+Release/Trimming baut für ARM64/x64. Dokumentierte Plattformabweichungen sind
+bewusst akzeptiert: keine neuen False Highs/High-Phantome, Nutzerprüfung und
+Bestätigung vor Speicherung. Native Mobile ist Produktionspfad; Windows/OpenCvSharp
+bleibt Referenz-/Regressionstool. Keine weitere CV-Forschung geplant. Echter
+Android-ARM64-Gerätelauf und iOS-Apple-Build/Link/Runtime bleiben als manuelle
+Runtime-Nachweise offen. GT-Ergebnisse und Nachweise im CV-Status.
 
 ## Punkteanzeige
 

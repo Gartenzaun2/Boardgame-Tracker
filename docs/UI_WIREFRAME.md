@@ -268,7 +268,7 @@ Häkchen im SelectionDialog. Schließen/System-Zurück verwirft nur die Auswahl.
 Wiederholungen sind wählbar. Busy-Overlays blockieren Eingaben; Fehler sind nur
 bei vorhandenem Text sichtbar.
 
-## Fotoerkennung – implementierter Review, Produktfreigabe offen
+## Fotoerkennung – fachlich freigegebene assistierte Wertung
 
 Foto aufnehmen oder vorhandenes Foto wählen → gemeinsame Analyse → editierbare
 Vorschläge mit `✓ Sicher`, `! Prüfen`, `? Unsicher` und Grün/Gelb/Rot → explizit
@@ -277,8 +277,10 @@ AppDialogPage. Native eingebettete Picker bei stabiler Plattformunterstützung,
 sonst normale Systemauswahl; keine eigene Galerie. Analysefehler erhalten die
 gespeicherten Werte, Abbruch bleibt neutral. Quellenauswahl und Review deaktivieren
 den darunterliegenden Wertungsinhalt; separate Entwurfsfelder verhindern Autosave.
-Die Produktfreigabe hängt weiter an nativer Backend-Parität. Der implementierte
-iOS-Pfad benötigt manuelle Apple-Verifikation. Details: [CV-Status](ARK_NOVA_CV_STATUS.md).
+Die fachliche Produktfreigabe akzeptiert dokumentierte Plattformabweichungen
+bewusst; auch grüne Werte bleiben prüfpflichtige Vorschläge. Keine automatische
+Wertung. Manuelle Runtime-Nachweise auf echtem Android ARM64 und iOS bleiben
+offen. Details: [CV-Status](ARK_NOVA_CV_STATUS.md).
 
 ## Dialogübersicht
 

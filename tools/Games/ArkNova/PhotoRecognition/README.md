@@ -7,7 +7,7 @@ nach Confidence E aber keinen Vorteil und bleibt dokumentierter Forschungskandid
 Die unten aufgeführten Vergleichsbefehle und zugehörigen Eingabeassets bleiben zur
 Reproduktion erhalten. Doppelte lokale Ergebnis-/Checkpointdateien und Scratchdateien
 sind bereinigt; versionierte historische Reports bleiben erhalten. Der native
-Mobile-CV-Port und App-Review sind implementiert, die fachliche Parität bleibt offen;
+Mobile-CV-Port und App-Review sind fachlich für assistierte Wertung freigegeben;
 keine neue Referenz-/Heuristikoptimierung und keine automatische Übernahme von B/C.
 
 Gehärtetes A bleibt Basis, C1/C2 verworfen, C3 research-only, keine F1/F2-Fusion
@@ -15,10 +15,14 @@ und keine C3-Warnregel. [Kanonischer Status](../../../../docs/ARK_NOVA_CV_STATUS
 [Abschlussmetriken und letztes Stressfoto](Reports/FinalAcceptance/README.md).
 Die nachfolgenden Forschungsstände sind historisch; ihre früheren Empfehlungen
 öffnen keine neue Forschungsrunde. Der [native Backendpfad](../NativeVisionSpike/README.md)
-baut für Android ARM64/x64 und wird in der App verwendet. Das funktionale
-Paritätsgate scheitert weiter; damit keine Produktfreigabe. iOS ist im Code
-vollständig vorbereitet, Apple-Verifikation bleibt manuell offen. OpenCvSharp
-bleibt Windows-Referenz. Keine Schwellen-/Confidence-Änderung aus dem Stressfoto.
+baut für Android ARM64/x64 und ist mobiler Produktionspfad. Das ausdrückliche
+fachliche GO akzeptiert die dokumentierten Plattformabweichungen für assistierte
+Wertung: nach E 294/411 Treffer und Empty-Phantome 11/120; keine neuen False
+Highs/High-Phantome, Prüfung und Bestätigung vor Speicherung. Historische
+Paritäts-/GT-Gate-FAILs bleiben dokumentiert und blockieren diese Entscheidung
+nicht mehr. iOS ist im Code vollständig vorbereitet; echter Android-ARM64-
+Gerätelauf und Apple-Verifikation bleiben manuell offen. OpenCvSharp bleibt
+Windows-Referenz-/Regressionstool. Keine weitere CV-Forschung oder -Optimierung.
 
 Der isolierte [ReferenceV3Validation-Vergleich](Reports/ReferenceV3Validation/README.md)
 lehnt die neue Single-Shot-/Candidate-5-Referenz wegen Regression ab. Die bisherigen
@@ -239,11 +243,15 @@ Quellen: [OpenCvSharp-Plattformen und Profile](https://github.com/shimat/opencvs
 Der weitere Integrationsweg ist im [CV-Status](../../../../docs/ARK_NOVA_CV_STATUS.md)
 und im [nativen Build-Spike](../NativeVisionSpike/README.md) festgelegt. Keine
 weitere Forschungs-/Threshold-Runde und kein neues Holdout als Voraussetzung
-für manuell bestätigte Vorschläge. Zunächst muss der technische Backend-Spike
-seine Paritätsgates erfüllen. Android ARM64 baut; die numerische Parität ist noch
-offen, iOS vorerst nur dokumentarisch geprüft. Kamera, Galerie-Systempicker,
-Review, Confidence-Anzeige und Bestätigung vor Persistenz sind danach umzusetzen.
+für manuell bestätigte Vorschläge. Der native mobile Produktionspfad ist durch
+fachliches GO für assistierte Wertung freigegeben; die historische
+[Ground-Truth-Abnahme](../NativeVisionSpike/NativeGroundTruthAcceptance.md) bleibt
+mit unveränderten Ergebnissen erhalten. Keine weitere CV-Optimierung geplant.
+Android ARM64 baut, x64-App-Workflow wurde geprüft. iOS-Codepfad ist implementiert,
+Apple-Build/Link/Runtime bleiben manuell offen. Kamera, Systempicker, Review,
+Confidence-Anzeige und explizite Bestätigung vor Persistenz sind implementiert.
 
 OpenCvSharp bleibt Windows-Forschungs-/Referenzcode. Der gemeinsame native
-OpenCV-C++-Kern soll den mobilen Produktpfad übernehmen; reine Ranking-/Confidence-
-Logik bleibt C#. Es gibt derzeit noch keine funktionsfähige mobile Fotoanalyse.
+OpenCV-C++-Kern ist in der mobilen App angebunden; reine Ranking-/Confidence-
+Logik bleibt C#. Funktionsfähiger App-Pfad und fachliche Produktionsfreigabe sind
+getrennte Nachweise.

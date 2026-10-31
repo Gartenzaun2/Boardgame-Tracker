@@ -1,5 +1,13 @@
 # Arche Nova – CV-Abschluss und Integrationsstatus
 
+**Mobile Ark-Nova-CV ist fachlich für assistierte Wertung freigegeben.**
+Der native Mobile-CV-Kern ist der Produktionspfad. Die dokumentierten
+Plattformabweichungen gegenüber Windows A sind durch ausdrückliches fachliches
+GO bewusst akzeptiert: keine neuen False-High-Fälle, keine neuen High-Phantome,
+Prüfung/Korrektur und ausdrückliche Bestätigung durch den Nutzer vor Speicherung.
+Alle Ergebnisse bleiben Vorschläge, einschließlich Grün. Keine automatische
+Wertung und keine weitere CV-Forschung oder -Optimierung geplant.
+
 **Erkennungsforschung: ABGESCHLOSSEN / FROZEN.** Produktionsbasis ist das
 gehärtete A aus V5 einschließlich `ArkNovaMaskFraction.ClampRoundoff` und
 Regressionstests. Registrierung, Ranking A_NoZero und Confidence E bleiben
@@ -15,14 +23,15 @@ Im [finalen Referenzvergleich](../tools/Games/ArkNova/PhotoRecognition/Reports/R
 registriert C v2 technisch erfolgreich 54/54; nach E treffen A/B/C jeweils 297/411.
 C v2 bleibt ausschließlich dokumentierter Referenzkandidat/Forschungsstand,
 keine automatische Übernahme. Weitere Referenz-/Heuristikoptimierung ist gestoppt.
-Der native Mobile-CV-Port und App-Workflow sind implementiert; die Produktfreigabe
-bleibt vom noch fehlenden fachlichen Paritätsnachweis abhängig. Keine weitere Referenzforschung.
+Der native Mobile-CV-Port und App-Workflow sind für assistierte Wertung fachlich
+freigegeben. Windows-Parität und das historische GT-Gate blockieren diese bewusst
+getroffene Produktentscheidung nicht. Keine weitere Referenzforschung.
 
 Die Qualität reicht für manuell geprüfte Vorschläge, nicht für stilles Speichern.
 Auf wiederverwendetem V3 sind acht grüne Vorschläge falsch. Bekannte Grenzen:
 Schwarz, Nachbarfelder, mehrere Farben auf demselben Feld, Schatten und
-Karten/sonstiges Störmaterial. Weitere CV-Forschung nur bei einem reproduzierbaren
-Problem aus realer Produktnutzung; keine neue Suche auf V2/V3 oder dem Stressfoto.
+Karten/sonstiges Störmaterial. Keine weitere CV-Forschung geplant; keine neue
+Suche auf V2/V3 oder dem Stressfoto.
 
 Das letzte Stressfoto `IMG_4263.jpeg` registriert erfolgreich: fünf richtige,
 ein falscher, kein fehlender Wert. Schwarz-Artenschutz: **2 statt 24**, Rot/Unsicher.
@@ -52,7 +61,7 @@ Android: eingebetteter Picker nur bei verfügbarer stabiler SDK-/Binding-Anbindu
 sonst nativer Systempicker. Keine eigene Galerie, keine Vollbibliotheksberechtigung
 allein für die Systemauswahl.
 
-## Tatsächlicher Implementierungsstand – Paritätsgate offen
+## Produktionspfad und dokumentierte Qualität
 
 Gemeinsamer C++/OpenCV-Kern unter `App/Games/ArkNova/PhotoRecognition/Native`,
 stabile C-ABI, SafeHandle und source-generiertes P/Invoke sind in der MAUI-App
@@ -68,13 +77,37 @@ Laufzeitprüfung erfolgt im API-30-x64-Emulator mit isolierter Test-App und eige
 Testdaten. EF-Mapping-/Domain-/Provider-Metadaten bleiben für reflektive EF-Zugriffe
 erhalten; Trim-Warnungen sind weiterhin vorhanden. ARM64-Gerätelauf fehlt.
 
-**Keine Produktfreigabe:** Auf allen 54 bisherigen Vergleichsfotos registriert der
-Port erfolgreich. Von 648 Entscheidungen unterscheiden sich aber 30 Rohwerte
-und 27 Ergebnisse nach E (Wert oder Confidence-Klasse). Gleicher Registrierungserfolg
-genügt nicht. Deshalb ist die Gesamtaufgabe noch nicht abgeschlossen. Toleranzen,
-Baseline und Erkennungsparameter wurden nicht geändert. Technische Untersuchung
-von Feature-Reihenfolge/Gleitkomma-Kontraktion hat die Parität nicht hergestellt;
-die vollständige Ursache ist nicht nachgewiesen. Keine fallbezogenen Sonderregeln.
+Die Ground-Truth-Ergebnisse bleiben unverändert dokumentiert: nach E **294/411**
+richtig; Raw gesamt 311/411. Die 411 vorhandenen GT-Entscheidungen nach E:
+
+| Klasse | Anzahl | Richtig | Falsch | Ohne Wert |
+|---|---:|---:|---:|---:|
+| High | 115 | 107 | 8 | 0 |
+| Medium | 77 | 72 | 5 | 0 |
+| Uncertain | 219 | 115 | 36 | 68 |
+
+Die **68 ohne Wert sind in den 219 Uncertain enthalten**. Alle acht falschen
+Highs sind bereits bei Windows A in gleicher Weise falsch; keine neuen False
+Highs, kein korrekt-High zu falsch-High und keine neuen High-Phantome.
+V3 Empty nach E **11/120** Phantome (Windows A 10/120), Raw 42/120 (A 40/120).
+Windows A bleibt mit 297/411 nach E die Vergleichsbaseline. Vollständige Tabellen
+und Einzelentscheidungen, einschließlich des historischen GT-Gate-FAIL:
+[NativeGroundTruthAcceptance](../tools/Games/ArkNova/NativeVisionSpike/NativeGroundTruthAcceptance.md).
+
+Das historische strengere Gate bleibt als Mess-/Bewertungsstand erhalten.
+Das ausdrückliche fachliche GO akzeptiert die Plattformabweichungen für den
+assistierten Workflow bewusst; es erklärt weder die Ergebnisse zu gleich noch
+ändert es Messwerte. 54/54 Registrierungen und 30 Raw-/27 E-Abweichungen bleiben
+Vergleichsdaten. Keine neue Messung, Ursachenforschung, Threshold-, Polygon-,
+Confidence- oder sonstige Erkennungsänderung. Keine weitere CV-Optimierung geplant.
+
+## Offene manuelle Runtime-Nachweise
+
+Diese Nachweise sind getrennt von der abgeschlossenen fachlichen Produktfreigabe:
+
+- Android ARM64: echter Gerätelauf weiterhin offen; bisheriger Runtime-Nachweis
+  auf Android API 30 x64. Keine neue CV-Qualitätsprüfung als Voraussetzung.
+- iOS: `iOS build/link/runtime verification pending manual user verification`.
 
 iOS besitzt denselben implementierten Engine-/Service-/Review-Pfad, statisches
 Archiv-Buildskript für Device ARM64/Simulator, `NativeReference`, `__Internal`,
@@ -85,8 +118,8 @@ das ersetzt keinen Apple-Build-/Link-/Laufzeitnachweis:
 
 Build-/Reproduktionsanleitung und aktuelle Nachweisgrenzen:
 [Native README](../tools/Games/ArkNova/NativeVisionSpike/README.md).
-Windows/OpenCvSharp bleibt die unveränderte Referenz. Der Backend-Port nimmt
-keine eingefrorene Erkennungsforschung wieder auf.
+Windows/OpenCvSharp bleibt Referenz-/Regressionstool; Native Mobile ist der
+Produktionspfad für assistierte Wertung. Keine weitere CV-Forschung geplant.
 
 ## Aufbewahrung
 

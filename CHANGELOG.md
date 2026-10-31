@@ -4,6 +4,22 @@ Historische Versionsentscheidungen können durch spätere Einträge überholt se
 Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
 Spezifikationen unter `docs/`.
 
+## 0.10.0.24
+
+- Ausdrückliches fachliches GO: Native Mobile-CV ist Produktionspfad und für assistierte Ark-Nova-Wertung freigegeben. Plattformabweichungen gegenüber Windows A bewusst akzeptiert: keine neuen False-High-Fälle/High-Phantome, verpflichtende Nutzerprüfung/Korrektur und explizite Bestätigung vor Speicherung. Keine automatische Wertung.
+- Historische Paritäts-/GT-Gate-FAILs und alle Messwerte unverändert erhalten; fachliche Produktentscheidung hebt sie als Freigabeblocker auf. Native nach E 294/411; 115 High (107 richtig/8 falsch), 77 Medium (72 richtig/5 falsch), 219 Uncertain einschließlich 68 ohne Wert; Empty Phantom E 11/120. Windows/OpenCvSharp bleibt Referenz-/Regressionstool.
+- CV-Status und relevante README/Produkt-/Architekturdokumentation abgeschlossen. Keine weitere CV-Forschung, Optimierung oder Ursachenforschung geplant; keine Threshold-, Polygon-, Confidence- oder andere Erkennungsänderung. Offen sind nur manuelle Runtime-Nachweise: echter Android-ARM64-Gerätelauf und `iOS build/link/runtime verification pending manual user verification`.
+- App-Version 0.10.0.24 / ApplicationVersion 61. Commit und Push auf ausdrücklichen Benutzerauftrag; Ground-Truth-Bericht aus dem vorherigen Auftrag bleibt Teil des dokumentierten Stands.
+- Verifikation: Solution-Build ohne Warnungen/Fehler, 73 Core- und 207 Application-Tests bestanden. GT-/Native-Messdateien und deren gespeicherte Quellprüfsummen unverändert; ausschließlich Statusdokumentation und Versionsmetadaten geändert. Keine neuen CV- oder Geräteläufe.
+
+## 0.10.0.23
+
+- Ausschließlich vorhandenen nativen Mobile-CV-Run direkt gegen die originalen Ground Truths tabelliert; alle 648 Expected-Zuordnungen und historischen Nenner geprüft. Kein neuer CV-Lauf, keine Ursachenforschung, Optimierung oder Erkennungsparameteränderung.
+- `NativeGroundTruthAcceptance.md` und maschinenlesbarer Nachweis mit allen Entscheidungen: **FAIL**. Gesamt raw 311 statt 312/411; nach E 294 statt 297/411. V3 False High unverändert 8, identische Fehler, keine neuen falschen Highs und kein korrekt-High zu falsch-High. V3 Empty raw 42 statt 40/120, nach E 11 statt 10/120. Weniger E-Treffer und mehr E-Phantome verhindern die Freigabe unabhängig von Windows-Parität.
+- Datensatz-, Track-, Farb- und Confidence-Tabellen sowie Quellprüfsummen dokumentiert. Status/README halten Produktionsfreigabe offen und weitere CV-Arbeit gestoppt. ARM64-Gerätelauf separat manuell offen; `iOS build/link/runtime verification pending manual user verification` unverändert.
+- App-Version 0.10.0.23 / ApplicationVersion 60 gemäß Dokumentations-Versionsregel. Erkennungslogik und historische Messungen unverändert. Änderungen lokal, kein Commit oder Push.
+- Verifikation: alle 648 GT-Zuordnungen, unveränderte Quellprüfsummen, vollständige Nenner und Rekonstruktion der 30 Raw-/27 E-Differenzen geprüft. Solution-Build ohne Warnungen/Fehler; 73 Core- und 207 Application-Tests bestanden. Kein neuer Native-/CV-Lauf.
+
 ## 0.10.0.22
 
 - Gemeinsamen nativen OpenCV-Kern in die MAUI-App eingebunden: Decode/EXIF, Registrierung/Gates, Warp, LAB/HSV/Helligkeitsnormalisierung, Farb-/Differenzmasken, Grow und Field/Core-Evidenz hinter einer C-ABI. SafeHandle, serialisierte Lebensdauer und source-generiertes P/Invoke; Ranking A_NoZero und Confidence E unverändert nach Application übernommen und mit dem Windows-Werkzeug geteilt. Alte Referenz/v2-Geometrie, RegistrationEdge 1600 und AnalysisScale 0,5 bleiben aktiv.
