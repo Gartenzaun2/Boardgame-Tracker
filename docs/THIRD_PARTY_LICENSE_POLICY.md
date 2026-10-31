@@ -63,6 +63,26 @@ Keine neue Komponente aufnehmen, deren Lizenz beispielsweise:
 - keine ausreichenden Rechte zur Weitergabe der Anwendung gewährt;
 - keine ausreichenden Rechte zur gewünschten Modifikation oder Weitergabe des betroffenen Drittanbieter-Codes gewährt.
 
+## Umfang von Lizenzprüfungen
+
+Die Umsetzung oder Pflege der In-App-Lizenzanzeige ist kein automatischer
+vollständiger Dependency-License-Audit. Ohne ausdrücklichen Audit-Auftrag:
+
+- keinen vollständigen transitiven NuGet-Paketbaum herunterladen oder analysieren;
+- keine komplette .NET-/Mono-Runtime inventarisieren;
+- keine SDK-/NDK-Bestandteile systematisch auditieren;
+- keine projektweite Lizenz-Inventur erstellen;
+- keine Prüfsummen-/Provenance-Dokumentation für sämtliche Drittanbieterdateien erzeugen;
+- keine zusätzlichen externen Quellen recherchieren, wenn vorhandene konkret
+  ausgelieferte Lizenzinformationen ausreichen.
+
+Bei einer konkreten neuen Dependency deren Lizenz gemäß dieser Policy prüfen.
+Bei einer bereits bekannten nativen Bibliothek dürfen die unmittelbar mit ihr
+ausgelieferten bzw. statisch eingebundenen Lizenz-/NOTICE-Pflichten geprüft werden.
+Der Umfang endet, wenn die konkrete Änderung und die tatsächlich bekannten
+Distributionspflichten erfüllt sind. Ein vollständiger Dependency-License-Audit
+ist ein eigener Auftrag.
+
 ## Prüfung neuer Abhängigkeiten
 
 Vor Aufnahme einer neuen Third-Party-Dependency mindestens prüfen und nachvollziehbar festhalten:

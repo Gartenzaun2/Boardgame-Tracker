@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Include="../../src/BoardgameTracker.App/Features/Settings/Licenses/ThirdPartyLicenseCatalog.cs;../../src/BoardgameTracker.App/Features/Settings/Licenses/LicenseTextService.cs;../../src/BoardgameTracker.App/Features/Settings/Licenses/LicenseListViewModel.cs;../../src/BoardgameTracker.App/Features/Settings/Licenses/LicenseDetailViewModel.cs" Link="Presentation/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Resources/Raw/ThirdPartyLicenses/catalog.json" LogicalName="LicenseAssets.ThirdPartyLicenses/catalog.json" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Resources/Raw/ThirdPartyLicenses/texts/*.txt" LogicalName="LicenseAssets.ThirdPartyLicenses/texts/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Games/ArkNova/PhotoRecognition/Native/licenses/*.txt" LogicalName="LicenseAssets.ArkNovaVision/licenses/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Features/Settings/Licenses/*.xaml;../../src/BoardgameTracker.App/AppShell.xaml.cs;../../src/BoardgameTracker.App/Navigation/NavigationParameters.cs" LogicalName="LicenseNavigation.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\**\*.cs;..\..\src\BoardgameTracker.App\Games\**\Features\**\*.cs" Exclude="..\..\src\BoardgameTracker.App\Features\Groups\**\*.cs;..\..\src\BoardgameTracker.App\Features\Players\**\*.cs;..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportTargets.cs" LogicalName="PresentationBoundary.%(Identity)" />
     <Compile Include="..\..\src\BoardgameTracker.App\Persistence\SQLite\*.cs" Link="Persistence\%(Filename)%(Extension)" />
     <Compile Include="..\..\src\BoardgameTracker.App\Features\History\Export\HistoryExportFlow.cs" Link="Presentation\HistoryExportFlow.cs" />

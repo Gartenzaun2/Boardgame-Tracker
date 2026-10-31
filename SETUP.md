@@ -28,6 +28,14 @@ Integrationstests verwenden denselben Provider-/Collation-Code mit isolierten Da
 
 ## Lokaler Entwicklungsablauf
 
+Die In-App-Lizenzanzeige liest ausschließlich MAUI-Assets offline. Vorhandene
+native Texte bleiben unter ihren `ArkNovaVision/licenses/`-LogicalNames; Manifest
+und deduplizierte Zusatztexte werden vom bestehenden `Resources/Raw/**`-Glob
+paketiert. Kein zusätzlicher Build-/Runtime-Download und keine neue Dependency.
+Bei konkret geänderten App-Abhängigkeiten die Lizenzhinweise gemäß
+[Lizenzpolicy](docs/THIRD_PARTY_LICENSE_POLICY.md) pflegen. Fehlende oder nicht
+referenzierte Textassets werden von den Application-Tests erkannt.
+
 Die mobile Ark-Nova-Fotoerkennung benötigt vor dem App-Build den gemeinsamen
 nativen OpenCV-Build. Gepinnte Abhängigkeiten, Android-ARM64/x64- und iOS-
 Device-/Simulator-Befehle stehen im
@@ -40,6 +48,24 @@ offene manuelle Runtime-Nachweise: [CV-Status](docs/ARK_NOVA_CV_STATUS.md).
 Standard gemäß `AGENTS.md`: Code ändern → Build → automatisierte Tests → fertig.
 Restore bei Bedarf; automatisierte Tests dürfen sinnvoll ergänzt oder erweitert
 werden. Eine manuelle Geräte-/UI-Prüfung gehört nicht zum Standardabschluss.
+
+Für normale Entwicklungsaufträge ist die vollständige Standardverifikation:
+
+```text
+1x Solution-Build
+1x Core-Tests
+1x Application-Tests
+```
+
+Zusätzliche Android-x64-/ARM64-/iOS-Release-Builds, Trimming-Matrizen,
+APK-/IPA-Inhaltsanalysen, Emulator-/Gerätetests, Screenshots und Theme-
+Sichtprüfungen nur bei ausdrücklichem Auftrag oder wenn genau diese Plattform-/
+Packaging-Eigenschaft Gegenstand der Änderung ist. Ein normaler UI-Slice
+rechtfertigt keine automatische manuelle UI-Prüfung; die strengeren Opt-in-
+Regeln aus AGENTS bleiben maßgeblich. Nach erfolgreichem Build und Tests stoppen.
+Bei Fehlern nur die für die Korrektur notwendige fehlgeschlagene Prüfung
+wiederholen; erfolgreiche Läufe nach unabhängigen Dokumentationsänderungen
+nicht wiederholen.
 
 Ab dem Solution-Root:
 

@@ -1,0 +1,212 @@
+{
+  "components": [
+    {
+      "id": "opencv",
+      "displayName": "OpenCV",
+      "version": "4.13.0",
+      "licenseDisplayName": "Apache License 2.0",
+      "spdxIdentifier": "Apache-2.0",
+      "assetPath": "ArkNovaVision/licenses/OpenCV.txt",
+      "attributionText": "OpenCV team and contributors.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "libjpeg-turbo",
+      "displayName": "libjpeg-turbo",
+      "version": null,
+      "licenseDisplayName": "IJG / BSD-3-Clause",
+      "spdxIdentifier": null,
+      "assetPath": "ArkNovaVision/licenses/libjpeg-turbo.txt",
+      "attributionText": "This software is based in part on the work of the Independent JPEG Group.",
+      "additionalAssetPaths": [
+        "ArkNovaVision/licenses/IndependentJPEGGroup.txt"
+      ]
+    },
+    {
+      "id": "independent-jpeg-group",
+      "displayName": "Independent JPEG Group",
+      "version": null,
+      "licenseDisplayName": "Independent JPEG Group License",
+      "spdxIdentifier": "IJG",
+      "assetPath": "ArkNovaVision/licenses/IndependentJPEGGroup.txt",
+      "attributionText": "This software is based in part on the work of the Independent JPEG Group.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "libpng",
+      "displayName": "libpng",
+      "version": null,
+      "licenseDisplayName": "PNG Reference Library License",
+      "spdxIdentifier": "libpng-2.0",
+      "assetPath": "ArkNovaVision/licenses/libpng.txt",
+      "attributionText": "PNG Reference Library contributors; copyright notices are included below.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "openjpeg",
+      "displayName": "OpenJPEG",
+      "version": null,
+      "licenseDisplayName": "BSD-2-Clause",
+      "spdxIdentifier": "BSD-2-Clause",
+      "assetPath": "ArkNovaVision/licenses/OpenJPEG.txt",
+      "attributionText": "Université catholique de Louvain and OpenJPEG contributors; full copyright notices below.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "kleidicv",
+      "displayName": "KleidiCV",
+      "version": "0.7.0",
+      "licenseDisplayName": "Apache License 2.0",
+      "spdxIdentifier": "Apache-2.0",
+      "assetPath": "ArkNovaVision/licenses/KleidiCV.txt",
+      "attributionText": "Copyright (c) 2023–2025 Arm Limited and/or its affiliates.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "carotene",
+      "displayName": "Carotene",
+      "version": null,
+      "licenseDisplayName": "BSD-3-Clause",
+      "spdxIdentifier": "BSD-3-Clause",
+      "assetPath": "ArkNovaVision/licenses/Carotene.txt",
+      "attributionText": "Copyright (C) 2014–2015 NVIDIA Corporation.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "android-cpu-features",
+      "displayName": "Android CPU Features",
+      "version": null,
+      "licenseDisplayName": "Apache License 2.0",
+      "spdxIdentifier": "Apache-2.0",
+      "assetPath": "ArkNovaVision/licenses/AndroidCpuFeatures.txt",
+      "attributionText": "Copyright (C) 2016 The Android Open Source Project.",
+      "additionalAssetPaths": [
+        "ArkNovaVision/licenses/OpenCV.txt"
+      ]
+    },
+    {
+      "id": "berkeley-softfloat",
+      "displayName": "Berkeley SoftFloat",
+      "version": "3c",
+      "licenseDisplayName": "BSD-3-Clause",
+      "spdxIdentifier": "BSD-3-Clause",
+      "assetPath": "ThirdPartyLicenses/texts/157c1095adca585146eef6b36f654daff6ade2b4b40dad49aa6cd6b0aaee80ef.txt",
+      "attributionText": "Copyright 2011–2017 The Regents of the University of California.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "flann",
+      "displayName": "FLANN (OpenCV)",
+      "version": null,
+      "licenseDisplayName": "BSD-2-Clause",
+      "spdxIdentifier": "BSD-2-Clause",
+      "assetPath": "ThirdPartyLicenses/texts/555caefc71b296673fa5736b3dfbc3cef31f58803d094bef392abb9c2daf3736.txt",
+      "attributionText": "Copyright 2008–2011 Marius Muja and David G. Lowe.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "fdlibm",
+      "displayName": "FDLIBM (OpenCV SoftFloat)",
+      "version": null,
+      "licenseDisplayName": "Sun Microsystems permissive license",
+      "spdxIdentifier": null,
+      "assetPath": "ThirdPartyLicenses/texts/4593be7f6ff8773114200ea5fd8a20f39da6040104cb4f8c394e9eede26882ee.txt",
+      "attributionText": "Copyright (C) 1993, 2004 Sun Microsystems, Inc. All rights reserved.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "llvm-cpp-runtime",
+      "displayName": "LLVM C++ Runtime (Android NDK)",
+      "version": "30.0.16248370",
+      "licenseDisplayName": "Apache License 2.0 with LLVM Exceptions / Third-Party Notices",
+      "spdxIdentifier": null,
+      "assetPath": "ThirdPartyLicenses/texts/f96f763beb66a7ba7a667647fc64c0226ace875e590c831fdd9579ec1c1d91e1.txt",
+      "attributionText": "LLVM Project contributors. C++ runtime statically linked by Android NDK r30; original LLVM notice collection follows.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "dotnet-runtime",
+      "displayName": ".NET Runtime (Mono)",
+      "version": "10.0.14",
+      "licenseDisplayName": "MIT / Third-Party Notices",
+      "spdxIdentifier": null,
+      "assetPath": "ThirdPartyLicenses/texts/cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310.txt",
+      "attributionText": ".NET Foundation and contributors. Microsoft.NETCore.App.Runtime.Mono.android-arm64; upstream runtime notices are retained in full.",
+      "additionalAssetPaths": [
+        "ThirdPartyLicenses/texts/66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54.txt"
+      ]
+    },
+    {
+      "id": "CommunityToolkit.Mvvm",
+      "displayName": "CommunityToolkit.Mvvm",
+      "version": "8.4.2",
+      "licenseDisplayName": "MIT",
+      "spdxIdentifier": "MIT",
+      "assetPath": "ThirdPartyLicenses/texts/651997ef19dbb9ecb8dd660dbc86444a65af21f18cfe08daa69bf201cd5cfdfc.txt",
+      "attributionText": "(c) .NET Foundation and Contributors. All rights reserved.",
+      "additionalAssetPaths": [
+        "ThirdPartyLicenses/texts/7774f8b0ab66bfb47ec154ce24a2d6d574febc44a74d940b8a037d1c56756163.txt"
+      ]
+    },
+    {
+      "id": "dotnet-maui",
+      "displayName": ".NET MAUI",
+      "version": "10.0.110",
+      "licenseDisplayName": "MIT",
+      "spdxIdentifier": "MIT",
+      "assetPath": "ThirdPartyLicenses/texts/d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b.txt",
+      "attributionText": "© Microsoft Corporation. All rights reserved.",
+      "additionalAssetPaths": [
+        "ThirdPartyLicenses/texts/45fb89606fe922d1615ee62be7f42342db766685af2ebaf2fe8d2a187100687c.txt"
+      ]
+    },
+    {
+      "id": "entity-framework-core",
+      "displayName": "Entity Framework Core / Microsoft.Data.Sqlite",
+      "version": "10.0.14",
+      "licenseDisplayName": "MIT",
+      "spdxIdentifier": "MIT",
+      "assetPath": "ThirdPartyLicenses/texts/cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310.txt",
+      "attributionText": "© Microsoft Corporation. All rights reserved.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "microsoft-extensions",
+      "displayName": "Microsoft.Extensions",
+      "version": null,
+      "licenseDisplayName": "MIT",
+      "spdxIdentifier": "MIT",
+      "assetPath": "ThirdPartyLicenses/texts/6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21.txt",
+      "attributionText": "© Microsoft Corporation. All rights reserved.",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "sqlitepclraw",
+      "displayName": "SQLitePCLRaw",
+      "version": "2.1.13",
+      "licenseDisplayName": "Apache License 2.0",
+      "spdxIdentifier": "Apache-2.0",
+      "assetPath": "ArkNovaVision/licenses/OpenCV.txt",
+      "attributionText": "Copyright 2014-2024 SourceGear, LLC",
+      "additionalAssetPaths": []
+    },
+    {
+      "id": "android-libraries",
+      "displayName": "AndroidX, Material, Glide, Gson und Kotlin",
+      "version": null,
+      "licenseDisplayName": "MIT / Apache License 2.0 / BSD-2-Clause",
+      "spdxIdentifier": null,
+      "assetPath": "ThirdPartyLicenses/texts/7f92be6c840f2584494d4986060fe7dfe8bbf02d6ab122980fa1d43ffb2ecb0f.txt",
+      "attributionText": "AndroidX, Material Components, Glide, Gson, Kotlin/KotlinX, Tink, Guava ListenableFuture, JSR305, Error Prone, JetBrains Annotations und JSpecify (einschließlich .NET-Bindings).\n© Microsoft Corporation. All rights reserved.",
+      "additionalAssetPaths": [
+        "ThirdPartyLicenses/texts/7e1405f51bf00284ff8b7a63ac55a3c87b2b3c78ab13aef90d2541f247f359f3.txt",
+        "ThirdPartyLicenses/texts/05ebf75adcc496443b65df977e5724b8c09203d100f5f1bbdaf8d941817e587e.txt",
+        "ThirdPartyLicenses/texts/1a14e25264f604fca355c489c0d5877480ddb738cec665008bcf494ad1cdc787.txt",
+        "ThirdPartyLicenses/texts/9133ba7182dfd4dc7c5a3205e2ee6e979fedf299e14020834e718d6aae95a600.txt",
+        "ThirdPartyLicenses/texts/fcc5a0baffb2f1b01b593349b7275518b56621a862f44cbcfbf6bd4476b23461.txt",
+        "ThirdPartyLicenses/texts/872d4dac04f9505fd782be74a4ff099208cdbc23fba6df9c0ac73dfdfc5aa482.txt",
+        "ThirdPartyLicenses/texts/550c765e696f8b24ca17254f722f1772365f46b142367d11db1b604645fec683.txt"
+      ]
+    }
+  ]
+}
