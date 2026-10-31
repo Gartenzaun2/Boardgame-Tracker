@@ -1,11 +1,11 @@
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 
-namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
+namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring.PhotoRecognition;
 
 [Flags]
-internal enum RankingVariant { Baseline = 0, A_NoZero = 1, B_RelativeBlack = 2, C_CoreRanking = 4 }
+public enum RankingVariant { Baseline = 0, A_NoZero = 1, B_RelativeBlack = 2, C_CoreRanking = 4 }
 
-internal static class ArkNovaRankingRules
+public static class ArkNovaRankingRules
 {
     public const RankingVariant Selected = RankingVariant.A_NoZero;
 
@@ -101,9 +101,9 @@ internal static class ArkNovaRankingRules
     private static bool Saturated(RankedField field) => field.FullColor >= 0.18 && field.CoreColor >= 0.16;
 }
 
-internal sealed record RankingObservation(string Color, string Track, int Value, double FullColor, double CoreColor,
+public sealed record RankingObservation(string Color, string Track, int Value, double FullColor, double CoreColor,
     double FullDifference, double CoreDifference, double Grown, double Visibility, double TrackVisibility,
     double RelativeFull, double RelativeCore, double RelativeGrown);
-internal sealed record RankedField(RankingObservation Observation, double FullColor, double CoreColor, double Grown, double Score);
-internal sealed record RankingResult(int? Value, string? Abstention, RankedField[] Fields, double RankingGap);
-internal sealed record ColorScores(Dictionary<string, FieldPrediction> Tracks);
+public sealed record RankedField(RankingObservation Observation, double FullColor, double CoreColor, double Grown, double Score);
+public sealed record RankingResult(int? Value, string? Abstention, RankedField[] Fields, double RankingGap);
+public sealed record ColorScores(Dictionary<string, FieldPrediction> Tracks);

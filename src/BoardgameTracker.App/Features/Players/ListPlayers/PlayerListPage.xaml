@@ -24,7 +24,7 @@
 
                 <HorizontalStackLayout Spacing="20">
                     <HorizontalStackLayout Spacing="6">
-                        <Switch IsToggled="{Binding IncludeTemporary}" />
+                        <Switch IsToggled="{Binding IncludeGuests}" />
                         <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="6">

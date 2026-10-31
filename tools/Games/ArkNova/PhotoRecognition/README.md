@@ -6,19 +6,19 @@ Produktionsbaseline. B brachte keinen Produktgewinn; C v2 registriert 54/54, bri
 nach Confidence E aber keinen Vorteil und bleibt dokumentierter Forschungskandidat.
 Die unten aufgeführten Vergleichsbefehle und zugehörigen Eingabeassets bleiben zur
 Reproduktion erhalten. Doppelte lokale Ergebnis-/Checkpointdateien und Scratchdateien
-sind bereinigt; versionierte historische Reports bleiben erhalten. Nächster Schritt
-ist der native Mobile-CV-Port mit Paritätsnachweis und Produktintegration,
+sind bereinigt; versionierte historische Reports bleiben erhalten. Der native
+Mobile-CV-Port und App-Review sind implementiert, die fachliche Parität bleibt offen;
 keine neue Referenz-/Heuristikoptimierung und keine automatische Übernahme von B/C.
 
 Gehärtetes A bleibt Basis, C1/C2 verworfen, C3 research-only, keine F1/F2-Fusion
 und keine C3-Warnregel. [Kanonischer Status](../../../../docs/ARK_NOVA_CV_STATUS.md),
 [Abschlussmetriken und letztes Stressfoto](Reports/FinalAcceptance/README.md).
 Die nachfolgenden Forschungsstände sind historisch; ihre früheren Empfehlungen
-öffnen keine neue Forschungsrunde. Der vorgelagerte
-[native Backend-Spike](../NativeVisionSpike/README.md) baut für Android ARM64,
-verfehlt aber noch das Paritätsgate. Mobile Produktintegration bleibt offen;
-OpenCvSharp ist kein Android-/iOS-Produktionsweg. iOS wurde vorerst nur gegen
-Dokumentation geprüft. Keine Schwellen-/Confidence-Änderung aus dem Stressfoto.
+öffnen keine neue Forschungsrunde. Der [native Backendpfad](../NativeVisionSpike/README.md)
+baut für Android ARM64/x64 und wird in der App verwendet. Das funktionale
+Paritätsgate scheitert weiter; damit keine Produktfreigabe. iOS ist im Code
+vollständig vorbereitet, Apple-Verifikation bleibt manuell offen. OpenCvSharp
+bleibt Windows-Referenz. Keine Schwellen-/Confidence-Änderung aus dem Stressfoto.
 
 Der isolierte [ReferenceV3Validation-Vergleich](Reports/ReferenceV3Validation/README.md)
 lehnt die neue Single-Shot-/Candidate-5-Referenz wegen Regression ab. Die bisherigen

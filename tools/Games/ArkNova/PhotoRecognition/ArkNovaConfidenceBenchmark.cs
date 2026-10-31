@@ -12,7 +12,7 @@ internal static class ArkNovaConfidenceBenchmark
         if (partition is not ("calibration" or "holdout"))
             throw new ArgumentException("Partition must be calibration or holdout.");
         // Check the freeze before touching holdout images, not after analysis.
-        string policySourceHash = Hash(Path.Combine(referenceDirectory, "..", "ArkNovaConfidencePolicy.cs"));
+        string policySourceHash = Hash(Path.Combine(referenceDirectory, "..", ArkNovaRankingExperiment.SharedRecognitionSources, "ArkNovaConfidencePolicy.cs"));
         if (partition == "holdout")
         {
             using JsonDocument frozen = JsonDocument.Parse(File.ReadAllText(Path.Combine(referenceDirectory, "..", "confidence-policy-selection.json")));

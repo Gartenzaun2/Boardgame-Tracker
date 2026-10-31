@@ -36,6 +36,7 @@ public static class MauiProgram
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
         builder.UseMauiApp<App>();
+        builder.Logging.AddProvider(new BoardgameTracker.App.Diagnostics.PlatformLogProvider());
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

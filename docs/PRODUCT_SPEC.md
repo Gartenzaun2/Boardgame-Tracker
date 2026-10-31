@@ -381,13 +381,12 @@ im vorhandenen App-Dialog. Ruf bleibt gemäß globaler Einstellung optional.
 CV liefert für Attraktivität/Artenschutz 0 weiterhin keinen Kandidaten; manuelle
 0-Eingabe bleibt gültig. Keine automatischen Nachbarwertkorrekturen.
 
-**Noch keine mobile Produktintegration:** Auf ausdrückliche Folgeanweisung geht
-zuerst der gemeinsame native OpenCV-C++-Spike vor. Android ARM64 baut, Android-x64-
-Interop läuft, numerische Parität zur Windows-Referenz ist aber nicht nachgewiesen.
-iOS ist vorerst nur dokumentarisch geprüft. Daher bleiben Kamera-/Picker-/Review-
-Anbindung und deren UI-/Persistenztests offen. Der bestehende Kameraeinstieg ist
-weiterhin ein Platzhalter; der gewünschte Produktablauf wird nicht als fertig
-implementiert ausgegeben.
+**Implementiert, Produktfreigabe offen:** Gemeinsamer nativer OpenCV-C++-Kern,
+Kamera/Systempicker und isolierter Review sind in der App angebunden. Erst die
+explizite Bestätigung speichert alle bestätigten Spielerwerte atomar. Android
+Release/Trimming baut für ARM64/x64; fachliche Windows-Parität ist noch nicht
+erreicht. iOS besitzt den vollständigen Code-/Buildpfad; Apple-Build/Link/Runtime
+bleiben manuell zu verifizieren. Aktuelle Nachweise und Grenzen im CV-Status.
 
 ## Punkteanzeige
 

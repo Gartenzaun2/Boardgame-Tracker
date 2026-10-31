@@ -858,4 +858,17 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameMaterialHint" xml:space="preserve">
     <value>Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.</value>
   </data>
+  <data name="PhotoTake" xml:space="preserve"><value>Foto aufnehmen</value></data>
+  <data name="PhotoChoose" xml:space="preserve"><value>Foto auswählen</value></data>
+  <data name="PhotoReviewTitle" xml:space="preserve"><value>Fotowerte prüfen</value></data>
+  <data name="PhotoReviewHint" xml:space="preserve"><value>Alle Vorschläge prüfen und bei Bedarf korrigieren. Auch Grün ist keine Garantie. Erst die Bestätigung speichert diese Werte.</value></data>
+  <data name="PhotoConfirm" xml:space="preserve"><value>Bestätigen und speichern</value></data>
+  <data name="PhotoConfidenceHigh" xml:space="preserve"><value>✓ Sicher</value></data>
+  <data name="PhotoConfidenceMedium" xml:space="preserve"><value>! Prüfen</value></data>
+  <data name="PhotoConfidenceUncertain" xml:space="preserve"><value>? Unsicher</value></data>
+  <data name="PhotoHelpTitle" xml:space="preserve"><value>Fotoerkennung</value></data>
+  <data name="PhotoHelpMessage" xml:space="preserve"><value>Grün: ✓ Sicher. Gelb: ! Prüfen. Rot: ? Unsicher. Alle Fotowerte sind Vorschläge, auch Grün ist keine Garantie. Prüfe und korrigiere die Werte. Erst „Bestätigen und speichern“ übernimmt sie.</value></data>
+  <data name="PhotoBoardNotRecognized" xml:space="preserve"><value>Die Wertungstafel konnte nicht sicher ausgerichtet werden. Bitte verwende ein vollständiges, scharfes Foto. Deine bisherigen Werte bleiben erhalten.</value></data>
+  <data name="PhotoAnalysisFailed" xml:space="preserve"><value>Das Foto konnte nicht verarbeitet werden. Prüfe gegebenenfalls die Kameraberechtigung oder wähle ein anderes Foto. Deine bisherigen Werte bleiben erhalten.</value></data>
+  <data name="PhotoValuesInvalid" xml:space="preserve"><value>Bitte prüfe die Zahlenbereiche: Attraktivität 0–113, Artenschutz 0–41, Ruf 1–15. Nicht erfasste Werte dürfen leer bleiben.</value></data>
 </root>

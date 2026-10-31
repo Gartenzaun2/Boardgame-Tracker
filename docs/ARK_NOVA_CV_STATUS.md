@@ -15,8 +15,8 @@ Im [finalen Referenzvergleich](../tools/Games/ArkNova/PhotoRecognition/Reports/R
 registriert C v2 technisch erfolgreich 54/54; nach E treffen A/B/C jeweils 297/411.
 C v2 bleibt ausschließlich dokumentierter Referenzkandidat/Forschungsstand,
 keine automatische Übernahme. Weitere Referenz-/Heuristikoptimierung ist gestoppt.
-Nächster Schritt ist der native Mobile-CV-Port mit Paritätsnachweis und anschließender
-Produktintegration; keine weitere Referenzforschung.
+Der native Mobile-CV-Port und App-Workflow sind implementiert; die Produktfreigabe
+bleibt vom noch fehlenden fachlichen Paritätsnachweis abhängig. Keine weitere Referenzforschung.
 
 Die Qualität reicht für manuell geprüfte Vorschläge, nicht für stilles Speichern.
 Auf wiederverwendetem V3 sind acht grüne Vorschläge falsch. Bekannte Grenzen:
@@ -45,30 +45,48 @@ ist ein normaler Abbruch.
 - Rot: `? Unsicher` = Uncertain, unbekannter Status oder null; manuell prüfen/eingeben.
 
 Kein neuer Confidence-Threshold. Jeder Status hat Text/Icon zusätzlich zur Farbe.
-Ein Info-Icon im Wertungsheader soll dies im vorhandenen App-Dialog erklären.
-Kamera und Systempicker sollen denselben Analyzer benutzen. iOS: eingebetteter
+Ein Info-Icon im Wertungsheader erklärt dies im vorhandenen App-Dialog.
+Kamera und Systempicker benutzen denselben Analyzer. iOS: eingebetteter
 Photos-Picker ab unterstützter System-/Binding-Version, sonst Systemauswahl.
 Android: eingebetteter Picker nur bei verfügbarer stabiler SDK-/Binding-Anbindung,
 sonst nativer Systempicker. Keine eigene Galerie, keine Vollbibliotheksberechtigung
 allein für die Systemauswahl.
 
-## Tatsächlicher Implementierungsstand – Produktintegration offen
+## Tatsächlicher Implementierungsstand – Paritätsgate offen
 
-Der obige Workflow ist entschieden, **noch nicht in der mobilen App umgesetzt**.
-Auf ausdrückliche Folgeanweisung geht ein nativer Architektur-/Build-Spike vor.
-Sein [Nachweis](../tools/Games/ArkNova/NativeVisionSpike/README.md) enthält einen
-gemeinsamen C++-Kern, C-ABI und `IArkNovaVisionEngine` ausschließlich im separaten
-Werkzeug. Android ARM64 und getrimmte Release-Test-App bauen. SIFT/Matching/
-RANSAC/Warp und Interop laufen im x64-Android-Emulator, aber das numerische
-Paritätsgate zur Windows-Referenz scheitert. iOS wurde auf Benutzerwunsch nur
-gegen Dokumentation geprüft; Build/Linking/Laufzeit sind ungetestet.
+Gemeinsamer C++/OpenCV-Kern unter `App/Games/ArkNova/PhotoRecognition/Native`,
+stabile C-ABI, SafeHandle und source-generiertes P/Invoke sind in der MAUI-App
+angebunden. Decode/EXIF, Registrierung, Gates, Warp, LAB/HSV, Helligkeitskorrektur,
+Masken, Grow, Field/Core und Occupancy liegen nativ; unveränderte Rankingregeln
+A_NoZero und Confidence E liegen gemeinsam für App und Referenzwerkzeug in Application.
+Die App paketiert ausschließlich die alte aktive Referenz und v2-Geometrie.
 
-Deshalb kein vollständiger A-Port und keine scheinbar funktionierende Kamera-
-oder Pickerintegration. UI-/Bestätigungs-/Persistenz-/Picker-Tests folgen mit
-dieser Integration. Die Windows/OpenCvSharp-Implementierung bleibt Referenz und
-Forschungswerkzeug, kein mobiler Produktionsweg. Ranking, Confidence, Domain und
-Feld-/Konfliktlogik sollen in C# bleiben. Der technische Backend-Port ist keine
-Wiederaufnahme der eingefrorenen Erkennungsforschung.
+Kamera/Systempicker, isolierter editierbarer Review und atomare Bestätigung sind
+implementiert. Unbestätigte Vorschläge hängen nicht am manuellen Autosave.
+Android Release mit vollständigem Trimming baut für ARM64 und x64; tatsächliche
+Laufzeitprüfung erfolgt im API-30-x64-Emulator mit isolierter Test-App und eigenen
+Testdaten. EF-Mapping-/Domain-/Provider-Metadaten bleiben für reflektive EF-Zugriffe
+erhalten; Trim-Warnungen sind weiterhin vorhanden. ARM64-Gerätelauf fehlt.
+
+**Keine Produktfreigabe:** Auf allen 54 bisherigen Vergleichsfotos registriert der
+Port erfolgreich. Von 648 Entscheidungen unterscheiden sich aber 30 Rohwerte
+und 27 Ergebnisse nach E (Wert oder Confidence-Klasse). Gleicher Registrierungserfolg
+genügt nicht. Deshalb ist die Gesamtaufgabe noch nicht abgeschlossen. Toleranzen,
+Baseline und Erkennungsparameter wurden nicht geändert. Technische Untersuchung
+von Feature-Reihenfolge/Gleitkomma-Kontraktion hat die Parität nicht hergestellt;
+die vollständige Ursache ist nicht nachgewiesen. Keine fallbezogenen Sonderregeln.
+
+iOS besitzt denselben implementierten Engine-/Service-/Review-Pfad, statisches
+Archiv-Buildskript für Device ARM64/Simulator, `NativeReference`, `__Internal`,
+Framework-/Runtime-Linkangaben, Assets, Kamera, Systempicker und native
+Format-/Orientierungsnormalisierung. Der iOS-C#-Target kompiliert auf Windows;
+das ersetzt keinen Apple-Build-/Link-/Laufzeitnachweis:
+`iOS build/link/runtime verification pending manual user verification`.
+
+Build-/Reproduktionsanleitung und aktuelle Nachweisgrenzen:
+[Native README](../tools/Games/ArkNova/NativeVisionSpike/README.md).
+Windows/OpenCvSharp bleibt die unveränderte Referenz. Der Backend-Port nimmt
+keine eingefrorene Erkennungsforschung wieder auf.
 
 ## Aufbewahrung
 

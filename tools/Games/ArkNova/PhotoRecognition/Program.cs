@@ -3,6 +3,11 @@ using System.Text.Json;
 using OpenCvSharp;
 using BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
 
+if (args.Length == 3 && args[0] == "native-parity-export")
+    return ArkNovaNativeParity.Export(args[1], args[2]);
+if (args.Length == 4 && args[0] == "native-parity-compare")
+    return ArkNovaNativeParity.Compare(args[1], args[2], args[3]);
+
 if (args.Length == 5 && args[0] == "compare-reference-c-boundsfix")
     return ArkNovaReference3WayComparison.Run(args[1], args[2], args[4], args[3]);
 

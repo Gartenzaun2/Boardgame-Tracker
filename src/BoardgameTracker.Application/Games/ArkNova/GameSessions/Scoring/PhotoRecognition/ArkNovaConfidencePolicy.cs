@@ -1,12 +1,12 @@
-namespace BoardgameTracker.Tools.Games.ArkNova.PhotoRecognition;
+namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring.PhotoRecognition;
 
-internal enum ConfidenceVariant { A_Baseline, B_FieldVisibility, C_NeighborBalance, D_Combined, E_Guarded }
+public enum ConfidenceVariant { A_Baseline, B_FieldVisibility, C_NeighborBalance, D_Combined, E_Guarded }
 
 /// <summary>
 /// Small, named ablations. Never reads ground truth or changes a candidate to
 /// another field. The guarded policy can abstain when color presence is unsupported.
 /// </summary>
-internal static class ArkNovaConfidencePolicy
+public static class ArkNovaConfidencePolicy
 {
     public const ConfidenceVariant Selected = ConfidenceVariant.E_Guarded;
 
@@ -74,8 +74,8 @@ internal static class ArkNovaConfidencePolicy
     }
 }
 
-internal sealed record FieldPrediction(int? Value, string Confidence, string OriginalConfidence, int? Alternative,
+public sealed record FieldPrediction(int? Value, string Confidence, string OriginalConfidence, int? Alternative,
     string? Warning, double Score, double Margin, double FullColor, double CoreColor,
     double TrackVisibility, double FieldVisibility, double GrownFraction, List<NeighborEvidence> Neighbors,
     int RunnerUpValue, double RunnerUpScore, double RunnerUpFullColor, double RunnerUpCoreColor);
-internal sealed record NeighborEvidence(int Value, double GrownFraction, double FieldVisibility);
+public sealed record NeighborEvidence(int Value, double GrownFraction, double FieldVisibility);

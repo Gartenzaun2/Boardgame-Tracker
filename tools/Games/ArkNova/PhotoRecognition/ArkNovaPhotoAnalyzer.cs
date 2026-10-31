@@ -101,6 +101,7 @@ internal sealed class ArkNovaPhotoAnalyzer : IDisposable
         for (int row = 0; row < 2; row++)
             for (int column = 0; column < 3; column++)
                 transform.Set(row, column, transform.At<double>(row, column) * AnalysisScale / _referenceRegistrationScale);
+        rankingCapture?.RegistrationObserver?.Invoke(transform);
         Point2f[] corners = [new(0, 0), new(small.Width, 0), new(small.Width, small.Height), new(0, small.Height)];
         Point2f[] footprint = Cv2.PerspectiveTransform(corners, transform);
         double footprintArea = Math.Abs(Cv2.ContourArea(footprint));

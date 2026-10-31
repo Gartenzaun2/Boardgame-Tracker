@@ -131,8 +131,8 @@ Wertungskarten reservieren eigene Zeilen für Name/Punkte, Farbe/Zooplan,
 Attraktivität/Artenschutz und Kartenanzahl/optionalen Ruf. Das neutrale
 Besondere-Karten-Icon besitzt keinen Zähler; es öffnet die konkrete Kartenwahl.
 Ein Tap auf den übrigen Kartenbereich öffnet die Spielereingabe. Der Kamera-Button
-ist in der laufenden Wertung sichtbar und zeigt derzeit den Hinweis zur noch
-nicht implementierten Fotoerkennung. Einstellungen sind aus der Wertung erreichbar.
+öffnet in der laufenden Wertung die Auswahl Kamera/Systempicker. Ein Info-Icon
+erklärt Vorschlagsstatus und Bestätigungspflicht. Einstellungen bleiben erreichbar.
 
 Die Kartenwahl zeigt geordnete Symbolgrafiken vor dem aktuellen Namen ohne
 sichtbare Zuordnungszeile. Für die Darstellung gilt:
@@ -268,17 +268,17 @@ Häkchen im SelectionDialog. Schließen/System-Zurück verwirft nur die Auswahl.
 Wiederholungen sind wählbar. Busy-Overlays blockieren Eingaben; Fehler sind nur
 bei vorhandenem Text sichtbar.
 
-## Fotoerkennung – verbindlicher Zielstand, Integration gesperrt
+## Fotoerkennung – implementierter Review, Produktfreigabe offen
 
 Foto aufnehmen oder vorhandenes Foto wählen → gemeinsame Analyse → editierbare
 Vorschläge mit `✓ Sicher`, `! Prüfen`, `? Unsicher` und Grün/Gelb/Rot → explizit
 bestätigen → speichern. Info-Icon im Wertungsheader erklärt die Status im
 AppDialogPage. Native eingebettete Picker bei stabiler Plattformunterstützung,
 sonst normale Systemauswahl; keine eigene Galerie. Analysefehler erhalten die
-gespeicherten Werte, Abbruch bleibt neutral. Dieser Ablauf ist noch **nicht**
-implementiert: Die vorgelagerte native Backend-Parität ist offen, iOS vorerst nur
-dokumentarisch geprüft. Der Kamera-Platzhalter in der folgenden Dialogtabelle
-bleibt deshalb aktuell. Details: [CV-Status](ARK_NOVA_CV_STATUS.md).
+gespeicherten Werte, Abbruch bleibt neutral. Quellenauswahl und Review deaktivieren
+den darunterliegenden Wertungsinhalt; separate Entwurfsfelder verhindern Autosave.
+Die Produktfreigabe hängt weiter an nativer Backend-Parität. Der implementierte
+iOS-Pfad benötigt manuelle Apple-Verifikation. Details: [CV-Status](ARK_NOVA_CV_STATUS.md).
 
 ## Dialogübersicht
 
@@ -305,7 +305,8 @@ zunächst die Auswahl. Die gemeinsame Modalitätsregel steht im UI Design Guide.
 | Wertung verwerfen / abgeschlossene Partie löschen | Wertungsübersicht / Historie | App-Sicherheitsabfrage mit expliziter destruktiver Bestätigung und Text-Abbrechen. |
 | Mehrfache Spezialkarte bestätigen | Besondere-Karten-Auswahl | App-Bestätigung mit Ja-/Abbrechen; Kartenpicker und Entwurf bleiben erhalten. |
 | Speichern / Korrektur fehlgeschlagen | Spielereingabe, Wertungsübersicht, Gleichstandsauflösung | App-Fehlermeldung; Entwurf bleibt erhalten. |
-| Fotoerkennung noch nicht verfügbar | Wertungsübersicht | App-Hinweis mit Textaktion. |
+| Fotoquelle / Fotowerte prüfen | Laufende Wertung | Page-interne Quelle Kamera/Systempicker; editierbarer Review mit Confidence und explizitem Bestätigen/Speichern oder Abbrechen. |
+| Fotoerkennung erklären | Wertungsübersicht | Info-Icon öffnet AppDialogPage; Grün bleibt prüfpflichtiger Vorschlag. |
 
 System-Zurück schließt zunächst den modalen Dialog und bestätigt keine Aktion.
 Bei darunter geöffnetem Spezialkarten-Picker schließt erst das nächste Zurück

@@ -7,6 +7,7 @@
     <AssemblyName>BoardgameTracker.App</AssemblyName>
 
     <UseMaui>true</UseMaui>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SingleProject>true</SingleProject>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
@@ -15,8 +16,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.10.0.21</ApplicationDisplayVersion>
-    <ApplicationVersion>58</ApplicationVersion>
+    <ApplicationDisplayVersion>0.10.0.22</ApplicationDisplayVersion>
+    <ApplicationVersion>59</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
@@ -37,6 +38,42 @@
     <MauiAsset Include="Resources\Raw\**"
                LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+  <ItemGroup>
+    <MauiAsset Include="../../tools/Games/ArkNova/PhotoRecognition/Assets/board_reference_master_clean.png" LogicalName="ArkNovaVision/board_reference_master_clean.png" />
+    <MauiAsset Include="../../tools/Games/ArkNova/PhotoRecognition/Assets/scoring_regions_v2.json" LogicalName="ArkNovaVision/scoring_regions_v2.json" />
+    <MauiAsset Include="Games/ArkNova/PhotoRecognition/Native/licenses/*.txt" LogicalName="ArkNovaVision/licenses/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- EF discovers mapping configurations and domain constructors by reflection.
+         Keep this metadata while trimming the host/framework and native interop. -->
+    <TrimmerRootAssembly Include="BoardgameTracker.Application" />
+    <TrimmerRootAssembly Include="BoardgameTracker.Core" />
+    <TrimmerRootAssembly Include="Microsoft.EntityFrameworkCore" />
+    <TrimmerRootAssembly Include="Microsoft.EntityFrameworkCore.Relational" />
+    <TrimmerRootAssembly Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <TrimmerRootAssembly Include="Microsoft.Data.Sqlite" />
+  </ItemGroup>
+  <PropertyGroup>
+    <ArkNovaNativeAbi Condition="'$(RuntimeIdentifier)' == 'android-x64'">x86_64</ArkNovaNativeAbi>
+    <ArkNovaNativeAbi Condition="'$(ArkNovaNativeAbi)' == ''">arm64-v8a</ArkNovaNativeAbi>
+    <ArkNovaNativeBuildDirectory Condition="'$(ArkNovaNativeBuildDirectory)' == '' and '$(ArkNovaNativeAbi)' == 'x86_64'">$(MSBuildThisFileDirectory)../../artifacts/native-spike/android-x64</ArkNovaNativeBuildDirectory>
+    <ArkNovaNativeBuildDirectory Condition="'$(ArkNovaNativeBuildDirectory)' == ''">$(MSBuildThisFileDirectory)../../artifacts/native-spike/android-arm64</ArkNovaNativeBuildDirectory>
+    <ArkNovaIosBuildDirectory Condition="'$(ArkNovaIosBuildDirectory)' == ''">$(MSBuildThisFileDirectory)../../artifacts/native-spike/ios-arm64</ArkNovaIosBuildDirectory>
+  </PropertyGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidNativeLibrary Include="$(ArkNovaNativeBuildDirectory)/libarknova_vision.so" Abi="$(ArkNovaNativeAbi)" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and Exists('$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a')">
+    <NativeReference Include="$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a">
+      <Kind>Static</Kind><ForceLoad>true</ForceLoad><SmartLink>false</SmartLink>
+      <LinkerFlags>-lc++ -lz</LinkerFlags>
+      <Frameworks>Foundation CoreGraphics ImageIO Accelerate</Frameworks>
+    </NativeReference>
+  </ItemGroup>
+  <Target Name="RequireArkNovaIosNativeLibrary" BeforeTargets="PrepareForBuild"
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(OS)' != 'Windows_NT' and '$(DesignTimeBuild)' != 'true'">
+    <Error Condition="!Exists('$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a')" Text="Build the shared Ark Nova iOS archive with tools/Games/ArkNova/NativeVisionSpike/Build-iOS.sh first; set ArkNovaIosBuildDirectory to that output." />
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />
