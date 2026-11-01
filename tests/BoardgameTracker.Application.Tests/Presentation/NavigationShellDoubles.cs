@@ -47,6 +47,12 @@ namespace Microsoft.Maui.Controls
                 CurrentItem.CurrentItem.Navigation.NavigationStackPages.RemoveRange(1,
                     CurrentItem.CurrentItem.Navigation.NavigationStack.Count - 1);
             }
+            else if (route == ".." || route == "../..")
+            {
+                int count = route == ".." ? 1 : 2;
+                var stack = CurrentItem.CurrentItem.Navigation.NavigationStackPages;
+                stack.RemoveRange(stack.Count - count, count);
+            }
             else
                 CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(new Page());
             Navigated?.Invoke(this, new());

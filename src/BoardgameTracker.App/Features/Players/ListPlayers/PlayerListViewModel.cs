@@ -5,6 +5,7 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Players;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using BoardgameTracker.Core.GameSessions;
 
 namespace BoardgameTracker.App.Features.Players.ListPlayers;
 
@@ -89,6 +90,7 @@ public sealed record PlayerListRow(PlayerListItem Data)
     public bool HasStatus => IsGuest || IsArchived;
     public bool HasLastGameSession => Data.LastGameSessionId is Guid id && id != Guid.Empty && !string.IsNullOrWhiteSpace(Data.LastGameKey);
     public bool HasNoGameSession => !HasLastGameSession;
+    public bool HasOpenGameSession => HasLastGameSession && Data.LastGameSessionStatus is GameSessionStatus.Running or GameSessionStatus.Scoring;
     public string CreatedText => string.Format(AppResources.PlayerCreatedFormat, Data.CreatedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
     public string LastPlayedText => Data.LastPlayedAt is DateTimeOffset date
         ? string.Format(AppResources.PlayerLastPlayedFormat, date.ToLocalTime().ToString("d", CultureInfo.CurrentCulture)) : AppResources.PlayerNoGameSession;

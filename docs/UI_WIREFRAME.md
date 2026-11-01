@@ -92,6 +92,8 @@ Einstieg über **Einstellungen → Spieler**. Header: Zurück · **Spieler** · 
 
 Spielerkarte: Name + Bearbeiten-Icon, darunter **Erstellt <Datum>**, optionale Gast-/Archiv-Chips und eine eigene Secondary-Aktion **Zuletzt gespielt <…>**. Ohne Partie steht dort **Noch keine Partie** nicht interaktiv. Nur das Bearbeiten-Icon öffnet den Editor.
 
+Neben **Zuletzt gespielt** erscheint bei `Running` und `Scoring` dasselbe Aktiv-Icon wie in der Gruppenübersicht, bei `Completed` keines. Das Icon ist eine Statusanzeige ohne eigene Aktion. Ein abgeschlossenes Ergebnis wird über der Spielerübersicht geöffnet; Zurück führt dorthin zurück, auch nach einer Korrektur über den Ergebnis-Screen.
+
 ### Bearbeiten
 
 Header **Spieler bearbeiten**; Felder: Name, Archiv-Switch; unten **Speichern**. Kein Gast-Control.

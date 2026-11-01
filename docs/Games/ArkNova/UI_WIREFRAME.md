@@ -74,9 +74,9 @@ Platz-Chips sind ca. **32 dp**, zeigen nur die Zahl und markieren den eigenen Zu
 
 Ergebnis zeigt je Spieler **Placement/Name/Punkte**, Zooplan, Rohwerte und Spezialkarten. Nach regulärem Abschluss bleibt der Screen bis **Fertig** geöffnet; **Fertig** führt zu Gruppen.
 
-Historisch geöffnet ist dieselbe Ergebnisansicht read-only. Header: Zurück · **Ergebnis** · Edit-Icon (semantisch **Ergebnis bearbeiten**), kein Bearbeiten-Textbutton. Header-/System-Zurück führt zur Historie.
+Historisch geöffnet ist dieselbe Ergebnisansicht read-only. Header: Zurück · **Ergebnis** · Edit-Icon (semantisch **Ergebnis bearbeiten**), kein Bearbeiten-Textbutton. Header-/System-Zurück führt zum aufrufenden Screen: Historie oder Einstellungen → Spieler.
 
-Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und **Partie löschen**. Spieler-Tap öffnet die Spielereingabe; Zurück verwirft ungespeicherte Korrekturen und zeigt wieder das Ergebnis. **Korrektur speichern** führt zum aktualisierten Ergebnis derselben Partie zurück, bei nötiger Gleichstandsauflösung über denselben Gleichstandsscreen.
+Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und **Partie löschen**. Spieler-Tap öffnet die Spielereingabe; Zurück verwirft ungespeicherte Korrekturen und zeigt wieder das Ergebnis. **Korrektur speichern** führt zum aktualisierten Ergebnis derselben Partie zurück, bei nötiger Gleichstandsauflösung über denselben Gleichstandsscreen. Das ursprüngliche Rückziel des Ergebnisses bleibt dabei erhalten.
 
 ## 9. Arche-Nova-Einstellungen
 

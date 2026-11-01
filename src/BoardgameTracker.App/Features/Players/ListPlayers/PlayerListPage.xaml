@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.ListPlayers" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     x:Class="BoardgameTracker.App.Features.Players.ListPlayers.PlayerListPage" x:DataType="local:PlayerListViewModel" Shell.NavBarIsVisible="False">
     <Grid Padding="18">
         <!-- Keep modal and busy layers outside the content they disable. -->
@@ -46,7 +47,14 @@
                                     </VerticalStackLayout>
                                     <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
                                 </Grid>
-                                <Button Text="{Binding LastPlayedText}" IsVisible="{Binding HasLastGameSession}" Style="{StaticResource SecondaryActionButton}" Clicked="OnLastPlayedClicked" CommandParameter="{Binding .}" />
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding HasLastGameSession}">
+                                    <Image Source="icon_active_session.png" IsVisible="{Binding HasOpenGameSession}"
+                                           BackgroundColor="Transparent" presentation:IconTint.Color="{DynamicResource TextPrimary}"
+                                           HeightRequest="20" WidthRequest="20" VerticalOptions="Center" InputTransparent="True"
+                                           SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
+                                           ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}" />
+                                    <Button Grid.Column="1" Text="{Binding LastPlayedText}" Style="{StaticResource SecondaryActionButton}" Clicked="OnLastPlayedClicked" CommandParameter="{Binding .}" />
+                                </Grid>
                                 <Border IsVisible="{Binding HasNoGameSession}" BackgroundColor="{DynamicResource SurfaceSecondary}" StrokeThickness="0" Padding="12,6" StrokeShape="RoundRectangle 10">
                                     <Label Text="{x:Static res:AppResources.PlayerNoGameSession}" TextColor="{DynamicResource TextSecondary}" />
                                 </Border>

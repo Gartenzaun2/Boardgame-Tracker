@@ -14,7 +14,9 @@ Spieler sind appweit wiederverwendbar und können regulär oder Gast sein. Umben
 
 Unter **Einstellungen → Spieler** werden Name und Archivstatus gepflegt. Standardmäßig erscheinen aktive Nicht-Gäste; **Gäste anzeigen** und **Archivierte anzeigen** sind unabhängige Screenfilter. Der Gaststatus wird dort nicht bearbeitet.
 
-Ein Spieler kann seine zuletzt gestartete Partie öffnen. Maßgeblich ist der neueste Startzeitpunkt, auch bei offenen Partien. Das zuständige Spielmodul öffnet je nach Status laufende Partie, Wertung oder Ergebnis. Abgeschlossene Partien werden im Hauptbereich Historie geöffnet; Zurück führt zur Historie. Offene Partien werden im Spiel-/Gruppenkontext geöffnet.
+Ein Spieler kann seine zuletzt gestartete Partie öffnen. Maßgeblich ist der neueste Startzeitpunkt, auch bei offenen Partien. Das zuständige Spielmodul öffnet je nach Status laufende Partie, Wertung oder Ergebnis. Bei abgeschlossenen Partien bleibt der aufrufende Bereich als Rückziel erhalten: aus Einstellungen → Spieler führt Zurück zur Spielerübersicht, aus Historie zur Historie. Dies gilt auch nach einer historischen Korrektur. Offene Partien werden im Spiel-/Gruppenkontext geöffnet.
+
+Bei **Zuletzt gespielt** kennzeichnet das gemeinsame Aktiv-Symbol eine noch offene Session. `Running` und `Scoring` verwenden dieselbe Aktiv-Semantik; bei `Completed` fehlt diese Kennzeichnung.
 
 ## 3. Gruppen
 

@@ -25,10 +25,11 @@ public sealed class TieResolutionTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Theory]
-    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
-    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
-    [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.History)]
-    public async Task LastPlayedSessionUsesStatusRouteAndNormalizesMainSection(GameSessionStatus status, string route,
+    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
+    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
+    [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
+    [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", true, BoardgameTracker.Application.Settings.Navigation.AppMainSection.History)]
+    public async Task SessionUsesStatusRouteAndPreservesCompletedOrigin(GameSessionStatus status, string route, bool fromHistory,
         BoardgameTracker.Application.Settings.Navigation.AppMainSection expectedSection)
     {
         await using TieDatabase database = await TieDatabase.CreateAsync(running: status == GameSessionStatus.Running);
@@ -41,9 +42,13 @@ public sealed class TieResolutionTests
         MainSectionNavigationTests.SettingsStore store = new();
         var shell = MainSectionNavigationTests.CreateShell(store);
         Shell.Current = shell;
-        await shell.NavigateToMainSectionAsync(BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings);
-        await shell.GoToAsync("PlayerListPage");
-        await shell.GoToAsync("EditPlayerPage");
+        await shell.NavigateToMainSectionAsync(fromHistory
+            ? BoardgameTracker.Application.Settings.Navigation.AppMainSection.History
+            : BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings);
+        if (!fromHistory)
+            await shell.GoToAsync("PlayerListPage");
+        Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        int callsBeforeOpen = shell.Calls.Count;
         var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));
 
         await handler.OpenGameSessionAsync(database.Session.Id);
@@ -54,7 +59,15 @@ public sealed class TieResolutionTests
         Assert.Equal(status == GameSessionStatus.Completed,
             shell.Calls[^1].Parameters[BoardgameTracker.App.Navigation.NavigationParameters.ResultIsHistorical]);
         Assert.Equal(status == GameSessionStatus.Completed ? null : (Guid?)database.Session.Id, store.Value.LastGameSessionId);
-        Assert.Equal(2, shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
+        Assert.Equal(status == GameSessionStatus.Completed && !fromHistory ? 3 : 2,
+            shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
+        if (status == GameSessionStatus.Completed)
+        {
+            Assert.Equal(callsBeforeOpen + 1, shell.Calls.Count);
+            await shell.GoToAsync("..");
+            Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+            Assert.Equal(expectedSection, store.Value.LastMainSection);
+        }
     }
 
     [Fact]

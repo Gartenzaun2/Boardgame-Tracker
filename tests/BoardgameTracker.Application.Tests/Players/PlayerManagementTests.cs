@@ -37,11 +37,14 @@ public sealed class PlayerManagementTests
         Assert.Equal(guests && archived, rows.Any(player => player.PlayerId == database.Players[4].Id));
     }
 
-    [Fact]
-    public async Task List_UsesActualCreationDateAndLatestStartAcrossAllSessionStates()
+    [Theory]
+    [InlineData(GameSessionStatus.Running, true)]
+    [InlineData(GameSessionStatus.Scoring, true)]
+    [InlineData(GameSessionStatus.Completed, false)]
+    public async Task List_UsesLatestStartAcrossAllSessionStatesAndExposesOpenStatus(GameSessionStatus latestStatus, bool isOpen)
     {
         DateTimeOffset before = DateTimeOffset.UtcNow;
-        await using Database database = await Database.CreateAsync();
+        await using Database database = await Database.CreateAsync(latestStatus);
         DateTimeOffset after = DateTimeOffset.UtcNow;
         IReadOnlyList<PlayerListItem> rows = await database.Query.ListPlayersAsync(cancellationToken: Token);
         PlayerListItem player = rows.Single(row => row.PlayerId == database.Players[0].Id);
@@ -50,10 +53,14 @@ public sealed class PlayerManagementTests
         Assert.Equal(database.Latest.Id, player.LastGameSessionId);
         Assert.Equal(database.Latest.StartedAt, player.LastPlayedAt);
         Assert.Equal("test-game", player.LastGameKey);
+        Assert.Equal(latestStatus, player.LastGameSessionStatus);
+        Assert.Equal(isOpen, new PlayerListRow(player).HasOpenGameSession);
         PlayerListItem unused = rows.Single(row => row.PlayerId == database.Players[1].Id);
         Assert.Null(unused.LastGameSessionId);
         Assert.Null(unused.LastGameKey);
         Assert.Null(unused.LastPlayedAt);
+        Assert.Null(unused.LastGameSessionStatus);
+        Assert.False(new PlayerListRow(unused).HasOpenGameSession);
     }
 
     [Fact]
@@ -163,7 +170,7 @@ public sealed class PlayerManagementTests
         public EditPlayerUseCase Edit => new(this);
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
 
-        public static async Task<Database> CreateAsync()
+        public static async Task<Database> CreateAsync(GameSessionStatus latestStatus = GameSessionStatus.Scoring)
         {
             Database database = new();
             await database._connection.OpenAsync(Token);
@@ -177,7 +184,7 @@ public sealed class PlayerManagementTests
             db.AddRange(game, group);
             foreach (GameSessionStatus status in new[] { GameSessionStatus.Completed, GameSessionStatus.Running, GameSessionStatus.Scoring })
             {
-                int day = status == GameSessionStatus.Completed ? 1 : status == GameSessionStatus.Running ? 2 : 3;
+                int day = status == latestStatus ? 4 : status == GameSessionStatus.Completed ? 1 : status == GameSessionStatus.Running ? 2 : 3;
                 DateTimeOffset start = new(2026, 10, day, 12, 0, 0, TimeSpan.Zero);
                 GameSession session = new(game.Id, group.Id, start, [database.Players[0].Id, database.Players[3].Id]);
                 if (status != GameSessionStatus.Running)
@@ -189,7 +196,8 @@ public sealed class PlayerManagementTests
                     session.Complete(start.AddHours(2));
                 }
                 db.Add(session);
-                database.Latest = session;
+                if (status == latestStatus)
+                    database.Latest = session;
             }
             await db.SaveChangesAsync(Token);
             return database;

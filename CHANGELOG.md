@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.28
+
+- Abgeschlossene Ergebnisse aus „Zuletzt gespielt“ behalten die Spielerübersicht als Rückziel, auch nach historischer Korrektur; aus der Historie führt Zurück weiterhin zur Historie.
+- „Zuletzt gespielt“ zeigt bei laufender Partie und offener Wertung das gemeinsame Aktiv-Icon. Der Sessionstatus wird im bestehenden Spieler-Query mitgeladen.
+
 ## 0.10.0.27
 
 - Abgeschlossene Partien öffnen das Ergebnis; historische Ergebnisse bieten eine Korrektur per Header-Icon und kehren nach dem Speichern einschließlich Gleichstandsauflösung zum aktualisierten Ergebnis zurück.

@@ -9,7 +9,6 @@ using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
-using BoardgameTracker.Application.Settings.Navigation;
 
 namespace BoardgameTracker.App.Games.ArkNova.Navigation;
 
@@ -24,9 +23,8 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
             ?? throw new InvalidOperationException("The game session does not exist.");
         if (Shell.Current is AppShell shell)
         {
-            if (data.Status == GameSessionStatus.Completed)
-                await shell.NavigateToMainSectionAsync(AppMainSection.History);
-            else if (data.Status is GameSessionStatus.Running or GameSessionStatus.Scoring)
+            // Completed results stay on their caller's stack (history or players).
+            if (data.Status is GameSessionStatus.Running or GameSessionStatus.Scoring)
             {
                 await shell.NavigateToGroupsForGameAsync(GameKey);
                 shell.RememberGameSession(gameSessionId, GameKey);

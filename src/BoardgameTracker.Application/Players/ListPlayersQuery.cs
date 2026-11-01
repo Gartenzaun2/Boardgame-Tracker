@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Players;
@@ -10,7 +11,7 @@ public sealed class ListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         List<PlayerListItem> players = await db.Players.AsNoTracking()
             .Where(player => (includeGuests || !player.IsGuest) && (includeArchived || !player.IsArchived))
-            .Select(player => new PlayerListItem(player.Id, player.Name, player.IsGuest, player.IsArchived, player.CreatedAt, null, null, null))
+            .Select(player => new PlayerListItem(player.Id, player.Name, player.IsGuest, player.IsArchived, player.CreatedAt, null, null, null, null))
             .ToListAsync(cancellationToken);
         if (players.Count == 0)
             return [];
@@ -20,16 +21,17 @@ public sealed class ListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext
                               join session in db.GameSessions.AsNoTracking() on participant.GameSessionId equals session.Id
                               join game in db.Games.AsNoTracking() on session.GameId equals game.Id
                               where ids.Contains(participant.PlayerId)
-                              select new { participant.PlayerId, session.Id, session.StartedAt, game.Key }).ToListAsync(cancellationToken);
+                              select new { participant.PlayerId, session.Id, session.StartedAt, session.Status, game.Key }).ToListAsync(cancellationToken);
         // SQLite cannot order DateTimeOffset directly. Use the same date semantics as the group overview.
         var latest = sessions.GroupBy(session => session.PlayerId)
             .ToDictionary(group => group.Key, group => group.OrderByDescending(session => session.StartedAt).ThenBy(session => session.Id).First());
         return players.Select(player => latest.TryGetValue(player.PlayerId, out var session)
-                ? player with { LastPlayedAt = session.StartedAt, LastGameSessionId = session.Id, LastGameKey = session.Key }
+                ? player with { LastPlayedAt = session.StartedAt, LastGameSessionId = session.Id, LastGameKey = session.Key, LastGameSessionStatus = session.Status }
                 : player)
             .OrderBy(player => player.Name, StringComparer.CurrentCultureIgnoreCase).ThenBy(player => player.PlayerId).ToArray();
     }
 }
 
 public sealed record PlayerListItem(Guid PlayerId, string Name, bool IsGuest, bool IsArchived,
-    DateTimeOffset CreatedAt, DateTimeOffset? LastPlayedAt, Guid? LastGameSessionId, string? LastGameKey);
+    DateTimeOffset CreatedAt, DateTimeOffset? LastPlayedAt, Guid? LastGameSessionId, string? LastGameKey,
+    GameSessionStatus? LastGameSessionStatus = null);
