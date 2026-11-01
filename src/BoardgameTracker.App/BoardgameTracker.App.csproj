@@ -16,8 +16,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.10.0.35</ApplicationDisplayVersion>
-    <ApplicationVersion>72</ApplicationVersion>
+    <ApplicationDisplayVersion>0.10.0.36</ApplicationDisplayVersion>
+    <ApplicationVersion>73</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
-    <MtouchInterpreter>-all</MtouchInterpreter>
+    <MtouchInterpreter>-all,Microsoft.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Relational,Microsoft.EntityFrameworkCore.Sqlite</MtouchInterpreter>
   </PropertyGroup>
 
   <ItemGroup>
