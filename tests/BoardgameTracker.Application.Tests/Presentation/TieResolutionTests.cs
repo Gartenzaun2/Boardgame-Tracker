@@ -24,6 +24,46 @@ public sealed class TieResolutionTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
+    [Theory]
+    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
+    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
+    [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", BoardgameTracker.Application.Settings.Navigation.AppMainSection.History)]
+    public async Task LastPlayedSessionUsesStatusRouteAndNormalizesMainSection(GameSessionStatus status, string route,
+        BoardgameTracker.Application.Settings.Navigation.AppMainSection expectedSection)
+    {
+        await using TieDatabase database = await TieDatabase.CreateAsync(running: status == GameSessionStatus.Running);
+        if (status == GameSessionStatus.Completed)
+        {
+            var completion = database.CreateViewModel();
+            await completion.LoadAsync(database.Session.Id, Token);
+            await completion.CompleteAsync(Token);
+        }
+        MainSectionNavigationTests.SettingsStore store = new();
+        var shell = MainSectionNavigationTests.CreateShell(store);
+        Shell.Current = shell;
+        await shell.NavigateToMainSectionAsync(BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings);
+        await shell.GoToAsync("PlayerListPage");
+        await shell.GoToAsync("EditPlayerPage");
+        var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));
+
+        await handler.OpenGameSessionAsync(database.Session.Id);
+
+        Assert.Equal(route, shell.Calls[^1].Route);
+        Assert.Equal(expectedSection, store.Value.LastMainSection);
+        Assert.Equal(database.Session.Id, shell.Calls[^1].Parameters[BoardgameTracker.App.Navigation.NavigationParameters.GameSessionId]);
+        Assert.Equal(status == GameSessionStatus.Completed,
+            shell.Calls[^1].Parameters[BoardgameTracker.App.Navigation.NavigationParameters.ResultIsHistorical]);
+        Assert.Equal(status == GameSessionStatus.Completed ? null : (Guid?)database.Session.Id, store.Value.LastGameSessionId);
+        Assert.Equal(2, shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
+    }
+
+    [Fact]
+    public async Task UnknownSessionStatusIsRejectedInsteadOfOpeningScoring()
+    {
+        var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(null!);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.OpenGroupAsync(Guid.NewGuid(), Guid.NewGuid(), (GameSessionStatus)999));
+    }
+
     [Fact]
     public async Task PlacementGroups_MoveOnlySelectedPlayer_KeepEmptyTargetsAndPlayerColors_AfterReopening()
     {
@@ -217,7 +257,7 @@ public sealed class TieResolutionTests
         public ArkNovaTieResolutionViewModel CreateViewModel() => new(new(this, Scoring), Correction);
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).AddInterceptors(SaveInterceptor).Options);
 
-        public static async Task<TieDatabase> CreateAsync(int[]? scores = null)
+        public static async Task<TieDatabase> CreateAsync(int[]? scores = null, bool running = false)
         {
             TieDatabase database = new();
             await database._connection.OpenAsync(Token);
@@ -226,7 +266,8 @@ public sealed class TieResolutionTests
             Guid gameId = await context.Games.Select(game => game.Id).SingleAsync(Token);
             Group group = new("Group", false, database.Players.Select(player => player.Id).ToArray());
             database.Session = new(gameId, group.Id, DateTimeOffset.UtcNow.AddHours(-2), database.Players.Select(player => player.Id).ToArray());
-            database.Session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));
+            if (!running)
+                database.Session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));
             context.AddRange(database.Players);
             context.AddRange(group, database.Session);
             scores ??= [100, 90, 90, 80];

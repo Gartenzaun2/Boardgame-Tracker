@@ -152,6 +152,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             {
                 await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
                 persisted = true;
+                await Shell.Current.GoToAsync("..");
                 return;
             }
             string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
@@ -228,7 +229,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
-            await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
+            await Shell.Current.GoToAsync(_viewModel.IsHistorical ? ".." : $"//{nameof(GroupListPage)}");
     }
 
     protected override bool OnBackButtonPressed()
@@ -246,7 +247,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             return true;
         }
 
-        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}"));
+        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync(_viewModel.IsHistorical ? ".." : $"//{nameof(GroupListPage)}"));
         return true;
     }
 }

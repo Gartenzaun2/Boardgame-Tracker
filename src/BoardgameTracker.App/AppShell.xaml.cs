@@ -24,6 +24,7 @@ public partial class AppShell : Shell
     private readonly Tab _settingsTab;
     private bool _isProgrammaticMainNavigation;
     private bool _isNavigationMemoryEnabled;
+    private bool _isMainTabTapInProgress;
 
     public AppShell(
         GroupListPage groupListPage,
@@ -59,6 +60,16 @@ public partial class AppShell : Shell
 
     public async Task NavigateToMainSectionAsync(AppMainSection section, bool remember = true)
     {
+        if (section == AppMainSection.Groups)
+        {
+            AppNavigationSettings settings = _navigationSettingsStore.Get();
+            string? gameKey = settings.SelectedGameKey ?? settings.DefaultGameKey;
+            if (string.IsNullOrWhiteSpace(gameKey))
+                section = AppMainSection.Games;
+            else if (string.IsNullOrWhiteSpace(settings.SelectedGameKey))
+                _navigationSettingsStore.Save(settings with { SelectedGameKey = gameKey });
+        }
+
         Tab target = section switch
         {
             AppMainSection.Games => _gamesTab,
@@ -68,7 +79,7 @@ public partial class AppShell : Shell
             _ => _gamesTab
         };
 
-        _isProgrammaticMainNavigation = !remember;
+        _isProgrammaticMainNavigation = true;
         try
         {
             await GoToAsync($"//{target.Route}");
@@ -102,6 +113,28 @@ public partial class AppShell : Shell
 
     public void EnableNavigationMemory() => _isNavigationMemoryEnabled = true;
 
+    // Native tab taps (including reselecting the active tab) use the same root routes.
+    public async Task NavigateFromMainTabTapAsync(ShellSection tab)
+    {
+        if (_isMainTabTapInProgress)
+            return;
+        _isMainTabTapInProgress = true;
+        try
+        {
+            await NavigateToMainSectionAsync(GetMainSection(tab));
+        }
+        finally
+        {
+            _isMainTabTapInProgress = false;
+        }
+    }
+
+    private AppMainSection GetMainSection(ShellSection tab) => tab == _gamesTab ? AppMainSection.Games
+        : tab == _groupsTab ? AppMainSection.Groups
+        : tab == _historyTab ? AppMainSection.History
+        : tab == _settingsTab ? AppMainSection.Settings
+        : throw new InvalidOperationException("Unknown main tab.");
+
     public void RememberGameSession(Guid gameSessionId, string gameKey)
     {
         AppNavigationSettings current = _navigationSettingsStore.Get();
@@ -119,12 +152,8 @@ public partial class AppShell : Shell
             return;
         }
 
-        string location = CurrentState.Location.OriginalString;
-        if (location.EndsWith(nameof(GamesPage), StringComparison.Ordinal))
-        {
-            RememberMainSection(AppMainSection.Games);
-        }
-        else if (location.EndsWith(nameof(GroupListPage), StringComparison.Ordinal))
+        AppMainSection section = GetMainSection(CurrentItem.CurrentItem);
+        if (section == AppMainSection.Groups)
         {
             AppNavigationSettings current = _navigationSettingsStore.Get();
             if (string.IsNullOrWhiteSpace(current.SelectedGameKey)
@@ -140,25 +169,19 @@ public partial class AppShell : Shell
                 _navigationSettingsStore.Save(current with { SelectedGameKey = current.DefaultGameKey });
             }
 
-            RememberMainSection(AppMainSection.Groups);
         }
-        else if (location.EndsWith(nameof(HistoryPage), StringComparison.Ordinal))
-        {
-            RememberMainSection(AppMainSection.History);
-        }
-        else if (location.EndsWith(nameof(AppSettingsPage), StringComparison.Ordinal))
-        {
-            RememberMainSection(AppMainSection.Settings);
-        }
+
+        // A push inside a game must retain its resume target. Returning to a root clears it.
+        RememberMainSection(section, CurrentItem.CurrentItem.Navigation.NavigationStack.Count <= 1);
     }
 
-    private void RememberMainSection(AppMainSection section)
+    private void RememberMainSection(AppMainSection section, bool clearGameSession = true)
     {
         AppNavigationSettings current = _navigationSettingsStore.Get();
         _navigationSettingsStore.Save(current with
         {
             LastMainSection = section,
-            LastGameSessionId = null
+            LastGameSessionId = clearGameSession ? null : current.LastGameSessionId
         });
     }
 

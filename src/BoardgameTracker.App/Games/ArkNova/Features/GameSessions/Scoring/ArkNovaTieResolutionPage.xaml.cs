@@ -63,7 +63,7 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
             persisted = true;
             if (_viewModel.Draft is not null)
             {
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("../..");
                 return;
             }
             await Shell.Current.GoToAsync(

@@ -59,28 +59,3 @@ repositoryweiter Schutz aller allgemeinen App-/Application-Bereiche vor
 `Games/<GameName>/`-Ownership projektweit schützt und dabei erlaubte
 Integrationspunkte wie Composition Root, Host-Projektdatei und technisch notwendige
 Partial-Type-Erweiterungen ausdrücklich berücksichtigt.
-
-## UI / Navigation
-
-### Hauptbereich wird auf bereits geöffneter Unterseite nicht zuverlässig gespeichert
-
-**Status:** offen
-
-`src/BoardgameTracker.App/AppShell.xaml.cs` aktualisiert in `OnShellNavigated` den
-gespeicherten Hauptbereich nur, wenn die aktuelle Route mit einer Hauptseite endet.
-
-Dadurch kann beim Wechsel zu einem Tab, dessen Unterseite bereits im Navigationsstack
-liegt, `LastMainSection` veraltet bleiben.
-
-Bekannte Reproduktion:
-
-1. historische Wertungsübersicht geöffnet lassen;
-2. zu Einstellungen wechseln;
-3. zurück zur historischen Wertungsübersicht wechseln;
-4. App neu starten.
-
-Die App kann anschließend Einstellungen statt Historie wiederherstellen.
-
-**Ziel:** Der gespeicherte Hauptbereich folgt dem tatsächlich aktiven Shell-Tab auch
-bei bereits geöffneten Unterseiten. Die allgemeine Produktregel zur
-Navigationswiederherstellung bleibt unverändert.

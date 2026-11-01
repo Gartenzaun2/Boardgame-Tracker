@@ -879,4 +879,5 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="LicenseAdditionalNotices" xml:space="preserve"><value>Weitere Lizenz- und Attributionshinweise</value></data>
   <data name="LicensesLoadFailed" xml:space="preserve"><value>Die Lizenzinformationen konnten nicht geladen werden. Bitte versuche es erneut.</value></data>
   <data name="LicensesRetry" xml:space="preserve"><value>Erneut versuchen</value></data>
+  <data name="EditResult" xml:space="preserve"><value>Ergebnis bearbeiten</value></data>
 </root>

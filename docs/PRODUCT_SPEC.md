@@ -14,7 +14,7 @@ Spieler sind appweit wiederverwendbar und können regulär oder Gast sein. Umben
 
 Unter **Einstellungen → Spieler** werden Name und Archivstatus gepflegt. Standardmäßig erscheinen aktive Nicht-Gäste; **Gäste anzeigen** und **Archivierte anzeigen** sind unabhängige Screenfilter. Der Gaststatus wird dort nicht bearbeitet.
 
-Ein Spieler kann seine zuletzt gestartete Partie öffnen. Maßgeblich ist der neueste Startzeitpunkt, auch bei offenen Partien. Das zuständige Spielmodul öffnet je nach Status laufende Partie, Wertung oder Ergebnis.
+Ein Spieler kann seine zuletzt gestartete Partie öffnen. Maßgeblich ist der neueste Startzeitpunkt, auch bei offenen Partien. Das zuständige Spielmodul öffnet je nach Status laufende Partie, Wertung oder Ergebnis. Abgeschlossene Partien werden im Hauptbereich Historie geöffnet; Zurück führt zur Historie. Offene Partien werden im Spiel-/Gruppenkontext geöffnet.
 
 ## 3. Gruppen
 
@@ -31,6 +31,8 @@ Die Hauptbereiche sind:
 ```text
 Spiele · Gruppen · Historie · Einstellungen
 ```
+
+Ein expliziter Tap auf einen Eintrag der persistenten unteren Hauptnavigation führt immer zum Root-Screen des gewählten Hauptbereichs und verwirft dessen tieferen Navigationsstack.
 
 Die Gruppenübersicht arbeitet immer im Kontext eines ausgewählten Spiels. Beim Öffnen einer Gruppe entscheidet das Spielmodul, ob eine offene Partie/Wertung fortgesetzt oder eine neue Partie vorbereitet wird.
 

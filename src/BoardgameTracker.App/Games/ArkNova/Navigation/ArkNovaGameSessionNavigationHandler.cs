@@ -8,6 +8,8 @@ using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
+using BoardgameTracker.Application.Settings.Navigation;
 
 namespace BoardgameTracker.App.Games.ArkNova.Navigation;
 
@@ -20,6 +22,16 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
     {
         ArkNovaGameSessionResultData data = await scoring.LoadGameSessionResultAsync(gameSessionId)
             ?? throw new InvalidOperationException("The game session does not exist.");
+        if (Shell.Current is AppShell shell)
+        {
+            if (data.Status == GameSessionStatus.Completed)
+                await shell.NavigateToMainSectionAsync(AppMainSection.History);
+            else if (data.Status is GameSessionStatus.Running or GameSessionStatus.Scoring)
+            {
+                await shell.NavigateToGroupsForGameAsync(GameKey);
+                shell.RememberGameSession(gameSessionId, GameKey);
+            }
+        }
         await NavigateToGameSessionAsync(Shell.Current, gameSessionId, data.Status);
     }
     public async Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus)
@@ -52,10 +64,17 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
 
     private static Task NavigateToGameSessionAsync(Shell shell, Guid gameSessionId, GameSessionStatus status)
     {
-        string route = status == GameSessionStatus.Running ? nameof(ArkNovaRunningPage) : nameof(ArkNovaScoringPage);
+        string route = status switch
+        {
+            GameSessionStatus.Running => nameof(ArkNovaRunningPage),
+            GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
+            GameSessionStatus.Completed => nameof(ArkNovaResultPage),
+            _ => throw new InvalidOperationException($"Unsupported GameSession status '{status}'.")
+        };
         return shell.GoToAsync(route, new ShellNavigationQueryParameters
         {
-            [NavigationParameters.GameSessionId] = gameSessionId
+            [NavigationParameters.GameSessionId] = gameSessionId,
+            [NavigationParameters.ResultIsHistorical] = status == GameSessionStatus.Completed
         });
     }
 }

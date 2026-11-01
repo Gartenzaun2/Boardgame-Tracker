@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.27
+
+- Abgeschlossene Partien öffnen das Ergebnis; historische Ergebnisse bieten eine Korrektur per Header-Icon und kehren nach dem Speichern einschließlich Gleichstandsauflösung zum aktualisierten Ergebnis zurück.
+- Zuletzt gespielte Partien öffnen den passenden Hauptbereich; Haupttab-Taps führen stets zum Root und speichern den tatsächlich aktiven Bereich.
+- Reine Auswahldialoge verwenden einheitlich den Zurück-IconButton. Das iOS-App-Icon erhält den dunklen Default-Hintergrund und ein etwas größeres Logo.
+
 ## 0.10.0.26
 
 - Scope-/Opt-in-Regeln und Verifikationsbudget in AGENTS, Setup und Third-Party-License-Policy präzisiert: normale Verifikation einmal Solution, Core und Application; keine automatischen Audits, Release-Matrizen oder manuellen UI-Prüfungen.

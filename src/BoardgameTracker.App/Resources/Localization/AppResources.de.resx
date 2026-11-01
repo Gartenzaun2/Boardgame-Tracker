@@ -526,4 +526,5 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameMaterialHint" xml:space="preserve">
     <value>Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.</value>
   </data>
+  <data name="EditResult" xml:space="preserve"><value>Ergebnis bearbeiten</value></data>
 </root>

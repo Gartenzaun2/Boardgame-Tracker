@@ -7,6 +7,29 @@ namespace BoardgameTracker.App.Platforms.iOS;
 
 public sealed class ThemeShellRenderer : ShellRenderer
 {
+    protected override IShellItemRenderer CreateShellItemRenderer(ShellItem item) => new MainTabRenderer(this);
+
+    private sealed class MainTabRenderer(IShellContext context) : ShellItemRenderer(context)
+    {
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
+            var original = ShouldSelectViewController;
+            ShouldSelectViewController = (controller, viewController) =>
+            {
+                int index = Array.IndexOf(ViewControllers ?? [], viewController);
+                var tabs = ShellItemController.GetItems();
+                if (context.Shell is AppShell shell && index >= 0 && index < tabs.Count)
+                {
+                    ShellSection tab = tabs[index];
+                    shell.Dispatcher.Dispatch(async () => await shell.NavigateFromMainTabTapAsync(tab));
+                    return false;
+                }
+                return original?.Invoke(controller, viewController) ?? true;
+            };
+        }
+    }
+
     protected override IShellTabBarAppearanceTracker CreateTabBarAppearanceTracker() => new ThemeTabBarTracker();
 
     private sealed class ThemeTabBarTracker : ShellTabBarAppearanceTracker

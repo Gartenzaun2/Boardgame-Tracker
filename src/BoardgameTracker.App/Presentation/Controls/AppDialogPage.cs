@@ -61,34 +61,55 @@ public sealed class AppDialogPage : ContentPage
             actions.Children.Add(accept);
         }
 
-        Button close = new()
+        View header = heading;
+        if (options is not null)
         {
-            Text = closeText,
-            Style = Resource<Style>("TextActionButton"),
-            AutomationId = "DialogCancel"
-        };
-        close.Clicked += async (_, _) => await CloseAsync(-1);
-        actions.Children.Add(close);
+            ImageButton exit = new()
+            {
+                Source = "icon_back.png",
+                Style = Resource<Style>("IconButton"),
+                AutomationId = "DialogCancel"
+            };
+            SemanticProperties.SetDescription(exit, AppResources.Back);
+            exit.Clicked += async (_, _) => await CloseAsync(-1);
+            Grid selectionHeader = new() { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star)], ColumnSpacing = 8 };
+            selectionHeader.Add(exit, 0, 0);
+            selectionHeader.Add(heading, 1, 0);
+            heading.VerticalOptions = LayoutOptions.Center;
+            header = selectionHeader;
+        }
+        else
+        {
+            Button close = new()
+            {
+                Text = closeText,
+                Style = Resource<Style>("TextActionButton"),
+                AutomationId = "DialogCancel"
+            };
+            close.Clicked += async (_, _) => await CloseAsync(-1);
+            actions.Children.Add(close);
+        }
 
         Grid layout = new()
         {
             RowDefinitions = [new(GridLength.Auto), new(GridLength.Auto), new(GridLength.Auto)],
             RowSpacing = 12
         };
-        layout.Add(heading, 0, 0);
+        layout.Add(header, 0, 0);
         ScrollView scroll = new() { Content = body };
         layout.Add(scroll, 0, 1);
-        layout.Add(actions, 0, 2);
+        if (options is null)
+            layout.Add(actions, 0, 2);
         Border dialog = new() { Style = Resource<Style>("SelectionDialog"), Content = layout };
         Grid backdrop = new() { Padding = 18, Children = { dialog } };
         void ResizeDialog()
         {
             double available = Math.Max(0, backdrop.Height - 36);
             dialog.MaximumHeightRequest = available;
-            scroll.MaximumHeightRequest = Math.Max(0, available - heading.Height - actions.Height - 56);
+            scroll.MaximumHeightRequest = Math.Max(0, available - header.Height - (options is null ? actions.Height : 0) - 56);
         }
         backdrop.SizeChanged += (_, _) => ResizeDialog();
-        heading.SizeChanged += (_, _) => ResizeDialog();
+        header.SizeChanged += (_, _) => ResizeDialog();
         actions.SizeChanged += (_, _) => ResizeDialog();
         Content = backdrop;
     }

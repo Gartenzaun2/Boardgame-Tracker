@@ -1,5 +1,7 @@
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
+using BoardgameTracker.Application.Settings.Navigation;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 
@@ -23,6 +25,10 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
             throw new InvalidOperationException("Required gameSession navigation parameter is missing or invalid.");
         }
         _gameSessionId = gameSessionId;
+        bool historical = query.TryGetValue(NavigationParameters.ResultIsHistorical, out object? context) && context is true;
+        BackButton.IsVisible = historical;
+        EditButton.IsVisible = historical;
+        DoneButton.IsVisible = !historical;
     }
 
     protected override async void OnAppearing()
@@ -32,7 +38,15 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
     }
 
     private async void OnDoneClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+        await ((AppShell)Shell.Current).NavigateToMainSectionAsync(AppMainSection.Groups);
 
-    protected override bool OnBackButtonPressed() => true;
+    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+
+    private async void OnEditClicked(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters
+        {
+            [NavigationParameters.GameSessionId] = _gameSessionId
+        });
+
+    protected override bool OnBackButtonPressed() => !BackButton.IsVisible || base.OnBackButtonPressed();
 }

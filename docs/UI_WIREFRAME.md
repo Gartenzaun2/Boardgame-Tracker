@@ -19,6 +19,10 @@ Spielspezifische Screens: `docs/Games/<GameName>/UI_WIREFRAME.md`.
 
 Permanente Tabs: **Spiele · Gruppen · Historie · Einstellungen**. Unter **Gruppen** bleibt der aktuelle Spielname sichtbar. Spiel-Tap setzt den Spielkontext und öffnet Gruppen; Gruppen-Tab öffnet die Übersicht im aktuellen Kontext. App-Start/Wiederherstellung folgen `PRODUCT_SPEC.md`.
 
+Ein expliziter Tab-Tap öffnet immer den jeweiligen Root: `GamesPage`, `GroupListPage` im aktuellen Spielkontext, `HistoryPage` oder `AppSettingsPage`; tiefere Seiten des gewählten Tabs werden verworfen.
+
+Reine Auswahllisten (auch Darstellung, Standardspiel und History-Filter) zeigen oben links den gemeinsamen Zurück-/Exit-IconButton und keinen unteren Schließen-Textbutton.
+
 ## 3. Gruppen
 
 ### Übersicht

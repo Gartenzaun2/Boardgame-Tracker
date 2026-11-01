@@ -139,6 +139,8 @@ suchbar werden.
 
 ## 7. Dialoge und modale Auswahl
 
+Jede reine Auswahlansicht zeigt oben links den gemeinsamen Zurück-/Exit-IconButton und keinen zusätzlichen Schließen-Textbutton unten. Auf normalen Pages navigiert er zurück, bei modaler Auswahl bricht er ab. Dies gilt auch für Single-Choice-Listen über `AppDialogPage.ChooseAsync`. Informations-, Bestätigungs-, Sicherheits- und destruktive Dialoge behalten ihre expliziten Textaktionen.
+
 ### SelectionDialog
 
 Page-interne Auswahl verwendet `SelectionDialog`:
@@ -165,7 +167,7 @@ zusätzliches X/Text-Schließen.
 
 Informationen, Fehler, Sicherheitsabfragen und einfache App-Auswahlen verwenden
 `AppDialogPage`. System-Zurück bricht ab und bestätigt niemals implizit.
-Längere Inhalte sind scrollbar. Bestätigung nutzt Primary bzw. Danger, Abbruch eine
+Längere Inhalte sind scrollbar. In Informations- und Bestätigungsdialogen nutzt Bestätigung Primary bzw. Danger, Abbruch eine
 getrennte Textaktion.
 
 Dialoge verändern keine ungespeicherten Entwürfe der darunterliegenden Page.

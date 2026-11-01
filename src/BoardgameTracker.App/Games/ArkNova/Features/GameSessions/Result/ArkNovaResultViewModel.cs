@@ -32,7 +32,7 @@ public partial class ArkNovaResultViewModel(
 
         foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players
                      .OrderBy(x => x.Placement ?? int.MaxValue)
-                     .ThenBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase))
+                     .ThenBy(x => x.Order))
         {
             ArkNovaSpecialCardData[] cards = gameSession.SpecialCards
                 .Where(x => x.PlayerId == player.PlayerId)

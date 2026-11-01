@@ -441,6 +441,7 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string Players => GetString(nameof(Players));
     public static string Guests => GetString(nameof(Guests));
     public static string EditPlayer => GetString(nameof(EditPlayer));
+    public static string EditResult => GetString(nameof(EditResult));
     public static string PlayerCreatedFormat => GetString(nameof(PlayerCreatedFormat));
     public static string PlayerLastPlayedFormat => GetString(nameof(PlayerLastPlayedFormat));
     public static string PlayerNoGameSession => GetString(nameof(PlayerNoGameSession));

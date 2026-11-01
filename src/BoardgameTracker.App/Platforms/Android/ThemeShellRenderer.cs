@@ -8,6 +8,24 @@ namespace BoardgameTracker.App.Platforms.Android;
 
 public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context)
 {
+    protected override IShellItemRenderer CreateShellItemRenderer(ShellItem shellItem)
+        => new MainTabRenderer(this);
+
+    private sealed class MainTabRenderer(IShellContext context) : ShellItemRenderer(context)
+    {
+        protected override bool OnItemSelected(global::Android.Views.IMenuItem item)
+        {
+            var tabs = ((IShellItemController)ShellItem).GetItems();
+            if (context.Shell is AppShell shell && item.ItemId >= 0 && item.ItemId < tabs.Count)
+            {
+                ShellSection tab = tabs[item.ItemId];
+                shell.Dispatcher.Dispatch(async () => await shell.NavigateFromMainTabTapAsync(tab));
+                return false;
+            }
+            return base.OnItemSelected(item);
+        }
+    }
+
     protected override IShellBottomNavViewAppearanceTracker CreateBottomNavViewAppearanceTracker(ShellItem shellItem)
         => new ThemeBottomBarTracker(this, shellItem);
 

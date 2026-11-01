@@ -12,5 +12,6 @@ internal static class NavigationParameters
     public const string PlayerId = nameof(PlayerId);
     public const string SpecialCardId = nameof(SpecialCardId);
     public const string CorrectionDraft = nameof(CorrectionDraft);
+    public const string ResultIsHistorical = nameof(ResultIsHistorical);
     public const string LicenseComponentId = nameof(LicenseComponentId);
 }
