@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.39
+
+- iOS-Scene-Lifecycle für Builds mit dem Xcode-27-SDK ergänzt: `SceneDelegate` und `UIApplicationSceneManifest` verwenden die MAUI-Standard-Szenenkonfiguration mit genau einer Scene. Bestehende EF-Core-Interpreter-, Symbol-Strip-, Datenbank- und Bilderkennungslogik bleiben unverändert. App-Version 0.10.0.39 / ApplicationVersion 76.
+
 ## 0.10.0.38
 
 - iOS-App-Startup auf den aktivierten Window-Lifecycle umgestellt: Die Initialisierung startet einmalig bei `Window.Activated`, die bereits angezeigte Startseite wird nicht erneut während des Appearance-Übergangs ersetzt, und ein Retry setzt die Startseite nur bewusst vor einem neuen Initialisierungsversuch. EF-Interpreter- und Symbol-Strip-Konfiguration bleiben unverändert. App-Version 0.10.0.38 / ApplicationVersion 75.
@@ -434,7 +438,7 @@ historische Aufzeichnung unverändert erhalten.
 - Statussymbol für offene Partien transparent und dynamisch im Theme-Textton statt fester grüner Fläche.
 
 - Gemeinsame Header-Unterkante und Aktionsrollen auf alle bestehenden Seiten angewendet.
-- Gruppenbearbeitung und Wertungseingabe flach; Leerzustände ohne dekorative Karte.
+- Gruppenbearbeitung und Wertungseingaben flach; Leerzustände ohne dekorative Karte.
 - App-Auswahldialoge vereinheitlicht; verbleibende native Dialoge im Wireframe dokumentiert.
 - App-Version 0.8.6.1 / ApplicationVersion 16.
 
