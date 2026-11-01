@@ -45,14 +45,19 @@ public partial class App : Microsoft.Maui.Controls.Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         Window window = new(CreateStartupPage());
-        window.Created += async (_, _) => await InitializeApplicationAsync(window);
+
+        async void OnActivated(object? sender, EventArgs args)
+        {
+            window.Activated -= OnActivated;
+            await InitializeApplicationAsync(window);
+        }
+
+        window.Activated += OnActivated;
         return window;
     }
 
     private async Task InitializeApplicationAsync(Window window)
     {
-        window.Page = CreateStartupPage();
-
         try
         {
             await _databaseInitializer.InitializeAsync();
@@ -181,6 +186,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         retryButton.Clicked += async (_, _) =>
         {
             retryButton.IsEnabled = false;
+            window.Page = CreateStartupPage();
             await InitializeApplicationAsync(window);
         };
         content.Children.Add(retryButton);
