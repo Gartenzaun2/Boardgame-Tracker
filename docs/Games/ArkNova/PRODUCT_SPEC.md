@@ -8,7 +8,8 @@ Weitere kanonische Quellen:
 - [DATA_MODEL.md](DATA_MODEL.md) für Werte, Identitäten und Invarianten;
 - [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md) für Darstellung und Interaktion;
 - [CV_STATUS.md](CV_STATUS.md) für CV-Forschungs-/Integrationsstatus;
-- [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md) für Transferdetails.
+- [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md) für den allgemeinen Transfervertrag;
+- [IMPORT_EXPORT.md](IMPORT_EXPORT.md) für das Arche-Nova-Transferschema.
 
 ## 2. Spielumfang und Einstellungen
 
@@ -183,4 +184,10 @@ Spätere Arche-Nova-Statistik darf zusätzlich nach Zooplan und Spezialkarte fil
 
 ## 12. Import / Export
 
-Arche-Nova-Partien nehmen am allgemeinen History-Transfer teil. Das Modul liefert seine spielabhängigen Daten und Referenzen; Matching und Formatregeln stehen ausschließlich in [IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
+Arche-Nova-Partien nehmen am allgemeinen History-Transfer teil.
+
+Allgemeines Format, Matching und Commit:
+[../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
+
+Arche-Nova-Schema, Validierung und Spezialkartenreferenzen:
+[IMPORT_EXPORT.md](IMPORT_EXPORT.md).

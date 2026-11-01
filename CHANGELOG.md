@@ -1,8 +1,43 @@
 # Changelog
 
-Historische Versionsentscheidungen können durch spätere Einträge überholt sein.
-Maßgeblich für den aktuellen Stand sind AGENTS, Setup und die kanonischen
-Spezifikationen unter `docs/`.
+`CHANGELOG.md` ist die **historische Versionschronik** des Boardgame Trackers.
+Es beschreibt, was sich in einem Stand geändert hat, nicht den aktuellen
+Sollzustand.
+
+Für den aktuellen Stand gelten ausschließlich `AGENTS.md`, `SETUP.md` und die
+kanonischen Spezifikationen unter `docs/`. Historische Entscheidungen können durch
+spätere Einträge überholt sein.
+
+## Regel für neue Einträge
+
+Ein Eintrag enthält nur historisch relevante Änderungen, insbesondere:
+
+- sichtbares Produktverhalten oder relevante Fehlerbehebungen;
+- Architektur-, Datenmodell- oder Vertragsänderungen;
+- neue bzw. entfernte Integrationen oder Abhängigkeiten;
+- Kompatibilitätsbrüche, notwendige Neuinstallation oder möglicher Datenverlust;
+- wesentliche Forschungs-/Freigabeentscheidungen, wenn sie den Projektstand ändern.
+
+Nicht aufnehmen:
+
+- Commit-, Push-, Staging- oder lokalen Arbeitsbaumstatus;
+- normale Build-/Testzählungen und wiederholte „alles erfolgreich“-Nachweise;
+- Tätigkeitschronologien, ausgeführte Einzelbefehle oder Agentenabläufe;
+- temporäre lokale Dateien oder Bereinigungsschritte ohne dauerhafte Projektwirkung;
+- ausführliche Messdaten, wenn ein versionierter Report die kanonische Evidenz ist;
+- Wiederholungen unveränderter Regeln oder Zustände.
+
+Verifikation wird nur erwähnt, wenn ihr Ergebnis selbst historisch relevant ist,
+z. B. ein bewusst fehlgeschlagenes Freigabegate oder ein erstmals bestätigter
+Plattformnachweis.
+
+Pro Version möglichst wenige, aussagekräftige Punkte. Details bleiben in den
+damals zuständigen Reports oder Dokumenten.
+
+## Historischer Bestand
+
+Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
+historische Aufzeichnung unverändert erhalten.
 
 ## 0.10.0.26
 

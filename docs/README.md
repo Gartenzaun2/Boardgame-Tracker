@@ -44,7 +44,11 @@ erheblicher UX-Auswirkung wird der Entwickler gefragt.
 
 Ein Spiel ergänzt dieselben Dokumentfamilien unter `docs/Games/<GameName>/`,
 typischerweise `PRODUCT_SPEC.md`, `ARCHITECTURE.md`, `DATA_MODEL.md`,
-`UI_DESIGN_GUIDE.md` und `UI_WIREFRAME.md`.
+`UI_DESIGN_GUIDE.md`, `UI_WIREFRAME.md` und bei eigenem Transferschema
+`IMPORT_EXPORT.md`.
+
+Bei einer konkreten Spielaufgabe gilt zuerst die allgemeine Quelle und ergänzend
+die gleichnamige Spielergänzung, sofern sie existiert.
 
 Sie ersetzen die allgemeinen Quellen nicht, sondern enthalten nur die konkrete
 Spielausprägung. Spezialdokumente entstehen nur bei einer eigenen dauerhaften

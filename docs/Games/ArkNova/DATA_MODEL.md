@@ -205,4 +205,5 @@ Zusätzlich gelten:
 
 Produktverhalten: [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
 UI: [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
-Import/Export: [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
+Allgemeiner Import/Export: [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
+Arche-Nova-Transferschema: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).

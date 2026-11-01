@@ -78,18 +78,21 @@ Dokumente und werden hier nicht dupliziert.
 
 Allgemeine Dokumente unter `docs/` beschreiben ausschließlich spielübergreifende
 Regeln. Spielspezifische Dokumentation liegt unter `docs/Games/<GameName>/`.
-Ein spielespezifisches Dokument wird nur gelesen, wenn die Aufgabe dieses Spiel
+Ein spielspezifisches Dokument wird nur gelesen, wenn die Aufgabe dieses Spiel
 oder genau dieses Spezialthema betrifft.
 
-Bei Architekturfragen eines konkreten Spiels gelten die allgemeine
-`docs/ARCHITECTURE.md` und ergänzend `docs/Games/<GameName>/ARCHITECTURE.md`.
-Spezialisierte Dokumente, auf die eine Spielarchitektur verweist, nur bei Bedarf lesen.
+Bei Produkt-, Architektur-, Datenmodell-, UI-, Wireframe- oder Import/Export-Fragen
+eines konkreten Spiels gilt zuerst die allgemeine kanonische Quelle und ergänzend
+die gleichnamige Datei unter `docs/Games/<GameName>/`, sofern sie existiert.
+Spezialisierte Dokumente wie Forschungs- oder Integrationsstatus nur bei Bedarf lesen.
+
+`docs/README.md` nur bei Dokumentationsstruktur, Dokumentverschiebungen, neuen
+Dokumenten oder unklarer Dokumentzuständigkeit lesen.
 
 | Thema | Kanonische Quelle |
 |---|---|
 | Produktverhalten und Anforderungen | `docs/PRODUCT_SPEC.md` |
 | allgemeine Architektur, Schichten und Modulregeln | `docs/ARCHITECTURE.md` |
-| Architektur eines konkreten Spiels | `docs/Games/<GameName>/ARCHITECTURE.md` |
 | Domain und Persistenzmodell | `docs/DATA_MODEL.md` |
 | C#, Async, Naming und Kommentare | `docs/CODE_GUIDELINES.md` |
 | allgemeine UI-/Interaktionsregeln | `docs/UI_DESIGN_GUIDE.md` |

@@ -84,8 +84,11 @@ Datenmodell: [DATA_MODEL.md](DATA_MODEL.md).
 Arche Nova implementiert die allgemeinen Transfer-Erweiterungspunkte innerhalb
 `Application/Games/ArkNova/`.
 
-Format, Matching und Commitregeln bleiben ausschließlich in
+Allgemeines Format, Matching und Commit:
 [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
+
+Arche-Nova-Schema, Validierung und Spezialkartenreferenzen:
+[IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
 ## 7. Fotoerkennung
 
@@ -126,4 +129,5 @@ Bekannte Abweichungen vom gewünschten Architekturzustand stehen ausschließlich
 | Datenmodell | `docs/Games/ArkNova/DATA_MODEL.md` |
 | UI | `docs/Games/ArkNova/UI_DESIGN_GUIDE.md` |
 | CV-Status | `docs/Games/ArkNova/CV_STATUS.md` |
-| Import/Export | `docs/IMPORT_EXPORT.md` |
+| allgemeiner Import/Export | `docs/IMPORT_EXPORT.md` |
+| Arche-Nova-Import/Export | `docs/Games/ArkNova/IMPORT_EXPORT.md` |
