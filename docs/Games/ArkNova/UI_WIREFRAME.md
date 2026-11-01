@@ -94,11 +94,15 @@ Create/Edit: Name, Vorschau `Symbol1 → Symbol2 → Symbol3 → Name`, drei num
 
 Kamera-Aktion öffnet **Foto aufnehmen** oder **Vorhandenes Foto auswählen**. Danach liegt ein isolierter Review über der deaktivierten Wertung.
 
-Jede Zeile zeigt Spieler/Wert plus `✓ Sicher`, `! Prüfen` oder `? Unsicher`; Werte sind editierbar. Unten **Bestätigen/Speichern · Abbrechen**.
+Der Review-Header zeigt Zurück · **Fotowerte prüfen**. Direkt darunter steht eine kompakte Hinweiszeile aus Info-Icon und anschließendem Hinweistext; es gibt keinen separaten Infotextblock.
+
+Pro Spieler stehen die erkannten Werte in kompakten Zeilen. Jede Wertzeile zeigt das Label, direkt daneben den Sicherheitsstatus `✓ Sicher`, `! Prüfen` oder `? Unsicher` und rechts den editierbaren Wert. Der Sicherheitsstatus erhält keine eigene Zeile. Bei aktivem **Ruf erfassen** gilt derselbe Aufbau für Ruf.
+
+Unten steht nur **Bestätigen/Speichern**. Header-Zurück oder System-Zurück beendet den Review ohne Bestätigung, verwirft die unbestätigten Fotovorschläge und zeigt wieder die Wertung. Im Review gibt es keinen unteren **Abbrechen**-Button.
 
 ## 12. Back-Navigation
 
-System-/Android-Zurück schließt zuerst die oberste modale Ebene. Bei Spezialkarten also: Bestätigungs-/Fehlerdialog → Spezialkartenwahl → Wertungsseite. Zurück bestätigt keine Auswahl oder destruktive Aktion.
+System-/Android-Zurück schließt zuerst die oberste modale Ebene. Bei Spezialkarten also: Bestätigungs-/Fehlerdialog → Spezialkartenwahl → Wertungsseite. Beim Foto-Review entspricht Zurück der Header-Zurück-Aktion aus Abschnitt 11. Zurück bestätigt keine Auswahl oder destruktive Aktion.
 
 ## 13. Quellen
 

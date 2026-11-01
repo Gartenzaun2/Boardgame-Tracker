@@ -21,6 +21,8 @@ Permanente Tabs: **Spiele · Gruppen · Historie · Einstellungen**. Unter **Gru
 
 Ein expliziter Tab-Tap öffnet immer den jeweiligen Root: `GamesPage`, `GroupListPage` im aktuellen Spielkontext, `HistoryPage` oder `AppSettingsPage`; tiefere Seiten des gewählten Tabs werden verworfen.
 
+Öffnet ein bestehender GameSession-Screen aus **Gruppen**, **Historie** oder **Einstellungen → Spieler**, bleibt der konkrete aufrufende Screen als Rückziel erhalten: `GroupListPage`, `HistoryPage` beziehungsweise `PlayerListPage`. Interne Wechsel zwischen laufender Partie, Wertung, Ergebnis und historischer Korrektur ändern dieses Rückziel nicht. Header-/System-Zurück sowie erfolgreiches Verwerfen einer offenen Partie oder Wertung führen dorthin zurück. Ein expliziter Haupttab-Tap hat Vorrang und öffnet weiterhin den Root des gewählten Hauptbereichs.
+
 Reine Auswahllisten (auch Darstellung, Standardspiel und History-Filter) zeigen oben links den gemeinsamen Zurück-/Exit-IconButton und keinen unteren Schließen-Textbutton.
 
 ## 3. Gruppen
@@ -92,7 +94,7 @@ Einstieg über **Einstellungen → Spieler**. Header: Zurück · **Spieler** · 
 
 Spielerkarte: Name + Bearbeiten-Icon, darunter **Erstellt <Datum>**, optionale Gast-/Archiv-Chips und eine eigene Secondary-Aktion **Zuletzt gespielt <…>**. Ohne Partie steht dort **Noch keine Partie** nicht interaktiv. Nur das Bearbeiten-Icon öffnet den Editor.
 
-Neben **Zuletzt gespielt** erscheint bei `Running` und `Scoring` dasselbe Aktiv-Icon wie in der Gruppenübersicht, bei `Completed` keines. Das Icon ist eine Statusanzeige ohne eigene Aktion. Ein abgeschlossenes Ergebnis wird über der Spielerübersicht geöffnet; Zurück führt dorthin zurück, auch nach einer Korrektur über den Ergebnis-Screen.
+Bei `Running` und `Scoring` enthält die Secondary-Aktion **Zuletzt gespielt <…>** rechts neben Text/Datum dasselbe Aktiv-Icon wie in der Gruppenübersicht; bei `Completed` fehlt es. Das Icon ist Bestandteil der Buttonfläche, dient nur als Statusanzeige und besitzt keine eigene Aktion. Eine über **Zuletzt gespielt** geöffnete Partie behält die Spielerübersicht als Rückziel. Bei abgeschlossenen Ergebnissen gilt dies auch nach einer Korrektur über den Ergebnis-Screen.
 
 ### Bearbeiten
 
