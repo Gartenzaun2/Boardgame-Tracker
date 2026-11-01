@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.36
+
+- iOS-Release-Persistenz auf gezielten Interpreterbetrieb umgestellt: App, MAUI und native Bilderkennung bleiben AOT-kompiliert; nur die EF-Core-/Relational-/SQLite-Assemblies werden interpretiert, damit der beim Modellaufbau per Reflection auftretende `InvalidProgramException` in `ValueComparer.CreateDefault` vermieden wird. App-Version 0.10.0.36 / ApplicationVersion 73.
+
 ## 0.10.0.33
 
 - iOS-Release-Start korrigiert: Für iOS wird der Interpreter aktiviert, damit EF Core sein Modell zur Laufzeit aufbauen kann und `EnsureCreatedAsync()` nicht mit `Model building is not supported when publishing with NativeAOT` abbricht. App-Version 0.10.0.33 / ApplicationVersion 70.
@@ -94,7 +98,7 @@ historische Aufzeichnung unverändert erhalten.
 - Ausschließlich vorhandenen nativen Mobile-CV-Run direkt gegen die originalen Ground Truths tabelliert; alle 648 Expected-Zuordnungen und historischen Nenner geprüft. Kein neuer CV-Lauf, keine Ursachenforschung, Optimierung oder Erkennungsparameteränderung.
 - `NativeGroundTruthAcceptance.md` und maschinenlesbarer Nachweis mit allen Entscheidungen: **FAIL**. Gesamt raw 311 statt 312/411; nach E 294 statt 297/411. V3 False High unverändert 8, identische Fehler, keine neuen falschen Highs und kein korrekt-High zu falsch-High. V3 Empty raw 42 statt 40/120, nach E 11 statt 10/120. Weniger E-Treffer und mehr E-Phantome verhindern die Freigabe unabhängig von Windows-Parität.
 - Datensatz-, Track-, Farb- und Confidence-Tabellen sowie Quellprüfsummen dokumentiert. Status/README halten Produktionsfreigabe offen und weitere CV-Arbeit gestoppt. ARM64-Gerätelauf separat manuell offen; `iOS build/link/runtime verification pending manual user verification` unverändert.
-- App-Version 0.10.0.23 / ApplicationVersion 60 gemäß Dokumentations-Versionsregel. Erkennungslogik und historische Messungen unverändert. Änderungen lokal, kein Commit oder Push.
+- App-Version 0.10.0.23 / ApplicationVersion 60 gemäß Dokumentations-Versionsregel. Erkennungslogik und historische Messungen unverändert. Änderungen lokal, ungestaged; kein Commit oder Push.
 - Verifikation: alle 648 GT-Zuordnungen, unveränderte Quellprüfsummen, vollständige Nenner und Rekonstruktion der 30 Raw-/27 E-Differenzen geprüft. Solution-Build ohne Warnungen/Fehler; 73 Core- und 207 Application-Tests bestanden. Kein neuer Native-/CV-Lauf.
 
 ## 0.10.0.22
