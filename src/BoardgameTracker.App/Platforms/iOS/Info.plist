@@ -5,6 +5,8 @@
 <dict>
   <key>NSCameraUsageDescription</key>
   <string>Fotografiere die Arche-Nova-Wertungstafel, um überprüfbare Wertungsvorschläge zu erhalten.</string>
+  <key>XSAppIconAssets</key>
+  <string>Assets.xcassets/appicon_ios.appiconset</string>
   <key>LSRequiresIPhoneOS</key>
   <true/>
   <key>UIDeviceFamily</key>
