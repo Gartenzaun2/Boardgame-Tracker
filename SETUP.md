@@ -224,20 +224,29 @@ In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
 <ApplicationVersion>n</ApplicationVersion>
 ```
 
-Für jeden abgeschlossenen Änderungsauftrag gilt:
+Für abgeschlossene Änderungsaufträge gilt:
 
-- `ApplicationDisplayVersion` und `ApplicationVersion` werden beide erhöht;
-- dies gilt auch für reine Dokumentations-, Test- oder Konfigurationsänderungen;
-- mehrere Dateien und Korrekturschritte desselben Auftrags erzeugen keine
-  zusätzlichen Erhöhungen;
-- ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte
-  Komponente von `ApplicationDisplayVersion` um eins;
-- `ApplicationVersion` steigt ebenfalls um eins;
-- beide Werte müssen gegenüber dem Auftragsbeginn erhöht sein;
-- bei Auslieferung entspricht `ApplicationDisplayVersion` exakt der ausgelieferten
-  Version;
-- vor Abschluss werden beide Werte und der zugehörige `CHANGELOG.md`-Eintrag geprüft;
-- vor einer Verpackung werden sie erneut geprüft.
+- Ein Auftrag, dessen versionierte Änderungen ausschließlich Markdown-Dateien
+  (`*.md`) betreffen, löst **keinen Versionsschritt** aus.
+  `ApplicationDisplayVersion` und `ApplicationVersion` bleiben unverändert.
+- Eine im selben reinen Dokumentationsauftrag angepasste `CHANGELOG.md` zählt
+  ebenfalls als Markdown-Dokumentation und erzeugt keinen Versionsschritt.
+- Sobald der Auftrag mindestens eine versionierte Änderung außerhalb von
+  Markdown-Dateien umfasst, werden `ApplicationDisplayVersion` und
+  `ApplicationVersion` beide erhöht. Dies gilt insbesondere für Code-, Test-,
+  Projekt-, Build-, Konfigurations- und Ressourcenänderungen.
+- Mehrere Dateien und Korrekturschritte desselben versionspflichtigen Auftrags
+  erzeugen keine zusätzlichen Erhöhungen.
+- Ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte
+  Komponente von `ApplicationDisplayVersion` um eins.
+- `ApplicationVersion` steigt ebenfalls um eins.
+- Bei einem versionspflichtigen Auftrag müssen beide Werte gegenüber dem
+  Auftragsbeginn erhöht sein.
+- Bei Auslieferung entspricht `ApplicationDisplayVersion` exakt der ausgelieferten
+  Version.
+- Vor Abschluss eines versionspflichtigen Auftrags werden beide Werte und der
+  zugehörige `CHANGELOG.md`-Eintrag geprüft; vor einer Verpackung werden sie erneut
+  geprüft.
 
 Versionshistorie steht ausschließlich in `CHANGELOG.md`.
 

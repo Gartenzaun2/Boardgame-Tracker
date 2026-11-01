@@ -8,6 +8,24 @@ gelesen. Neue Einträge nur aufnehmen, wenn ein Problem bewusst offen bleibt und
 später gezielt bearbeitet werden soll. Erledigte Einträge entfernen statt eine
 Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
+## Plattformnachweise
+
+### Android ARM64: nativer Gerätelauf
+
+**Status:** offen
+
+**Ist:** Der native Mobile-CV-Pfad ist fachlich freigegeben. Ein tatsächlicher
+Android-API-30-x64-App-/Interop-/Review-/Persistenzlauf ist vorhanden. Der
+vollständige iOS-Simulator-Build-/Runtime-/CV-Ergebnisnachweis ist ebenfalls
+erbracht und fachlich akzeptiert. Ein echter Android-ARM64-Gerätelauf der nativen
+Integration fehlt weiterhin.
+
+**Ziel:** Den bestehenden produktiven Android-ARM64-Pfad einmal auf einem echten
+geeigneten Gerät technisch ausführen und bestätigen, dass App-/Interop-/native
+Engine-Lauf ohne plattformspezifischen technischen Fehler funktioniert. Dies ist
+kein neues CV-Forschungs- oder Produktfreigabegate und darf keine Optimierung oder
+Parameteränderung auslösen.
+
 ## iOS-Navigation
 
 ### iOS: Haupttab-Retap / Root-Reset
