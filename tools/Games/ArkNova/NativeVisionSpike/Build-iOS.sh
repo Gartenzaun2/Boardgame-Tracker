@@ -7,7 +7,6 @@ fi
 source_dir="$(cd "$(dirname "$0")" && pwd)"
 opencv_dir="$(cd "$1" && pwd)"
 build_dir="$2"
-stage_dir="$build_dir/opencv-install"
 sdk="${ANV_IOS_SDK:-iphoneos}"
 arch="${ANV_IOS_ARCH:-arm64}"
 if [[ "$sdk" != iphoneos && "$sdk" != iphonesimulator ]]; then
@@ -30,28 +29,14 @@ cmake -S "$source_dir" -B "$build_dir" -G Xcode \
   -DCMAKE_BUILD_TYPE=Release -DANV_BUILD_RUNNER=OFF
 cmake --build "$build_dir" --config Release --target arknova_vision --parallel 8
 
-# Stage OpenCV's install tree before merging. The Xcode build tree contains
-# multiple copies of some third-party codec archives; recursively merging every
-# *.a from that tree duplicates object files (notably libjpeg-turbo) and causes
-# duplicate-symbol failures in the final .NET iOS link.
-rm -rf "$stage_dir"
-cmake --install "$build_dir" --config Release --prefix "$stage_dir"
-
-arknova_archive="$(find "$build_dir" -type f -name 'libarknova_vision.a' -print -quit)"
-if [[ -z "$arknova_archive" ]]; then
-  echo 'libarknova_vision.a was not produced by the iOS build' >&2
-  exit 1
-fi
-
-archives=("$arknova_archive")
+# Build one archive for .NET's NativeReference. libtool only combines archive
+# members here; the final iOS linker selectively loads the members reachable
+# from the explicitly retained Ark Nova C-ABI entry points.
+archives=()
 while IFS= read -r -d '' archive; do archives+=("$archive"); done < <(
-  find "$stage_dir/lib" -type f -name '*.a' -print0
+  find "$build_dir" -type f -name '*.a' ! -name 'libarknova_vision_full.a' -print0
 )
-if [[ ${#archives[@]} -le 1 ]]; then
-  echo 'No staged OpenCV static archives were found' >&2
-  exit 1
-fi
-
+if [[ ${#archives[@]} -eq 0 ]]; then exit 1; fi
 xcrun libtool -static -o "$build_dir/libarknova_vision_full.a" "${archives[@]}"
 xcrun lipo -info "$build_dir/libarknova_vision_full.a"
 xcrun nm -g "$build_dir/libarknova_vision_full.a" | grep ' _anv_probe$'
