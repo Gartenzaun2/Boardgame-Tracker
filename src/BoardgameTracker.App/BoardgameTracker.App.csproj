@@ -72,8 +72,8 @@
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and Exists('$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a')">
     <NativeReference Include="$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a">
-      <Kind>Static</Kind><ForceLoad>true</ForceLoad><SmartLink>false</SmartLink>
-      <LinkerFlags>-lc++ -lz</LinkerFlags>
+      <Kind>Static</Kind><ForceLoad>false</ForceLoad><SmartLink>true</SmartLink>
+      <LinkerFlags>-lc++ -lz -Wl,-u,_anv_engine_create -Wl,-u,_anv_engine_analyze -Wl,-u,_anv_engine_destroy</LinkerFlags>
       <Frameworks>Foundation CoreGraphics ImageIO Accelerate</Frameworks>
     </NativeReference>
   </ItemGroup>
