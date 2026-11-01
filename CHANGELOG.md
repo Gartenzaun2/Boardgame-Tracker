@@ -39,6 +39,14 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.38
+
+- iOS-App-Startup auf den aktivierten Window-Lifecycle umgestellt: Die Initialisierung startet einmalig bei `Window.Activated`, die bereits angezeigte Startseite wird nicht erneut während des Appearance-Übergangs ersetzt, und ein Retry setzt die Startseite nur bewusst vor einem neuen Initialisierungsversuch. EF-Interpreter- und Symbol-Strip-Konfiguration bleiben unverändert. App-Version 0.10.0.38 / ApplicationVersion 75.
+
+## 0.10.0.37
+
+- iOS-Release-Start stabilisiert: Native Symbol-Stripping für iOS Release deaktiviert, während der gezielte EF-Core-Interpreter erhalten bleibt. Datenbank-, Schema- und Bilderkennungslogik unverändert. App-Version 0.10.0.37 / ApplicationVersion 74.
+
 ## 0.10.0.36
 
 - iOS-Release-Persistenz auf gezielten Interpreterbetrieb umgestellt: App, MAUI und native Bilderkennung bleiben AOT-kompiliert; nur die EF-Core-/Relational-/SQLite-Assemblies werden interpretiert, damit der beim Modellaufbau per Reflection auftretende `InvalidProgramException` in `ValueComparer.CreateDefault` vermieden wird. App-Version 0.10.0.36 / ApplicationVersion 73.
@@ -426,7 +434,7 @@ historische Aufzeichnung unverändert erhalten.
 - Statussymbol für offene Partien transparent und dynamisch im Theme-Textton statt fester grüner Fläche.
 
 - Gemeinsame Header-Unterkante und Aktionsrollen auf alle bestehenden Seiten angewendet.
-- Gruppenbearbeitung und Wertungseingaben flach; Leerzustände ohne dekorative Karte.
+- Gruppenbearbeitung und Wertungseingabe flach; Leerzustände ohne dekorative Karte.
 - App-Auswahldialoge vereinheitlicht; verbleibende native Dialoge im Wireframe dokumentiert.
 - App-Version 0.8.6.1 / ApplicationVersion 16.
 
