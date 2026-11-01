@@ -107,9 +107,10 @@ Produktiver nativer Code liegt unter
 `App/Games/ArkNova/PhotoRecognition/Native`; Windows/OpenCvSharp bleibt
 Referenz-/Regressionstool unter `tools/Games/ArkNova/`.
 
-CV-Vorschläge werden erst nach expliziter Nutzerbestätigung über den normalen
-Application-Speicherpfad persistiert. Bilder und Confidence-Werte sind keine
-historischen Partiedaten.
+Der CV-Pfad besitzt keinen eigenen Persistenzweg. Vom in
+[PRODUCT_SPEC.md](PRODUCT_SPEC.md) definierten Review-Flow übergebene Werte laufen
+über den normalen Application-Speicherpfad. Bilder und Confidence-Werte werden nicht
+als historische Partiedaten persistiert.
 
 Forschungs-/Integrationsstatus: [CV_STATUS.md](CV_STATUS.md). Native Technik:
 `tools/Games/ArkNova/NativeVisionSpike/README.md`.
@@ -118,16 +119,3 @@ Forschungs-/Integrationsstatus: [CV_STATUS.md](CV_STATUS.md). Native Technik:
 
 Bekannte Abweichungen vom gewünschten Architekturzustand stehen ausschließlich in
 [`docs/TODO.md`](../../TODO.md) und gelten nicht als Architektur-Ausnahmen.
-
-## 9. Dokumente
-
-| Thema | Quelle |
-|---|---|
-| allgemeine Architektur | `docs/ARCHITECTURE.md` |
-| Arche-Nova-Architektur | `docs/Games/ArkNova/ARCHITECTURE.md` |
-| Produkt | `docs/Games/ArkNova/PRODUCT_SPEC.md` |
-| Datenmodell | `docs/Games/ArkNova/DATA_MODEL.md` |
-| UI | `docs/Games/ArkNova/UI_DESIGN_GUIDE.md` |
-| CV-Status | `docs/Games/ArkNova/CV_STATUS.md` |
-| allgemeiner Import/Export | `docs/IMPORT_EXPORT.md` |
-| Arche-Nova-Import/Export | `docs/Games/ArkNova/IMPORT_EXPORT.md` |

@@ -19,9 +19,8 @@ Spielerkachel: Positionsnummer, Name, Palette/Farbstatus, zwei Zooplankacheln ne
 Zooplankacheln sind quadratisch, verwenden die Skizze mit `Fill`, zeigen die Nummer und keinen zusätzlichen Namen. Initial ist keine ausgewählt; Tap markiert die ganze Kachel.
 
 Die Partiefarbauswahl öffnet sich über Palette; die aktuell gesetzte Farbe wird
-darin nicht erneut angeboten. Doppelte Farben dürfen im Entwurf vorübergehend
-sichtbar sein, blockieren aber **Starten**. Weitere Validierungsregeln folgen
-`PRODUCT_SPEC.md`.
+darin nicht erneut angeboten. Ob **Starten** verfügbar ist, folgt den
+Vorbereitungsregeln aus `PRODUCT_SPEC.md`.
 
 ## 3. Laufende Partie
 
@@ -52,21 +51,18 @@ Vorschlagsstatus stehen zentriert. Außenkanten fluchten mit Punktefläche und
 **Fertig**. Bei aktivem **Ruf erfassen** folgt unter den Punkten ein horizontaler
 Ruf-Slider mit editierbarem Zahlenfeld, ohne zusätzlichen Erfassungsschalter. Bei
 Tastatur/großer Schrift bleibt der Inhalt scrollbar und **Fertig** unten erreichbar.
-Historische Korrektur verwendet denselben Aufbau. Ist Ruf dort aktuell verborgen,
-bleibt ein bereits gespeicherter Ruf im Korrekturentwurf erhalten.
+Historische Korrektur verwendet denselben Aufbau. Sichtbarkeit und Erhalt eines
+vorhandenen Rufwerts folgen `PRODUCT_SPEC.md`.
 
 ## 6. Spezialkartenwahl
 
 Page-interner `SelectionDialog`; jeder Eintrag zeigt `Symbol1 → Symbol2 → Symbol3 → Name`.
+Zuordnungen zum Zielspieler und zu anderen Spielern besitzen getrennt sichtbare
+Zustände gemäß `UI_DESIGN_GUIDE.md`.
 
-| Zustand | Fläche | Rahmen |
-|---|---|---|
-| nicht zugeordnet | `Surface` | normale `Outline` |
-| Zielspieler | `SelectedSurface` | normale `Outline` |
-| anderer Spieler | `Surface` | gestrichelt `Danger` |
-| Zielspieler + anderer | `SelectedSurface` | gestrichelt `Danger` |
-
-Danger-Rahmen: **2 dp**, Muster **4/3**. Archivierte Karten erscheinen nur, wenn sie für den Zielspieler bereits relevant sind. Ein Tap führt die zugehörige Zuordnungsaktion aus und schließt; nötige Bestätigung liegt darüber als App-Dialog.
+Archivierte Karten erscheinen nur, wenn sie für den Zielspieler bereits relevant
+sind. Ein Tap führt die zugehörige Zuordnungsaktion aus und schließt; nötige
+Bestätigung liegt darüber als App-Dialog.
 
 ## 7. Gleichstände bearbeiten
 

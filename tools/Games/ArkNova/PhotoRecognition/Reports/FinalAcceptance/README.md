@@ -1,7 +1,7 @@
 # FinalAcceptance / StressTest – Abschlussreport
 
 **Erkennungsforschung ABGESCHLOSSEN / FROZEN.** Aktuelle Entscheidung und offener
-mobiler Integrationsstand: [kanonischer Status](../../../../../../docs/ARK_NOVA_CV_STATUS.md).
+mobiler Integrationsstand: [kanonischer Status](../../../../../../docs/Games/ArkNova/CV_STATUS.md).
 Gehärtetes A bleibt Basis, C1/C2 verworfen, C3 research-only. Keine F1/F2-Fusion
 oder C3-Warnregel produktiv. Kein neuer Parameter-/Confidence-/Ensembleversuch.
 

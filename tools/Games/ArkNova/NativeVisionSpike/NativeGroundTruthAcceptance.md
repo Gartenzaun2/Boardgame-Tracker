@@ -1,11 +1,10 @@
 # NativeGroundTruthAcceptance
 
-> **Aktuelle Produktentscheidung: fachliches GO für assistierte Wertung.**
-> Die dokumentierten Plattformabweichungen sind bewusst akzeptiert: keine neuen
-> False Highs/High-Phantome und verpflichtende Nutzerprüfung/Bestätigung.
-> Die folgende frühere Gate-Auswertung und alle Messwerte bleiben unverändert
-> als historischer Nachweis erhalten. Ihr FAIL blockiert die Produktfreigabe
-> nicht mehr. Aktueller [Projektstatus](../../../../docs/ARK_NOVA_CV_STATUS.md).
+> **Aktueller Produkt-/Integrationsstatus:**
+> [CV_STATUS.md](../../../../docs/Games/ArkNova/CV_STATUS.md).
+> Die folgende frühere Gate-Auswertung und alle Messwerte bleiben unverändert als
+> historischer Nachweis. Das damalige FAIL ist historische Evidenz und keine Quelle
+> für den aktuellen Freigabestatus.
 
 ## Historische Ground-Truth-Gate-Auswertung
 

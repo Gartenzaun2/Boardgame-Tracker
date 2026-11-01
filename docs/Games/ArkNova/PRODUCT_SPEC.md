@@ -46,6 +46,9 @@ Blue · Yellow · Red · Black
 ```
 
 Gruppendefaults werden übernommen; Änderungen in der Vorbereitung verändern sie nicht.
+Vor dem Start muss jeder Partieteilnehmer eine unterschiedliche erlaubte Farbe besitzen.
+Doppelte Farben dürfen im unpersistierten Entwurf vorübergehend vorkommen; solange
+sie bestehen, kann die Partie nicht gestartet werden.
 
 ### Zoopläne
 
@@ -177,6 +180,9 @@ Historisch korrigierbar sind ausschließlich:
 Spiel, Gruppe, Teilnehmer, Farben, Zoopläne, Startreihenfolge sowie Start-/Endzeit bleiben unverändert.
 
 Die Bearbeitung erfolgt zunächst in einem Entwurf. **Korrektur speichern** übernimmt die Änderungen atomar; die Partie bleibt durchgehend `Completed`. Ändern sich Scores, werden Placements neu bestimmt und nötige Gleichstände über denselben Flow aufgelöst.
+
+Ist **Ruf erfassen** während einer Korrektur deaktiviert, bleibt ein bereits
+gespeicherter Ruf unverändert; das ausgeblendete Feld wird nicht geleert.
 
 ## 11. Statistik – Zielbild
 

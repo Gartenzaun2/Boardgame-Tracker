@@ -103,10 +103,9 @@ Für x64:
 -p:RuntimeIdentifier=android-x64
 ```
 
-Der aktuelle technische Nachweis umfasst Android ARM64/x64 Builds sowie einen
-tatsächlichen API-30-x64-App-/Interop-/Review-/Persistenzlauf mit isoliertem
-Testpaket. Der echte ARM64-Gerätelauf ist weiterhin offen; Statusdetails stehen in
-`CV_STATUS.md`.
+Aktueller Runtime-/Plattformnachweis und offene Integrationspunkte stehen
+ausschließlich in
+[`docs/Games/ArkNova/CV_STATUS.md`](../../../../docs/Games/ArkNova/CV_STATUS.md).
 
 ## 5. Native Parity reproduzieren
 

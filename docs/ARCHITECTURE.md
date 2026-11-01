@@ -72,38 +72,7 @@ allgemeinen Namespace verwenden. Ownership bleibt durch den Dateipfad im Spielmo
 bestimmt. Das ist keine Erlaubnis für sonstige konkrete Spielabhängigkeiten im
 allgemeinen Code.
 
-## 4. Dokumentationsarchitektur
-
-Allgemeine Regeln stehen unter `docs/`; Spielergänzungen unter:
-
-```text
-docs/Games/<GameName>/
-```
-
-Bei einer Aufgabe zu einem konkreten Spiel wird zuerst das passende allgemeine
-Dokument und danach die Spielergänzung gelesen. Weitere Spezialdokumente nur bei
-Bedarf.
-
-Jede dauerhafte Regel hat genau eine kanonische Quelle.
-
-### Generalisierungstest
-
-Bevor eine Regel in `docs/Games/<GameName>/` landet:
-
-> Würde sie für jedes zukünftige Spiel gelten – oder für jedes Spiel, das dieses
-> allgemeine Konzept verwendet?
-
-Wenn ja, gehört sie ins allgemeine Dokument, auch wenn aktuell nur ein Spiel sie
-implementiert.
-
-Spielspezifisch ist eine Aussage nur, wenn sie konkrete Spieltypen/-werte/-workflows
-beschreibt, ein anderes Spiel bewusst anders entscheiden darf oder sie Status/
-Forschung genau dieses Spiels dokumentiert.
-
-Die Anzahl aktuell implementierter Spiele ist kein Zuordnungskriterium. Bei einer
-relevanten unklaren Grenzentscheidung wird der Entwickler gefragt.
-
-## 5. Domänenvokabular
+## 4. Domänenvokabular
 
 Verbindliche allgemeine Begriffe:
 
@@ -121,7 +90,7 @@ Nicht als Synonyme verwenden: `Person`, `Member`/`Participant` für `Player` ode
 
 Konkrete Felder und Invarianten: [DATA_MODEL.md](DATA_MODEL.md).
 
-## 6. Vertical Slices und Ordner
+## 5. Vertical Slices und Ordner
 
 Application und UI werden primär nach Fachfeature/Use Case organisiert.
 
@@ -132,7 +101,7 @@ Wiederverwendung, relevanter Logik oder unabhängigen Änderungsgründen.
 Keine Standardhierarchie aus `Commands/`, `Queries/`, `Services/`, `Validators/`
 oder `DTOs/` nur um einer Schablone zu folgen.
 
-## 7. Domainmodellierung und Composition
+## 6. Domainmodellierung und Composition
 
 Entities besitzen fachliche Identität; Aggregate schützen ihre Invarianten.
 Cross-Aggregate-Beziehungen referenzieren bevorzugt IDs. Navigation Properties
@@ -152,7 +121,7 @@ Persistierte Vererbung wird nur für eine echte stabile is-a-Beziehung mit
 polymorphem Verhalten eingesetzt. Value Objects werden für echte fachliche
 Werteblöcke eingeführt, nicht als technische Pflicht.
 
-## 8. Application und Persistenz
+## 7. Application und Persistenz
 
 Application arbeitet bewusst direkt mit EF Core.
 
@@ -181,7 +150,7 @@ Application-Fachlogik.
 
 DB-/Build-/Migrationsregeln: [`SETUP.md`](../SETUP.md).
 
-## 9. Modulregistrierung und Host-Integration
+## 8. Modulregistrierung und Host-Integration
 
 Jedes Spiel besitzt einen öffentlichen Registrierungseinstieg, bevorzugt
 `Add<GameName>()`.
@@ -206,7 +175,7 @@ Builddatei ausgelagert werden.
 Ein neuer Erweiterungspunkt entsteht erst, wenn allgemeiner Code tatsächlich eine
 austauschbare oder spielabhängige Implementierung benötigt.
 
-## 10. Gemeinsame Querschnittskonzepte
+## 9. Gemeinsame Querschnittskonzepte
 
 ### PlayerColor
 
@@ -257,7 +226,7 @@ App-Adapter und enthalten keine Format-/Matchinglogik.
 
 Details: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
-## 11. Rollen
+## 10. Rollen
 
 - **Query:** reine Leseprojektion.
 - **UseCase:** Application-Orchestrierung eines fachlichen Ablaufs.
@@ -269,7 +238,7 @@ Details: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
 C#-/Async-/Naming-Regeln: [CODE_GUIDELINES.md](CODE_GUIDELINES.md).
 
-## 12. Tests und Architekturschutz
+## 11. Tests und Architekturschutz
 
 Core-Tests bleiben ohne EF/SQLite. Application-Tests für relationale Regeln verwenden
 echtes EF/SQLite mit isolierter Lebensdauer; EF InMemory ersetzt keine
@@ -286,7 +255,7 @@ Architekturtests sollen schützen:
 
 Tests spiegeln die fachliche Modul-/Slicestruktur.
 
-## 13. Nicht gewünschte Muster
+## 12. Nicht gewünschte Muster
 
 Ohne konkreten Bedarf nicht einführen:
 
@@ -301,7 +270,7 @@ Ohne konkreten Bedarf nicht einführen:
 - leere Modulordner;
 - Compatibility-Aliase für alte interne Begriffe.
 
-## 14. Bewusste technische Entscheidungen
+## 13. Bewusste technische Entscheidungen
 
 SQLite kann bestimmte `DateTimeOffset`-Sortierungen nicht zuverlässig übersetzen.
 Betroffene kleine lokale Listen dürfen deshalb nur benötigte Daten projizieren und

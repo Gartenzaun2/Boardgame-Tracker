@@ -18,14 +18,11 @@ Statusspezifikation.
 
 ## 2. Aktueller Status
 
-**Native Mobile-CV ist für assistierte Wertung fachlich freigegeben.**
+**Native Mobile-CV ist für den in [PRODUCT_SPEC.md](PRODUCT_SPEC.md) definierten
+assistierten Wertungsworkflow fachlich freigegeben.**
 
 - Native Mobile ist der Produktionspfad.
 - Windows/OpenCvSharp bleibt Referenz-/Regressionstool.
-- Alle erkannten Werte bleiben Vorschläge, auch **High / Sicher**.
-- Nutzerprüfung/Korrektur und ausdrückliche Bestätigung vor Speicherung bleiben
-  verpflichtend.
-- Es gibt keine automatische Wertung.
 - Die Erkennungsforschung ist **abgeschlossen / frozen**.
 - Keine weitere CV-Optimierung, Ursachenforschung oder Parameteränderung ist geplant.
 
@@ -79,8 +76,8 @@ Alle acht falschen High-Werte waren bereits bei Windows A in gleicher Weise fals
 Es entstanden keine neuen False-High-Fälle, kein korrektes High wurde zu einem
 falschen High und keine neuen High-Phantome wurden eingeführt.
 
-Diese Werte begründen **keine automatische Speicherung**. Bekannte schwierige Fälle
-bleiben insbesondere:
+Die dokumentierten Qualitätsgrenzen sind für den oben verlinkten assistierten
+Workflow bewusst akzeptiert. Bekannte schwierige Fälle bleiben insbesondere:
 
 - Schwarz;
 - Nachbarfelder;

@@ -111,9 +111,9 @@ Statistik ist ein späterer, von der Partienliste unabhängiger Slice. Allgemein
 
 ## 12. Einstellungen
 
-Allgemeine Einstellungen enthalten mindestens Theme, Standardspiel, Spieler, rechtliche/Open-Source-Informationen und Einstiege in registrierte Spieleinstellungen.
+Allgemeine Einstellungen enthalten mindestens Theme-Auswahl, Standardspiel, Spieler, rechtliche/Open-Source-Informationen und Einstiege in registrierte Spieleinstellungen.
 
-Themes: **Deep Forest**, **Königsblau**, **Dunkel**. **Dunkel ist der Default**, wenn keine gültige Auswahl gespeichert ist. Details stehen in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
+Verfügbare Themes, Default, visuelle Tokens und Wechselverhalten stehen ausschließlich in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 
 Drittanbieter-Lizenzanforderungen stehen ausschließlich in [THIRD_PARTY_LICENSE_POLICY.md](THIRD_PARTY_LICENSE_POLICY.md).
 
@@ -127,17 +127,4 @@ Format, Matching, Konfliktauflösung und Transportdetails: [IMPORT_EXPORT.md](IM
 
 Später sollen Benutzer eigene Spiele anlegen und einfache Ergebnisarten wie „gespielt“, Gewinner, Punkte und/oder Platzierung konfigurieren können. Das konkrete Modell wird erst bei Umsetzung spezifiziert; daraus wird vorab keine generische Spiele-Engine abgeleitet.
 
-## 15. Dokumentgrenzen
-
-| Thema | Quelle |
-|---|---|
-| allgemeines Produktverhalten | `docs/PRODUCT_SPEC.md` |
-| Produktverhalten eines Spiels | `docs/Games/<GameName>/PRODUCT_SPEC.md` |
-| Datenmodell | `docs/DATA_MODEL.md` + Spiel-Datenmodell |
-| UI-Regeln | `docs/UI_DESIGN_GUIDE.md` + Spiel-UI-Guide |
-| konkrete Screens | `docs/UI_WIREFRAME.md` |
-| Architektur | `docs/ARCHITECTURE.md` |
-| Import/Export | `docs/IMPORT_EXPORT.md` |
-| Drittanbieter-Lizenzen | `docs/THIRD_PARTY_LICENSE_POLICY.md` |
-
-Der Generalisierungstest aus `ARCHITECTURE.md` gilt auch hier: Eine Anforderung wird nicht spielbezogen, nur weil aktuell erst ein Spiel implementiert ist.
+Dokumentationszuständigkeiten und Generalisierungstest: [README.md](README.md).

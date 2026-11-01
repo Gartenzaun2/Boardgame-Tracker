@@ -50,7 +50,9 @@ Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Schnellstart
 
 Vorausgesetzt werden .NET 10, die .NET-MAUI-Workload sowie die gewünschte
-Android- und/oder iOS-Toolchain.
+Android- und/oder iOS-Toolchain. Für plattformspezifische App-Builds muss zusätzlich
+die benötigte native Arche-Nova-Bibliothek gemäß [SETUP.md](SETUP.md) lokal
+bereitstehen.
 
 Vom Solution-Root:
 
