@@ -39,6 +39,14 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.31
+
+- iOS-Native-Build korrigiert: OpenCV-/Codec-Archive werden vor dem Zusammenführen aus einem dedizierten Install-Staging übernommen, statt rekursiv alle statischen Archive aus dem Xcode-Buildbaum einzusammeln. Dadurch werden doppelte libjpeg-turbo-Objekte und die daraus resultierenden Duplicate-Symbol-Linkfehler vermieden. App-Version 0.10.0.31 / ApplicationVersion 68.
+
+## 0.10.0.30
+
+- iOS-App-Icon-Build korrigiert: veraltete `XSAppIconAssets`-Referenz entfernt, damit die MAUI-`MauiIcon`-Pipeline das App-Icon vollständig erzeugt und `actool` kein nicht vorhandenes `appicon.appiconset` mehr erwartet. App-Version 0.10.0.30 / ApplicationVersion 67.
+
 ## 0.10.0.29
 
 - Dialoge und modale Auswahlen verwenden eine leichtere, vom Busy-Zustand getrennte Abdunklung. Modale und Busy-Overlays reichen über die gesamte Seitenfläche; der bisher sichtbare Rand durch äußeres Screen-Padding entfällt.
@@ -490,8 +498,8 @@ historische Aufzeichnung unverändert erhalten.
 
 - Android-Launcher-Icon endgültig auf den kanonischen Ressourcennamen `appicon` vereinheitlicht.
 - Ursache des Roboter-Icons behoben: Der `MauiIcon`-Hintergrund hieß zuvor `appiconbg`; Androids Manifest muss aber exakt den aus dem `MauiIcon Include`-Dateinamen abgeleiteten Mipmap-Namen referenzieren.
-- `MauiIcon Include` verwendet jetzt `Resources\AppIcon\appicon.png`, Foreground bleibt `appiconfg.png`; AndroidManifest referenziert passend `@mipmap/appicon` und `@mipmap/appicon_round`.
-- `ForegroundScale="0.70"` gesetzt, damit das Logo innerhalb der Android-Adaptive-Icon-Safe-Zone bleibt.
+- `MauiIcon Include` verwendet jetzt `Resources\\AppIcon\\appicon.png`, Foreground bleibt `appiconfg.png`; AndroidManifest referenziert passend `@mipmap/appicon` und `@mipmap/appicon_round`.
+- `ForegroundScale=\"0.70\"` gesetzt, damit das Logo innerhalb der Android-Adaptive-Icon-Safe-Zone bleibt.
 - App-Version auf 0.8.2.5 / ApplicationVersion 5 erhöht.
 
 ## 0.8.2.4
