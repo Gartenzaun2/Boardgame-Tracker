@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.41
+
+- Gezielten iOS-Simulator-Smoke-Test bei plausiblem Startup-/Initial-UI-Risiko mit minimalem Umfang und Abbruchkriterien in `SETUP.md` verankert; keine Standardverifikation und weiterhin nur nach unmittelbarer ausdrücklicher Freigabe. App-Version 0.10.0.41 / ApplicationVersion 78.
+
 ## 0.10.0.40
 
 - Schwarzen iOS-Startbildschirm behoben: Der eigene `MainTabRenderer` verursachte den Black-Screen. iOS verwendet wieder MAUIs Standard-`ShellItemRenderer`; das projektspezifische Tab-Bar-Appearance bleibt erhalten. Auf dem physischen iPhone wurde die sichtbare Hauptoberfläche bestätigt. Der Root-Reset bei expliziten Haupttab-Taps einschließlich Retap bleibt auf iOS eine separate Folgeaufgabe. App-Version 0.10.0.40 / ApplicationVersion 77.

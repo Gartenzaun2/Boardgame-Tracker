@@ -154,9 +154,11 @@ Keine zusätzlichen Plattform-/Release-/Trimming-Matrizen, ABI-Prüfungen,
 APK-/IPA-Analysen, Screenshots, manuellen UI-Prüfungen oder alternativen
 Verifikationsverfahren ohne ausdrücklichen Auftrag.
 
-Emulator- oder Geräteläufe niemals selbstständig starten. Auch wenn ein Auftrag
-einen Emulator-, Geräte-, UI- oder Smoke-Test ausdrücklich nennt, unmittelbar vor
-der tatsächlichen Ausführung nochmals die Bestätigung des Entwicklers einholen.
+Simulator-, Geräte- und manuelle UI-Läufe sind keine Standardverifikation. Wenn sie
+für die konkrete Änderung als kleinste sinnvolle Runtime-Prüfung geeignet sind,
+gelten Umfang und Abbruchkriterien aus `SETUP.md`. Unmittelbar vor der tatsächlichen
+Ausführung eines Simulator-, Emulator- oder Gerätelaufs immer erneut die
+ausdrückliche Bestätigung des Entwicklers einholen.
 
 Schlägt eine notwendige Prüfung fehl, Ursache korrigieren und nur den betroffenen
 notwendigen Schritt wiederholen. Bereits erfolgreiche unabhängige Prüfungen nicht

@@ -101,8 +101,60 @@ Die Tests verwenden xUnit v3 mit Microsoft Testing Platform; deshalb wird
 `dotnet test --project` verwendet.
 
 Welcher Teil davon für einen konkreten Auftrag tatsächlich ausgeführt werden soll,
-richtet sich nach `AGENTS.md`. Geräte-/Emulator-/UI-Prüfungen sind dort ausdrücklich
-geregelt und werden nicht durch diese Datei erweitert.
+richtet sich nach `AGENTS.md`. Für Simulator-/Emulator-/Geräte- und manuelle
+UI-Prüfungen gelten die dortigen Freigaberegeln; Umfang und Abbruchkriterien des
+gezielten iOS-Simulator-Smoke-Tests stehen im folgenden Unterabschnitt.
+
+### Gezielter iOS-Simulator-Smoke-Test
+
+Der iOS-Simulator ist **keine Standardprüfung** und wird nicht nach jeder Änderung
+gestartet. Ein Smoke-Test ist sinnvoll, wenn die konkrete Änderung plausibel
+mindestens einen dieser Bereiche beeinflussen kann:
+
+- App-Startup oder Initialisierung;
+- Dependency Injection / Startup-Registrierung;
+- initiale Shell oder Navigation;
+- den ersten sichtbaren Hauptscreen;
+- iOS-spezifische Renderer, Handler oder Lifecycle-Logik;
+- native iOS-Integration, deren Fehler den App-Start verhindern können;
+- Startup-Ressourcen, deren Fehler zu Crash, Black Screen oder fehlendem Hauptscreen
+  führen können.
+
+Wenn Build/Unit-Tests die geänderte Eigenschaft bereits ausreichend prüfen und kein
+plausibles Startup-/Initial-UI-Risiko besteht, keinen Simulatorlauf ergänzen.
+
+Der Smoke-Test bleibt strikt minimal:
+
+1. passenden iOS-Simulator-Build erfolgreich erstellen;
+2. nach der gemäß `AGENTS.md` erforderlichen unmittelbaren ausdrücklichen Freigabe
+   genau einen geeigneten Simulator starten;
+3. App einmal installieren/starten;
+4. prüfen, dass Initialisierung/Splash beendet werden;
+5. prüfen, dass der erwartete erste Hauptbildschirm sichtbar ist;
+6. prüfen, dass kein Crash oder Black Screen vorliegt;
+7. direkt sichtbare Hauptnavigation darf mitgeprüft werden;
+8. App danach beenden.
+
+Damit ist der Smoke-Test beendet. Bei fehlgeschlagenem Build, nicht endender
+Initialisierung, Crash, Black Screen oder fehlendem Hauptscreen abbrechen und den
+Befund berichten; den Prüfumfang nicht ausweiten.
+
+Ausdrücklich **nicht** Bestandteil dieses Smoke-Tests:
+
+- Navigation durch weitere Screens;
+- vollständige Tab-/Navigationsprüfung;
+- UI-Regressionstest;
+- Screenshot-Serie;
+- systematisches Prüfen sämtlicher Views;
+- Kamera-/Fotoerkennungs-Fachtest;
+- Datenbankreset;
+- echter Gerätetest;
+- Signing-/Provisioning-Reparatur;
+- weitere Simulatoren oder Gerätematrix „zur Sicherheit“.
+
+Ein einzelner Screenshot des ersten Screens darf nur verwendet werden, wenn er zur
+visuellen Bestätigung technisch erforderlich ist. Keine Screenshot-Serie und den
+Screenshot nicht ungefragt als Ergebnis bereitstellen.
 
 ### Gesperrte App-Assembly
 
