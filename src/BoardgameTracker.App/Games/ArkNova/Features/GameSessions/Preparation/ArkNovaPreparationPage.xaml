@@ -10,9 +10,9 @@
     x:DataType="local:ArkNovaPreparationViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="18,18,18,14">
+    <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
+        <Grid x:Name="PageContent" Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
             <Grid.Triggers>
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>

@@ -9,9 +9,9 @@
     x:DataType="local:GroupListViewModel"
     Shell.NavBarIsVisible="False">
 
-    <Grid Padding="20,22">
+    <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
+        <Grid x:Name="PageContent" Padding="20,22" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
             <Grid.Triggers>
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>

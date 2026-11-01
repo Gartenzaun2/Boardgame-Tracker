@@ -44,7 +44,7 @@ NavigationBackground NavigationText
 NavigationSelectedSurface NavigationSelectedText
 Danger DangerSurface
 DisabledSurface DisabledText
-BusyOverlay IconSurface GameGraphicText BusyIndicator
+ModalOverlay BusyOverlay IconSurface GameGraphicText BusyIndicator
 RecognitionHigh RecognitionMedium
 ```
 
@@ -56,6 +56,10 @@ Features definieren keine ad-hoc-Farben.
 `BusyOverlay`/`BusyIndicator` den blockierenden Busy-Zustand. `IconSurface` ist für
 eingebettete Grafik-/Farbwahlfelder gedacht; `GameGraphicText` ist der feste dunkle
 Textton auf hellen fachlichen Grafikbadges.
+
+`ModalOverlay` dimmt den Hintergrund hinter Dialogen und modalen Auswahlen,
+während der darunterliegende Screen erkennbar bleibt. `BusyOverlay` bleibt
+ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 
 ## 3. Paletten
 
@@ -81,6 +85,7 @@ Textton auf hellen fachlichen Grafikbadges.
 | DisabledSurface | `#FFFFFF` | `#FFFFFF` | `#222A26` |
 | DisabledText | `#263D31` | `#18386A` | `#F0F4F1` |
 | BusyOverlay | `#99000000` | `#99000000` | `#99000000` |
+| ModalOverlay | `#66000000` | `#66000000` | `#66000000` |
 | IconSurface | `#EEF5F1` | `#EEF3FB` | `#EEF5F1` |
 | GameGraphicText | `#101713` | `#101713` | `#101713` |
 | BusyIndicator | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` |
@@ -147,10 +152,15 @@ Page-interne Auswahl verwendet `SelectionDialog`:
 
 ```text
 Root
-├─ deaktivierter Page-Inhalt
-├─ modales Auswahl-Overlay
-└─ Busy-Layer
+├─ deaktivierter Page-Inhalt mit Screen-Padding
+├─ modales Auswahl-Overlay (ModalOverlay)
+└─ Busy-Layer (BusyOverlay)
 ```
+
+Modale und Busy-Overlays decken die gesamte ContentPage-Fläche ab. Der gemeinsame
+Root-Container besitzt kein Screen-Padding; dieses liegt auf dem normalen
+Seiteninhalt. Overlays liegen direkt im Root, Dialogcontainer erhalten ihren
+eigenen Abstand zum Bildschirmrand.
 
 Hintergrundinhalt ist auch für Fokus/Accessibility deaktiviert. Globale
 Shell-Navigation bleibt unberührt. Eine offene Auswahl ist kein Busy-Zustand; Busy

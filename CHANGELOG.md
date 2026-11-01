@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.29
+
+- Dialoge und modale Auswahlen verwenden eine leichtere, vom Busy-Zustand getrennte Abdunklung. Modale und Busy-Overlays reichen über die gesamte Seitenfläche; der bisher sichtbare Rand durch äußeres Screen-Padding entfällt.
+
 ## 0.10.0.28
 
 - Abgeschlossene Ergebnisse aus „Zuletzt gespielt“ behalten die Spielerübersicht als Rückziel, auch nach historischer Korrektur; aus der Historie führt Zurück weiterhin zur Historie.

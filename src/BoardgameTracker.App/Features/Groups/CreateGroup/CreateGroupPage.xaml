@@ -157,7 +157,7 @@
             </ScrollView>
         </Grid>
 
-        <Grid x:Name="ExistingPlayerOverlay" IsVisible="False" BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+        <Grid x:Name="ExistingPlayerOverlay" IsVisible="False" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Grid.Triggers>
                 <DataTrigger TargetType="Grid" Binding="{Binding IsBusy}" Value="True">
                     <Setter Property="IsEnabled" Value="False" />

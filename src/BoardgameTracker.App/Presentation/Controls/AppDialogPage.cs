@@ -13,7 +13,7 @@ public sealed class AppDialogPage : ContentPage
         string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex)
     {
         Shell.SetNavBarIsVisible(this, false);
-        SetDynamicResource(BackgroundColorProperty, "BusyOverlay");
+        SetDynamicResource(BackgroundColorProperty, "ModalOverlay");
         Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page.SetModalPresentationStyle(
             this.On<Microsoft.Maui.Controls.PlatformConfiguration.iOS>(),
             Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.OverFullScreen);

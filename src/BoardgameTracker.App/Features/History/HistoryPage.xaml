@@ -2,9 +2,9 @@
 <ContentPage x:Class="BoardgameTracker.App.Features.History.HistoryPage"
  xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
  xmlns:local="clr-namespace:BoardgameTracker.App.Features.History" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" Shell.NavBarIsVisible="False">
- <Grid Padding="16">
+ <Grid>
      <!-- Keep modal and busy layers outside the content they disable. -->
-     <Grid x:Name="PageContent" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8" IsEnabled="False">
+     <Grid x:Name="PageContent" Padding="16" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="8" IsEnabled="False">
          <Grid.Triggers>
              <MultiTrigger TargetType="Grid">
                  <MultiTrigger.Conditions>

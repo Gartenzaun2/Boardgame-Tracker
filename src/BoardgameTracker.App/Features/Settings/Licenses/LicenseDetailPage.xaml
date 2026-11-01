@@ -3,8 +3,8 @@
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.Licenses" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Settings.Licenses.LicenseDetailPage" x:DataType="local:LicenseDetailViewModel"
     Title="{Binding DisplayName}" Shell.NavBarIsVisible="False">
-    <Grid Padding="18">
-        <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
+    <Grid>
+        <Grid x:Name="PageContent" Padding="18" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
             <VerticalStackLayout Spacing="8">
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                     <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />

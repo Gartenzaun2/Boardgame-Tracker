@@ -3,7 +3,7 @@
  xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
  xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.Colors"
  xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" x:DataType="local:GroupColorSelectionViewModel">
- <Grid BackgroundColor="{DynamicResource BusyOverlay}" Padding="18">
+ <Grid BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
   <Border Style="{StaticResource SelectionDialog}">
    <VerticalStackLayout Spacing="12">
     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
