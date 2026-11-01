@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.40
+
+- Schwarzen iOS-Startbildschirm behoben: Der eigene `MainTabRenderer` verursachte den Black-Screen. iOS verwendet wieder MAUIs Standard-`ShellItemRenderer`; das projektspezifische Tab-Bar-Appearance bleibt erhalten. Auf dem physischen iPhone wurde die sichtbare Hauptoberfläche bestätigt. Der Root-Reset bei expliziten Haupttab-Taps einschließlich Retap bleibt auf iOS eine separate Folgeaufgabe. App-Version 0.10.0.40 / ApplicationVersion 77.
+- Allgemeine Datenschutz-/Secret-Regeln für Repository-Dateien und die Weitergabe redigierter Diagnoseausgaben in `AGENTS.md` und `SETUP.md` verankert.
+
 ## 0.10.0.39
 
 - iOS-Scene-Lifecycle für Builds mit dem Xcode-27-SDK ergänzt: `SceneDelegate` und `UIApplicationSceneManifest` verwenden die MAUI-Standard-Szenenkonfiguration mit genau einer Scene. Bestehende EF-Core-Interpreter-, Symbol-Strip-, Datenbank- und Bilderkennungslogik bleiben unverändert. App-Version 0.10.0.39 / ApplicationVersion 76.

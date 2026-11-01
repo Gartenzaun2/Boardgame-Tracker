@@ -89,6 +89,10 @@ Spezialisierte Dokumente wie Forschungs- oder Integrationsstatus nur bei Bedarf 
 `docs/README.md` nur bei Dokumentationsstruktur, Dokumentverschiebungen, neuen
 Dokumenten oder unklarer Dokumentzuständigkeit lesen.
 
+Bekannte offene Soll-/Ist-Abweichungen, technische Schulden und konkrete Follow-ups
+gehören ausschließlich nach `docs/TODO.md`. Soll-Dokumente bleiben frei von offenen
+technischen Statusnotizen; Details zur Zuständigkeit stehen in `docs/README.md`.
+
 | Thema | Kanonische Quelle |
 |---|---|
 | Produktverhalten und Anforderungen | `docs/PRODUCT_SPEC.md` |
@@ -112,6 +116,11 @@ Widerspruch zwischen Code und kanonischer Dokumentation nicht stillschweigend ei
 Seite wählen. Den Widerspruch klären lassen.
 
 ## Änderungen
+
+Secrets, Zugangsdaten und private/persönliche Kennungen niemals in versionierte
+Dateien, Patches, Commits oder bereitgestellte Diagnoseausgaben übernehmen.
+Diagnose-/Logausgaben vor dem Bereitstellen redigieren; Details und
+Redaktionsregeln stehen in `SETUP.md`.
 
 Die kleinste sinnvolle Änderung durchführen. Funktionierenden, nicht betroffenen
 Code nicht modernisieren, umbenennen, verschieben oder refactoren.

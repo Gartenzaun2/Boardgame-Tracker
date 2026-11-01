@@ -8,6 +8,23 @@ gelesen. Neue Einträge nur aufnehmen, wenn ein Problem bewusst offen bleibt und
 später gezielt bearbeitet werden soll. Erledigte Einträge entfernen statt eine
 Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
+## iOS-Navigation
+
+### iOS: Haupttab-Retap / Root-Reset
+
+**Status:** offen
+
+**Ist:** Nach Entfernung des fehlerhaften eigenen `MainTabRenderer` verwendet iOS
+wieder MAUIs Standard-`ShellItemRenderer`. Dadurch ist der bestätigte
+Startup-Black-Screen beseitigt. Das vollständige gewünschte Root-Reset-Verhalten
+bei expliziten Haupttab-Taps, insbesondere beim erneuten Tap auf den bereits
+aktiven Tab, ist auf iOS noch nicht abschließend umgesetzt/verifiziert.
+
+**Ziel:** Die allgemeine Produktregel aus `PRODUCT_SPEC.md` / `UI_WIREFRAME.md`
+erfüllen, ohne erneut einen eigenen `ShellItemRenderer` einzuführen, der die native
+iOS-Shell-/ViewController-Hierarchie beschädigt. Eine Lösungsvariante ist noch nicht
+entschieden.
+
 ## Architektur
 
 ### Spielmodulgrenze in allgemeinen App-Features

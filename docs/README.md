@@ -30,7 +30,7 @@ erheblicher UX-Auswirkung wird der Entwickler gefragt.
 
 | Dokument | Zuständigkeit | Nicht zuständig für |
 |---|---|---|
-| `PRODUCT_SPEC.md` | Produktverhalten und markierte Zielbilder | Layout, Persistenz, Architektur |
+| `PRODUCT_SPEC.md` | gewünschtes aktuelles Produktverhalten | Layout, Persistenz, Architektur |
 | `ARCHITECTURE.md` | Schichten, Modulgrenzen, Abhängigkeiten, Extension Points | Produktabläufe, UI-Layout, Historie |
 | `DATA_MODEL.md` | Domain-/Persistenzmodell und Invarianten | UI, Workflows, Setup |
 | `CODE_GUIDELINES.md` | Code/XAML/Async/Naming/Kommentare/Fehlerbehandlung | Produkt, Facharchitektur, Screenlayout |
@@ -38,7 +38,7 @@ erheblicher UX-Auswirkung wird der Entwickler gefragt.
 | `UI_WIREFRAME.md` | Screens, Controls, Maße, Navigation, Screen-/Modalzustände | Fachvalidierung, Speicherlogik, Styles |
 | `IMPORT_EXPORT.md` | Format, Versionierung, Validierung, Matching, Commit/Transfer | Screenlayout, allgemeine UI-Regeln |
 | `THIRD_PARTY_LICENSE_POLICY.md` | Dependency- und Lizenz-/NOTICE-Regeln | Inventar, allgemeine Release-Anleitung |
-| `TODO.md` | bekannte technische Schulden und Soll-/Ist-Abweichungen | Roadmap, Wunschliste, Historie |
+| `TODO.md` | einzige kanonische Sammelstelle für bekannte offene Soll-/Ist-Abweichungen, technische Schulden und konkrete Follow-ups | Roadmap, Wunschliste, Historie |
 
 ## Spielspezifische Ergänzungen
 
@@ -66,7 +66,15 @@ Keine dieser Dateien ersetzt eine fachliche kanonische Spezifikation.
 ## Status, Tools und Historie
 
 Kanonische Spezifikationen beschreiben den **aktuellen gewünschten Zustand**.
-Soll-/Ist-Abweichungen gehören in `TODO.md`, Historie in `CHANGELOG.md`.
+Das gilt für Produkt-, Architektur-, Datenmodell-, UI-, Import-/Export- und weitere
+Soll-Dokumente einschließlich ihrer Spielergänzungen. Sie enthalten keine offenen
+technischen Statusnotizen wie „offen“, „noch nicht umgesetzt“, „Follow-up“ oder
+„TODO“.
+
+`docs/TODO.md` ist die **einzige kanonische Sammelstelle** für bekannte offene
+Soll-/Ist-Abweichungen, technische Schulden und konkrete Follow-ups. Bewusst offene
+Punkte werden ausschließlich dort geführt. Erledigte TODOs werden entfernt;
+relevante Historie gehört in Git/`CHANGELOG.md`.
 
 Dokumentation unter `tools/` beschreibt nur Werkzeug, Bedienung oder Reproduktion.
 Reports und Messungen sind Evidenz, keine Quelle für aktuellen Produkt- oder

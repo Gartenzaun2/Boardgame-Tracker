@@ -28,10 +28,49 @@ iOS 15
 ```
 
 Lokale macOS-/iOS-Konfiguration darf unter `.local/` liegen. Dieser Bereich wird
-nicht versioniert. Persönliche Signing-, Zertifikats- und Gerätedaten gehören
-niemals ins Repository.
+nicht versioniert. Für private Konfiguration und Diagnoseausgaben gelten die
+folgenden Sicherheitsregeln.
 
 Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
+
+### Repository- und Log-Sicherheit
+
+Secrets, Zugangsdaten und private/persönliche Kennungen gehören niemals in
+versionierte Repository-Dateien, Patches oder Commits. Dazu zählen insbesondere:
+
+- API-Keys und andere Schlüssel, Access-/Refresh-Tokens, Passwörter und Credentials;
+- private Schlüssel, Zertifikatsmaterial sowie Provisioning-/Signing-Geheimnisse;
+- persönliche E-Mail-Adressen, sofern nicht ausdrücklich als öffentliche
+  Projektdaten vorgesehen;
+- Apple-/Developer-Team-IDs, persönliche Account-/Benutzerkennungen;
+- Geräte-UDIDs, Seriennummern und vergleichbare eindeutige Gerätekennungen;
+- lokale Benutzernamen und persönliche Home-Verzeichnispfade, wenn sie für die
+  Diagnose nicht erforderlich sind;
+- sonstige Secrets oder personenbezogene/private IDs.
+
+Öffentliche technische Projektkennungen wie der normale App-Bundle-Identifier
+müssen nicht pauschal entfernt werden, sofern sie keine privaten Daten darstellen.
+
+Logs, Buildlogs, JSON-Diagnosen, Crash-/Device-Ausgaben und Terminalausgaben, die
+ein Agent dem Entwickler bereitstellt, müssen **vor dem Bereitstellen** redigiert
+sein. Der Entwickler soll sie direkt an externe Analysewerkzeuge bzw. ChatGPT
+weitergeben können, ohne selbst noch nach privaten Daten suchen zu müssen.
+Dasselbe gilt für kopierte Ausschnitte im Abschlussbericht: keine privaten Werte
+aus Rohlogs in Antworten übernehmen.
+
+Eindeutige, diagnostisch brauchbare Platzhalter verwenden, zum Beispiel
+`<REDACTED_EMAIL>`, `<REDACTED_TOKEN>`, `<SIGNING_IDENTITY>`, `<TEAM_ID>`,
+`<DEVICE_ID>`, `<USER>`, `<HOME>` und `<PRIVATE_ID>`. Die Redaktion darf die
+diagnostisch relevante Struktur nicht unnötig zerstören. Zeitstempel, PID,
+Fehlermeldungen, Framework-/SDK-Versionen, öffentliche Bundle-Identifier und
+technische Stacktraces bleiben erhalten, soweit sie keine privaten Daten enthalten.
+
+Technisch benötigte Rohlogs ausschließlich lokal und unversioniert behandeln:
+niemals committen oder als weitergabefähiges Ergebnis präsentieren. Für die
+Weitergabe eine redigierte Kopie erzeugen, möglichst bereits beim Erfassen.
+Bevor ein Logpfad als Ergebnis genannt wird, dessen Inhalt auf private Daten
+prüfen und sicherstellen, dass die genannte Datei die redigierte,
+weitergabefähige Variante ist.
 
 ## 3. Native Arche-Nova-Abhängigkeit
 
