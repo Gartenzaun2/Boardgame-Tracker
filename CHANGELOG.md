@@ -39,6 +39,14 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.33
+
+- iOS-Release-Start korrigiert: Für iOS wird der Interpreter aktiviert, damit EF Core sein Modell zur Laufzeit aufbauen kann und `EnsureCreatedAsync()` nicht mit `Model building is not supported when publishing with NativeAOT` abbricht. App-Version 0.10.0.33 / ApplicationVersion 70.
+
+## 0.10.0.32
+
+- iOS-App-Icon-Auswahl auf den tatsächlich erzeugten MAUI-Asset-Katalog `appicon_ios.appiconset` korrigiert. App-Version 0.10.0.32 / ApplicationVersion 69.
+
 ## 0.10.0.31
 
 - iOS-Native-Build korrigiert: OpenCV-/Codec-Archive werden vor dem Zusammenführen aus einem dedizierten Install-Staging übernommen, statt rekursiv alle statischen Archive aus dem Xcode-Buildbaum einzusammeln. Dadurch werden doppelte libjpeg-turbo-Objekte und die daraus resultierenden Duplicate-Symbol-Linkfehler vermieden. App-Version 0.10.0.31 / ApplicationVersion 68.
@@ -291,7 +299,7 @@ historische Aufzeichnung unverändert erhalten.
 
 ## 0.9.0.6
 
-- Partiestart mit Auf/Ab-Aktionen für die konkrete Partiereihenfolge; Gruppenreihenfolge bleibt erhalten. Rotationsaktion heißt „Reihenfolge rotieren“.
+- Partiestart mit Auf/Ab-Aktionen für die konkrete Partierreihenfolge; Gruppenreihenfolge bleibt erhalten. Rotationsaktion heißt „Reihenfolge rotieren“.
 - Wertung serialisiert Autosave und abschließendes Speichern, protokolliert Autosave-Fehler und unterscheidet Speicher- von nachgelagerten Navigationsfehlern. Bedienung und Mehrfachabschluss sind beim Speichern gesperrt.
 - Dunkel ist Standard ohne gespeicherte Theme-Auswahl; bestehende Präferenzen bleiben erhalten.
 - Gleichstände erhalten Auf/Ab-Aktionen innerhalb derselben Punktzahl; Drag & Drop übergibt die Spieler-ID explizit. Gewählte Platzierungen werden für Ergebnis und Historie gespeichert.
