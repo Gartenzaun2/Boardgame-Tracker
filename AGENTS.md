@@ -39,6 +39,10 @@ bearbeiten. Nicht automatisch an Codex oder einen anderen Coding-Agenten delegie
 Wenn Analyse, Review, Recherche, Architektur- oder Dokumentationsarbeit ohne lokalen
 Ausführungsbedarf direkt besser erledigt werden kann, diese Arbeit selbst durchführen.
 
+Reine Dokumentationsänderungen, die sich vollständig aus dem gepushten Repository-
+Stand ableiten lassen, direkt bearbeiten und als aktualisierte Dateien bereitstellen;
+dafür keinen zusätzlichen Coding-Agenten einschalten.
+
 Codex bzw. lokale Coding-Werkzeuge bevorzugen, wenn nicht gepushte Arbeitsbaumdaten,
 lokale Codeänderungen, Builds, Tests oder andere lokale Ausführung tatsächlich nötig
 sind. Wenn ein anderer Arbeitsweg klar besser geeignet ist, den Entwickler kurz darauf

@@ -105,6 +105,28 @@ richtet sich nach `AGENTS.md`. Für Simulator-/Emulator-/Geräte- und manuelle
 UI-Prüfungen gelten die dortigen Freigaberegeln; Umfang und Abbruchkriterien des
 gezielten iOS-Simulator-Smoke-Tests stehen im folgenden Unterabschnitt.
 
+### Inkrementelle Builds und Wiederverwendung
+
+Builds sollen vorhandene gültige Zwischenergebnisse, Caches und native Artefakte
+wiederverwenden. Standardmäßig keinen `clean` oder vollständigen `rebuild`
+ausführen, `bin`/`obj` oder andere Build-Caches nicht vorsorglich löschen und
+keinen Restore wiederholen, wenn der vorhandene Restore zur aktuellen
+Projektkonfiguration passt; dann bevorzugt mit `--no-restore` bauen und testen.
+
+Native Ark-Nova-/OpenCV-Artefakte nur erneut bauen, wenn sich ihre Quellen,
+Buildparameter, Toolchain oder Zielplattform/-architektur geändert haben, das
+passende Artefakt fehlt oder konkret als ungültig erkannt wurde. iOS-Device- und
+iOS-Simulator-Artefakte bleiben strikt getrennt und werden nicht gegenseitig
+wiederverwendet.
+
+Vom Buildsystem als abhängig erkannte Schritte dürfen normal erneut laufen. Änderungen
+an Managed Assemblies können insbesondere erneutes AOT, LLVM oder natives Linking
+erforderlich machen; solche notwendigen Schritte nicht künstlich überspringen.
+
+Clean/Rebuild, Cache-Löschung, erneuter Restore oder erneuter Native-Build nur bei
+einem konkreten technischen Grund. Keinen zweiten Build derselben Konfiguration
+allein „zur Sicherheit“ ausführen.
+
 ### Gezielter iOS-Simulator-Smoke-Test
 
 Der iOS-Simulator ist **keine Standardprüfung** und wird nicht nach jeder Änderung
