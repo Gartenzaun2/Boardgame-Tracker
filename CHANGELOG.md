@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.2.1
+
+- Arche-Nova-Foto-Review zeigt den Erklärungstext erst beim Antippen des Info-Icons in einem Informationsdialog.
+
 ## 0.11.2.0
 
 - Allgemeine Einstellungen zeigen unter Über / Rechtliches die installierte App-Version einschließlich Buildnummer aus den Runtime-Metadaten.
