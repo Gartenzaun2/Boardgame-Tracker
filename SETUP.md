@@ -38,7 +38,7 @@ Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
 Secrets, Zugangsdaten und private/persönliche Kennungen gehören niemals in
 versionierte Repository-Dateien, Patches oder Commits. Dazu zählen insbesondere:
 
-- API-Keys und andere Schlüssel, Access-/Refresh-Slots, Passwörter und Credentials;
+- API-Keys und andere Schlüssel, Access-/Refresh-Tokens, Passwörter und Credentials;
 - private Schlüssel, Zertifikatsmaterial sowie Provisioning-/Signing-Geheimnisse;
 - persönliche E-Mail-Adressen, sofern nicht ausdrücklich als öffentliche
   Projektdaten vorgesehen;
