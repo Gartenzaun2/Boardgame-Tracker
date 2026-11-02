@@ -208,31 +208,20 @@ UI: [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 Allgemeiner Import/Export: [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
 Arche-Nova-Transferschema: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
-## Lokaler Bilderkennungsdatensatz
+## 11. Lokaler Bilderkennungsdatensatz
 
 Der Datensatz liegt unabhängig von SQLite und historischen Partiedaten in einem
-app-internen, vom Systembackup ausgeschlossenen Ark-Nova-Verzeichnis. Pro Sample
-existieren eine eigene JPEG-Datei und atomar ersetzte JSON-Metadaten; eine separate
-Preference-Datei hält Sammlung an/aus. Löschen der Samples erhält diese Preference.
-Es gibt weder SQLite-Bild-BLOBs noch eine automatische Alters-/Größenbereinigung.
+app-internen, vom Systembackup ausgeschlossenen Verzeichnis. Pro Sample existieren
+JPEG und JSON-Metadaten; eine separate Preference hält Sammlung an/aus. Es gibt
+keine SQLite-Bild-BLOBs und keine automatische Retention.
 
-Jedes Sample besitzt eine zufällige Dataset-ID. Nur lokale Metadaten enthalten
-GameSession-ID und SHA-256-Hash der orientierten, verkleinerten Pixel einschließlich
-Bildmaßen. Der Hash dient ausschließlich der Deduplizierung innerhalb derselben
-Wertung; Dateiname, Pfad und EXIF sind keine Identität. Die unabhängige Bildkopie
-behält das Seitenverhältnis, begrenzt die lange Kante auf etwa 1600 px, normalisiert
-die Orientierung und wird ohne übernommene EXIF-/GPS-Metadaten als JPEG kodiert.
+Ein lokales Sample enthält Dataset-ID, GameSession-Zuordnung, Content-Hash des
+normalisierten Bildinhalts, Quelle/App-/Pipeline-/Baseline-Kennung, unveränderliche
+Prediction, Reviewstatus und optionale Ground Truth. Dedupliziert wird innerhalb
+derselben Wertung über GameSession-ID plus Content-Hash. Die Dataset-Bildkopie ist
+orientierungsbereinigt, metadatenfrei und auf etwa 1600 px lange Kante begrenzt.
 
-Prediction wird bei Aufnahme als Snapshot eingefroren: Werte je Farbe/Track,
-Confidence und vorhandene feldbezogene Evidence sowie Registration-Metriken
-(Matches, Inliers, Reprojection-P95, Visibility, Spread und Homographie).
-App-, Recognition-/Pipeline- und Baseline-Kennung dokumentieren die Herkunft.
-Reviewstatus ist `pending`, `confirmed` oder `cancelled`; `pending` kann nach
-Unterbrechung des Reviews bestehen bleiben. Ein erneuter Review desselben Bildes
-aktualisiert nur den Reviewstatus des bestehenden Samples.
-
-Optionale Ground Truth enthält Attraktivität, Artenschutz und optionalen Ruf je
-Spielerfarbe. Die erste Zuordnung nach erfolgreichem regulärem Partieabschluss
-wird eingefroren; weder Reviewänderungen noch historische Korrekturen überschreiben
-Prediction oder zugeordnete Labels. Ohne Abschluss bleiben Samples ohne Labels
-exportierbar. Das Verwerfen/Löschen der Partie löscht keine Dataset-Samples.
+Ground Truth enthält die finalen Rohwerte je Spielerfarbe und wird höchstens einmal
+nach regulärem Partieabschluss zugeordnet. Prediction und vorhandene Ground Truth
+werden nicht überschrieben; Samples ohne Ground Truth bleiben erhalten. Verwerfen
+oder Löschen der Partie entfernt Dataset-Samples nicht.

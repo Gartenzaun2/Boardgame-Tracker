@@ -200,21 +200,14 @@ Arche-Nova-Schema, Validierung und Spezialkartenreferenzen:
 
 ## 13. Lokale Bilderkennungsdaten
 
-Die Ark-Nova-eigene Sammlung ist in der aktuellen Pre-1.0-Testphase ohne gespeicherte
-Auswahl standardmäßig aktiv. Dieser feste Default hängt nicht von der App-Version ab.
-Die Daten bleiben lokal, ohne automatischen Upload, Cloud-Synchronisation oder
-Retention. Export kopiert; Löschen erfolgt ausschließlich durch eine bewusste Aktion.
-Beim Deaktivieren mit vorhandenen Daten werden Behalten und Löschen angeboten.
+Die lokale Ark-Nova-Sammlung ist in der Pre-1.0-Testphase standardmäßig aktiv.
+Sie wird weder automatisch hochgeladen noch bereinigt; beim Deaktivieren vorhandener
+Daten stehen Behalten und Löschen zur Wahl, Export löscht nichts.
 
-Nur Foto-Versuche mit erfolgreicher Registrierung und mindestens einem tatsächlich
-erkannten Wert werden übernommen. Ein Review-Abbruch entfernt das Sample nicht.
-Retakes bleiben eigenständige Samples; identischer normalisierter Bildinhalt innerhalb
-derselben Wertung wird nicht mehrfach gespeichert. Bildnormalisierung für das Dataset
-verändert weder Recognition-Eingabe noch die akzeptierte CV-Baseline.
-Dataset-Fehler dürfen Erkennung, Review, Wertung oder Partieabschluss nicht verhindern.
+Gespeichert werden nur Foto-Versuche mit erfolgreicher Registrierung und mindestens
+einem erkannten Wert. Review-Abbruch behält das Sample, Retakes bleiben erhalten;
+identischer normalisierter Bildinhalt derselben Wertung wird nur einmal gespeichert.
 
-Ground Truth entsteht ausschließlich nach erfolgreichem regulärem Partieabschluss,
-nicht beim Bestätigen des Foto-Reviews oder durch Autosave. Alle Samples derselben
-Wertung einschließlich früherer Retakes erhalten dieselben finalen Rohwerte nach
-Spielerfarbe. Einmal zugeordnete Ground Truth bleibt bei historischen Korrekturen
-unverändert; die ursprüngliche Prediction bleibt immer unveränderlich.
+Ground Truth wird erst nach erfolgreichem regulärem Partieabschluss allen Samples
+derselben Wertung zugeordnet. Spätere historische Korrekturen verändern sie nicht;
+die ursprüngliche Prediction bleibt unverändert.

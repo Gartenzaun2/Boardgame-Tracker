@@ -117,16 +117,15 @@ Forschungs-/Integrationsstatus: [CV_STATUS.md](CV_STATUS.md). Native Technik:
 
 ## 8. Lokaler Bilderkennungsdatensatz
 
-`Application/Games/ArkNova/PhotoDataset` besitzt Dateimetadaten, Deduplizierung,
-Snapshot-/Ground-Truth-Invarianten und ZIP-Export. Der App-Adapter normalisiert
-unabhängige Bildkopien und wählt das lokale, vom Systembackup ausgeschlossene
-Verzeichnis. Es gibt keine generische spielübergreifende Dataset-Infrastruktur.
+`Application/Games/ArkNova/PhotoDataset` verantwortet lokale Dataset-Persistenz,
+Deduplizierung, Snapshot-/Ground-Truth-Invarianten und Export. Der App-Adapter
+übernimmt Bildnormalisierung und das vom Systembackup ausgeschlossene Verzeichnis;
+eine spielübergreifende Dataset-Infrastruktur gibt es nicht.
 
-Der Review-Flow sammelt erst nach der unveränderten Recognition; der reguläre
-Scoring-Abschluss friert nach erfolgreichem Datenbank-Commit die Ground Truth ein.
-Dataset-Schreibfehler werden an dieser Diagnosegrenze geloggt und blockieren den
-produktiven Ablauf nicht. Dataset-Daten sind kein Bestandteil der Partiedaten
-oder des History-Transfers. Forschung bleibt durch `CV_STATUS.md` abgegrenzt.
+Der Review-Flow sammelt erst nach der Recognition, der reguläre Scoring-Abschluss
+friert Ground Truth erst nach erfolgreichem Datenbank-Commit ein. Dataset-Fehler
+werden isoliert geloggt und blockieren den produktiven Ablauf nicht; Dataset-Daten
+gehören weder zu historischen Partiedaten noch zum History-Transfer.
 
 ## 9. Bekannte Abweichungen
 
