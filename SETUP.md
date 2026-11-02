@@ -224,29 +224,22 @@ In `src/BoardgameTracker.App/BoardgameTracker.App.csproj`:
 <ApplicationVersion>n</ApplicationVersion>
 ```
 
-Für abgeschlossene Änderungsaufträge gilt:
+Bedeutung von `ApplicationDisplayVersion`:
 
-- Ein Auftrag, dessen versionierte Änderungen ausschließlich Markdown-Dateien
-  (`*.md`) betreffen, löst **keinen Versionsschritt** aus.
-  `ApplicationDisplayVersion` und `ApplicationVersion` bleiben unverändert.
-- Eine im selben reinen Dokumentationsauftrag angepasste `CHANGELOG.md` zählt
-  ebenfalls als Markdown-Dokumentation und erzeugt keinen Versionsschritt.
-- Sobald der Auftrag mindestens eine versionierte Änderung außerhalb von
-  Markdown-Dateien umfasst, werden `ApplicationDisplayVersion` und
-  `ApplicationVersion` beide erhöht. Dies gilt insbesondere für Code-, Test-,
-  Projekt-, Build-, Konfigurations- und Ressourcenänderungen.
-- Mehrere Dateien und Korrekturschritte desselben versionspflichtigen Auftrags
-  erzeugen keine zusätzlichen Erhöhungen.
-- Ohne ausdrücklich festgelegten größeren Versionssprung steigt die letzte
-  Komponente von `ApplicationDisplayVersion` um eins.
-- `ApplicationVersion` steigt ebenfalls um eins.
-- Bei einem versionspflichtigen Auftrag müssen beide Werte gegenüber dem
-  Auftragsbeginn erhöht sein.
-- Bei Auslieferung entspricht `ApplicationDisplayVersion` exakt der ausgelieferten
-  Version.
-- Vor Abschluss eines versionspflichtigen Auftrags werden beide Werte und der
-  zugehörige `CHANGELOG.md`-Eintrag geprüft; vor einer Verpackung werden sie erneut
-  geprüft.
+- `x` **Major**: inkompatibler großer Wechsel oder bewusst gesetzter stabiler Meilenstein;
+- `y` **Minor**: neue abwärtskompatible Nutzerfunktion;
+- `z` **Patch**: Fehlerbehebung oder Korrektur bestehenden Nutzerverhaltens;
+- `r` **Revision**: interne technische Änderung ohne neue Nutzerfunktion oder Nutzer-Bugfix.
+
+Für Änderungsaufträge gilt:
+
+- Reine Markdown-Änderungen (`*.md`, einschließlich `CHANGELOG.md`) erzeugen keinen Versionsschritt.
+- Jeder Auftrag mit mindestens einer versionierten Nicht-Markdown-Änderung erzeugt genau einen Versionsschritt.
+- Der Entwickler legt die Versionsart vor der Umsetzung fest; der Agent wählt oder erhöht sie nicht eigenständig. Fehlt sie oder passt sie wegen einer Scope-Änderung nicht mehr, wird sie vor der Versionsänderung geklärt.
+- Die gewählte Stelle steigt um eins; alle rechts davon liegenden Stellen werden auf `0` gesetzt. `1.0.0.0` oder andere Release-Meilensteine werden nur ausdrücklich festgelegt.
+- `ApplicationVersion` steigt bei jedem versionspflichtigen Auftrag unabhängig davon genau um eins.
+- Vor Abschluss werden beide Versionswerte und der zugehörige `CHANGELOG.md`-Eintrag geprüft; bei Auslieferung entspricht `ApplicationDisplayVersion` der ausgelieferten Version.
+- Der Abschlussbericht enthält einen Committext-Vorschlag mit ein bis zwei Sätzen, beginnend mit der neuen `ApplicationDisplayVersion`. Kein Commit ohne ausdrücklichen Auftrag.
 
 Versionshistorie steht ausschließlich in `CHANGELOG.md`.
 
