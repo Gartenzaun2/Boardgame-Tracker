@@ -15,7 +15,6 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaRunningViewModel _viewModel;
     private readonly IDispatcherTimer _durationTimer;
-    private Guid _gameSessionId;
 
     public ArkNovaRunningPage(ArkNovaRunningViewModel viewModel)
     {
@@ -26,22 +25,6 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
         _durationTimer = Dispatcher.CreateTimer();
         _durationTimer.Interval = TimeSpan.FromSeconds(30);
         _durationTimer.Tick += (_, _) => _viewModel.RefreshDuration(DateTimeOffset.UtcNow);
-    }
-
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        // Single-use Shell parameters are cleared before an existing page is revisited.
-        if (query.Count == 0 && _gameSessionId != Guid.Empty)
-            return;
-        if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
-            || value is not Guid gameSessionId
-            || gameSessionId == Guid.Empty)
-        {
-            throw new InvalidOperationException(
-                $"Required navigation parameter '{NavigationParameters.GameSessionId}' is missing or invalid.");
-        }
-
-        _gameSessionId = gameSessionId;
     }
 
     protected override async void OnAppearing()

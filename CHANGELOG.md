@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.1.0
+
+- Arche-Nova-Wertung: Rückkehr aus der Spielerwertung nach erfolgreichem Speichern repariert. Bereits geöffnete Wertungs-, laufende Partie- und Ergebnisseiten behalten ihren Partiekontext bei fehlendem Single-Use-Shell-Parameter; explizit ungültige Parameter werden weiterhin abgelehnt. ApplicationVersion 82.
+
 ## 0.11.0.0
 
 - Arche Nova sammelt in der Pre-1.0-Testphase standardmäßig verwertbar erkannte Fotos lokal als normalisierte, metadatenfreie JPEG-Kopien mit unveränderlicher Prediction und vorhandenen C#-Diagnosen. Identischer normalisierter Bildinhalt wird innerhalb derselben Wertung dedupliziert; erkannte Retakes und abgebrochene Reviews bleiben erhalten.

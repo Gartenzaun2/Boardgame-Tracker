@@ -8,30 +8,12 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaResultViewModel _viewModel;
-    private Guid _gameSessionId;
 
     public ArkNovaResultPage(ArkNovaResultViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = viewModel;
-    }
-
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        // Single-use Shell parameters are cleared before an existing page is revisited.
-        if (query.Count == 0 && _gameSessionId != Guid.Empty)
-            return;
-        if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
-            || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
-        {
-            throw new InvalidOperationException("Required gameSession navigation parameter is missing or invalid.");
-        }
-        _gameSessionId = gameSessionId;
-        bool historical = query.TryGetValue(NavigationParameters.ResultIsHistorical, out object? context) && context is true;
-        BackButton.IsVisible = historical;
-        EditButton.IsVisible = historical;
-        DoneButton.IsVisible = !historical;
     }
 
     protected override async void OnAppearing()

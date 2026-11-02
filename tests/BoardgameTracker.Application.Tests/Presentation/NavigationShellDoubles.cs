@@ -78,6 +78,12 @@ namespace BoardgameTracker.App.Features.Settings.Licenses
 namespace BoardgameTracker.App.Features.Players.ListPlayers { public sealed class PlayerListPage : Page; }
 namespace BoardgameTracker.App.Features.Players.EditPlayer { public sealed class EditPlayerPage : Page; }
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation { public sealed class ArkNovaPreparationPage : Page; }
-namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running { public sealed class ArkNovaRunningPage : Page; }
-namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring { public sealed class ArkNovaScoringPage : Page; }
-namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result { public sealed class ArkNovaResultPage : Page; }
+namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running { public partial class ArkNovaRunningPage : Page; }
+namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring { public partial class ArkNovaScoringPage : Page; }
+namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result { public partial class ArkNovaResultPage : Page
+    {
+        public TestButton BackButton { get; } = new();
+        public TestButton EditButton { get; } = new();
+        public TestButton DoneButton { get; } = new();
+    }
+    public sealed class TestButton { public bool IsVisible { get; set; } } }

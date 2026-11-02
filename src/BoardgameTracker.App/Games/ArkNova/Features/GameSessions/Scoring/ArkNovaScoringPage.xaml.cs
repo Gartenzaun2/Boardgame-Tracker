@@ -17,7 +17,6 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaScoringViewModel _viewModel;
     private readonly ILogger<ArkNovaScoringPage> _logger;
-    private Guid _gameSessionId;
 
     public ArkNovaScoringPage(ArkNovaScoringViewModel viewModel, ILogger<ArkNovaScoringPage> logger)
     {
@@ -25,20 +24,6 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         _viewModel = viewModel;
         _logger = logger;
         BindingContext = viewModel;
-    }
-
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        // Single-use Shell parameters are cleared before an existing page is revisited.
-        if (query.Count == 0 && _gameSessionId != Guid.Empty)
-            return;
-        if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
-            || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
-        {
-            throw new InvalidOperationException($"Required navigation parameter '{NavigationParameters.GameSessionId}' is missing or invalid.");
-        }
-
-        _gameSessionId = gameSessionId;
     }
 
     protected override async void OnAppearing()
