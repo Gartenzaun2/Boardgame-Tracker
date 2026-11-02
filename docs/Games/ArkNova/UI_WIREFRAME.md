@@ -107,3 +107,18 @@ System-/Android-Zurück schließt zuerst die oberste modale Ebene. Bei Spezialka
 ## 13. Quellen
 
 Allgemeine Screens: `docs/UI_WIREFRAME.md` · Produkt: `docs/Games/ArkNova/PRODUCT_SPEC.md` · UI: `docs/Games/ArkNova/UI_DESIGN_GUIDE.md` · Datenmodell: `docs/Games/ArkNova/DATA_MODEL.md` · CV: `docs/Games/ArkNova/CV_STATUS.md`.
+
+## 14. Debug → Bilderkennungsdaten
+
+Unter Arche-Nova-Einstellungen steht ein Abschnitt **Debug** mit dem Einstieg
+**Bilderkennungsdaten**. Der Screen besitzt Header-Zurück, Titel und Divider sowie
+scrollbaren Inhalt: lokaler Datenschutzhinweis, **Sammlung aktiv** als Switch,
+Anzahl gespeicherter Aufnahmen und Speicher in MB, **Dataset als ZIP exportieren**
+und die getrennte Danger-Aktion **Aufnahmen löschen**. Bei leerer Sammlung sind
+Export und Löschen deaktiviert. Laufende Operationen sperren die Aktionen;
+Fehler bleiben als verständliche Meldung auf dem Screen.
+
+Beim Deaktivieren mit Daten öffnet eine App-Auswahl **Sammlung deaktivieren** mit
+**Aufnahmen behalten** und **Aufnahmen löschen**. Header-Zurück bricht die Änderung
+ab; es gibt keinen unteren Abbrechen-Button. Separates Löschen benötigt einen
+Bestätigungsdialog. Export öffnet den System-Share-Sheet für das ZIP.

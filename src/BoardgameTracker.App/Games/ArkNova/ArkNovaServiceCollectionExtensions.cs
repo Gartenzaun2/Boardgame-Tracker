@@ -28,6 +28,8 @@ using BoardgameTracker.Application.Groups.Colors;
 using Microsoft.Extensions.DependencyInjection;
 using BoardgameTracker.App.Games.ArkNova.PhotoRecognition;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring.PhotoRecognition;
+using BoardgameTracker.Application.Games.ArkNova.PhotoDataset;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ArkNova;
 
@@ -49,6 +51,10 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaRunningGameSessionQuery>();
         services.AddTransient<ArkNovaGameSessionResultQuery>();
         services.AddTransient<ArkNovaScoringUseCase>();
+        services.AddSingleton(provider => new ArkNovaPhotoDataset(
+            MauiArkNovaDatasetImageNormalizer.GetLocalDirectory(), new MauiArkNovaDatasetImageNormalizer(),
+            AppInfo.Current.VersionString, provider.GetRequiredService<ILogger<ArkNovaPhotoDataset>>(),
+            MauiArkNovaDatasetImageNormalizer.ExcludeFromBackup));
         services.AddSingleton<IArkNovaVisionEngine>(_ => new NativeArkNovaVisionEngine(async name =>
         {
             using Stream input = await FileSystem.OpenAppPackageFileAsync(name);
@@ -81,6 +87,7 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<ArkNovaSpecialCardEditorPage>();
         services.AddTransient<ArkNovaSettingsViewModel>();
         services.AddTransient<ArkNovaSettingsPage>();
+        services.AddTransient<ArkNovaPhotoDatasetPage>();
 
         services.AddSingleton<IGameSessionResumeHandler, ArkNovaGameSessionNavigationHandler>();
         ArkNovaRoutes.Register();

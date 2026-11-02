@@ -206,3 +206,32 @@ Fachliche Dateninvarianten:
 
 Produktverhalten:
 [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
+
+## Separater Bilderkennungsdaten-Export
+
+Der Ark-Nova-Dataset-Export ist unabhängig vom `.bgt`-History-Transfer und dessen
+Versionsvertrag. Die ausdrückliche Exportaktion erzeugt eine ZIP-Kopie und öffnet
+das System-Share-Sheet zur vom Nutzer gewählten Ausgabe. Lokale Samples bleiben
+erhalten. Auch verwertbar erkannte Samples ohne Ground Truth werden exportiert.
+
+ZIP-Struktur: `dataset.json` und `images/<sample-id>.jpg`.
+Das JSON-Manifest verwendet camelCase und aktuell `datasetVersion: 1` sowie
+`schemaVersion: 1`. `samples` enthält je Eintrag:
+
+- `sampleId`: eigene zufällige Dataset-GUID;
+- `game`: `ark-nova`;
+- `photoSource`: `camera` oder `library`;
+- `appVersion`, `recognitionVersion`, `baselineVersion`;
+- `prediction`: unveränderter Recognition-Snapshot mit `registration`, `colors`
+  (Werte/Confidence/Evidence je Track) und den bereits in C# vorhandenen
+  `evidence`-Feldbeobachtungen;
+- `groundTruth`: null oder finale Rohwerte je `color`, `attractiveness`,
+  `conservation`, `reputation`, ausschließlich aus dem regulären Partieabschluss;
+- `reviewStatus`: `pending`, `confirmed` oder `cancelled`;
+- `imagePath`: relativer JPEG-Pfad innerhalb des ZIPs.
+
+Nicht-endliche technische Messwerte können als JSON-Strings `NaN`, `Infinity`
+oder `-Infinity` dargestellt sein. Es werden ausschließlich neu kodierte,
+metadatenfreie Dataset-Bildkopien exportiert. Spieler-, Gruppen- und Sessionnamen,
+produktive interne IDs, lokale Zuordnungen, Bildhashes und Originalmetadaten sind
+kein Bestandteil des öffentlichen Manifests.

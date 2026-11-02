@@ -9,6 +9,17 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string DebugSettings => GetString(nameof(DebugSettings));
+    public static string PhotoDatasetTitle => GetString(nameof(PhotoDatasetTitle));
+    public static string PhotoDatasetCollection => GetString(nameof(PhotoDatasetCollection));
+    public static string PhotoDatasetLocalHint => GetString(nameof(PhotoDatasetLocalHint));
+    public static string PhotoDatasetSummary => GetString(nameof(PhotoDatasetSummary));
+    public static string PhotoDatasetExport => GetString(nameof(PhotoDatasetExport));
+    public static string PhotoDatasetDelete => GetString(nameof(PhotoDatasetDelete));
+    public static string PhotoDatasetKeep => GetString(nameof(PhotoDatasetKeep));
+    public static string PhotoDatasetDisable => GetString(nameof(PhotoDatasetDisable));
+    public static string PhotoDatasetDeleteQuestion => GetString(nameof(PhotoDatasetDeleteQuestion));
+    public static string PhotoDatasetFailed => GetString(nameof(PhotoDatasetFailed));
     public static string OpenSourceLicenses => GetString(nameof(OpenSourceLicenses));
     public static string AboutLegal => GetString(nameof(AboutLegal));
     public static string LicenseOpenHint => GetString(nameof(LicenseOpenHint));

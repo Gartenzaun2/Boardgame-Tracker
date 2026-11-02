@@ -207,3 +207,32 @@ Produktverhalten: [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
 UI: [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 Allgemeiner Import/Export: [../../IMPORT_EXPORT.md](../../IMPORT_EXPORT.md).
 Arche-Nova-Transferschema: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
+
+## Lokaler Bilderkennungsdatensatz
+
+Der Datensatz liegt unabhängig von SQLite und historischen Partiedaten in einem
+app-internen, vom Systembackup ausgeschlossenen Ark-Nova-Verzeichnis. Pro Sample
+existieren eine eigene JPEG-Datei und atomar ersetzte JSON-Metadaten; eine separate
+Preference-Datei hält Sammlung an/aus. Löschen der Samples erhält diese Preference.
+Es gibt weder SQLite-Bild-BLOBs noch eine automatische Alters-/Größenbereinigung.
+
+Jedes Sample besitzt eine zufällige Dataset-ID. Nur lokale Metadaten enthalten
+GameSession-ID und SHA-256-Hash der orientierten, verkleinerten Pixel einschließlich
+Bildmaßen. Der Hash dient ausschließlich der Deduplizierung innerhalb derselben
+Wertung; Dateiname, Pfad und EXIF sind keine Identität. Die unabhängige Bildkopie
+behält das Seitenverhältnis, begrenzt die lange Kante auf etwa 1600 px, normalisiert
+die Orientierung und wird ohne übernommene EXIF-/GPS-Metadaten als JPEG kodiert.
+
+Prediction wird bei Aufnahme als Snapshot eingefroren: Werte je Farbe/Track,
+Confidence und vorhandene feldbezogene Evidence sowie Registration-Metriken
+(Matches, Inliers, Reprojection-P95, Visibility, Spread und Homographie).
+App-, Recognition-/Pipeline- und Baseline-Kennung dokumentieren die Herkunft.
+Reviewstatus ist `pending`, `confirmed` oder `cancelled`; `pending` kann nach
+Unterbrechung des Reviews bestehen bleiben. Ein erneuter Review desselben Bildes
+aktualisiert nur den Reviewstatus des bestehenden Samples.
+
+Optionale Ground Truth enthält Attraktivität, Artenschutz und optionalen Ruf je
+Spielerfarbe. Die erste Zuordnung nach erfolgreichem regulärem Partieabschluss
+wird eingefroren; weder Reviewänderungen noch historische Korrekturen überschreiben
+Prediction oder zugeordnete Labels. Ohne Abschluss bleiben Samples ohne Labels
+exportierbar. Das Verwerfen/Löschen der Partie löscht keine Dataset-Samples.

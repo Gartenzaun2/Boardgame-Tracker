@@ -20,5 +20,6 @@ public static class ArkNovaRoutes
         Routing.RegisterRoute(nameof(ArkNovaSpecialCardsPage), typeof(ArkNovaSpecialCardsPage));
         Routing.RegisterRoute(nameof(ArkNovaSpecialCardEditorPage), typeof(ArkNovaSpecialCardEditorPage));
         Routing.RegisterRoute(nameof(ArkNovaSettingsPage), typeof(ArkNovaSettingsPage));
+        Routing.RegisterRoute(nameof(ArkNovaPhotoDatasetPage), typeof(ArkNovaPhotoDatasetPage));
     }
 }

@@ -197,3 +197,24 @@ Allgemeines Format, Matching und Commit:
 
 Arche-Nova-Schema, Validierung und Spezialkartenreferenzen:
 [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
+
+## 13. Lokale Bilderkennungsdaten
+
+Die Ark-Nova-eigene Sammlung ist in der aktuellen Pre-1.0-Testphase ohne gespeicherte
+Auswahl standardmäßig aktiv. Dieser feste Default hängt nicht von der App-Version ab.
+Die Daten bleiben lokal, ohne automatischen Upload, Cloud-Synchronisation oder
+Retention. Export kopiert; Löschen erfolgt ausschließlich durch eine bewusste Aktion.
+Beim Deaktivieren mit vorhandenen Daten werden Behalten und Löschen angeboten.
+
+Nur Foto-Versuche mit erfolgreicher Registrierung und mindestens einem tatsächlich
+erkannten Wert werden übernommen. Ein Review-Abbruch entfernt das Sample nicht.
+Retakes bleiben eigenständige Samples; identischer normalisierter Bildinhalt innerhalb
+derselben Wertung wird nicht mehrfach gespeichert. Bildnormalisierung für das Dataset
+verändert weder Recognition-Eingabe noch die akzeptierte CV-Baseline.
+Dataset-Fehler dürfen Erkennung, Review, Wertung oder Partieabschluss nicht verhindern.
+
+Ground Truth entsteht ausschließlich nach erfolgreichem regulärem Partieabschluss,
+nicht beim Bestätigen des Foto-Reviews oder durch Autosave. Alle Samples derselben
+Wertung einschließlich früherer Retakes erhalten dieselben finalen Rohwerte nach
+Spielerfarbe. Einmal zugeordnete Ground Truth bleibt bei historischen Korrekturen
+unverändert; die ursprüngliche Prediction bleibt immer unveränderlich.

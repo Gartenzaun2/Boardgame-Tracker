@@ -26,6 +26,15 @@ public partial class ArkNovaSettingsPage : ContentPage {
     }
 
     private bool _openingCards;
+    private async void OnPhotoDatasetClicked(object? sender, EventArgs e)
+    {
+        if (_choosing)
+            return;
+        _choosing = true;
+        try { await Shell.Current.GoToAsync(nameof(ArkNovaPhotoDatasetPage)); }
+        finally { _choosing = false; }
+    }
+
     private async void OnSpecialCardsClicked(object? sender, EventArgs e) {
         if(_openingCards)
             return;

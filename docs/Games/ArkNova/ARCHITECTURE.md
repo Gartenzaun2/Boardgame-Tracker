@@ -115,7 +115,20 @@ als historische Partiedaten persistiert.
 Forschungs-/Integrationsstatus: [CV_STATUS.md](CV_STATUS.md). Native Technik:
 `tools/Games/ArkNova/NativeVisionSpike/README.md`.
 
-## 8. Bekannte Abweichungen
+## 8. Lokaler Bilderkennungsdatensatz
+
+`Application/Games/ArkNova/PhotoDataset` besitzt Dateimetadaten, Deduplizierung,
+Snapshot-/Ground-Truth-Invarianten und ZIP-Export. Der App-Adapter normalisiert
+unabhängige Bildkopien und wählt das lokale, vom Systembackup ausgeschlossene
+Verzeichnis. Es gibt keine generische spielübergreifende Dataset-Infrastruktur.
+
+Der Review-Flow sammelt erst nach der unveränderten Recognition; der reguläre
+Scoring-Abschluss friert nach erfolgreichem Datenbank-Commit die Ground Truth ein.
+Dataset-Schreibfehler werden an dieser Diagnosegrenze geloggt und blockieren den
+produktiven Ablauf nicht. Dataset-Daten sind kein Bestandteil der Partiedaten
+oder des History-Transfers. Forschung bleibt durch `CV_STATUS.md` abgegrenzt.
+
+## 9. Bekannte Abweichungen
 
 Bekannte Abweichungen vom gewünschten Architekturzustand stehen ausschließlich in
 [`docs/TODO.md`](../../TODO.md) und gelten nicht als Architektur-Ausnahmen.

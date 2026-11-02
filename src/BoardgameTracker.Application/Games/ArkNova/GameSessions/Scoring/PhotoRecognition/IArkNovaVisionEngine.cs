@@ -21,8 +21,11 @@ public sealed class ArkNovaPhotoRecognition(IArkNovaVisionEngine engine)
         Dictionary<string, ColorScores> raw = ArkNovaRankingRules.Predict(evidence.Fields, ArkNovaRankingRules.Selected);
         Dictionary<string, ColorScores> evaluated = raw.ToDictionary(pair => pair.Key,
             pair => new ColorScores(ArkNovaConfidencePolicy.Evaluate(pair.Value.Tracks, ArkNovaConfidencePolicy.Selected)));
-        return new(evidence.Registration, evaluated);
+        return new(evidence.Registration, evaluated) { Evidence = evidence.Fields };
     }
 }
 
-public sealed record ArkNovaPhotoRecognitionResult(ArkNovaVisionRegistration Registration, IReadOnlyDictionary<string, ColorScores> Colors);
+public sealed record ArkNovaPhotoRecognitionResult(ArkNovaVisionRegistration Registration, IReadOnlyDictionary<string, ColorScores> Colors)
+{
+    public IReadOnlyList<RankingObservation> Evidence { get; init; } = [];
+}

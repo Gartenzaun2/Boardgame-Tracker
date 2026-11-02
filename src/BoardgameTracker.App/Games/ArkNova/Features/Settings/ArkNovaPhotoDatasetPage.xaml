@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+             x:Class="BoardgameTracker.App.Games.ArkNova.Features.Settings.ArkNovaPhotoDatasetPage"
+             Shell.NavBarIsVisible="False">
+    <Grid Padding="18" RowDefinitions="Auto,*" RowSpacing="20">
+        <VerticalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" />
+                <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoDatasetTitle}" FontSize="23" FontAttributes="Bold" VerticalOptions="Center" />
+            </Grid>
+            <BoxView Style="{StaticResource HeaderDivider}" />
+        </VerticalStackLayout>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="Actions" Spacing="12">
+                <Border Style="{StaticResource CardBorder}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{x:Static res:AppResources.PhotoDatasetLocalHint}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{x:Static res:AppResources.PhotoDatasetCollection}" VerticalOptions="Center" />
+                            <Switch x:Name="CollectionSwitch" Grid.Column="1" Toggled="OnCollectionToggled" />
+                        </Grid>
+                        <Label x:Name="SummaryLabel" />
+                    </VerticalStackLayout>
+                </Border>
+                <Button x:Name="ExportButton" Text="{x:Static res:AppResources.PhotoDatasetExport}" Style="{StaticResource SecondaryActionButton}" Clicked="OnExportClicked" />
+                <Button x:Name="DeleteButton" Text="{x:Static res:AppResources.PhotoDatasetDelete}" Style="{StaticResource DangerButton}" Clicked="OnDeleteClicked" />
+                <Label x:Name="ErrorLabel" TextColor="{DynamicResource TextPrimary}" IsVisible="False" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

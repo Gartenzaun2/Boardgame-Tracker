@@ -7,11 +7,13 @@ using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Games.ArkNova.PhotoDataset;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 
 /// <summary>Coordinates incremental scoring and completion; domain types protect scoring rules.</summary>
-public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, ArkNovaGameSessionResultQuery resultQuery)
+public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, ArkNovaGameSessionResultQuery resultQuery,
+    ArkNovaPhotoDataset? photoDataset = null)
 {
     public Task<ArkNovaGameSessionResultData?> LoadGameSessionResultAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
@@ -130,6 +132,11 @@ public sealed class ArkNovaScoringUseCase(IDbContextFactory<BoardgameTrackerDbCo
 
         gameSession.Complete(completedAt);
         await dbContext.SaveChangesAsync(cancellationToken);
+        // Only the real completion commit freezes labels, never review confirmation or historical corrections.
+        if (photoDataset is not null)
+            await photoDataset.FreezeGroundTruthAsync(gameSessionId, scoringData.Players.Select(player =>
+                new ArkNovaDatasetScore(player.Color.ToString().ToLowerInvariant(), player.Attractiveness,
+                    player.Conservation, player.Reputation)).ToArray());
     }
 
     public async Task DiscardAsync(

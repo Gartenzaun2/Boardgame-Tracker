@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.0.0
+
+- Arche Nova sammelt in der Pre-1.0-Testphase standardmäßig verwertbar erkannte Fotos lokal als normalisierte, metadatenfreie JPEG-Kopien mit unveränderlicher Prediction und vorhandenen C#-Diagnosen. Identischer normalisierter Bildinhalt wird innerhalb derselben Wertung dedupliziert; erkannte Retakes und abgebrochene Reviews bleiben erhalten.
+- Erst der erfolgreiche Partieabschluss ordnet allen Foto-Versuchen derselben Wertung eingefrorene Ground Truth zu. Historische Korrekturen verändern diese Labels nicht.
+- Unter Arche-Nova-Einstellungen → Debug → Bilderkennungsdaten stehen Sammlung, Anzahl/Speicher, separater ZIP-Export ohne produktive IDs und manuelles Löschen bereit. Keine automatische Löschung, kein Upload, Ausschluss vom Systembackup; `.bgt` und die akzeptierte CV-Baseline bleiben unverändert.
+
 ## 0.10.0.43
 
 - Bewusstes Verlassen des GameSession-Flows löscht das persistierte Resume-Ziel auch bei tieferen Aufrufern wie der Spielerübersicht; Navigation innerhalb einer geöffneten Partie behält es bei. App-Version 0.10.0.43 / ApplicationVersion 80.

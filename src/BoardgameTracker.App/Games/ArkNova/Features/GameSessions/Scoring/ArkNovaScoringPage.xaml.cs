@@ -216,7 +216,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnTakePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Camera);
     private async void OnChoosePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Library);
     private async void OnConfirmPhotoClicked(object? sender, EventArgs e) => await _viewModel.ConfirmPhotoReviewAsync();
-    private void OnCancelPhotoClicked(object? sender, EventArgs e) => _viewModel.CancelPhotoReview();
+    private async void OnCancelPhotoClicked(object? sender, EventArgs e) => await _viewModel.CancelPhotoReviewAsync();
     private async void OnPhotoInfoClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
@@ -246,7 +246,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
         if (_viewModel.IsPhotoSourceVisible || _viewModel.IsPhotoReviewVisible)
         {
-            _viewModel.CancelPhotoReview();
+            Dispatcher.Dispatch(async () => await _viewModel.CancelPhotoReviewAsync());
             return true;
         }
 

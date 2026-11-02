@@ -26,7 +26,7 @@ public partial class ArkNovaScoringViewModel
         if (IsScoringContentEnabled && IsLiveScoring)
             IsPhotoSourceVisible = true;
     }
-    public void CancelPhotoReview()
+    public async Task CancelPhotoReviewAsync()
     {
         if (!IsIdle)
             return;
@@ -34,6 +34,7 @@ public partial class ArkNovaScoringViewModel
         IsPhotoReviewVisible = false;
         PhotoPlayers.Clear();
         PhotoError = null;
+        await photoReview.SetReviewStatusAsync("cancelled");
     }
     public async Task AnalyzePhotoAsync(ArkNovaPhotoSource source, CancellationToken cancellationToken = default)
     {
@@ -45,7 +46,7 @@ public partial class ArkNovaScoringViewModel
         PhotoError = null;
         try
         {
-            ArkNovaPhotoRecognitionResult? result = await photoReview.AnalyzeAsync(source, cancellationToken);
+            ArkNovaPhotoRecognitionResult? result = await photoReview.AnalyzeAsync(source, cancellationToken, GameSessionId);
             if (result is null)
                 return;
             if (!result.Registration.Success)
@@ -93,6 +94,7 @@ public partial class ArkNovaScoringViewModel
         try
         {
             await scoringUseCase.SaveConfirmedPhotoScoresAsync(GameSessionId, confirmed, cancellationToken);
+            await photoReview.SetReviewStatusAsync("confirmed");
             IsPhotoReviewVisible = false;
             PhotoPlayers.Clear();
             await LoadAsync(GameSessionId, cancellationToken);

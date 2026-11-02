@@ -47,6 +47,8 @@
                     </Grid>
                 </Border>
                 <Button Text="{x:Static res:AppResources.SpecialCardManagementTitle}" Style="{StaticResource SecondaryActionButton}" Clicked="OnSpecialCardsClicked" />
+                <Label Text="{x:Static res:AppResources.DebugSettings}" FontAttributes="Bold" />
+                <Button Text="{x:Static res:AppResources.PhotoDatasetTitle}" Style="{StaticResource SecondaryActionButton}" Clicked="OnPhotoDatasetClicked" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

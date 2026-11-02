@@ -880,4 +880,15 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="LicensesLoadFailed" xml:space="preserve"><value>Die Lizenzinformationen konnten nicht geladen werden. Bitte versuche es erneut.</value></data>
   <data name="LicensesRetry" xml:space="preserve"><value>Erneut versuchen</value></data>
   <data name="EditResult" xml:space="preserve"><value>Ergebnis bearbeiten</value></data>
+  <data name="DebugSettings" xml:space="preserve"><value>Debug</value></data>
+  <data name="PhotoDatasetTitle" xml:space="preserve"><value>Bilderkennungsdaten</value></data>
+  <data name="PhotoDatasetCollection" xml:space="preserve"><value>Sammlung aktiv</value></data>
+  <data name="PhotoDatasetLocalHint" xml:space="preserve"><value>Die Sammlung bleibt lokal. Kein automatischer Upload, keine Cloud-Synchronisation und keine automatische Löschung.</value></data>
+  <data name="PhotoDatasetSummary" xml:space="preserve"><value>{0} Aufnahmen · {1:F2} MB</value></data>
+  <data name="PhotoDatasetExport" xml:space="preserve"><value>Dataset als ZIP exportieren</value></data>
+  <data name="PhotoDatasetDelete" xml:space="preserve"><value>Aufnahmen löschen</value></data>
+  <data name="PhotoDatasetKeep" xml:space="preserve"><value>Aufnahmen behalten</value></data>
+  <data name="PhotoDatasetDisable" xml:space="preserve"><value>Sammlung deaktivieren</value></data>
+  <data name="PhotoDatasetDeleteQuestion" xml:space="preserve"><value>Alle gespeicherten Bilderkennungsdaten unwiderruflich löschen?</value></data>
+  <data name="PhotoDatasetFailed" xml:space="preserve"><value>Die Bilderkennungsdaten konnten nicht verarbeitet werden. Bitte erneut versuchen.</value></data>
 </root>

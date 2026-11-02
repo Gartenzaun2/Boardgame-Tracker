@@ -3,16 +3,35 @@ using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring.PhotoRecog
 using BoardgameTracker.App.Games.ArkNova.PhotoRecognition;
 using BoardgameTracker.App.Resources.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using BoardgameTracker.Application.Games.ArkNova.PhotoDataset;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
 /// <summary>Both user acquisition routes invoke exactly the same analyzer. Cancellation produces no proposal.</summary>
-public sealed class ArkNovaPhotoReviewFlow(IArkNovaPhotoInput input, ArkNovaPhotoRecognition recognition)
+public sealed class ArkNovaPhotoReviewFlow(IArkNovaPhotoInput input, ArkNovaPhotoRecognition recognition, ArkNovaPhotoDataset? dataset = null)
 {
-    public async Task<ArkNovaPhotoRecognitionResult?> AnalyzeAsync(ArkNovaPhotoSource source, CancellationToken cancellationToken = default)
+    private Guid? _sampleId;
+
+    public async Task<ArkNovaPhotoRecognitionResult?> AnalyzeAsync(ArkNovaPhotoSource source, CancellationToken cancellationToken = default,
+        Guid? gameSessionId = null)
     {
+        _sampleId = null;
         byte[]? image = await input.ReadAsync(source, cancellationToken);
-        return image is null ? null : await recognition.AnalyzeAsync(image, cancellationToken);
+        if (image is null)
+            return null;
+        ArkNovaPhotoRecognitionResult result = await recognition.AnalyzeAsync(image, cancellationToken);
+        if (dataset is not null && gameSessionId is Guid id)
+            _sampleId = await dataset.CaptureAsync(id, source.ToString().ToLowerInvariant(), image, result, cancellationToken);
+        return result;
+    }
+
+    public async Task SetReviewStatusAsync(string status)
+    {
+        Guid? sampleId = _sampleId;
+        // Closing a later source picker must not relabel a previously closed review.
+        _sampleId = null;
+        if (dataset is not null)
+            await dataset.SetReviewStatusAsync(sampleId, status);
     }
 }
 
