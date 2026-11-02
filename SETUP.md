@@ -113,6 +113,12 @@ ausführen, `bin`/`obj` oder andere Build-Caches nicht vorsorglich löschen und
 keinen Restore wiederholen, wenn der vorhandene Restore zur aktuellen
 Projektkonfiguration passt; dann bevorzugt mit `--no-restore` bauen und testen.
 
+Ein App-, Simulator- oder Geräte-Artefakt gilt nur dann als gültig, wenn es den für
+die Prüfung relevanten aktuellen Quell-, XAML-, Ressourcen-, Projekt- und
+Versionsstand enthält. Relevante Änderungen seit seinem Build erfordern vor dem
+Runtime-Test einen neuen passenden inkrementellen Build; ein Clean/Rebuild ist dafür
+nicht nötig.
+
 Native Ark-Nova-/OpenCV-Artefakte nur erneut bauen, wenn sich ihre Quellen,
 Buildparameter, Toolchain oder Zielplattform/-architektur geändert haben, das
 passende Artefakt fehlt oder konkret als ungültig erkannt wurde. iOS-Device- und
