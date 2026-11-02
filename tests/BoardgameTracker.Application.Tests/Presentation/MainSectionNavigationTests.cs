@@ -77,19 +77,31 @@ public sealed class MainSectionNavigationTests
     [InlineData(AppMainSection.Settings)]
     public async Task SessionTransitionsReturnToActualCaller(AppMainSection section)
     {
-        AppShell shell = CreateShell(new SettingsStore());
+        SettingsStore store = new();
+        AppShell shell = CreateShell(store);
         await shell.NavigateToMainSectionAsync(section);
         if (section == AppMainSection.Settings)
             await shell.GoToAsync("PlayerListPage");
         Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
         shell.CaptureGameSessionCaller();
+        Guid gameSessionId = Guid.NewGuid();
+        shell.RememberGameSession(gameSessionId, ArkNovaGame.Key);
         await shell.GoToAsync("Running");
+        Assert.Equal(gameSessionId, store.Value.LastGameSessionId);
         await shell.GoToAsync("Scoring");
+        Assert.Equal(gameSessionId, store.Value.LastGameSessionId);
+        await shell.GoToAsync("PlayerScoring");
+        Assert.Equal(gameSessionId, store.Value.LastGameSessionId);
+        await shell.GoToAsync("..");
+        Assert.Equal(gameSessionId, store.Value.LastGameSessionId);
         await shell.GoToAsync("Result");
         await shell.GoToAsync("Correction");
         await shell.GoToAsync("..");
         await shell.ReturnToGameSessionCallerAsync();
         Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        Assert.Null(store.Value.LastGameSessionId);
+        Assert.Equal(section, store.Value.LastMainSection);
+        Assert.Equal(ArkNovaGame.Key, store.Value.SelectedGameKey);
     }
 
     [Fact]

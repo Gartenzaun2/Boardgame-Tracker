@@ -141,6 +141,9 @@ public partial class AppShell : Shell
                 navigation.RemovePage(navigation.NavigationStack[^2]);
             if (navigation.NavigationStack[^1] != caller)
                 await GoToAsync("..");
+            // Leaving the session flow ends resume even when its caller is below the section root.
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with { LastGameSessionId = null });
             _gameSessionCaller = null;
             _gameSessionCallerSection = null;
         }

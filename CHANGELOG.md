@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.43
+
+- Bewusstes Verlassen des GameSession-Flows löscht das persistierte Resume-Ziel auch bei tieferen Aufrufern wie der Spielerübersicht; Navigation innerhalb einer geöffneten Partie behält es bei. App-Version 0.10.0.43 / ApplicationVersion 80.
+
 ## 0.10.0.42
 
 - Bestehende Partien behalten ihren tatsächlichen Aufrufer über Running, Wertung und Ergebnis; Zurück und Verwerfen kehren dorthin zurück. Historische Rückkehr verarbeitet geleerte Shell-Parameter ohne erneute Initialisierung. iOS-Haupttab-Taps einschließlich Retap öffnen den Root über die bestehende Shell, ohne eigene ViewController-Hierarchie.
