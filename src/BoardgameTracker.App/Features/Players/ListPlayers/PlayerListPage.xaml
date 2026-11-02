@@ -47,14 +47,15 @@
                                     </VerticalStackLayout>
                                     <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
                                 </Grid>
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding HasLastGameSession}">
-                                    <Image Source="icon_active_session.png" IsVisible="{Binding HasOpenGameSession}"
-                                           BackgroundColor="Transparent" presentation:IconTint.Color="{DynamicResource TextPrimary}"
-                                           HeightRequest="20" WidthRequest="20" VerticalOptions="Center" InputTransparent="True"
-                                           SemanticProperties.Description="{x:Static res:AppResources.ActiveGame}"
-                                           ToolTipProperties.Text="{x:Static res:AppResources.ActiveGame}" />
-                                    <Button Grid.Column="1" Text="{Binding LastPlayedText}" Style="{StaticResource SecondaryActionButton}" Clicked="OnLastPlayedClicked" CommandParameter="{Binding .}" />
-                                </Grid>
+                                <Button Text="{Binding LastPlayedText}" IsVisible="{Binding HasLastGameSession}"
+                                        Style="{StaticResource SecondaryActionButton}" ContentLayout="Right,6"
+                                        Clicked="OnLastPlayedClicked" CommandParameter="{Binding .}">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding HasOpenGameSession}" Value="True">
+                                            <Setter Property="ImageSource" Value="icon_active_session.png" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
                                 <Border IsVisible="{Binding HasNoGameSession}" BackgroundColor="{DynamicResource SurfaceSecondary}" StrokeThickness="0" Padding="12,6" StrokeShape="RoundRectangle 10">
                                     <Label Text="{x:Static res:AppResources.PlayerNoGameSession}" TextColor="{DynamicResource TextSecondary}" />
                                 </Border>

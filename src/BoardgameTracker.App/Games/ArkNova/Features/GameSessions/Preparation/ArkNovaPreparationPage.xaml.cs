@@ -164,6 +164,7 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
 
         if (Shell.Current is AppShell shell)
         {
+            shell.CaptureGameSessionCaller(useRoot: true);
             shell.RememberGameSession(gameSessionId.Value, ArkNovaGame.Key);
         }
 

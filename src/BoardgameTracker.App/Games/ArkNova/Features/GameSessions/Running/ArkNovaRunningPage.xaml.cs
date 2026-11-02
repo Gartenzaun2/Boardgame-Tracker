@@ -30,6 +30,9 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        // Single-use Shell parameters are cleared before an existing page is revisited.
+        if (query.Count == 0 && _gameSessionId != Guid.Empty)
+            return;
         if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
             || value is not Guid gameSessionId
             || gameSessionId == Guid.Empty)
@@ -62,12 +65,12 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 
 
     private async void OnBackClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+        await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
 
     protected override bool OnBackButtonPressed()
     {
         Dispatcher.Dispatch(async () =>
-            await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}"));
+            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
         return true;
     }
 
@@ -99,6 +102,6 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
             return;
         }
 
-        await Shell.Current.GoToAsync($"//{nameof(GroupListPage)}");
+        await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
     }
 }

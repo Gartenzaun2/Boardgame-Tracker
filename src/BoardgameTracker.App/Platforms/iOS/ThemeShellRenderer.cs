@@ -1,4 +1,5 @@
 using CoreGraphics;
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls.Handlers.Compatibility;
 using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
@@ -11,6 +12,50 @@ public sealed class ThemeShellRenderer : ShellRenderer
 
     private sealed class ThemeTabBarTracker : ShellTabBarAppearanceTracker
     {
+        private static readonly ConditionalWeakTable<UITabBar, UITapGestureRecognizer> TabTaps = new();
+
+        private static void ConnectTabTaps(UITabBarController controller)
+        {
+            UITabBar bar = controller.TabBar;
+            TabTaps.GetValue(bar, _ =>
+            {
+                UITapGestureRecognizer tap = new(recognizer =>
+                {
+                    if (Shell.Current is not AppShell shell)
+                        return;
+                    // Use actual native item frames, including safe-area/RTL layout.
+                    UIView? item = bar.Subviews.OfType<UIControl>()
+                        .FirstOrDefault(view => view.Frame.Contains(recognizer.LocationInView(bar)));
+                    if (item is null || controller.ViewControllers is null)
+                        return;
+                    UIControl[] controls = bar.Subviews.OfType<UIControl>().OrderBy(view => view.Frame.X).ToArray();
+                    int index = Array.IndexOf(controls, item);
+                    if (bar.EffectiveUserInterfaceLayoutDirection == UIUserInterfaceLayoutDirection.RightToLeft)
+                        index = controls.Length - 1 - index;
+                    if (index < 0 || index >= shell.CurrentItem.Items.Count)
+                        return;
+                    ShellSection target = shell.CurrentItem.Items[index];
+                    shell.Dispatcher.Dispatch(async () =>
+                    {
+                        try
+                        {
+                            await shell.NavigateFromMainTabTapAsync(target);
+                        }
+                        catch (Exception)
+                        {
+                            // Keep native event exceptions out of the iOS run loop.
+                            await shell.DisplayAlertAsync(Resources.Localization.AppResources.Settings,
+                                Resources.Localization.AppResources.PlayerNavigationFailed,
+                                Resources.Localization.AppResources.Ok);
+                        }
+                    });
+                }) { CancelsTouchesInView = true, DelaysTouchesEnded = true };
+                // Shell owns selection and root reset; do not replace any native controller/delegate.
+                bar.AddGestureRecognizer(tap);
+                return tap;
+            });
+        }
+
         public override void SetAppearance(UITabBarController controller, ShellAppearance appearance)
         {
             base.SetAppearance(controller, appearance);
@@ -23,6 +68,7 @@ public sealed class ThemeShellRenderer : ShellRenderer
         }
         private static void Apply(UITabBarController controller)
         {
+            ConnectTabTaps(controller);
             var bar = controller.TabBar;
             bar.Translucent = false;
             bar.ItemPositioning = UITabBarItemPositioning.Fill;

@@ -28,97 +28,19 @@ Parameteränderung auslösen.
 
 ## iOS-Navigation
 
-### iOS: Haupttab-Retap / Root-Reset
+### Runtime-Bestätigung der korrigierten Navigationspfade
 
-**Status:** offen
+**Status:** gezielte manuelle Verifikation ausstehend
 
-**Ist:** Nach Entfernung des fehlerhaften eigenen `MainTabRenderer` verwendet iOS
-wieder MAUIs Standard-`ShellItemRenderer`. Dadurch ist der bestätigte
-Startup-Black-Screen beseitigt. Das vollständige gewünschte Root-Reset-Verhalten
-bei expliziten Haupttab-Taps, insbesondere beim erneuten Tap auf den bereits
-aktiven Tab, ist auf iOS noch nicht abschließend umgesetzt/verifiziert.
-
-Manueller Repro: **Historie → Partie → Wertung/Korrektur → App neu starten → Historie
-antippen**. Statt den Root `HistoryPage` zu öffnen, kann die App wieder in der tieferen
-Wertung/Korrektur landen.
-
-**Ziel:** Die allgemeine Produktregel aus `PRODUCT_SPEC.md` / `UI_WIREFRAME.md`
-erfüllen, ohne erneut einen eigenen `ShellItemRenderer` einzuführen, der die native
-iOS-Shell-/ViewController-Hierarchie beschädigt. Ein expliziter Haupttab-Tap muss
-immer den Root des gewählten Bereichs öffnen. Eine Lösungsvariante ist noch nicht
-entschieden.
-
-### iOS: Crash beim Zurück aus historischer Korrektur
-
-**Status:** offen
-
-**Ist:** Manueller Repro:
-**Historie → Partie → Ergebnis/Wertung bearbeiten → Zurück**. Beim Zurück aus der
-historischen Korrektur wird die iOS-App beendet bzw. stürzt ab.
-
-**Ziel:** Zurück verwirft ungespeicherte Korrekturen, zeigt wieder das historische
-Ergebnis derselben Partie und erhält dessen ursprüngliches Rückziel **Historie**.
-Dabei darf kein Crash oder App-Ende auftreten.
-
-### iOS: App-Ende beim Verwerfen einer offenen Partie
-
-**Status:** offen
-
-**Ist:** Bei einer laufenden Arche-Nova-Partie führt **Verwerfen → Bestätigen** im
-manuellen iOS-Test zum App-Ende. Der aktuelle Navigationspfad verwendet zudem ein
-festes Gruppen-Rückziel statt des tatsächlichen Aufrufers.
-
-**Ziel:** Die offene Partie wird nach Bestätigung verworfen, die App bleibt geöffnet
-und navigiert zum erhaltenen Aufrufer zurück: aus **Gruppen** zur Gruppenübersicht,
-aus **Historie** zur Historie und aus **Einstellungen → Spieler** zur
-Spielerübersicht.
-
-## Navigation
-
-### GameSession: aufrufenden Bereich als Rückziel erhalten
-
-**Status:** offen
-
-**Ist:** Das allgemeine Soll verlangt ein erhaltenes Rückziel, die aktuelle
-GameSession-Navigation zieht offene `Running`-/`Scoring`-Partien jedoch teilweise
-in den Gruppen-Kontext. Insbesondere **Einstellungen → Spieler → Zuletzt gespielt**
-öffnet eine offene Partie so, dass Zurück bei Gruppen landet. Running-/Scoring-
-Screens verwenden außerdem teilweise fest verdrahtete Gruppen-Routen für Zurück
-oder Verwerfen.
-
-**Ziel:** Beim Öffnen einer bestehenden Partie den tatsächlichen Aufrufer
-(**Gruppen**, **Historie** oder **Einstellungen → Spieler**) erhalten. Interne
-Wechsel zwischen Running, Scoring, Ergebnis und Korrektur dürfen dieses Rückziel
-nicht verändern. Zurück und erfolgreiches Verwerfen führen zum entsprechenden
-aufrufenden Screen. Ein expliziter Haupttab-Tap bleibt davon unabhängig und öffnet
-den jeweiligen Root.
-
-## UI
-
-### Spielerübersicht: Aktivsymbol innerhalb von „Zuletzt gespielt“
-
-**Status:** offen
-
-**Ist:** Das Aktivsymbol für `Running`/`Scoring` steht in der Spielerübersicht als
-eigenes Element links neben der Secondary-Aktion **Zuletzt gespielt <Datum>**.
-
-**Ziel:** Das Aktivsymbol ist Bestandteil derselben Buttonfläche und steht rechts
-neben Text/Datum. Es bleibt reine Statusanzeige ohne eigene Aktion; bei `Completed`
-fehlt es.
-
-### Arche Nova: Foto-Review kompakter und eindeutig navigieren
-
-**Status:** offen
-
-**Ist:** Im aktuellen Foto-Review stehen die Sicherheitsmarkierungen
-`✓ Sicher` / `! Prüfen` / `? Unsicher` jeweils in einer eigenen Zeile. Der Hinweis
-wird als separater Textblock dargestellt. Unten existiert neben der Bestätigung ein
-**Abbrechen**-Button.
-
-**Ziel:** Das Arche-Nova-Wireframe umsetzen: Sicherheitsstatus direkt neben dem
-jeweiligen Label in derselben Wertzeile; kompakte Hinweiszeile aus Info-Icon plus
-Text; Header Zurück · **Fotowerte prüfen**; unten nur **Bestätigen/Speichern**.
-Zurück verwirft unbestätigte Fotovorschläge und zeigt wieder die Wertung.
+Die Implementierung erhält den tatsächlichen GameSession-Aufrufer, behandelt
+geleerte Shell-Query-Parameter beim Zurückkehren und bindet iOS-Tab-Taps ohne
+eigenen ShellItemRenderer an die bestehende Root-Navigation an. Nach unmittelbarer
+ausdrücklicher Entwicklerfreigabe sind auf iOS noch die bisherigen Repros zu
+bestätigen: Haupttab-Tap/Retap nach tiefer Navigation, Zurück aus historischer
+Korrektur sowie bestätigtes Verwerfen aus Gruppen, Historie und Spielerübersicht.
+Insbesondere App-Ende/Black Screen und die Rückkehr zum richtigen Screen prüfen.
+Diese Interaktionsprüfung geht über den minimalen Startup-Smoke-Test hinaus und
+benötigt einen entsprechend ausdrücklichen Auftrag. Kein automatischer Gerätelauf.
 
 ## Architektur
 

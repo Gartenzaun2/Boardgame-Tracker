@@ -138,33 +138,39 @@
         <Grid IsVisible="{Binding IsPhotoReviewVisible}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}" IsEnabled="{Binding IsIdle}">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="{x:Static res:AppResources.PhotoReviewTitle}" FontAttributes="Bold" FontSize="20" />
-                    <Label Text="{x:Static res:AppResources.PhotoReviewHint}" FontSize="12" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCancelPhotoClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoReviewTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                        <Image Source="icon_info.png" HeightRequest="20" WidthRequest="20" VerticalOptions="Start" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoReviewHint}" FontSize="12" />
+                    </Grid>
                     <CollectionView ItemsSource="{Binding PhotoPlayers}" HeightRequest="350" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ArkNovaPhotoReviewPlayer">
                                 <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,8">
-                                    <Grid ColumnDefinitions="*,80" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="4">
+                                    <Grid ColumnDefinitions="Auto,*,80" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="4">
                                         <Label Text="{Binding Name}" FontAttributes="Bold" />
                                         <Label Grid.Row="1" Text="{x:Static res:AppResources.Attractiveness}" VerticalOptions="Center" />
-                                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding AttractivenessText}" Keyboard="Numeric" MaxLength="3" />
-                                        <Label Grid.Row="2" Text="{Binding AttractivenessStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                        <Entry Grid.Row="1" Grid.Column="2" Text="{Binding AttractivenessText}" Keyboard="Numeric" MaxLength="3" />
+                                        <Label Grid.Row="1" Grid.Column="1" VerticalOptions="Center" Text="{Binding AttractivenessStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding AttractivenessConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
                                                 <DataTrigger TargetType="Label" Binding="{Binding AttractivenessConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
                                             </Label.Triggers>
                                         </Label>
-                                        <Label Grid.Row="3" Text="{x:Static res:AppResources.Conservation}" VerticalOptions="Center" />
-                                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding ConservationText}" Keyboard="Numeric" MaxLength="2" />
-                                        <Label Grid.Row="4" Text="{Binding ConservationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                        <Label Grid.Row="2" Text="{x:Static res:AppResources.Conservation}" VerticalOptions="Center" />
+                                        <Entry Grid.Row="2" Grid.Column="2" Text="{Binding ConservationText}" Keyboard="Numeric" MaxLength="2" />
+                                        <Label Grid.Row="2" Grid.Column="1" VerticalOptions="Center" Text="{Binding ConservationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding ConservationConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
                                                 <DataTrigger TargetType="Label" Binding="{Binding ConservationConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
                                             </Label.Triggers>
                                         </Label>
-                                        <Label Grid.Row="5" IsVisible="{Binding ShowReputation}" Text="{x:Static res:AppResources.Reputation}" VerticalOptions="Center" />
-                                        <Entry Grid.Row="5" Grid.Column="1" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationText}" Keyboard="Numeric" MaxLength="2" />
-                                        <Label Grid.Row="6" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
+                                        <Label Grid.Row="3" IsVisible="{Binding ShowReputation}" Text="{x:Static res:AppResources.Reputation}" VerticalOptions="Center" />
+                                        <Entry Grid.Row="3" Grid.Column="2" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationText}" Keyboard="Numeric" MaxLength="2" />
+                                        <Label Grid.Row="3" Grid.Column="1" VerticalOptions="Center" IsVisible="{Binding ShowReputation}" Text="{Binding ReputationStatus}" FontSize="12" TextColor="{DynamicResource Danger}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding ReputationConfidence}" Value="High"><Setter Property="TextColor" Value="{DynamicResource RecognitionHigh}" /></DataTrigger>
                                                 <DataTrigger TargetType="Label" Binding="{Binding ReputationConfidence}" Value="Medium"><Setter Property="TextColor" Value="{DynamicResource RecognitionMedium}" /></DataTrigger>
@@ -177,7 +183,6 @@
                     </CollectionView>
                     <Label Text="{Binding PhotoError}" TextColor="{DynamicResource Danger}" FontSize="12" />
                     <Button Text="{x:Static res:AppResources.PhotoConfirm}" Clicked="OnConfirmPhotoClicked" Style="{StaticResource PrimaryCompactButton}" />
-                    <Button Text="{x:Static res:AppResources.Cancel}" Clicked="OnCancelPhotoClicked" Style="{StaticResource SecondaryActionButton}" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

@@ -25,6 +25,9 @@ public partial class AppShell : Shell
     private bool _isProgrammaticMainNavigation;
     private bool _isNavigationMemoryEnabled;
     private bool _isMainTabTapInProgress;
+    private ShellSection? _gameSessionCallerSection;
+    private Page? _gameSessionCaller;
+    private bool _isReturningToCaller;
 
     public AppShell(
         GroupListPage groupListPage,
@@ -79,6 +82,8 @@ public partial class AppShell : Shell
             _ => _gamesTab
         };
 
+        _gameSessionCaller = null;
+        _gameSessionCallerSection = null;
         _isProgrammaticMainNavigation = true;
         try
         {
@@ -109,6 +114,40 @@ public partial class AppShell : Shell
         });
 
         await NavigateToMainSectionAsync(AppMainSection.Groups, remember);
+    }
+
+    public void CaptureGameSessionCaller(bool useRoot = false)
+    {
+        _gameSessionCallerSection = CurrentItem.CurrentItem;
+        var stack = _gameSessionCallerSection.Navigation.NavigationStack;
+        _gameSessionCaller = useRoot ? stack[0] : stack[^1];
+    }
+
+    public async Task ReturnToGameSessionCallerAsync()
+    {
+        if (_isReturningToCaller)
+            return;
+        _isReturningToCaller = true;
+        try
+        {
+            ShellSection section = CurrentItem.CurrentItem;
+            var navigation = section.Navigation;
+            Page caller = section == _gameSessionCallerSection && _gameSessionCaller is not null
+                && navigation.NavigationStack.Contains(_gameSessionCaller)
+                ? _gameSessionCaller : navigation.NavigationStack[0];
+            // Remove intermediate session screens, then pop once to the retained caller.
+            while (navigation.NavigationStack[^1] != caller
+                && navigation.NavigationStack.Count > 1 && navigation.NavigationStack[^2] != caller)
+                navigation.RemovePage(navigation.NavigationStack[^2]);
+            if (navigation.NavigationStack[^1] != caller)
+                await GoToAsync("..");
+            _gameSessionCaller = null;
+            _gameSessionCallerSection = null;
+        }
+        finally
+        {
+            _isReturningToCaller = false;
+        }
     }
 
     public void EnableNavigationMemory() => _isNavigationMemoryEnabled = true;

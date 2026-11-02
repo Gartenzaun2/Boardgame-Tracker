@@ -23,10 +23,9 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
             ?? throw new InvalidOperationException("The game session does not exist.");
         if (Shell.Current is AppShell shell)
         {
-            // Completed results stay on their caller's stack (history or players).
+            shell.CaptureGameSessionCaller();
             if (data.Status is GameSessionStatus.Running or GameSessionStatus.Scoring)
             {
-                await shell.NavigateToGroupsForGameAsync(GameKey);
                 shell.RememberGameSession(gameSessionId, GameKey);
             }
         }
@@ -39,7 +38,10 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
             if (openGameSessionStatus is not (GameSessionStatus.Running or GameSessionStatus.Scoring))
                 throw new InvalidOperationException($"Unsupported open GameSession status '{openGameSessionStatus}'.");
             if (Shell.Current is AppShell shell)
+            {
+                shell.CaptureGameSessionCaller();
                 shell.RememberGameSession(gameSessionId, GameKey);
+            }
             await NavigateToGameSessionAsync(Shell.Current, gameSessionId, openGameSessionStatus.Value);
             return;
         }
@@ -53,6 +55,7 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
     public async Task ResumeAsync(AppShell shell, OpenGameSession gameSession)
     {
         await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false);
+        shell.CaptureGameSessionCaller();
         shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
         // Resume restores context only for open GameSessions; history also opens Completed.
         if (gameSession.Status is not (GameSessionStatus.Running or GameSessionStatus.Scoring))

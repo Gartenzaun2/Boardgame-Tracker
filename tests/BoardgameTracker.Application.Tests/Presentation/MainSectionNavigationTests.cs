@@ -71,6 +71,54 @@ public sealed class MainSectionNavigationTests
         Assert.Null(store.Value.LastGameSessionId);
     }
 
+    [Theory]
+    [InlineData(AppMainSection.Groups)]
+    [InlineData(AppMainSection.History)]
+    [InlineData(AppMainSection.Settings)]
+    public async Task SessionTransitionsReturnToActualCaller(AppMainSection section)
+    {
+        AppShell shell = CreateShell(new SettingsStore());
+        await shell.NavigateToMainSectionAsync(section);
+        if (section == AppMainSection.Settings)
+            await shell.GoToAsync("PlayerListPage");
+        Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        shell.CaptureGameSessionCaller();
+        await shell.GoToAsync("Running");
+        await shell.GoToAsync("Scoring");
+        await shell.GoToAsync("Result");
+        await shell.GoToAsync("Correction");
+        await shell.GoToAsync("..");
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+    }
+
+    [Fact]
+    public async Task ReturningWithoutLeavingCallerDoesNotRemoveIt()
+    {
+        AppShell shell = CreateShell(new SettingsStore());
+        await shell.NavigateToMainSectionAsync(AppMainSection.Settings);
+        await shell.GoToAsync("PlayerListPage");
+        Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        shell.CaptureGameSessionCaller();
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+    }
+
+    [Fact]
+    public async Task MainTabTapOverridesSessionCaller()
+    {
+        AppShell shell = CreateShell(new SettingsStore());
+        await shell.NavigateToMainSectionAsync(AppMainSection.Settings);
+        await shell.GoToAsync("PlayerListPage");
+        shell.CaptureGameSessionCaller();
+        await shell.GoToAsync("Scoring");
+        await shell.NavigateFromMainTabTapAsync(shell.CurrentItem.Items.Single(t => t.Route == "HistoryPage"));
+        await shell.GoToAsync("OtherSession");
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.Equal("HistoryPage", shell.CurrentItem.CurrentItem.Route);
+        Assert.Single(shell.CurrentItem.CurrentItem.Navigation.NavigationStack);
+    }
+
     [Fact]
     public async Task RestoringSectionDoesNotOverwriteRememberedSection()
     {

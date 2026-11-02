@@ -25,11 +25,11 @@ public sealed class TieResolutionTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Theory]
-    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
-    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Groups)]
+    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
+    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
     [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
     [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", true, BoardgameTracker.Application.Settings.Navigation.AppMainSection.History)]
-    public async Task SessionUsesStatusRouteAndPreservesCompletedOrigin(GameSessionStatus status, string route, bool fromHistory,
+    public async Task SessionUsesStatusRouteAndPreservesCaller(GameSessionStatus status, string route, bool fromHistory,
         BoardgameTracker.Application.Settings.Navigation.AppMainSection expectedSection)
     {
         await using TieDatabase database = await TieDatabase.CreateAsync(running: status == GameSessionStatus.Running);
@@ -59,15 +59,13 @@ public sealed class TieResolutionTests
         Assert.Equal(status == GameSessionStatus.Completed,
             shell.Calls[^1].Parameters[BoardgameTracker.App.Navigation.NavigationParameters.ResultIsHistorical]);
         Assert.Equal(status == GameSessionStatus.Completed ? null : (Guid?)database.Session.Id, store.Value.LastGameSessionId);
-        Assert.Equal(status == GameSessionStatus.Completed && !fromHistory ? 3 : 2,
+        Assert.Equal(!fromHistory ? 3 : 2,
             shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
-        if (status == GameSessionStatus.Completed)
-        {
-            Assert.Equal(callsBeforeOpen + 1, shell.Calls.Count);
-            await shell.GoToAsync("..");
-            Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
-            Assert.Equal(expectedSection, store.Value.LastMainSection);
-        }
+        Assert.Equal(callsBeforeOpen + 1, shell.Calls.Count);
+        await shell.GoToAsync("InternalSessionTransition");
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.Same(caller, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        Assert.Equal(expectedSection, store.Value.LastMainSection);
     }
 
     [Fact]

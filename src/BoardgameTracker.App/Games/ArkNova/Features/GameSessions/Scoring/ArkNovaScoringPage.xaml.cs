@@ -29,6 +29,9 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        // Single-use Shell parameters are cleared before an existing page is revisited.
+        if (query.Count == 0 && _gameSessionId != Guid.Empty)
+            return;
         if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
             || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
         {
@@ -198,7 +201,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
             if (confirmed && await _viewModel.DiscardAsync())
             {
-                await Shell.Current.GoToAsync(_viewModel.IsHistorical ? "//HistoryPage" : $"//{nameof(GroupListPage)}");
+                await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
             }
 
         }
@@ -229,7 +232,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
-            await Shell.Current.GoToAsync(_viewModel.IsHistorical ? ".." : $"//{nameof(GroupListPage)}");
+            await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..") : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
     }
 
     protected override bool OnBackButtonPressed()
@@ -247,7 +250,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             return true;
         }
 
-        Dispatcher.Dispatch(async () => await Shell.Current.GoToAsync(_viewModel.IsHistorical ? ".." : $"//{nameof(GroupListPage)}"));
+        Dispatcher.Dispatch(async () => await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..") : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync()));
         return true;
     }
 }

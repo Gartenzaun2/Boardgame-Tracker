@@ -11,6 +11,7 @@ namespace Microsoft.Maui.Controls
     {
         public List<Page> NavigationStackPages { get; } = [new Page()];
         public IReadOnlyList<Page> NavigationStack => NavigationStackPages;
+        public void RemovePage(Page page) => NavigationStackPages.Remove(page);
     }
     public class ShellSection
     {

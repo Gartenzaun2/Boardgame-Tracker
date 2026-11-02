@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.10.0.42
+
+- Bestehende Partien behalten ihren tatsächlichen Aufrufer über Running, Wertung und Ergebnis; Zurück und Verwerfen kehren dorthin zurück. Historische Rückkehr verarbeitet geleerte Shell-Parameter ohne erneute Initialisierung. iOS-Haupttab-Taps einschließlich Retap öffnen den Root über die bestehende Shell, ohne eigene ViewController-Hierarchie.
+- Foto-Review mit Status neben dem Wertlabel, Infozeile und Zurück im Header; nur die Bestätigung bleibt unten. Aktivsymbol der zuletzt gespielten offenen Partie in die gemeinsame Buttonfläche integriert. App-Version 0.10.0.42 / ApplicationVersion 79.
+
 ## 0.10.0.41
 
 - Gezielten iOS-Simulator-Smoke-Test bei plausiblem Startup-/Initial-UI-Risiko mit minimalem Umfang und Abbruchkriterien in `SETUP.md` verankert; keine Standardverifikation und weiterhin nur nach unmittelbarer ausdrücklicher Freigabe. App-Version 0.10.0.41 / ApplicationVersion 78.

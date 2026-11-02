@@ -19,6 +19,9 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        // Single-use Shell parameters are cleared before an existing page is revisited.
+        if (query.Count == 0 && _gameSessionId != Guid.Empty)
+            return;
         if (!query.TryGetValue(NavigationParameters.GameSessionId, out object? value)
             || value is not Guid gameSessionId || gameSessionId == Guid.Empty)
         {
@@ -38,9 +41,9 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
     }
 
     private async void OnDoneClicked(object? sender, EventArgs e) =>
-        await ((AppShell)Shell.Current).NavigateToMainSectionAsync(AppMainSection.Groups);
+        await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+    private async void OnBackClicked(object? sender, EventArgs e) => await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
 
     private async void OnEditClicked(object? sender, EventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters
@@ -48,5 +51,9 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
             [NavigationParameters.GameSessionId] = _gameSessionId
         });
 
-    protected override bool OnBackButtonPressed() => !BackButton.IsVisible || base.OnBackButtonPressed();
+    protected override bool OnBackButtonPressed()
+    {
+        Dispatcher.Dispatch(async () => await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
+        return true;
+    }
 }
