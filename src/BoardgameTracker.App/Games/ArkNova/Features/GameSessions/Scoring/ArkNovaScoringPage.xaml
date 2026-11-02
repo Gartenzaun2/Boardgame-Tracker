@@ -141,12 +141,12 @@
         <Grid IsVisible="{Binding IsPhotoReviewVisible}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}" IsEnabled="{Binding IsIdle}">
                 <VerticalStackLayout Spacing="10">
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
                         <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCancelPhotoClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoReviewTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
-                    </Grid>
-                    <ImageButton Source="icon_info.png" Style="{StaticResource IconButton}" HorizontalOptions="Start"
+                        <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" HorizontalOptions="Start"
                         Clicked="OnPhotoReviewInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.PhotoReviewTitle}" />
+                    </Grid>
                     <CollectionView ItemsSource="{Binding PhotoPlayers}" HeightRequest="350" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ArkNovaPhotoReviewPlayer">
