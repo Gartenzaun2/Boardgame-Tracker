@@ -203,6 +203,12 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnChoosePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Library);
     private async void OnConfirmPhotoClicked(object? sender, EventArgs e) => await _viewModel.ConfirmPhotoReviewAsync();
     private async void OnCancelPhotoClicked(object? sender, EventArgs e) => await _viewModel.CancelPhotoReviewAsync();
+    private async void OnPhotoReviewInfoClicked(object? sender, EventArgs e)
+    {
+        if (_viewModel.IsIdle && _viewModel.IsPhotoReviewVisible)
+            await AppDialogPage.ShowAsync(this, AppResources.PhotoReviewTitle, AppResources.PhotoReviewHint, AppResources.Ok);
+    }
+
     private async void OnPhotoInfoClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)

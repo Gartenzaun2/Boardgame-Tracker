@@ -94,7 +94,7 @@ Create/Edit: Name, Vorschau `Symbol1 → Symbol2 → Symbol3 → Name`, drei num
 
 Kamera-Aktion öffnet **Foto aufnehmen** oder **Vorhandenes Foto auswählen**. Danach liegt ein isolierter Review über der deaktivierten Wertung.
 
-Der Review-Header zeigt Zurück · **Fotowerte prüfen**. Direkt darunter steht eine kompakte Hinweiszeile aus Info-Icon und anschließendem Hinweistext; es gibt keinen separaten Infotextblock.
+Der Review-Header zeigt Zurück · **Fotowerte prüfen**. Direkt darunter steht nur das gemeinsame Info-/Hinweis-Icon. Der zugehörige Erklärungstext wird erst nach Tap auf dieses Icon in einem App-Informationsdialog angezeigt und steht nicht dauerhaft im Review.
 
 Pro Spieler stehen die erkannten Werte in kompakten Zeilen. Jede Wertzeile zeigt das Label, direkt daneben den Sicherheitsstatus `✓ Sicher`, `! Prüfen` oder `? Unsicher` und rechts den editierbaren Wert. Der Sicherheitsstatus erhält keine eigene Zeile. Bei aktivem **Ruf erfassen** gilt derselbe Aufbau für Ruf.
 
