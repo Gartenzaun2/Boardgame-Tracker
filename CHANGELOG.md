@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.2.0
+
+- Allgemeine Einstellungen zeigen unter Über / Rechtliches die installierte App-Version einschließlich Buildnummer aus den Runtime-Metadaten.
+
+- Arche-Nova-Fotoquellen-Auswahl: Zurück-Pfeil im Header statt unterem Abbrechen-Button. Zurück schließt ausschließlich die Auswahl ohne Fotoaktion oder Änderung des Review-Status. ApplicationVersion 83.
+
 ## 0.11.1.0
 
 - Arche-Nova-Wertung: Rückkehr aus der Spielerwertung nach erfolgreichem Speichern repariert. Bereits geöffnete Wertungs-, laufende Partie- und Ergebnisseiten behalten ihren Partiekontext bei fehlendem Single-Use-Shell-Parameter; explizit ungültige Parameter werden weiterhin abgelehnt. ApplicationVersion 82.

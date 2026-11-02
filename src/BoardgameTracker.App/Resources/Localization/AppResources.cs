@@ -21,6 +21,7 @@ public static class AppResources
     public static string PhotoDatasetDeleteQuestion => GetString(nameof(PhotoDatasetDeleteQuestion));
     public static string PhotoDatasetFailed => GetString(nameof(PhotoDatasetFailed));
     public static string OpenSourceLicenses => GetString(nameof(OpenSourceLicenses));
+    public static string AppVersionFormat => GetString(nameof(AppVersionFormat));
     public static string AboutLegal => GetString(nameof(AboutLegal));
     public static string LicenseOpenHint => GetString(nameof(LicenseOpenHint));
     public static string LicenseVersionFormat => GetString(nameof(LicenseVersionFormat));

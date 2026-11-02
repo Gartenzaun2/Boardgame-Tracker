@@ -197,6 +197,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
     }
 
+    private void OnPhotoSourceBackClicked(object? sender, EventArgs e) => _viewModel.ClosePhotoSource();
     private void OnCameraClicked(object? sender, EventArgs e) => _viewModel.OpenPhotoSource();
     private async void OnTakePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Camera);
     private async void OnChoosePhotoClicked(object? sender, EventArgs e) => await _viewModel.AnalyzePhotoAsync(ArkNovaPhotoSource.Library);
@@ -229,7 +230,12 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             _viewModel.CloseSpecialCardPicker();
             return true;
         }
-        if (_viewModel.IsPhotoSourceVisible || _viewModel.IsPhotoReviewVisible)
+        if (_viewModel.IsPhotoSourceVisible)
+        {
+            _viewModel.ClosePhotoSource();
+            return true;
+        }
+        if (_viewModel.IsPhotoReviewVisible)
         {
             Dispatcher.Dispatch(async () => await _viewModel.CancelPhotoReviewAsync());
             return true;

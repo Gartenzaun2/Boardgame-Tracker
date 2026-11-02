@@ -1,3 +1,4 @@
+using Microsoft.Maui.ApplicationModel;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
@@ -18,6 +19,7 @@ public partial class AppSettingsPage : ContentPage
     public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
     {
         InitializeComponent();
+        AppVersionLabel.Text = string.Format(AppResources.AppVersionFormat, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
         _navigationSettingsStore = navigationSettingsStore;
         _themes = themes;
 

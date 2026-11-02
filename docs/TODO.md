@@ -38,22 +38,6 @@ externer Verteilung muss dieser Default bewusst auf deaktiviert geändert werden
 Keine Laufzeitentscheidung anhand der App-Version einführen; bestehende ausdrücklich
 gespeicherte Nutzerauswahlen erhalten.
 
-## iOS-Navigation
-
-### Runtime-Bestätigung der korrigierten Navigationspfade
-
-**Status:** gezielte manuelle Verifikation ausstehend
-
-Die Implementierung erhält den tatsächlichen GameSession-Aufrufer, behandelt
-geleerte Shell-Query-Parameter beim Zurückkehren und bindet iOS-Tab-Taps ohne
-eigenen ShellItemRenderer an die bestehende Root-Navigation an. Nach unmittelbarer
-ausdrücklicher Entwicklerfreigabe sind auf iOS noch die bisherigen Repros zu
-bestätigen: Haupttab-Tap/Retap nach tiefer Navigation, Zurück aus historischer
-Korrektur sowie bestätigtes Verwerfen aus Gruppen, Historie und Spielerübersicht.
-Insbesondere App-Ende/Black Screen und die Rückkehr zum richtigen Screen prüfen.
-Diese Interaktionsprüfung geht über den minimalen Startup-Smoke-Test hinaus und
-benötigt einen entsprechend ausdrücklichen Auftrag. Kein automatischer Gerätelauf.
-
 ## Architektur
 
 ### Spielmodulgrenze in allgemeinen App-Features

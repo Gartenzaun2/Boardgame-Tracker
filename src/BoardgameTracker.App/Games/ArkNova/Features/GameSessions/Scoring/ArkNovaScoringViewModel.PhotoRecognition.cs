@@ -26,6 +26,12 @@ public partial class ArkNovaScoringViewModel
         if (IsScoringContentEnabled && IsLiveScoring)
             IsPhotoSourceVisible = true;
     }
+    public void ClosePhotoSource()
+    {
+        if (IsIdle)
+            IsPhotoSourceVisible = false;
+    }
+
     public async Task CancelPhotoReviewAsync()
     {
         if (!IsIdle)

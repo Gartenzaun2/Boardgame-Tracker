@@ -872,6 +872,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="PhotoAnalysisFailed" xml:space="preserve"><value>Das Foto konnte nicht verarbeitet werden. Prüfe gegebenenfalls die Kameraberechtigung oder wähle ein anderes Foto. Deine bisherigen Werte bleiben erhalten.</value></data>
   <data name="PhotoValuesInvalid" xml:space="preserve"><value>Bitte prüfe die Zahlenbereiche: Attraktivität 0–113, Artenschutz 0–41, Ruf 1–15. Nicht erfasste Werte dürfen leer bleiben.</value></data>
   <data name="OpenSourceLicenses" xml:space="preserve"><value>Open-Source-Lizenzen</value></data>
+  <data name="AppVersionFormat" xml:space="preserve"><value>Version {0} (Build {1})</value></data>
   <data name="AboutLegal" xml:space="preserve"><value>Über / Rechtliches</value></data>
   <data name="LicenseOpenHint" xml:space="preserve"><value>Vollständigen Lizenztext und Hinweise öffnen</value></data>
   <data name="LicenseVersionFormat" xml:space="preserve"><value>Version {0}</value></data>

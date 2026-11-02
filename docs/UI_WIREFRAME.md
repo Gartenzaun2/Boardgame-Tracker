@@ -104,6 +104,8 @@ Header **Spieler bearbeiten**; Felder: Name, Archiv-Switch; unten **Speichern**.
 
 Reihenfolge: **Darstellung · Standardspiel · Spieler · registrierte Spieleinstellungen · Über / Rechtliches**. Darstellung und Standardspiel öffnen App-Auswahldialoge. Allgemeiner Code zeigt Spieleinstellungen nur als registrierte Einstiege.
 
+Unter **Über / Rechtliches** steht zuerst die zurückhaltende, nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)** der installierten App. Danach folgt **Open-Source-Lizenzen**.
+
 ## 7. Open-Source-Lizenzen
 
 Übersicht: Header mit Zurück/Divider, direkt darunter der erforderliche IJG-Hinweis, dann eine Liste aus **Komponentenname + Version** und **Lizenzbezeichnung**. Tap öffnet die Detailseite.

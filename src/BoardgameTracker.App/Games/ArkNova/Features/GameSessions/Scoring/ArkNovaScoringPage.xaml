@@ -128,10 +128,13 @@
         <Grid IsVisible="{Binding IsPhotoSourceVisible}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}" IsEnabled="{Binding IsIdle}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="{x:Static res:AppResources.PhotoRecognition}" FontAttributes="Bold" FontSize="20" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnPhotoSourceBackClicked"
+                                     SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoRecognition}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
+                    </Grid>
                     <Button Text="{x:Static res:AppResources.PhotoTake}" Clicked="OnTakePhotoClicked" Style="{StaticResource PrimaryCompactButton}" />
                     <Button Text="{x:Static res:AppResources.PhotoChoose}" Clicked="OnChoosePhotoClicked" Style="{StaticResource SecondaryActionButton}" />
-                    <Button Text="{x:Static res:AppResources.Cancel}" Clicked="OnCancelPhotoClicked" Style="{StaticResource SecondaryActionButton}" />
                 </VerticalStackLayout>
             </Border>
         </Grid>
