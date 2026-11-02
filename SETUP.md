@@ -38,7 +38,7 @@ Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
 Secrets, Zugangsdaten und private/persönliche Kennungen gehören niemals in
 versionierte Repository-Dateien, Patches oder Commits. Dazu zählen insbesondere:
 
-- API-Keys und andere Schlüssel, Access-/Refresh-Tokens, Passwörter und Credentials;
+- API-Keys und andere Schlüssel, Access-/Refresh-Slots, Passwörter und Credentials;
 - private Schlüssel, Zertifikatsmaterial sowie Provisioning-/Signing-Geheimnisse;
 - persönliche E-Mail-Adressen, sofern nicht ausdrücklich als öffentliche
   Projektdaten vorgesehen;
@@ -132,6 +132,20 @@ erforderlich machen; solche notwendigen Schritte nicht künstlich überspringen.
 Clean/Rebuild, Cache-Löschung, erneuter Restore oder erneuter Native-Build nur bei
 einem konkreten technischen Grund. Keinen zweiten Build derselben Konfiguration
 allein „zur Sicherheit“ ausführen.
+
+### iOS-Simulator-Builds
+
+Für normale UI-/Navigationsprüfungen im iOS-Simulator `Debug` mit
+`net10.0-ios` und passender Simulator-RID verwenden. Release nur, wenn
+Release-, AOT-, Trimming- oder Device-Verhalten geprüft werden soll.
+
+Bei unerwartet langer `AOTCompile`-Phase zuerst Konfiguration, RuntimeIdentifier
+und mögliche Single-Core-Schalter (`-m:1`, `MaxCpuCount=1`,
+`BuildInParallel=false`) prüfen.
+
+Gültige Restore-/Build-Zwischenergebnisse und passende native
+Simulator-Artefakte wiederverwenden; kein Clean/Rebuild oder Native-Neubuild
+ohne konkreten Grund.
 
 ### Gezielter iOS-Simulator-Smoke-Test
 
