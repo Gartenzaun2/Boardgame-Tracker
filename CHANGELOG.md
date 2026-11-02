@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.3.0
+
+- .NET SDK 10.0.403 und Workload-Set 10.0.401 reproduzierbar gepinnt; MAUI 10.0.110 enthält den iOS-Kamera-Fix ohne zusätzliche Foto-Mediathek-Berechtigung. ApplicationVersion 85.
+
 ## 0.11.2.1
 
 - Arche-Nova-Foto-Review zeigt den Erklärungstext erst beim Antippen des Info-Icons in einem Informationsdialog.

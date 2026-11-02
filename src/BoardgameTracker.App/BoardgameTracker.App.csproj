@@ -7,6 +7,7 @@
     <AssemblyName>BoardgameTracker.App</AssemblyName>
 
     <UseMaui>true</UseMaui>
+    <MauiVersion>10.0.110</MauiVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SingleProject>true</SingleProject>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
@@ -16,8 +17,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.11.2.1</ApplicationDisplayVersion>
-    <ApplicationVersion>84</ApplicationVersion>
+    <ApplicationDisplayVersion>0.11.3.0</ApplicationDisplayVersion>
+    <ApplicationVersion>85</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 

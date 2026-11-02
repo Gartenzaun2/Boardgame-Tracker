@@ -13,8 +13,8 @@ Arbeits- und Verifikationspolicy: [`AGENTS.md`](AGENTS.md).
 
 ## 2. Voraussetzungen
 
-- .NET 10
-- .NET MAUI
+- .NET SDK 10.0.403 (exakt über `global.json` gepinnt)
+- .NET MAUI 10.0.110 (über `MauiVersion` im App-Projekt gepinnt)
 - EF Core 10
 - SQLite
 - Visual Studio bzw. passende .NET-MAUI-Toolchain
@@ -32,6 +32,13 @@ nicht versioniert. Für private Konfiguration und Diagnoseausgaben gelten die
 folgenden Sicherheitsregeln.
 
 Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
+
+`global.json` pinnt zusätzlich Workload-Set `10.0.401`. Im Repository mit
+`dotnet workload restore src/BoardgameTracker.App/BoardgameTracker.App.csproj`
+die passenden Workloads bereitstellen. MAUI wird unabhängig davon auf `10.0.110`
+festgelegt, damit der iOS-Kamera-Fix enthalten ist, während die bestehenden
+Plattform-Workloads für Xcode 26.6 erhalten bleiben. SDK-, Workload-Set- und
+MAUI-Paket-Pin bei einer Toolchain-Aktualisierung gemeinsam prüfen.
 
 ### Repository- und Log-Sicherheit
 
