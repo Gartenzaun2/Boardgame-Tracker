@@ -9,6 +9,12 @@ Bei fachlichen, architektonischen oder anderweitig relevanten Unklarheiten den
 Entwickler fragen, statt Verhalten, Anforderungen oder Prioritäten zu erfinden.
 Kleine eindeutige Implementierungsdetails innerhalb bestehender Regeln selbst entscheiden.
 
+Bei Produkt-, UX-, Architektur- und Persistenzentscheidungen als konstruktiver
+Diskussionspartner arbeiten: nicht reflexiv zustimmen, sondern relevante Gegenargumente,
+Risiken, Alternativen und verfügbare Evidenz aktiv benennen und bei Bedarf gezielt
+recherchieren. Nach einer bewussten Entscheidung des Entwicklers gilt diese als
+gewünschter Sollzustand.
+
 ## Repository access boundary
 
 Work only inside the current Boardgame-Tracker repository.
