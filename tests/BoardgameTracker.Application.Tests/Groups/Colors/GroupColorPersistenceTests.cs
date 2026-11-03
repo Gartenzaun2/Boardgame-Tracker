@@ -61,7 +61,6 @@ public sealed class GroupColorPersistenceTests
         Assert.NotNull(result);
         Assert.Equal("Neu", result.Name);
         Assert.True(result.IsArchived);
-        Assert.False(result.IsTemporary);
         Assert.Equal(fixture.Second.Id, result.Players[0].PlayerId);
         Assert.Equal(PlayerColor.Red, result.Players.Single(player => player.PlayerId == fixture.First.Id).DefaultColor);
         Assert.Equal(PlayerColor.Blue, result.Players.Single(player => player.PlayerId == fixture.Second.Id).DefaultColor);
@@ -113,7 +112,7 @@ public sealed class GroupColorPersistenceTests
     {
         await using var fixture = await Fixture.CreateAsync();
         var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
-        var id = await create.CreateGroupAsync(new("Neu", false,
+        var id = await create.CreateGroupAsync(new("Neu",
             [new(null, "Chris", false, PlayerColor.Red), new(fixture.First.Id, fixture.First.Name, false, PlayerColor.Blue)],
             ArkNovaGame.Key), TestContext.Current.CancellationToken);
         var result = await fixture.UseCase.GetAsync(id, ArkNovaGame.Key, TestContext.Current.CancellationToken);
@@ -134,7 +133,7 @@ public sealed class GroupColorPersistenceTests
                 BEGIN SELECT RAISE(ABORT, 'Simulated color write failure'); END;
                 """, TestContext.Current.CancellationToken);
         var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
-        await Assert.ThrowsAsync<DbUpdateException>(() => create.CreateGroupAsync(new("Neu", false,
+        await Assert.ThrowsAsync<DbUpdateException>(() => create.CreateGroupAsync(new("Neu",
             [new(null, "Chris", false, PlayerColor.Red)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var verify = fixture.CreateDbContext();
         Assert.Equal(1, await verify.Groups.CountAsync(TestContext.Current.CancellationToken));
@@ -171,7 +170,7 @@ public sealed class GroupColorPersistenceTests
     {
         await using var fixture = await Fixture.CreateAsync();
         var create = new CreateGroupUseCase(fixture, fixture.Catalog, [new ArkNovaGroupColorPersistence()]);
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => create.CreateGroupAsync(new("Neu", false,
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => create.CreateGroupAsync(new("Neu",
             [new(null, "Chris", false, PlayerColor.Green)], ArkNovaGame.Key), TestContext.Current.CancellationToken));
         await using var db = fixture.CreateDbContext();
         Assert.Equal(2, await db.Players.CountAsync(TestContext.Current.CancellationToken));
@@ -198,7 +197,7 @@ public sealed class GroupColorPersistenceTests
         {
             var fixture = new Fixture();
             await fixture._connection.OpenAsync(TestContext.Current.CancellationToken);
-            fixture.Group = new("Alt", true, [fixture.First.Id, fixture.Second.Id]);
+            fixture.Group = new("Alt", [fixture.First.Id, fixture.Second.Id]);
             await using var db = fixture.CreateDbContext();
             await db.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
             db.AddRange(fixture.First, fixture.Second, fixture.Group,
@@ -208,7 +207,7 @@ public sealed class GroupColorPersistenceTests
             return fixture;
         }
 
-        public EditGroupCommand Command(IReadOnlyDictionary<Guid, PlayerColor?>? colors = null) => new(Group.Id, "Neu", true, true, [Second.Id, First.Id], new(ArkNovaGame.Key, colors ?? Colors()));
+        public EditGroupCommand Command(IReadOnlyDictionary<Guid, PlayerColor?>? colors = null) => new(Group.Id, "Neu", true, [Second.Id, First.Id], new(ArkNovaGame.Key, colors ?? Colors()));
         public Dictionary<Guid, PlayerColor?> Colors() => new()
         {
             [First.Id] = PlayerColor.Blue,
@@ -220,7 +219,6 @@ public sealed class GroupColorPersistenceTests
             var result = await UseCase.GetAsync(Group.Id, ArkNovaGame.Key, TestContext.Current.CancellationToken);
             Assert.NotNull(result);
             Assert.Equal("Alt", result.Name);
-            Assert.True(result.IsTemporary);
             Assert.False(result.IsArchived);
             Assert.Equal(First.Id, result.Players[0].PlayerId);
             Assert.Equal(PlayerColor.Blue, result.Players.Single(player => player.PlayerId == First.Id).DefaultColor);

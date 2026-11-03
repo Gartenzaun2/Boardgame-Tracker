@@ -21,9 +21,6 @@ internal sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(x => x.IsTemporary)
-            .IsRequired();
-
         builder.Property(x => x.IsArchived)
             .IsRequired();
 

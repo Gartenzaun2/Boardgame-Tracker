@@ -22,7 +22,6 @@ public sealed class CreateGroupUseCaseTests
 
         Guid groupId = await useCase.CreateGroupAsync(new CreateGroupCommand(
             "Freitagabend",
-            false,
             [
                 new CreateGroupPlayerInput(existingPlayerId, "Anna", false),
                 new CreateGroupPlayerInput(null, "Gast", true)
@@ -50,7 +49,6 @@ public sealed class CreateGroupUseCaseTests
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.CreateGroupAsync(new CreateGroupCommand(
                 "Freitagabend",
-                false,
                 [new CreateGroupPlayerInput(playerId, "Anna", false)]), Token));
     }
 }

@@ -42,7 +42,7 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         Guid[] groupIds = gameSessions.Select(gameSession => gameSession.GroupId).Distinct().ToArray();
         Guid[] gameIds = gameSessions.Select(gameSession => gameSession.GameId).Distinct().ToArray();
         var groups = await db.Groups.AsNoTracking().Where(group => groupIds.Contains(group.Id))
-            .Select(group => new { group.Id, group.Name, group.IsTemporary, group.IsArchived }).ToArrayAsync(cancellationToken);
+            .Select(group => new { group.Id, group.Name, group.IsArchived }).ToArrayAsync(cancellationToken);
         var groupPlayers = await db.GroupPlayers.AsNoTracking().Where(player => groupIds.Contains(player.GroupId))
             .Select(player => new { player.GroupId, player.PlayerId, player.DefaultOrder }).ToArrayAsync(cancellationToken);
         Guid[] playerIds = groupPlayers.Select(player => player.PlayerId).Distinct().ToArray();
@@ -66,7 +66,7 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         }
         await transaction.CommitAsync(cancellationToken);
         return new(1, appVersion, DateTimeOffset.UtcNow, games.ToArray(), players,
-            groups.Select(group => new BgtGroup(group.Id, group.Name, group.IsTemporary, group.IsArchived,
+            groups.Select(group => new BgtGroup(group.Id, group.Name, false, group.IsArchived,
                 groupPlayers.Where(player => player.GroupId == group.Id).Select(player => new BgtGroupPlayer(player.PlayerId, player.DefaultOrder)).ToArray())).ToArray(), output.ToArray());
     }
     public async Task<TransferPreview> PreviewAsync(ImportPlan plan, CancellationToken cancellationToken = default)
@@ -108,15 +108,21 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         }
         foreach (PlannedGroup planned in plan.Groups.Where(group => group.IsNew))
         {
-            Group group = new(planned.Name, planned.Imported.IsTemporary,
+            Group group = new(planned.Name,
                 planned.Imported.GroupPlayers.OrderBy(player => player.DefaultOrder).Select(player => playerMap[player.PlayerId]).ToArray(), planned.LocalId);
             group.SetArchived(planned.Imported.IsArchived);
             db.Groups.Add(group);
         }
+        HashSet<Guid> newGroupIds = plan.Groups.Where(group => group.IsNew).Select(group => group.Imported.Id).ToHashSet();
         Guid[] neededGames = plan.GameSessions.Select(gameSession => gameSession.GameId).Distinct().ToArray();
         foreach (BgtGame game in plan.Source.Games.Where(game => neededGames.Contains(game.Id)))
         {
             Guid localId = await db.Games.Where(candidate => candidate.Key == game.Key).Select(candidate => candidate.Id).SingleAsync(cancellationToken);
+            // Only newly created groups acquire assignments, from sessions surviving pruning.
+            foreach (Guid groupId in plan.GameSessions.Where(session => session.GameId == game.Id && newGroupIds.Contains(session.GroupId))
+                .Select(session => groupMap[session.GroupId]).Distinct())
+                db.GroupGames.Add(new GroupGame(groupId, localId));
+
             foreach (BgtGameSession input in plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id))
             {
                 GameSession gameSession = new(localId, groupMap[input.GroupId], input.StartedAt,

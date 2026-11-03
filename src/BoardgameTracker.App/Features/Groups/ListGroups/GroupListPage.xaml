@@ -46,10 +46,6 @@
 
                 <HorizontalStackLayout Spacing="20">
                     <HorizontalStackLayout Spacing="6">
-                        <Switch IsToggled="{Binding IncludeTemporary}" />
-                        <Label Text="{x:Static res:AppResources.Temporary}" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="6">
                         <Switch IsToggled="{Binding IncludeArchived}" />
                         <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
                     </HorizontalStackLayout>
@@ -103,7 +99,6 @@
                                     </HorizontalStackLayout>
                                     <HorizontalStackLayout Spacing="8">
                                         <Label Text="{Binding PlayerNames}" />
-                                        <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsTemporary}" Text="{x:Static res:AppResources.Temporary}" TextColor="{DynamicResource TextSecondary}" />
                                         <Label FontAttributes="Italic" FontSize="12" IsVisible="{Binding IsArchived}" Text="{x:Static res:AppResources.Archived}" TextColor="{DynamicResource TextSecondary}" />
                                     </HorizontalStackLayout>
                                     <Label

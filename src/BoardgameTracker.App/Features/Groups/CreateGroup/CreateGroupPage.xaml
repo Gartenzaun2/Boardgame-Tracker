@@ -75,12 +75,6 @@
                                 Placeholder="{x:Static res:AppResources.GroupNameExample}"
                                 Text="{Binding GroupName}" />
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                            <Label
-                                Text="{x:Static res:AppResources.TemporaryGroup}"
-                                VerticalOptions="Center" />
-                            <Switch Grid.Column="1" IsToggled="{Binding IsTemporary}" />
-                        </Grid>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="10">

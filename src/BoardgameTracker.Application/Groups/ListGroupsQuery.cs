@@ -14,7 +14,6 @@ public sealed class ListGroupsQuery(
 {
     public async Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
-        bool includeTemporary = false,
         bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
@@ -25,9 +24,8 @@ public sealed class ListGroupsQuery(
 
         var groups = await dbContext.Groups
             .AsNoTracking()
-            .Where(group => includeTemporary || !group.IsTemporary)
             .Where(group => includeArchived || !group.IsArchived)
-            .Select(group => new { group.Id, group.Name, group.IsTemporary, group.IsArchived })
+            .Select(group => new { group.Id, group.Name, group.IsArchived })
             .ToListAsync(cancellationToken);
 
         Guid[] groupIds = [.. groups.Select(group => group.Id)];
@@ -110,7 +108,6 @@ public sealed class ListGroupsQuery(
                     return new GroupListItem(
                         group.Id,
                         group.Name,
-                        group.IsTemporary,
                         group.IsArchived,
                         playerNames.Length,
                         playerNames,
@@ -142,7 +139,6 @@ public sealed class ListGroupsQuery(
 public sealed record GroupListItem(
     Guid Id,
     string Name,
-    bool IsTemporary,
     bool IsArchived,
     int PlayerCount,
     IReadOnlyList<string> PlayerNames,

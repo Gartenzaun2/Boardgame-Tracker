@@ -43,13 +43,6 @@
                             <Label FontAttributes="Bold" Text="{x:Static res:AppResources.GroupName}" VerticalOptions="Center" />
                             <Entry Style="{StaticResource InlineFormEntry}" Grid.Column="1" Placeholder="{x:Static res:AppResources.GroupNameExample}" Text="{Binding GroupName}" />
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" IsVisible="{Binding IsTemporary}">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Text="{x:Static res:AppResources.TemporaryGroup}" VerticalOptions="Center" />
-                                <Label FontSize="12" Text="{x:Static res:AppResources.MakePermanent}" TextColor="{DynamicResource TextPrimary}" />
-                            </VerticalStackLayout>
-                            <Switch Grid.Column="1" IsToggled="{Binding MakePermanent}" />
-                        </Grid>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />

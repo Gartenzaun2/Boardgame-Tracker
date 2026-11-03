@@ -32,8 +32,8 @@ public sealed class StartArkNovaOpenSessionTests
         await using var context = new BoardgameTrackerDbContext(options);
         await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
         Player player = new("Anna");
-        Group group = new("Target", false, [player.Id]);
-        Group otherGroup = new("Other", false, [player.Id]);
+        Group group = new("Target", [player.Id]);
+        Group otherGroup = new("Other", [player.Id]);
         Game game = new(ArkNovaGame.Key);
         Game otherGame = new("other-game");
         context.AddRange(player, group, otherGroup, game, otherGame);

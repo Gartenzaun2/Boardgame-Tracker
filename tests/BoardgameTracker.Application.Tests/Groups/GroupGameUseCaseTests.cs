@@ -123,7 +123,7 @@ public sealed class GroupGameUseCaseTests
     [InlineData(GameSessionStatus.Completed)]
     public async Task Archive_ChecksOtherGamesAtSaveAndKeepsChangesAtomic(GameSessionStatus status)
     {
-        await using SliceDatabase database = await SliceDatabase.CreateAsync(temporary: true);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
         EditGroupUseCase useCase = new(database, new([]), []);
         // Simulate an editor loaded before a session was started in another game.
         EditGroupDetails details = (await useCase.GetAsync(database.Group.Id, cancellationToken: Token))!;
@@ -135,7 +135,7 @@ public sealed class GroupGameUseCaseTests
             await seed.SaveChangesAsync(Token);
         }
         await AddSessionAsync(database, other.Id, status);
-        EditGroupCommand command = new(details.Id, "Changed", true, true, [database.Second.Id, database.First.Id]);
+        EditGroupCommand command = new(details.Id, "Changed", true, [database.Second.Id, database.First.Id]);
         if (status == GameSessionStatus.Completed)
             await useCase.UpdateGroupAsync(command, Token);
         else
@@ -146,7 +146,6 @@ public sealed class GroupGameUseCaseTests
         bool allowed = status == GameSessionStatus.Completed;
         Assert.Equal(allowed ? "Changed" : details.Name, group.Name);
         Assert.Equal(allowed, group.IsArchived);
-        Assert.Equal(!allowed, group.IsTemporary);
         Assert.Equal(allowed ? 2 : 1, group.Players.Single(player => player.PlayerId == database.First.Id).DefaultOrder);
         Assert.Equal(allowed ? 1 : 2, group.Players.Single(player => player.PlayerId == database.Second.Id).DefaultOrder);
     }

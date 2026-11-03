@@ -127,9 +127,6 @@ public static class AppResources
     public static string GroupNamePlaceholder =>
         GetString(nameof(GroupNamePlaceholder));
 
-    public static string TemporaryGroup =>
-        GetString(nameof(TemporaryGroup));
-
     public static string NewPlayer =>
         GetString(nameof(NewPlayer));
 
@@ -218,14 +215,8 @@ public static class AppResources
     public static string TechnicalDetails =>
         GetString(nameof(TechnicalDetails));
 
-    public static string Temporary =>
-        GetString(nameof(Temporary));
-
     public static string Archived =>
         GetString(nameof(Archived));
-
-    public static string MakePermanent =>
-        GetString(nameof(MakePermanent));
 
     public static string ArchiveHint =>
         GetString(nameof(ArchiveHint));

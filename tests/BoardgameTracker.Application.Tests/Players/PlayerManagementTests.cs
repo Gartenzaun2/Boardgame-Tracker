@@ -179,7 +179,7 @@ public sealed class PlayerManagementTests
             database.Players[3].SetArchived(true);
             database.Players[4].SetArchived(true);
             Game game = new("test-game");
-            Group group = new("Group", false, database.Players.Select(player => player.Id).ToArray());
+            Group group = new("Group", database.Players.Select(player => player.Id).ToArray());
             db.AddRange(database.Players);
             db.AddRange(game, group);
             foreach (GameSessionStatus status in new[] { GameSessionStatus.Completed, GameSessionStatus.Running, GameSessionStatus.Scoring })

@@ -9,6 +9,7 @@ public sealed record BgtFile(int FormatVersion, string AppVersion, DateTimeOffse
     BgtGame[] Games, BgtPlayer[] Players, BgtGroup[] Groups, BgtGameSession[] GameSessions);
 public sealed record BgtGame(Guid Id, string Key, int SchemaVersion, JsonElement Data);
 public sealed record BgtPlayer(Guid Id, string Name, bool IsGuest, bool IsArchived, DateTimeOffset CreatedAt);
+// IsTemporary remains required only for format-v1 wire compatibility; imports ignore it.
 public sealed record BgtGroup(Guid Id, string Name, bool IsTemporary, bool IsArchived, BgtGroupPlayer[] GroupPlayers);
 public sealed record BgtGroupPlayer(Guid PlayerId, int DefaultOrder);
 public sealed record BgtGameSession(Guid Id, Guid GameId, Guid GroupId, DateTimeOffset StartedAt,

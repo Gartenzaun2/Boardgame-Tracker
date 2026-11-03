@@ -15,7 +15,6 @@ public sealed class Group
 
     public Group(
         string name,
-        bool isTemporary,
         IReadOnlyList<Guid> playerIds, Guid? id = null)
     {
         ArgumentNullException.ThrowIfNull(playerIds);
@@ -23,15 +22,12 @@ public sealed class Group
         Id = id ?? Guid.CreateVersion7();
         ArgumentOutOfRangeException.ThrowIfEqual(Id, Guid.Empty);
         SetName(name);
-        IsTemporary = isTemporary;
         SetInitialPlayers(playerIds);
     }
 
     public Guid Id { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
-
-    public bool IsTemporary { get; private set; }
 
     public bool IsArchived { get; private set; }
 
@@ -42,8 +38,6 @@ public sealed class Group
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         Name = EntityName.Normalize(name);
     }
-
-    public void MakePermanent() => IsTemporary = false;
 
     public void SetArchived(bool isArchived) => IsArchived = isArchived;
 

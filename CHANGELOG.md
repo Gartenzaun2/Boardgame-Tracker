@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.12.0.0
+
+- Temporäre Gruppen aus Domain, Persistenz, Application-Verträgen und bestehenden Gruppenformularen entfernt. Alle Gruppen sind dauerhaft gespeichert und optional archiviert.
+- History-Transfer bleibt bei Format v1: Das erforderliche Legacy-Feld isTemporary wird beim Import ignoriert und beim Export stets als false geschrieben. Arche Nova bleibt bei Spielschema 2; Schema 1 bleibt abgelehnt.
+- Neu importierte Gruppen erhalten deduplizierte Spielzuordnungen nur aus tatsächlich neu importierten Partien; vorhandene Gruppen behalten ihre Zuordnungen. Alle Importdaten werden atomar gespeichert.
+- Das entfernte SQLite-Feld erfordert bei bestehenden Entwicklungsdatenbanken einen ausdrücklich freigegebenen Neuaufbau mit möglichem lokalen Datenverlust; vorhandene Datenbanken werden nicht automatisch aktualisiert.
+
 ## 0.11.3.1
 
 - Allgemeine aktuelle Gruppe-Spiel-Zuordnungen mit eigenem zusammengesetztem Schlüssel und idempotentem Hinzufügen ergänzt; historische Partien bleiben unabhängig davon erhalten.

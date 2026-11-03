@@ -5,12 +5,29 @@ namespace BoardgameTracker.Core.Tests.Groups;
 public sealed class GroupTests
 {
     [Fact]
+    public void Group_RetainsIdentityAndMembershipWhenRenamedAndArchived()
+    {
+        Guid playerId = Guid.NewGuid();
+        Group group = new("Original", [playerId]);
+        Guid id = group.Id;
+        Assert.False(group.IsArchived);
+
+        group.SetName(" Renamed ");
+        group.SetArchived(true);
+
+        Assert.Equal(id, group.Id);
+        Assert.Equal("Renamed", group.Name);
+        Assert.True(group.IsArchived);
+        Assert.Equal(playerId, Assert.Single(group.Players).PlayerId);
+    }
+
+    [Fact]
     public void Constructor_CreatesPlayersInGivenOrder()
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
 
-        Group group = new("Freitagabend", false, [first, second]);
+        Group group = new("Freitagabend", [first, second]);
 
         Assert.Collection(
             group.Players.OrderBy(player => player.DefaultOrder),
@@ -32,7 +49,7 @@ public sealed class GroupTests
         Guid playerId = Guid.NewGuid();
 
         Assert.Throws<ArgumentException>(() =>
-            new Group("Freitagabend", false, [playerId, playerId]));
+            new Group("Freitagabend", [playerId, playerId]));
     }
 
     [Fact]
@@ -40,7 +57,7 @@ public sealed class GroupTests
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
-        Group group = new("Freitagabend", false, [first, second]);
+        Group group = new("Freitagabend", [first, second]);
 
         group.SetDefaultOrder([second, first]);
 
@@ -52,7 +69,7 @@ public sealed class GroupTests
     public void Constructor_RejectsEmptyPlayership()
     {
         Assert.Throws<ArgumentException>(() =>
-            new Group("Freitagabend", false, []));
+            new Group("Freitagabend", []));
     }
 
     [Fact]
@@ -60,7 +77,7 @@ public sealed class GroupTests
     {
         Guid first = Guid.NewGuid();
         Guid second = Guid.NewGuid();
-        Group group = new("Freitagabend", false, [first, second]);
+        Group group = new("Freitagabend", [first, second]);
 
         Assert.Throws<ArgumentException>(() =>
             group.SetDefaultOrder([first, Guid.NewGuid()]));

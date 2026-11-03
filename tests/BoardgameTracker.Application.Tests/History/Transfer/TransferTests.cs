@@ -128,7 +128,7 @@ public sealed class TransferTests
         await using Database db = await Database.CreateAsync();
         await using BoardgameTrackerDbContext context = db.CreateDbContext();
         Player player = new("Änna");
-        Group group = new("Group", false, [player.Id]);
+        Group group = new("Group", [player.Id]);
         Assert.Equal(7, player.Id.Version);
         Assert.Equal(7, group.Id.Version);
         Assert.Equal(7, new GameSession(GameId, group.Id, DateTimeOffset.UtcNow, [player.Id]).Id.Version);
@@ -137,7 +137,7 @@ public sealed class TransferTests
         context.Players.Add(new(" änNA "));
         await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync(Token));
         context.ChangeTracker.Clear();
-        context.Groups.Add(new(" group ", false, [player.Id]));
+        context.Groups.Add(new(" group ", [player.Id]));
         await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync(Token));
     }
     [Fact]
@@ -150,6 +150,8 @@ public sealed class TransferTests
         Assert.Single(exported.GameSessions);
         Assert.Equal(2, exported.Players.Length);
         Assert.Single(exported.Groups);
+        Assert.All(exported.Groups, group => Assert.False(group.IsTemporary));
+        Assert.Equal(1, exported.FormatVersion);
         await using Database target = await Database.CreateAsync();
         HistoryTransferUseCase useCase = new(target.Store, Format);
         using MemoryStream stream = new(JsonSerializer.SerializeToUtf8Bytes(exported, BgtFormat.JsonOptions));
@@ -181,6 +183,7 @@ public sealed class TransferTests
         Assert.Empty(await verify.Players.ToArrayAsync(Token));
         Assert.Empty(await verify.Groups.ToArrayAsync(Token));
         Assert.Empty(await verify.GameSessions.ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
     }
     [Fact]
     public async Task ExportUsesExactlySelected23CompletedGameSessionsAndDependencies()
@@ -404,7 +407,7 @@ public sealed class TransferTests
             Player first = new("Anna" + suffix);
             Player second = new("Guest" + suffix, true);
             second.SetArchived(true);
-            Group group = new("Group" + suffix, false, [first.Id, second.Id]);
+            Group group = new("Group" + suffix, [first.Id, second.Id]);
             Guid game = await db.Games.Select(game => game.Id).SingleAsync(Token);
             DateTimeOffset start = DateTimeOffset.UtcNow.AddHours(-2);
             GameSession gameSession = new(game, group.Id, start, [first.Id, second.Id]);

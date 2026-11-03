@@ -113,7 +113,7 @@ public sealed class HistoryTests
             await using var db = f.CreateDbContext();
             await db.Database.EnsureCreatedAsync(cancellationToken);
             db.AddRange(ArkNovaSpecialCardDefaults.Create());
-            f.Group = new("Group", false, [f.A.Id, f.B.Id]);
+            f.Group = new("Group", [f.A.Id, f.B.Id]);
             db.AddRange(f.A, f.B, f.Group, f.game, new ArkNovaZooPlan(1), new ArkNovaZooPlan(2), new ArkNovaZooPlan(3), new ArkNovaZooPlan(4));
             await db.SaveChangesAsync(cancellationToken);
             f.Completed = await f.AddAsync(GameSessionStatus.Completed, 1, cancellationToken);

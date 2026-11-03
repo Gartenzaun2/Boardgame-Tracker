@@ -275,7 +275,7 @@ public sealed class TieResolutionTests
             await new DatabaseInitializer(database, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
             await using BoardgameTrackerDbContext context = database.CreateDbContext();
             Guid gameId = await context.Games.Select(game => game.Id).SingleAsync(Token);
-            Group group = new("Group", false, database.Players.Select(player => player.Id).ToArray());
+            Group group = new("Group", database.Players.Select(player => player.Id).ToArray());
             database.Session = new(gameId, group.Id, DateTimeOffset.UtcNow.AddHours(-2), database.Players.Select(player => player.Id).ToArray());
             if (!running)
                 database.Session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));

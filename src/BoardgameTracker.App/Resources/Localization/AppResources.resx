@@ -141,9 +141,6 @@
   <data name="GroupNamePlaceholder" xml:space="preserve">
     <value>z. B. Freitagabend</value>
   </data>
-  <data name="TemporaryGroup" xml:space="preserve">
-    <value>Temporäre Gruppe</value>
-  </data>
   <data name="NewPlayer" xml:space="preserve">
     <value>Neue Spieler</value>
   </data>
@@ -231,14 +228,8 @@
   <data name="TechnicalDetails" xml:space="preserve">
     <value>Technische Details</value>
   </data>
-  <data name="Temporary" xml:space="preserve">
-    <value>Temporär</value>
-  </data>
   <data name="Archived" xml:space="preserve">
     <value>Archiviert</value>
-  </data>
-  <data name="MakePermanent" xml:space="preserve">
-    <value>Als permanente Gruppe übernehmen</value>
   </data>
   <data name="ArchiveHint" xml:space="preserve">
     <value>Archivierte Gruppen werden in der normalen Übersicht ausgeblendet.</value>

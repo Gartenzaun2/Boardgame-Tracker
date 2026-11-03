@@ -35,11 +35,6 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
 
         group.SetName(command.Name);
 
-        if (command.MakePermanent)
-        {
-            group.MakePermanent();
-        }
-
         group.SetArchived(command.IsArchived);
         group.SetDefaultOrder(command.OrderedPlayerIds);
 
@@ -80,7 +75,6 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
             {
                 candidate.Id,
                 candidate.Name,
-                candidate.IsTemporary,
                 candidate.IsArchived
             })
             .SingleOrDefaultAsync(cancellationToken);
@@ -112,7 +106,6 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         return new EditGroupDetails(
             group.Id,
             group.Name,
-            group.IsTemporary,
             group.IsArchived,
             players);
     }
@@ -125,7 +118,6 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
             .ExecuteUpdateAsync(
                 setters => setters
                     .SetProperty(candidate => candidate.Name, group.Name)
-                    .SetProperty(candidate => candidate.IsTemporary, group.IsTemporary)
                     .SetProperty(candidate => candidate.IsArchived, group.IsArchived),
                 cancellationToken);
 
@@ -173,7 +165,6 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
 public sealed record EditGroupCommand(
     Guid GroupId,
     string Name,
-    bool MakePermanent,
     bool IsArchived,
     IReadOnlyList<Guid> OrderedPlayerIds,
     GroupColorDefaults? ColorDefaults = null);
@@ -184,7 +175,6 @@ public sealed record EditGroupCommand(
 public sealed record EditGroupDetails(
     Guid Id,
     string Name,
-    bool IsTemporary,
     bool IsArchived,
     IReadOnlyList<EditGroupPlayer> Players);
 

@@ -335,7 +335,7 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
         await new DatabaseInitializer(f, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
         await using BoardgameTrackerDbContext db = f.CreateDbContext();
         f._gameId = await db.Games.Select(g => g.Id).SingleAsync(Token);
-        f.Group = new("Freitag", false, [f.A.Id, f.B.Id]);
+        f.Group = new("Freitag", [f.A.Id, f.B.Id]);
         db.AddRange(f.A, f.B, f.Group);
         await db.SaveChangesAsync(Token);
         return f;

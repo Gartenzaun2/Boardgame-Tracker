@@ -31,9 +31,6 @@ public partial class GroupListViewModel(
     public partial string SelectedGameKey { get; private set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool IncludeTemporary { get; set; }
-
-    [ObservableProperty]
     public partial bool IncludeArchived { get; set; }
 
     [ObservableProperty]
@@ -48,7 +45,6 @@ public partial class GroupListViewModel(
 
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
-    partial void OnIncludeTemporaryChanged(bool value) => _ = LoadAsync();
     partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
 
     public bool TryBeginNavigation()
@@ -102,7 +98,6 @@ public partial class GroupListViewModel(
                 IReadOnlyList<GroupListItem> groups =
                     await listGroupsQuery.ListGroupsAsync(
                         gameKey,
-                        IncludeTemporary,
                         IncludeArchived,
                         cancellationToken);
 
@@ -120,7 +115,6 @@ public partial class GroupListViewModel(
                     Groups.Add(new GroupListItemViewModel(
                         group.Id,
                         group.Name,
-                        group.IsTemporary,
                         group.IsArchived,
                         group.PlayerCount,
                         string.Join(" · ", group.PlayerNames),
@@ -151,7 +145,6 @@ public partial class GroupListViewModel(
 public sealed record GroupListItemViewModel(
     Guid Id,
     string Name,
-    bool IsTemporary,
     bool IsArchived,
     int PlayerCount,
     string PlayerNames,

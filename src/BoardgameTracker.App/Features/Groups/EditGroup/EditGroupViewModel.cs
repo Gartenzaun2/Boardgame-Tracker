@@ -29,12 +29,6 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
     public partial string GroupName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool IsTemporary { get; private set; }
-
-    [ObservableProperty]
-    public partial bool MakePermanent { get; set; }
-
-    [ObservableProperty]
     public partial bool IsArchived { get; set; }
 
     [ObservableProperty]
@@ -75,8 +69,6 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
 
             GroupId = details.Id;
             GroupName = details.Name;
-            IsTemporary = details.IsTemporary;
-            MakePermanent = false;
             IsArchived = details.IsArchived;
 
             Players.Clear();
@@ -166,7 +158,6 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             await editGroup.UpdateGroupAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
-                MakePermanent,
                 IsArchived,
                 orderedPlayerIds,
                 ColorSelection.GameKey is null ? null : new GroupColorDefaults(ColorSelection.GameKey, defaultColors)));

@@ -71,7 +71,7 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
             playerIds.Add(newPlayer.Id);
         }
 
-        Group group = new(command.Name, command.IsTemporary, playerIds);
+        Group group = new(command.Name, playerIds);
 
         GroupColorDefaults? colors = command.GameKey is null ? null : new(command.GameKey,
             playerIds.Select((id, index) => (id, command.Players[index].DefaultColor)).ToDictionary(p => p.id, p => p.DefaultColor));
@@ -145,7 +145,6 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
 /// </summary>
 public sealed record CreateGroupCommand(
     string Name,
-    bool IsTemporary,
     IReadOnlyList<CreateGroupPlayerInput> Players,
     string? GameKey = null);
 

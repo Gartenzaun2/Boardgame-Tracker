@@ -242,7 +242,7 @@ public sealed class NumberWheelTests
                 .UseTestSqlite(database._connection).Options);
             await db.Database.EnsureCreatedAsync(token);
             BoardgameTracker.Core.Players.Player player = new("Anna");
-            BoardgameTracker.Core.Groups.Group group = new("Group", false, [player.Id]);
+            BoardgameTracker.Core.Groups.Group group = new("Group", [player.Id]);
             BoardgameTracker.Core.Games.Game game = new(ArkNovaGame.Key);
             GameSession session = new(game.Id, group.Id, DateTimeOffset.UtcNow.AddHours(-2), [player.Id]);
             session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));

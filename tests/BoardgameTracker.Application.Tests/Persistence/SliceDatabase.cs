@@ -36,14 +36,14 @@ internal sealed class SliceDatabase : IDbContextFactory<BoardgameTrackerDbContex
     public BoardgameTrackerDbContext CreateDbContext() =>
         new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
 
-    public static async Task<SliceDatabase> CreateAsync(bool temporary = false, bool archived = false)
+    public static async Task<SliceDatabase> CreateAsync(bool archived = false)
     {
         SliceDatabase database = new();
         await database._connection.OpenAsync(Token);
         await new DatabaseInitializer(database, [new ArkNovaReferenceDataSeeder()]).InitializeAsync(Token);
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         database.GameId = await db.Games.Where(game => game.Key == ArkNovaGame.Key).Select(game => game.Id).SingleAsync(Token);
-        database.Group = new("Freitag", temporary, [database.First.Id, database.Second.Id]);
+        database.Group = new("Freitag", [database.First.Id, database.Second.Id]);
         database.Group.SetArchived(archived);
         db.AddRange(database.First, database.Second, database.Group);
         await db.SaveChangesAsync(Token);

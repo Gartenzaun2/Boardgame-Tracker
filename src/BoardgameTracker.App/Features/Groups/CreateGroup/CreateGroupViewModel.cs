@@ -24,9 +24,6 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupC
     public partial string GroupName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool IsTemporary { get; set; }
-
-    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
     public partial SelectablePlayer? SelectedExistingPlayer { get; set; }
 
@@ -216,7 +213,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupC
             ErrorMessage = null;
 
             await createGroup.CreateGroupAsync(
-                new CreateGroupCommand(GroupName, IsTemporary, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest, player.DefaultColor))], ColorSelection.GameKey));
+                new CreateGroupCommand(GroupName, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest, player.DefaultColor))], ColorSelection.GameKey));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }
