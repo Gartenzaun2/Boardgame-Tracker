@@ -53,4 +53,14 @@ public sealed class ArkNovaGameSessionSetupTests
             new(Guid.NewGuid(), (PlayerColor)999, 1, 2, 1)
         ]));
     }
+
+    [Theory]
+    [InlineData(PlayerColor.Green)]
+    [InlineData(PlayerColor.White)]
+    [InlineData(PlayerColor.Orange)]
+    public void Validate_WithGeneralColorOutsideArkNovaPalette_Throws(PlayerColor color)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
+            [new(Guid.NewGuid(), color, 1, 2, 1)]));
+    }
 }

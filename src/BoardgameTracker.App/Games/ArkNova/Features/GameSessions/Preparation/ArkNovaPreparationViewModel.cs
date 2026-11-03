@@ -52,7 +52,8 @@ public partial class ArkNovaPreparationViewModel(
     public bool CanStart =>
         !IsBusy
         && Players.Count is >= ArkNovaGameSessionSetup.MinimumPlayerCount and <= ArkNovaGameSessionSetup.MaximumPlayerCount
-        && Players.All(player => player.SelectedZooPlanNumber is not null)
+        && Players.All(player => player.SelectedZooPlanNumber is not null
+            && ArkNovaPlayerColors.Rules.Allows(player.Color))
         && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
 
     public async Task LoadAsync(
@@ -110,29 +111,6 @@ public partial class ArkNovaPreparationViewModel(
             }
 
             UpdatePositions();
-            if (data.LastGameSession is not null)
-            {
-                Guid? startingPlayerId =
-                    ArkNovaStartingPlayerRule.SelectFromPreviousPlacements(data.LastGameSession.Placements);
-
-                if (startingPlayerId is Guid playerId)
-                {
-                    int startIndex = Players
-                        .Select((player, index) => new { player.PlayerId, Index = index })
-                        .Where(item => item.PlayerId == playerId)
-                        .Select(item => item.Index)
-                        .DefaultIfEmpty(-1)
-                        .First();
-
-                    if (startIndex > 0)
-                    {
-                        IReadOnlyList<ArkNovaPreparationPlayerViewModel> currentOrder = [.. Players];
-                        IReadOnlyList<ArkNovaPreparationPlayerViewModel> rotated =
-                            StartingPlayerRotation.RotateToStart(currentOrder, startIndex);
-                        ReplacePlayers(rotated);
-                    }
-                }
-            }
         }
         catch (Exception exception)
         {
@@ -298,22 +276,22 @@ public partial class ArkNovaPreparationViewModel(
     private static PlayerColor[] AssignColors(
         IReadOnlyList<ArkNovaPreparationPlayer> players)
     {
-        PlayerColor[] result = new PlayerColor[players.Count];
+        PlayerColor?[] assigned = new PlayerColor?[players.Count];
         HashSet<PlayerColor> used = [];
 
+        // Reserve valid defaults before filling gaps, including defaults later in the order.
         for (int index = 0; index < players.Count; index++)
         {
-            PlayerColor? defaultColor = players[index].DefaultColor;
+            if (players[index].DefaultColor is PlayerColor color
+                && ArkNovaPlayerColors.Rules.Allows(color) && used.Add(color))
+                assigned[index] = color;
+        }
 
-            if (defaultColor is not null && used.Add(defaultColor.Value))
-            {
-                result[index] = defaultColor.Value;
-                continue;
-            }
-
-            PlayerColor fallback = AllColors.First(color => !used.Contains(color));
-            used.Add(fallback);
-            result[index] = fallback;
+        PlayerColor[] result = new PlayerColor[players.Count];
+        for (int index = 0; index < players.Count; index++)
+        {
+            result[index] = assigned[index] ?? AllColors.First(color => !used.Contains(color));
+            used.Add(result[index]);
         }
 
         return result;

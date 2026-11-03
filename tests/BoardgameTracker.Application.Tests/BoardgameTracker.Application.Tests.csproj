@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Preparation/ArkNovaPreparationViewModel.cs;../../src/BoardgameTracker.App/Games/ArkNova/ArkNovaZooPlanPresentation.cs;../../src/BoardgameTracker.App/Presentation/PlayerColors/PlayerColorPresentation.cs" Link="Presentation/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Scoring/ArkNovaScoringPage.Query.cs" Link="Presentation/ArkNovaScoringPage.Query.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaResultPage.Query.cs" Link="Presentation/ArkNovaResultPage.Query.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Running/ArkNovaRunningPage.Query.cs" Link="Presentation/ArkNovaRunningPage.Query.cs" />

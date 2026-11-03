@@ -3,6 +3,7 @@ using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Players;
+using BoardgameTracker.Core.Games.ArkNova.Groups;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Persistence;
 
@@ -21,6 +22,8 @@ public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTr
 
         await using BoardgameTrackerDbContext dbContext =
             await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         StartArkNovaGameSessionContext? context = await LoadContextAsync(
             dbContext,
@@ -90,13 +93,56 @@ public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTr
                 player.SelectedZooPlanNumber.GetValueOrDefault()))
         ];
 
-        // One SaveChanges inserts the aggregate and game-specific snapshots atomically.
+        // Temporary ranges free both unique indexes before applying swaps. These direct
+        // writes and all snapshots share one transaction; no temporary value can escape it.
+        await SaveDefaultsAsync(dbContext, command, cancellationToken);
 
         await dbContext.GameSessions.AddAsync(gameSession, cancellationToken);
         await dbContext.ArkNovaGameSessionPlayers.AddRangeAsync(arkNovaPlayers, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return gameSession.Id;
+    }
+
+    private static async Task SaveDefaultsAsync(
+        BoardgameTrackerDbContext dbContext,
+        StartArkNovaGameSessionCommand command,
+        CancellationToken cancellationToken)
+    {
+        await dbContext.GroupPlayers.Where(player => player.GroupId == command.GroupId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(
+                player => player.DefaultOrder, player => player.DefaultOrder + 1000), cancellationToken);
+
+        Guid[] existingColorPlayerIds = await dbContext.ArkNovaGroupPlayers.AsNoTracking()
+            .Where(player => player.GroupId == command.GroupId)
+            .Select(player => player.PlayerId).ToArrayAsync(cancellationToken);
+        // Color has no nullable representation. Reserve temporary database-only values
+        // to support even a full four-color permutation without deleting default records.
+        await dbContext.ArkNovaGroupPlayers.Where(player => player.GroupId == command.GroupId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(
+                player => player.DefaultColor,
+                player => (PlayerColor)((int)player.DefaultColor + 1000)), cancellationToken);
+
+        for (int index = 0; index < command.Players.Count; index++)
+        {
+            ArkNovaGameSessionSetupPlayer player = command.Players[index];
+            int order = index + 1;
+            await dbContext.GroupPlayers
+                .Where(candidate => candidate.GroupId == command.GroupId && candidate.PlayerId == player.PlayerId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(candidate => candidate.DefaultOrder, order), cancellationToken);
+
+            if (existingColorPlayerIds.Contains(player.PlayerId))
+            {
+                await dbContext.ArkNovaGroupPlayers
+                    .Where(candidate => candidate.GroupId == command.GroupId && candidate.PlayerId == player.PlayerId)
+                    .ExecuteUpdateAsync(setters => setters.SetProperty(candidate => candidate.DefaultColor, player.Color), cancellationToken);
+            }
+            else
+            {
+                dbContext.ArkNovaGroupPlayers.Add(new ArkNovaGroupPlayer(command.GroupId, player.PlayerId, player.Color));
+            }
+        }
     }
 
     private static async Task<StartArkNovaGameSessionContext?> LoadContextAsync(
