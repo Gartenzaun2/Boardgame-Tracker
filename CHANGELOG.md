@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.11.3.1
+
+- Allgemeine aktuelle Gruppe-Spiel-Zuordnungen mit eigenem zusammengesetztem Schlüssel und idempotentem Hinzufügen ergänzt; historische Partien bleiben unabhängig davon erhalten.
+- Offene Partien/Wertungen verhindern das Entfernen ihrer Zuordnung und die Archivierung ihrer Gruppe. Gruppenänderungen bleiben atomar.
+- Das neue Schema benötigt für bestehende Entwicklungsdatenbanken einen bewusst freigegebenen Neuaufbau; `EnsureCreated` aktualisiert vorhandene Schemas nicht. Dabei können lokale Daten verloren gehen.
+
 ## 0.11.3.0
 
 - .NET SDK 10.0.403 und Workload-Set 10.0.401 reproduzierbar gepinnt; MAUI 10.0.110 enthält den iOS-Kamera-Fix ohne zusätzliche Foto-Mediathek-Berechtigung. ApplicationVersion 85.

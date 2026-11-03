@@ -17,6 +17,7 @@ public sealed partial class BoardgameTrackerDbContext : DbContext
     public DbSet<Player> Players => Set<Player>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupPlayer> GroupPlayers => Set<GroupPlayer>();
+    public DbSet<GroupGame> GroupGames => Set<GroupGame>();
     public DbSet<Game> Games => Set<Game>();
     public DbSet<GameSession> GameSessions => Set<GameSession>();
     public DbSet<GameSessionPlayer> GameSessionPlayers => Set<GameSessionPlayer>();

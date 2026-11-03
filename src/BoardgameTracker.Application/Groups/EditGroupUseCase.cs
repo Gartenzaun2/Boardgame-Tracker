@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Groups.Colors;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Core.Players;
@@ -45,6 +46,10 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         // Reordering and module-owned colors must roll back together.
         await using var transaction =
             await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        if (command.IsArchived && await dbContext.GameSessions.AnyAsync(session => session.GroupId == group.Id
+            && (session.Status == GameSessionStatus.Running || session.Status == GameSessionStatus.Scoring), cancellationToken))
+            throw new InvalidOperationException("A group with an open game session cannot be archived.");
 
         await SaveGroupChangesAsync(dbContext, group, cancellationToken);
         if (command.ColorDefaults is not null)

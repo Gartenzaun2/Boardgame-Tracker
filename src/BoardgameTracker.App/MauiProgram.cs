@@ -82,6 +82,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<GamePlayerColorCatalog>();
         builder.Services.AddTransient<GroupColorSelectionViewModel>();
         builder.Services.AddTransient<EditGroupUseCase>();
+        builder.Services.AddTransient<AddGroupGameUseCase>();
+        builder.Services.AddTransient<RemoveGroupGameUseCase>();
         builder.Services.AddTransient<RunningGameSessionUseCase>();
         builder.Services.AddTransient<OpenGameSessionQuery>();
         builder.Services.AddSingleton<IAppNavigationSettingsStore, MauiAppNavigationSettingsStore>();
