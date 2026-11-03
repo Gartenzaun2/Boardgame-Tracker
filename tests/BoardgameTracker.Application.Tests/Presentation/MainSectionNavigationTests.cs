@@ -18,7 +18,7 @@ public sealed class MainSectionNavigationTests
 
     internal static AppShell CreateShell(SettingsStore store, IDbContextFactory<BoardgameTrackerDbContext> factory)
     {
-        AppShell shell = new(new(), new(), new(), new(), store, new(factory));
+        AppShell shell = new(new(), new(), new(), new(), store, new(factory, new TestGameActivationStore()));
         shell.EnableNavigationMemory();
         return shell;
     }

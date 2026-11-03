@@ -11,6 +11,8 @@ using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
+using BoardgameTracker.App.Features.Settings.MyGames;
+using Microsoft.Maui.Storage;
 using BoardgameTracker.App.Features.Settings.Licenses;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Groups;
@@ -74,6 +76,10 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ListGroupsQuery>();
         builder.Services.AddSingleton<PlayOverviewQuery>();
+        builder.Services.AddSingleton<IGameActivationStore>(_ => new MauiGameActivationStore(Preferences.Default));
+        builder.Services.AddTransient<GameActivationUseCase>();
+        builder.Services.AddTransient<MyGamesViewModel>();
+        builder.Services.AddTransient<MyGamesPage>();
         builder.Services.AddSingleton<StartupNavigationQuery>();
         builder.Services.AddTransient<GamesViewModel>();
         builder.Services.AddSingleton<ListManagedGroupsQuery>();

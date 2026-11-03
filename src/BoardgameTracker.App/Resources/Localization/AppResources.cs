@@ -483,4 +483,10 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string LoadGamesFailed => GetString(nameof(LoadGamesFailed));
     public static string GroupNavigationFailed => GetString(nameof(GroupNavigationFailed));
     public static string OpenGroupFailed => GetString(nameof(OpenGroupFailed));
+    public static string MyGames => GetString(nameof(MyGames));
+    public static string GameEnabled => GetString(nameof(GameEnabled));
+    public static string GameDisabled => GetString(nameof(GameDisabled));
+    public static string GameDisableBlocked => GetString(nameof(GameDisableBlocked));
+    public static string MyGamesLoadFailed => GetString(nameof(MyGamesLoadFailed));
+    public static string GameActivationSaveFailed => GetString(nameof(GameActivationSaveFailed));
 }

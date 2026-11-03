@@ -26,6 +26,8 @@
             </Border>
 
 
+            <Button Text="{x:Static res:AppResources.MyGames}" Clicked="OnMyGamesClicked" Style="{StaticResource SecondaryActionButton}" />
+
             <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />

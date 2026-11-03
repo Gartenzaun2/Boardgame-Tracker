@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.15.0.0
+
+- Einstellungen → Meine Spiele ergänzt: registrierte Spiele sind standardmäßig aktiviert und können anhand ihres stabilen Spiel-Keys lokal abgewählt oder reaktiviert werden.
+- Deaktivierte Spiele werden in Spielen ausgeblendet; Historie, Gruppenzuordnungen und Spieldefaults bleiben erhalten. Offene Partien/Wertungen sperren die Deaktivierung auch bei erneuter Prüfung im Speicherauftrag.
+
 ## 0.14.0.1
 
 - Nicht mehr benötigte Installationskompatibilität entfernt: keine Bereinigung des früheren Standardspiel-Schlüssels beim Lesen der Preferences und keine Zuordnung des ehemaligen Gruppen-Tab-Werts 2. Aktuelle Navigationswerte und der Standard-Fallback bleiben erhalten.

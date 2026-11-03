@@ -87,3 +87,5 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result { publ
         public TestButton DoneButton { get; } = new();
     }
     public sealed class TestButton { public bool IsVisible { get; set; } } }
+
+namespace BoardgameTracker.App.Features.Settings.MyGames { public sealed class MyGamesPage : Page; }

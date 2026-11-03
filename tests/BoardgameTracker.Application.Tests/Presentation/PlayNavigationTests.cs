@@ -126,7 +126,7 @@ public sealed class PlayNavigationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         Handler handler = new("ark-nova");
-        GroupListViewModel vm = new(new(db), new(db), new(db), NullLogger<GroupListViewModel>.Instance, [handler]);
+        GroupListViewModel vm = new(new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<GroupListViewModel>.Instance, [handler]);
         vm.SetGameContext(handler.GameKey);
         await vm.LoadAsync(Token);
         Assert.Empty(vm.Groups);

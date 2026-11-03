@@ -893,4 +893,10 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="LoadGamesFailed" xml:space="preserve"><value>Die Spiele konnten nicht geladen werden.</value></data>
   <data name="GroupNavigationFailed" xml:space="preserve"><value>Die Gruppe wurde gespeichert. Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
   <data name="OpenGroupFailed" xml:space="preserve"><value>Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
+  <data name="MyGames" xml:space="preserve"><value>Meine Spiele</value></data>
+  <data name="GameEnabled" xml:space="preserve"><value>Aktiviert</value></data>
+  <data name="GameDisabled" xml:space="preserve"><value>Deaktiviert</value></data>
+  <data name="GameDisableBlocked" xml:space="preserve"><value>Dieses Spiel bleibt aktiviert, solange eine Partie oder Wertung offen ist.</value></data>
+  <data name="MyGamesLoadFailed" xml:space="preserve"><value>Die Spieleinstellungen konnten nicht geladen werden.</value></data>
+  <data name="GameActivationSaveFailed" xml:space="preserve"><value>Die Aktivierung konnte nicht gespeichert werden. Bitte erneut versuchen.</value></data>
 </root>

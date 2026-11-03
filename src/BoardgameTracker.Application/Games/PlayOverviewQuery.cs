@@ -1,10 +1,11 @@
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Settings;
 using BoardgameTracker.Core.GameSessions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Games;
 
-public sealed class PlayOverviewQuery(IDbContextFactory<BoardgameTrackerDbContext> factory)
+public sealed class PlayOverviewQuery(IDbContextFactory<BoardgameTrackerDbContext> factory, IGameActivationStore activationStore)
 {
     public async Task<string?> GetSingleOpenGameKeyAsync(CancellationToken cancellationToken = default)
     {
@@ -20,7 +21,9 @@ public sealed class PlayOverviewQuery(IDbContextFactory<BoardgameTrackerDbContex
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         var games = await db.Games.AsNoTracking().Select(game => new { game.Id, game.Key }).ToArrayAsync(cancellationToken);
         var sessions = await db.GameSessions.AsNoTracking().Select(session => new { session.GameId, session.Status, session.StartedAt }).ToArrayAsync(cancellationToken);
-        return games.Select(game => new PlayGame(game.Id, game.Key,
+        return games.Where(game => activationStore.IsEnabled(game.Key)
+                || sessions.Any(session => session.GameId == game.Id && session.Status is GameSessionStatus.Running or GameSessionStatus.Scoring))
+            .Select(game => new PlayGame(game.Id, game.Key,
             sessions.Any(session => session.GameId == game.Id && session.Status is GameSessionStatus.Running or GameSessionStatus.Scoring),
             sessions.Where(session => session.GameId == game.Id).Select(session => (DateTimeOffset?)session.StartedAt).Max()))
             .OrderByDescending(game => game.HasOpenSession).ThenByDescending(game => game.LastStartedAt).ThenBy(game => game.Key, StringComparer.Ordinal).ToArray();

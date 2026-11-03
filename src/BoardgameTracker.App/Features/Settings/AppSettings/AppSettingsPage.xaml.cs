@@ -1,4 +1,5 @@
 using Microsoft.Maui.ApplicationModel;
+using BoardgameTracker.App.Features.Settings.MyGames;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
@@ -43,6 +44,21 @@ public partial class AppSettingsPage : ContentPage
 
     private async void OnArkNovaSettingsTapped(object? sender, TappedEventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+
+    private async void OnMyGamesClicked(object? sender, EventArgs e)
+    {
+        if (_choosing)
+            return;
+        _choosing = true;
+        try
+        {
+            await Shell.Current.GoToAsync(nameof(MyGamesPage));
+        }
+        finally
+        {
+            _choosing = false;
+        }
+    }
 
     private async void OnLicensesClicked(object? sender, EventArgs e)
     {

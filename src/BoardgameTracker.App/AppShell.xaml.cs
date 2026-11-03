@@ -5,6 +5,7 @@ using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Features.History;
 using BoardgameTracker.App.Features.Settings.AppSettings;
+using BoardgameTracker.App.Features.Settings.MyGames;
 using BoardgameTracker.App.Features.Settings.Licenses;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings.Navigation;
@@ -49,6 +50,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
         Routing.RegisterRoute(nameof(DuplicateGroupPage), typeof(DuplicateGroupPage));
         Routing.RegisterRoute(nameof(EditPlayerPage), typeof(EditPlayerPage));
+        Routing.RegisterRoute(nameof(MyGamesPage), typeof(MyGamesPage));
         Routing.RegisterRoute(nameof(LicenseListPage), typeof(LicenseListPage));
         Routing.RegisterRoute(nameof(LicenseDetailPage), typeof(LicenseDetailPage));
 
