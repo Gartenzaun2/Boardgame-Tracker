@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.12.0.1
+
+- Gemeinsame SDK-/Workload-Festlegung aus der Root-`global.json` entfernt und die separate, nicht versionierte Mac-/iOS-Toolchain-Konfiguration unter `.local/ios/global.json` dokumentiert. MAUI 10.0.110 bleibt unverändert.
+
 ## 0.12.0.0
 
 - Temporäre Gruppen aus Domain, Persistenz, Application-Verträgen und bestehenden Gruppenformularen entfernt. Alle Gruppen sind dauerhaft gespeichert und optional archiviert.

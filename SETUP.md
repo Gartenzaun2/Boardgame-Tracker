@@ -13,7 +13,8 @@ Arbeits- und Verifikationspolicy: [`AGENTS.md`](AGENTS.md).
 
 ## 2. Voraussetzungen
 
-- .NET SDK 10.0.403 (exakt über `global.json` gepinnt)
+- Für die `net10.0`-Ziele geeignetes .NET SDK und passende Plattform-Workloads;
+  macOS/iOS verwendet die unten dokumentierte lokale SDK-Version `10.0.403`.
 - .NET MAUI 10.0.110 (über `MauiVersion` im App-Projekt gepinnt)
 - EF Core 10
 - SQLite
@@ -27,18 +28,63 @@ Android 11 / API 30
 iOS 15
 ```
 
-Lokale macOS-/iOS-Konfiguration darf unter `.local/` liegen. Dieser Bereich wird
-nicht versioniert. Für private Konfiguration und Diagnoseausgaben gelten die
-folgenden Sicherheitsregeln.
-
 Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
 
-`global.json` pinnt zusätzlich Workload-Set `10.0.401`. Im Repository mit
-`dotnet workload restore src/BoardgameTracker.App/BoardgameTracker.App.csproj`
-die passenden Workloads bereitstellen. MAUI wird unabhängig davon auf `10.0.110`
-festgelegt, damit der iOS-Kamera-Fix enthalten ist, während die bestehenden
-Plattform-Workloads für Xcode 26.6 erhalten bleiben. SDK-, Workload-Set- und
-MAUI-Paket-Pin bei einer Toolchain-Aktualisierung gemeinsam prüfen.
+### Gemeinsame SDK-Konfiguration und macOS/iOS
+
+Die **versionierte `global.json` im Repository-Root** enthält nur die
+`Microsoft.Testing.Platform`-Runner-Konfiguration. Sie legt weder SDK-Version noch
+Workload-Set fest und darf nicht für die lokale Mac-/iOS-Toolchain gepinnt werden.
+Insbesondere Windows/Visual Studio wird dadurch nicht auf eine Mac-spezifische
+SDK-Version festgelegt. Ein kompatibles SDK und die erforderlichen Workloads müssen
+auf jedem Entwicklungsrechner trotzdem installiert sein.
+
+**Mac-Codex verwaltet die eigene, nicht versionierte Konfiguration unter
+`.local/ios/global.json` (Repository-Root → `.local` → `ios`).** `.local/` steht in
+`.gitignore`; weder diese Datei noch persönliche Signing-/Device-Konfigurationen
+werden ins Repository übernommen. Ein lokaler Mac-Pin sieht aktuell so aus:
+
+```json
+{
+  "sdk": {
+    "version": "10.0.403",
+    "rollForward": "disable",
+    "allowPrerelease": false,
+    "workloadVersion": "10.0.401"
+  },
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
+}
+```
+
+Das Workload-Set `10.0.401` dient der lokalen iOS-/Xcode-26.6-Toolchain.
+Die MAUI-Paketversion `10.0.110` bleibt unabhängig davon im App-Projekt gepinnt,
+damit der iOS-Kamera-Fix erhalten bleibt. Bei einer Toolchain-Aktualisierung SDK,
+Workload-Set und MAUI-Paket gemeinsam prüfen, aber keinen plattformübergreifenden
+Pin aus der Mac-Konfiguration in die Root-`global.json` übertragen.
+
+**Wichtig für Mac-Codex:** `.local/ios/global.json` ist kein automatischer Override
+für Builds vom Repository-Root. Die .NET-CLI sucht ab ihrem aktuellen
+Arbeitsverzeichnis, der MSBuild-SDK-Resolver kann dagegen beim Solution- bzw.
+Projektverzeichnis beginnen. Mac-Codex muss deshalb den lokalen Build-Einstieg und
+die *tatsächlich verwendete* SDK-/Workload-Version prüfen, statt nur das Vorhandensein
+der Datei vorauszusetzen.
+
+Für die SDK-/Workload-Auswahl zunächst aus `.local/ios/` prüfen:
+
+```bash
+cd .local/ios
+dotnet --version
+dotnet workload --version
+dotnet workload restore ../../src/BoardgameTracker.App/BoardgameTracker.App.csproj
+```
+
+Der erwartete lokale SDK-Wert ist `10.0.403`, die Workload-Set-Version `10.0.401`.
+Vor einem iOS-Build zusätzlich überprüfen, ob auch der konkrete MSBuild-Aufruf
+diese Toolchain verwendet. Stimmt die effektive Auswahl nicht, muss **die lokale
+Mac-Build-Aufrufkonfiguration** korrigiert werden, nicht die gemeinsame Root-Datei.
+Die allgemeinen Build-/Test- und Freigaberegeln dieses Dokuments gelten weiterhin.
 
 ### Repository- und Log-Sicherheit
 
