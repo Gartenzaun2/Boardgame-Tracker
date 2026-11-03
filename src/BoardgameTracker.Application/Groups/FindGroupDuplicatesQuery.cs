@@ -19,13 +19,19 @@ public sealed class FindGroupDuplicatesQuery(IDbContextFactory<BoardgameTrackerD
             return [];
 
         await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
-        return await db.Groups.AsNoTracking()
+        var names = await db.Players.AsNoTracking().Where(player => ids.Contains(player.Id))
+            .ToDictionaryAsync(player => player.Id, player => player.Name, cancellationToken);
+        GroupDuplicate[] matches = await db.Groups.AsNoTracking()
             .Where(group => group.Players.Count == ids.Length && group.Players.All(player => ids.Contains(player.PlayerId)))
             .OrderBy(group => group.Name).ThenBy(group => group.Id)
             .Select(group => new GroupDuplicate(group.Id, group.Name, group.IsArchived,
                 group.Players.OrderBy(player => player.DefaultOrder).Select(player => player.PlayerId).ToArray()))
             .ToArrayAsync(cancellationToken);
+        return matches.Select(group => group with { PlayerNames = group.OrderedPlayerIds.Select(id => names[id]).ToArray() }).ToArray();
     }
 }
 
-public sealed record GroupDuplicate(Guid Id, string Name, bool IsArchived, IReadOnlyList<Guid> OrderedPlayerIds);
+public sealed record GroupDuplicate(Guid Id, string Name, bool IsArchived, IReadOnlyList<Guid> OrderedPlayerIds)
+{
+    public IReadOnlyList<string> PlayerNames { get; init; } = [];
+}

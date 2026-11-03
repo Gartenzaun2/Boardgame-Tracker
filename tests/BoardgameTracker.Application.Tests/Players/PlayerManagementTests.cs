@@ -54,13 +54,13 @@ public sealed class PlayerManagementTests
         Assert.Equal(database.Latest.StartedAt, player.LastPlayedAt);
         Assert.Equal("test-game", player.LastGameKey);
         Assert.Equal(latestStatus, player.LastGameSessionStatus);
-        Assert.Equal(isOpen, new PlayerListRow(player).HasOpenGameSession);
+        Assert.Equal(isOpen, player.LastGameSessionStatus is GameSessionStatus.Running or GameSessionStatus.Scoring);
         PlayerListItem unused = rows.Single(row => row.PlayerId == database.Players[1].Id);
         Assert.Null(unused.LastGameSessionId);
         Assert.Null(unused.LastGameKey);
         Assert.Null(unused.LastPlayedAt);
         Assert.Null(unused.LastGameSessionStatus);
-        Assert.False(new PlayerListRow(unused).HasOpenGameSession);
+        Assert.Null(typeof(PlayerListViewModel).GetMethod("OpenLastGameSessionAsync"));
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public sealed class PlayerManagementTests
     {
         await using Database database = await Database.CreateAsync();
         Guid id = database.Players[0].Id;
-        EditPlayerViewModel editor = new(database.Edit, NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel editor = new(database.Edit, new(database), NullLogger<EditPlayerViewModel>.Instance);
         await editor.LoadAsync(id, Token);
         editor.Name = "Changed";
         editor.IsArchived = true;
@@ -114,19 +114,21 @@ public sealed class PlayerManagementTests
     }
 
     [Fact]
-    public async Task Navigation_UsesMatchingGeneralHandler_AndSkipsPlayerWithoutSession()
+    public async Task Management_FiltersPlayersAndSwitchesSegmentsWithoutOpeningSessions()
     {
         await using Database database = await Database.CreateAsync();
         HistoryHandler matching = new("test-game");
         HistoryHandler other = new("other-game");
-        PlayerListViewModel viewModel = new(database.Query, [other, matching], NullLogger<PlayerListViewModel>.Instance);
+        PlayerListViewModel viewModel = new(database.Query, new(database), NullLogger<PlayerListViewModel>.Instance);
         await viewModel.LoadAsync(Token);
         Assert.False(viewModel.IncludeGuests);
         Assert.False(viewModel.IncludeArchived);
-        await viewModel.OpenLastGameSessionAsync(viewModel.Players.Single(player => player.Data.PlayerId == database.Players[1].Id));
         Assert.Empty(matching.Opened);
-        await viewModel.OpenLastGameSessionAsync(viewModel.Players.Single(player => player.Data.PlayerId == database.Players[0].Id));
-        Assert.Equal(database.Latest.Id, Assert.Single(matching.Opened));
+        Assert.Empty(matching.Opened);
+        viewModel.SelectGroups();
+        Assert.True(viewModel.ShowGroups);
+        viewModel.SelectPlayers();
+        Assert.True(viewModel.ShowPlayers);
         Assert.Empty(other.Opened);
         viewModel.IncludeGuests = true;
         viewModel.IncludeArchived = true;

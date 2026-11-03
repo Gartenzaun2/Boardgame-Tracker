@@ -22,6 +22,11 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        if (query.TryGetValue(NavigationParameters.NewPlayer, out object? create) && create is true)
+        {
+            _viewModel.InitializeNew();
+            return;
+        }
         if (!query.TryGetValue(NavigationParameters.PlayerId, out object? value) || value is not Guid id || id == Guid.Empty)
             throw new InvalidOperationException("Required player navigation parameter is missing or invalid.");
         _playerId = id;
@@ -30,7 +35,7 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (!AppDialogPage.IsOpen(this))
+        if (!AppDialogPage.IsOpen(this) && !_viewModel.IsNew)
             await _viewModel.LoadAsync(_playerId);
     }
 

@@ -1,4 +1,4 @@
-using BoardgameTracker.App.Features.Groups.Colors;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -12,11 +12,12 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// <summary>
 /// Adapts the existing editor to game-neutral group metadata and order changes.
 /// </summary>
-public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSelectionViewModel colorSelection, ILogger<EditGroupViewModel> logger) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<IGameSessionNavigationHandler> games, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
-    private Guid[] _gameIds = [];
-    public GroupColorSelectionViewModel ColorSelection { get; } = colorSelection;
-    public ObservableCollection<GroupPlayerItemViewModel> Players { get; } = [];
+    public ObservableCollection<GroupGameSelection> Games { get; } = [];
+    [ObservableProperty] public partial bool CanArchive { get; private set; }
+    public bool ArchiveLocked => !CanArchive;
+    public ObservableCollection<GroupMemberDraft> Players { get; } = [];
 
     [ObservableProperty]
     public partial Guid GroupId { get; private set; }
@@ -44,7 +45,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
         Guid groupId,
         CancellationToken cancellationToken = default)
     {
-        if (IsBusy || groupId == Guid.Empty)
+        if (IsBusy || groupId == Guid.Empty || GroupId == groupId)
         {
             return;
         }
@@ -54,7 +55,6 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             IsBusy = true;
             ErrorMessage = null;
 
-            ColorSelection.Configure(null);
             EditGroupDetails? details =
                 await editGroup.GetAsync(groupId, cancellationToken);
 
@@ -64,7 +64,11 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
                 return;
             }
 
-            _gameIds = details.Games.Where(game => game.IsAssigned).Select(game => game.Id).ToArray();
+            Games.Clear();
+            foreach (EditGroupGame game in details.Games)
+                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.IsAssigned, game.CanRemove));
+            CanArchive = details.CanArchive;
+            OnPropertyChanged(nameof(ArchiveLocked));
             GroupId = details.Id;
             GroupName = details.Name;
             IsArchived = details.IsArchived;
@@ -72,7 +76,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             Players.Clear();
             foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
             {
-                Players.Add(new GroupPlayerItemViewModel(
+                Players.Add(new GroupMemberDraft(
                     player.PlayerId,
                     player.Name,
                     player.IsGuest));
@@ -92,9 +96,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
     }
 
     [RelayCommand]
-    private void MovePlayerUp(GroupPlayerItemViewModel? player)
+    private void MovePlayerUp(GroupMemberDraft? player)
     {
-        if (player is null)
+        if (IsBusy || player is null)
         {
             return;
         }
@@ -107,9 +111,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
     }
 
     [RelayCommand]
-    private void MovePlayerDown(GroupPlayerItemViewModel? player)
+    private void MovePlayerDown(GroupMemberDraft? player)
     {
-        if (player is null)
+        if (IsBusy || player is null)
         {
             return;
         }
@@ -119,12 +123,6 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
         {
             Players.Move(index, index + 1);
         }
-    }
-
-    [RelayCommand]
-    private void OpenColorPicker(GroupPlayerItemViewModel? player)
-    {
-        if (!IsBusy && player is not null) ColorSelection.Open(player, [.. Players]);
     }
 
     private bool CanSave() =>
@@ -154,7 +152,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
                 GroupName,
                 IsArchived,
                 orderedPlayerIds,
-                _gameIds));
+                Games.Where(game => game.IsSelected).Select(game => game.Id).ToArray()));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }

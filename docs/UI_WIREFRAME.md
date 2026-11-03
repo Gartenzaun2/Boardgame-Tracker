@@ -145,15 +145,36 @@ Aus **Spielen** ist das aufrufende Spiel vorausgewählt; nach Speichern öffnet 
 
 ### Dublette beim Anlegen
 
-Eigene Auswahl mit Zurück-Pfeil und sichtbarem bestehenden Gruppennamen/Mitgliedern:
+Eigene abbrechbare Auswahlseite mit dem gemeinsamen Zurück-Pfeil oben links und
+der Überschrift **Gruppe bereits vorhanden**. Sie erscheint bei einem oder
+mehreren Treffern mit exakt identischer Menge an Spieler-IDs.
 
-```text
-Gruppe bereits vorhanden
-[ Gruppe übernehmen ]   Primary
-[ Neue Gruppe anlegen ]  Secondary
-```
+Alle Treffer werden als scrollende, gleichwertige Einträge angezeigt, mit
+**Gruppenname**, **Mitgliedern in gespeicherter Default-Reihenfolge** und bei
+Bedarf dem sichtbaren Status **Archiviert**. Jeder Eintrag besitzt genau einen
+direkten Aktionsbutton:
 
-Bei archivierter Gruppe lautet die Primary-Aktion **Gruppe reaktivieren**. Zurück bricht ab, Übernehmen/Reaktivieren setzt den Flow aus dem jeweiligen Ursprung fort: aus **Spielen** zur Vorbereitung, aus **Mitspieler** zur Gruppenverwaltung.
+- aktive Gruppe: **Gruppe übernehmen**;
+- archivierte Gruppe: **Gruppe reaktivieren**.
+
+Die Einträge folgen der vom Application-Read-Model gelieferten stabilen
+Reihenfolge (Name, danach ID). Es gibt **keine Radio-Buttons**, keine
+vorgeschaltete Auswahl und keine zusätzliche Bestätigung nach dem Tap.
+Die Übernahme-/Reaktivierungsaktionen sind innerhalb der Trefferliste
+visuell gleichwertig; sie dürfen nicht alle als dominierende globale
+Primary-Aktion erscheinen.
+
+Unter der scrollenden Trefferliste steht optisch getrennt und stets erreichbar
+**Neue Gruppe anlegen** als Secondary-Aktion. Sie erlaubt ausdrücklich eine
+weitere Gruppe mit denselben Mitgliedern. Der gemeinsame Zurück-Pfeil bricht
+die Dubletten-Auswahl ohne Speichern ab und führt zum Gruppenentwurf zurück.
+
+Das Muster gilt auch bei genau einem Treffer. Übernehmen/Reaktivieren übernimmt
+ausschließlich die ausdrücklich angetippte Gruppenidentität und setzt den
+Flow unmittelbar fort: aus **Spielen** zur Vorbereitung, aus **Mitspieler**
+zur Gruppenverwaltung. Regeln zur Beibehaltung von Name, Reihenfolge,
+Mitgliedschaft und Spieldefaults sowie zur Vereinigung der Spielzuordnungen
+stehen in `PRODUCT_SPEC.md`.
 
 ### Gruppe bearbeiten
 

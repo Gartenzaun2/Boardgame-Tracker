@@ -15,7 +15,7 @@ public sealed class MainSectionNavigationTests
 
     internal static AppShell CreateShell(SettingsStore store)
     {
-        AppShell shell = new(new(), new(), new(), new(), store);
+        AppShell shell = new(new(), new(), new(), new(), new(), store);
         shell.EnableNavigationMemory();
         return shell;
     }
@@ -25,6 +25,7 @@ public sealed class MainSectionNavigationTests
     [InlineData(AppMainSection.Groups, "GroupListPage")]
     [InlineData(AppMainSection.History, "HistoryPage")]
     [InlineData(AppMainSection.Settings, "AppSettingsPage")]
+    [InlineData(AppMainSection.Participants, "PlayerListPage")]
     public async Task ExplicitTabTapAndReselectionOpenRootAndRememberSection(AppMainSection section, string root)
     {
         SettingsStore store = new();

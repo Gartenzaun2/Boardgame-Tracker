@@ -883,4 +883,15 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="PhotoDatasetDisable" xml:space="preserve"><value>Sammlung deaktivieren</value></data>
   <data name="PhotoDatasetDeleteQuestion" xml:space="preserve"><value>Alle gespeicherten Bilderkennungsdaten unwiderruflich löschen?</value></data>
   <data name="PhotoDatasetFailed" xml:space="preserve"><value>Die Bilderkennungsdaten konnten nicht verarbeitet werden. Bitte erneut versuchen.</value></data>
+  <data name="Participants" xml:space="preserve"><value>Mitspieler</value></data>
+  <data name="ChooseGames" xml:space="preserve"><value>Spiele auswählen</value></data>
+  <data name="GroupGameLocked" xml:space="preserve"><value>Diese Zuordnung bleibt bestehen, solange eine Partie oder Wertung offen ist.</value></data>
+  <data name="GroupArchiveLocked" xml:space="preserve"><value>Archivieren ist erst möglich, wenn alle Partien und Wertungen dieser Gruppe abgeschlossen sind.</value></data>
+  <data name="DuplicateGroupTitle" xml:space="preserve"><value>Gruppe bereits vorhanden</value></data>
+  <data name="ReuseGroup" xml:space="preserve"><value>Gruppe übernehmen</value></data>
+  <data name="ReactivateGroup" xml:space="preserve"><value>Gruppe reaktivieren</value></data>
+  <data name="CreateAdditionalGroup" xml:space="preserve"><value>Neue Gruppe anlegen</value></data>
+  <data name="FirstPlayerHint" xml:space="preserve"><value>Lege zuerst einen Spieler an. Danach kannst du Gruppen erstellen.</value></data>
+  <data name="ShowArchived" xml:space="preserve"><value>Archivierte anzeigen</value></data>
+  <data name="ShowGuests" xml:space="preserve"><value>Gäste anzeigen</value></data>
 </root>

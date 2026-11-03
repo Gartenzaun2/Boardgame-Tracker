@@ -7,6 +7,9 @@ namespace BoardgameTracker.App.Navigation;
 /// </summary>
 internal static class NavigationParameters
 {
+    public const string GroupManagement = nameof(GroupManagement);
+    public const string GroupDraft = nameof(GroupDraft);
+    public const string NewPlayer = nameof(NewPlayer);
     public const string GroupId = nameof(GroupId);
     public const string GameSessionId = nameof(GameSessionId);
     public const string PlayerId = nameof(PlayerId);

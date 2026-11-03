@@ -1,4 +1,6 @@
 using BoardgameTracker.App.Features.Players.EditPlayer;
+using BoardgameTracker.App.Features.Groups.CreateGroup;
+using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
@@ -11,7 +13,6 @@ public partial class PlayerListPage : ContentPage
     private readonly PlayerListViewModel _viewModel;
     private readonly ILogger<PlayerListPage> _logger;
     private bool _navigating;
-
     public PlayerListPage(PlayerListViewModel viewModel, ILogger<PlayerListPage> logger)
     {
         InitializeComponent();
@@ -19,49 +20,41 @@ public partial class PlayerListPage : ContentPage
         _logger = logger;
         BindingContext = viewModel;
     }
-
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (!AppDialogPage.IsOpen(this))
-            await _viewModel.LoadAsync();
+        if (!AppDialogPage.IsOpen(this)) await _viewModel.LoadAsync();
     }
-
-    private async void OnBackClicked(object? sender, EventArgs e)
-    {
-        if (!_navigating && !_viewModel.IsBusy)
-            await Shell.Current.GoToAsync("..");
-    }
+    private void OnPlayersSegmentClicked(object? sender, EventArgs e) => _viewModel.SelectPlayers();
+    private void OnGroupsSegmentClicked(object? sender, EventArgs e) => _viewModel.SelectGroups();
     private async void OnInfoClicked(object? sender, EventArgs e) =>
-        await AppDialogPage.ShowAsync(this, AppResources.Players, AppResources.PlayersInfo, AppResources.Ok);
-
+        await AppDialogPage.ShowAsync(this, AppResources.Participants, AppResources.PlayersInfo, AppResources.Ok);
     private async void OnEditClicked(object? sender, EventArgs e)
     {
-        if (_navigating || _viewModel.IsBusy || sender is not ImageButton { CommandParameter: PlayerListRow row })
-            return;
+        if (sender is ImageButton { CommandParameter: PlayerListRow row })
+            await NavigateAsync(nameof(EditPlayerPage), new() { [NavigationParameters.PlayerId] = row.Data.PlayerId });
+    }
+    private async void OnAddPlayerClicked(object? sender, EventArgs e) =>
+        await NavigateAsync(nameof(EditPlayerPage), new() { [NavigationParameters.NewPlayer] = true });
+    private async void OnAddGroupClicked(object? sender, EventArgs e) =>
+        await NavigateAsync(nameof(CreateGroupPage), new() { [NavigationParameters.GroupManagement] = true });
+    private async void OnEditGroupClicked(object? sender, EventArgs e)
+    {
+        if (sender is ImageButton { CommandParameter: ManagedGroupRow row })
+            await NavigateAsync(nameof(EditGroupPage), new() { [NavigationParameters.GroupId] = row.Id });
+    }
+    private async Task NavigateAsync(string route, ShellNavigationQueryParameters parameters)
+    {
+        if (_navigating || _viewModel.IsBusy) return;
         _navigating = true;
         IsEnabled = false;
-        try
-        {
-            await Shell.Current.GoToAsync(nameof(EditPlayerPage), new ShellNavigationQueryParameters { [NavigationParameters.PlayerId] = row.Data.PlayerId });
-        }
+        try { await Shell.Current.GoToAsync(route, parameters); }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Could not open player editor.");
-            await AppDialogPage.ShowAsync(this, AppResources.Players, AppResources.PlayerNavigationFailed, AppResources.Ok);
+            _logger.LogError(exception, "Could not open management editor.");
+            await AppDialogPage.ShowAsync(this, AppResources.Participants, AppResources.PlayerNavigationFailed, AppResources.Ok);
         }
-        finally
-        {
-            _navigating = false;
-            IsEnabled = true;
-        }
+        finally { _navigating = false; IsEnabled = true; }
     }
-
-    private async void OnLastPlayedClicked(object? sender, EventArgs e)
-    {
-        if (!_navigating && sender is Button { CommandParameter: PlayerListRow row })
-            await _viewModel.OpenLastGameSessionAsync(row);
-    }
-
     protected override bool OnBackButtonPressed() => _navigating || _viewModel.IsBusy || base.OnBackButtonPressed();
 }

@@ -5,7 +5,7 @@ using BoardgameTracker.App.Navigation;
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
 /// <summary>
-/// MAUI view for editing group metadata, order and Ark Nova default colors.
+/// MAUI view for editing group metadata, order and game assignments.
 /// </summary>
 public partial class EditGroupPage : ContentPage, IQueryAttributable
 {
@@ -49,7 +49,8 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        if (!_viewModel.IsBusy)
+            await Shell.Current.GoToAsync("..");
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e)
@@ -72,9 +73,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
     {
         if (_viewModel.IsBusy)
             return true;
-        if (!_viewModel.ColorSelection.IsVisible) return base.OnBackButtonPressed();
-        _viewModel.ColorSelection.Close();
-        return true;
+        return base.OnBackButtonPressed();
     }
 
     private async void OnSaved(object? sender, EventArgs e)

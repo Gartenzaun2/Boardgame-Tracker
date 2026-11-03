@@ -467,4 +467,15 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string PhotoBoardNotRecognized => GetString(nameof(PhotoBoardNotRecognized));
     public static string PhotoAnalysisFailed => GetString(nameof(PhotoAnalysisFailed));
     public static string PhotoValuesInvalid => GetString(nameof(PhotoValuesInvalid));
+    public static string Participants => GetString(nameof(Participants));
+    public static string ChooseGames => GetString(nameof(ChooseGames));
+    public static string GroupGameLocked => GetString(nameof(GroupGameLocked));
+    public static string GroupArchiveLocked => GetString(nameof(GroupArchiveLocked));
+    public static string DuplicateGroupTitle => GetString(nameof(DuplicateGroupTitle));
+    public static string ReuseGroup => GetString(nameof(ReuseGroup));
+    public static string ReactivateGroup => GetString(nameof(ReactivateGroup));
+    public static string CreateAdditionalGroup => GetString(nameof(CreateAdditionalGroup));
+    public static string FirstPlayerHint => GetString(nameof(FirstPlayerHint));
+    public static string ShowArchived => GetString(nameof(ShowArchived));
+    public static string ShowGuests => GetString(nameof(ShowGuests));
 }

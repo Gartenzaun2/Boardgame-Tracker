@@ -1,17 +1,35 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using BoardgameTracker.App.Navigation;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Players;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using BoardgameTracker.Core.GameSessions;
 
 namespace BoardgameTracker.App.Features.Players.ListPlayers;
 
-public partial class PlayerListViewModel(ListPlayersQuery query, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, ILogger<PlayerListViewModel> logger) : ObservableObject
+public partial class PlayerListViewModel(ListPlayersQuery query, ListManagedGroupsQuery groupsQuery, ILogger<PlayerListViewModel> logger) : ObservableObject
 {
     public ObservableCollection<PlayerListRow> Players { get; } = [];
+    public ObservableCollection<ManagedGroupRow> Groups { get; } = [];
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowPlayers))]
+    public partial bool ShowGroups { get; set; }
+    public bool ShowPlayers => !ShowGroups;
+    [ObservableProperty] public partial bool HasPlayers { get; private set; }
+    public bool HasNoPlayers => !HasPlayers;
+    [ObservableProperty] public partial bool IncludeArchivedGroups { get; set; }
+    partial void OnIncludeArchivedGroupsChanged(bool value) => _ = LoadAsync();
+    public void SelectPlayers()
+    {
+        if (!IsBusy)
+            ShowGroups = false;
+    }
+    public void SelectGroups()
+    {
+        if (!IsBusy && HasPlayers)
+            ShowGroups = true;
+    }
     [ObservableProperty] public partial bool IncludeGuests { get; set; }
     [ObservableProperty] public partial bool IncludeArchived { get; set; }
     [ObservableProperty]
@@ -42,6 +60,14 @@ public partial class PlayerListViewModel(ListPlayersQuery query, IEnumerable<IGa
                 ErrorMessage = null;
 
                 IReadOnlyList<PlayerListItem> rows = await query.ListPlayersAsync(IncludeGuests, IncludeArchived, cancellationToken);
+                HasPlayers = await query.HasPlayersAsync(cancellationToken);
+                OnPropertyChanged(nameof(HasNoPlayers));
+                if (!HasPlayers)
+                    ShowGroups = false;
+                IReadOnlyList<ManagedGroup> groups = await groupsQuery.ListAsync(IncludeArchivedGroups, cancellationToken);
+                Groups.Clear();
+                foreach (ManagedGroup group in groups)
+                    Groups.Add(new(group.Id, group.Name, string.Join(" · ", group.PlayerNames), group.IsArchived));
                 Players.Clear();
 
                 foreach(PlayerListItem row in rows) {
@@ -58,28 +84,6 @@ public partial class PlayerListViewModel(ListPlayersQuery query, IEnumerable<IGa
         }
     }
 
-    public async Task OpenLastGameSessionAsync(PlayerListRow row)
-    {
-        if (IsBusy || !row.HasLastGameSession)
-            return;
-        IsBusy = true;
-        ErrorMessage = null;
-        try
-        {
-            IGameSessionNavigationHandler handler = navigationHandlers.FirstOrDefault(handler => handler.GameKey == row.Data.LastGameKey)
-                ?? throw new InvalidOperationException("No history handler is registered for this game.");
-            await handler.OpenGameSessionAsync(row.Data.LastGameSessionId!.Value);
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not open the player's last game session.");
-            ErrorMessage = AppResources.HistoryOpenFailed;
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
 }
 
 public sealed record PlayerListRow(PlayerListItem Data)
@@ -88,10 +92,7 @@ public sealed record PlayerListRow(PlayerListItem Data)
     public bool IsGuest => Data.IsGuest;
     public bool IsArchived => Data.IsArchived;
     public bool HasStatus => IsGuest || IsArchived;
-    public bool HasLastGameSession => Data.LastGameSessionId is Guid id && id != Guid.Empty && !string.IsNullOrWhiteSpace(Data.LastGameKey);
-    public bool HasNoGameSession => !HasLastGameSession;
-    public bool HasOpenGameSession => HasLastGameSession && Data.LastGameSessionStatus is GameSessionStatus.Running or GameSessionStatus.Scoring;
     public string CreatedText => string.Format(AppResources.PlayerCreatedFormat, Data.CreatedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
-    public string LastPlayedText => Data.LastPlayedAt is DateTimeOffset date
-        ? string.Format(AppResources.PlayerLastPlayedFormat, date.ToLocalTime().ToString("d", CultureInfo.CurrentCulture)) : AppResources.PlayerNoGameSession;
 }
+
+public sealed record ManagedGroupRow(Guid Id, string Name, string Members, bool IsArchived);

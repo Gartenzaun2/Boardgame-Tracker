@@ -6,7 +6,7 @@
         <VerticalStackLayout Spacing="8">
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                 <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-                <Label Grid.Column="1" Text="{x:Static res:AppResources.EditPlayer}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding Title}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
             </Grid>
             <BoxView Style="{StaticResource HeaderDivider}" />
         </VerticalStackLayout>
@@ -14,9 +14,13 @@
             <VerticalStackLayout Spacing="12" IsEnabled="{Binding IsIdle}">
                 <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
                 <Entry Text="{Binding Name}" Style="{StaticResource InlineFormEntry}" />
-                <HorizontalStackLayout Spacing="8">
+                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsExisting}">
                     <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
                     <Switch IsToggled="{Binding IsArchived}" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsNew}">
+                    <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                    <Switch IsToggled="{Binding IsGuest}" />
                 </HorizontalStackLayout>
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </VerticalStackLayout>

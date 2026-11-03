@@ -22,6 +22,7 @@ public partial class AppShell : Shell
     private readonly Tab _groupsTab;
     private readonly Tab _historyTab;
     private readonly Tab _settingsTab;
+    private readonly Tab _participantsTab;
     private bool _isProgrammaticMainNavigation;
     private bool _isNavigationMemoryEnabled;
     private bool _isMainTabTapInProgress;
@@ -34,6 +35,7 @@ public partial class AppShell : Shell
         GamesPage gamesPage,
         HistoryPage historyPage,
         AppSettingsPage settingsPage,
+        PlayerListPage playerListPage,
         IAppNavigationSettingsStore navigationSettingsStore)
     {
         InitializeComponent();
@@ -41,7 +43,7 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
-        Routing.RegisterRoute(nameof(PlayerListPage), typeof(PlayerListPage));
+        Routing.RegisterRoute(nameof(DuplicateGroupPage), typeof(DuplicateGroupPage));
         Routing.RegisterRoute(nameof(EditPlayerPage), typeof(EditPlayerPage));
         Routing.RegisterRoute(nameof(LicenseListPage), typeof(LicenseListPage));
         Routing.RegisterRoute(nameof(LicenseDetailPage), typeof(LicenseDetailPage));
@@ -54,6 +56,8 @@ public partial class AppShell : Shell
         tabBar.Items.Add(_gamesTab);
         tabBar.Items.Add(_groupsTab);
         tabBar.Items.Add(_historyTab);
+        _participantsTab = CreateTab(AppResources.Participants, "icon_groups.png", playerListPage, nameof(PlayerListPage));
+        tabBar.Items.Add(_participantsTab);
         tabBar.Items.Add(_settingsTab);
         tabBar.CurrentItem = _gamesTab;
 
@@ -79,6 +83,7 @@ public partial class AppShell : Shell
             AppMainSection.Groups => _groupsTab,
             AppMainSection.History => _historyTab,
             AppMainSection.Settings => _settingsTab,
+            AppMainSection.Participants => _participantsTab,
             _ => _gamesTab
         };
 
@@ -174,6 +179,7 @@ public partial class AppShell : Shell
     private AppMainSection GetMainSection(ShellSection tab) => tab == _gamesTab ? AppMainSection.Games
         : tab == _groupsTab ? AppMainSection.Groups
         : tab == _historyTab ? AppMainSection.History
+        : tab == _participantsTab ? AppMainSection.Participants
         : tab == _settingsTab ? AppMainSection.Settings
         : throw new InvalidOperationException("Unknown main tab.");
 

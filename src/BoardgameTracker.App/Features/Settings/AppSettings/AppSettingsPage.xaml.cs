@@ -4,7 +4,6 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Games.ArkNova.Features.Settings;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.App.Features.Players.ListPlayers;
 using BoardgameTracker.App.Features.Settings.Licenses;
 
 namespace BoardgameTracker.App.Features.Settings.AppSettings;
@@ -55,21 +54,6 @@ public partial class AppSettingsPage : ContentPage
 
     private async void OnArkNovaSettingsTapped(object? sender, TappedEventArgs e) =>
         await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
-
-    private async void OnPlayersTapped(object? sender, TappedEventArgs e)
-    {
-        if (_choosing)
-            return;
-        _choosing = true;
-        try
-        {
-            await Shell.Current.GoToAsync(nameof(PlayerListPage));
-        }
-        finally
-        {
-            _choosing = false;
-        }
-    }
 
     private async void OnLicensesClicked(object? sender, EventArgs e)
     {

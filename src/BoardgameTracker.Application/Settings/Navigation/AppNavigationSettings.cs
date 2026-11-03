@@ -1,14 +1,15 @@
 namespace BoardgameTracker.Application.Settings.Navigation;
 
 /// <summary>
-/// Identifies the four persistent main areas of the mobile application.
+/// Identifies the persistent main areas of the mobile application.
 /// </summary>
 public enum AppMainSection
 {
     Games = 1,
     Groups = 2,
     History = 3,
-    Settings = 4
+    Settings = 4,
+    Participants = 5
 }
 
 /// <summary>

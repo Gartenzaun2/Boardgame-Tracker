@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.13.0.0
+
+- Mitspieler-Verwaltung mit Spieler-/Gruppensegmenten, Spieleranlage und Bearbeitung sowie spielunabhängiger Gruppenliste ergänzt. Bisherige Spieleinstiege bleiben im Übergangsstand erreichbar.
+- Gruppenformulare unterstützen Mehrfach-Spielzuordnungen und zeigen Archivierungs-/Entfernungssperren bei offenen Sessions. Die allgemeine Farbauswahl entfällt.
+- Dubletten erscheinen auf einer abbrechbaren Auswahlseite mit allen Treffern und direkter Übernahme/Reaktivierung je Gruppe; eine bewusste zusätzliche Neuanlage bleibt möglich. Zurück erhält den Entwurf.
+
 ## 0.12.0.2
 
 - Allgemeine Gruppenverwaltung unterstützt atomare Neuanlage mit mehreren Spielen, exakte Dublettensuche und explizite Übernahme/Reaktivierung mit ergänzenden Spielzuordnungen.

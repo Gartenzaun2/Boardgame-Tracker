@@ -72,6 +72,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<DatabaseInitializer>();
 
         builder.Services.AddSingleton<ListGroupsQuery>();
+        builder.Services.AddSingleton<ListManagedGroupsQuery>();
+        builder.Services.AddTransient<CreatePlayerUseCase>();
         builder.Services.AddSingleton<ListPlayersQuery>();
         builder.Services.AddTransient<EditPlayerUseCase>();
         builder.Services.AddTransient<PlayerListViewModel>();

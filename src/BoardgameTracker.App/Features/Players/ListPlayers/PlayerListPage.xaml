@@ -1,81 +1,75 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.ListPlayers" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     x:Class="BoardgameTracker.App.Features.Players.ListPlayers.PlayerListPage" x:DataType="local:PlayerListViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" Padding="18" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
-            <Grid.Triggers>
-                <MultiTrigger TargetType="Grid">
-                    <MultiTrigger.Conditions>
-                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsEnabled" Value="True" />
-                </MultiTrigger>
-            </Grid.Triggers>
+        <Grid Padding="18" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding IsIdle}">
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                    <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-                    <Label Grid.Column="1" Text="{x:Static res:AppResources.Players}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
-                    <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Players}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{x:Static res:AppResources.Participants}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
+                    <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
                 </Grid>
-
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
+                    <Button Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SecondaryActionButton}">
+                        <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowPlayers}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
+                    </Button>
+                    <Button Grid.Column="1" Text="{x:Static res:AppResources.Groups}" Clicked="OnGroupsSegmentClicked" IsEnabled="{Binding HasPlayers}" Style="{StaticResource SecondaryActionButton}">
+                        <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowGroups}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
+                    </Button>
+                </Grid>
                 <BoxView Style="{StaticResource HeaderDivider}" />
-
-                <HorizontalStackLayout Spacing="20">
-                    <HorizontalStackLayout Spacing="6">
-                        <Switch IsToggled="{Binding IncludeGuests}" />
-                        <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="6">
-                        <Switch IsToggled="{Binding IncludeArchived}" />
-                        <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-                </HorizontalStackLayout>
+                <Label Text="{x:Static res:AppResources.FirstPlayerHint}" IsVisible="{Binding HasNoPlayers}" />
             </VerticalStackLayout>
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Players}" SelectionMode="None" IsEnabled="{Binding IsIdle}">
+            <HorizontalStackLayout Grid.Row="1" Spacing="16" IsVisible="{Binding ShowPlayers}">
+                <HorizontalStackLayout Spacing="4"><Switch IsToggled="{Binding IncludeGuests}" /><Label Text="{x:Static res:AppResources.ShowGuests}" VerticalOptions="Center" /></HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="4"><Switch IsToggled="{Binding IncludeArchived}" /><Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" /></HorizontalStackLayout>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="1" Spacing="4" IsVisible="{Binding ShowGroups}"><Switch IsToggled="{Binding IncludeArchivedGroups}" /><Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" /></HorizontalStackLayout>
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Players}" SelectionMode="None" IsVisible="{Binding ShowPlayers}">
+                <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.PlayersEmpty}" /></CollectionView.EmptyView>
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:PlayerListRow">
-                        <Border Style="{StaticResource CardBorder}" Padding="12,8">
-                            <VerticalStackLayout Spacing="6">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                        <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" />
-                                        <Label Text="{Binding CreatedText}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                                    </VerticalStackLayout>
-                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
-                                </Grid>
-                                <Button Text="{Binding LastPlayedText}" IsVisible="{Binding HasLastGameSession}"
-                                        Style="{StaticResource SecondaryActionButton}" ContentLayout="Right,6"
-                                        Clicked="OnLastPlayedClicked" CommandParameter="{Binding .}">
-                                    <Button.Triggers>
-                                        <DataTrigger TargetType="Button" Binding="{Binding HasOpenGameSession}" Value="True">
-                                            <Setter Property="ImageSource" Value="icon_active_session.png" />
-                                        </DataTrigger>
-                                    </Button.Triggers>
-                                </Button>
-                                <Border IsVisible="{Binding HasNoGameSession}" BackgroundColor="{DynamicResource SurfaceSecondary}" StrokeThickness="0" Padding="12,6" StrokeShape="RoundRectangle 10">
-                                    <Label Text="{x:Static res:AppResources.PlayerNoGameSession}" TextColor="{DynamicResource TextSecondary}" />
-                                </Border>
-                                <HorizontalStackLayout Spacing="6" IsVisible="{Binding HasStatus}">
-                                    <Border IsVisible="{Binding IsGuest}" Style="{StaticResource CardBorder}" BackgroundColor="{DynamicResource SurfaceSecondary}" Padding="6,2"><Label Text="{x:Static res:AppResources.Guest}" FontSize="11" /></Border>
-                                    <Border IsVisible="{Binding IsArchived}" Style="{StaticResource CardBorder}" BackgroundColor="{DynamicResource SurfaceSecondary}" Padding="6,2"><Label Text="{x:Static res:AppResources.Archived}" FontSize="11" /></Border>
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
+                        <Border Style="{StaticResource CardBorder}" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" />
+                                    <Label Text="{Binding CreatedText}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{x:Static res:AppResources.Guest}" IsVisible="{Binding IsGuest}" FontSize="12" />
+                                        <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <VerticalStackLayout Grid.Row="3" Spacing="4">
-                <Label Text="{x:Static res:AppResources.PlayersEmpty}" IsVisible="{Binding IsEmpty}" />
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Groups}" SelectionMode="None" IsVisible="{Binding ShowGroups}">
+                <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.NoGroupsYet}" /></CollectionView.EmptyView>
+                <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:ManagedGroupRow">
+                        <Border Style="{StaticResource CardBorder}" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" />
+                                    <Label Text="{Binding Members}" />
+                                    <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" />
+                                </VerticalStackLayout>
+                                <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditGroupClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditGroup}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <VerticalStackLayout Grid.Row="3" Spacing="8">
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+                <Button Text="{x:Static res:AppResources.AddPlayer}" IsVisible="{Binding ShowPlayers}" Clicked="OnAddPlayerClicked" Style="{StaticResource PrimaryCompactButton}" />
+                <Button Text="{x:Static res:AppResources.CreateGroup}" IsVisible="{Binding ShowGroups}" Clicked="OnAddGroupClicked" Style="{StaticResource PrimaryCompactButton}" />
             </VerticalStackLayout>
         </Grid>
-
-        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
-            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
-        </Grid>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>
     </Grid>
 </ContentPage>

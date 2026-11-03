@@ -6,9 +6,19 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Players.EditPlayer;
 
-public partial class EditPlayerViewModel(EditPlayerUseCase useCase, ILogger<EditPlayerViewModel> logger) : ObservableObject
+public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayerUseCase createPlayer, ILogger<EditPlayerViewModel> logger) : ObservableObject
 {
     private Guid _playerId;
+    [ObservableProperty] public partial bool IsNew { get; private set; }
+    [ObservableProperty] public partial bool IsGuest { get; set; }
+    public bool IsExisting => !IsNew;
+    public string Title => IsNew ? AppResources.AddPlayer : AppResources.EditPlayer;
+    public void InitializeNew()
+    {
+        IsNew = true;
+        OnPropertyChanged(nameof(IsExisting));
+        OnPropertyChanged(nameof(Title));
+    }
     [ObservableProperty] public partial string Name { get; set; } = string.Empty;
     [ObservableProperty] public partial bool IsArchived { get; set; }
     [ObservableProperty]
@@ -46,13 +56,16 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, ILogger<Edit
 
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default)
     {
-        if (IsBusy || _playerId == Guid.Empty)
+        if (IsBusy || (!IsNew && _playerId == Guid.Empty))
             return false;
         IsBusy = true;
         ErrorMessage = null;
         try
         {
-            await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
+            if (IsNew)
+                await createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
+            else
+                await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
             return true;
         }
         catch (ArgumentException)

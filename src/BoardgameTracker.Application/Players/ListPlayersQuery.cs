@@ -6,6 +6,12 @@ namespace BoardgameTracker.Application.Players;
 
 public sealed class ListPlayersQuery(IDbContextFactory<BoardgameTrackerDbContext> factory)
 {
+    public async Task<bool> HasPlayersAsync(CancellationToken cancellationToken = default)
+    {
+        await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
+        return await db.Players.AnyAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<PlayerListItem>> ListPlayersAsync(bool includeGuests = false, bool includeArchived = false, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
