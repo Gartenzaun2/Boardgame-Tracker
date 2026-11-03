@@ -15,7 +15,6 @@ public sealed class MauiAppNavigationSettingsStore : IAppNavigationSettingsStore
 
     public AppNavigationSettings Get()
     {
-        Preferences.Default.Remove("Navigation.DefaultGameKey");
         string? selectedGame = GetNullableString(SelectedGameKey);
         int rawSection = Preferences.Default.Get(LastMainSectionKey, 0);
         AppMainSection? section = AppMainSections.FromStoredValue(rawSection);

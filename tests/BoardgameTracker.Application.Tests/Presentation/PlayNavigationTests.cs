@@ -264,10 +264,27 @@ public sealed class PlayNavigationTests
 
     [Theory]
     [InlineData(1, AppMainSection.Play)]
-    [InlineData(2, AppMainSection.Play)]
     [InlineData(3, AppMainSection.History)]
     [InlineData(4, AppMainSection.Settings)]
     [InlineData(5, AppMainSection.Participants)]
-    public void LegacyMainSections_MapWithoutDeadGroupTargets(int old, AppMainSection expected) =>
-        Assert.Equal(expected, AppMainSections.FromStoredValue(old));
+    public void CurrentMainSections_ResolveStoredValues(int stored, AppMainSection expected) =>
+        Assert.Equal(expected, AppMainSections.FromStoredValue(stored));
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(-1)]
+    [InlineData(999)]
+    public async Task InvalidMainSections_FallBackToPlay(int? stored)
+    {
+        Assert.Null(AppMainSections.FromStoredValue(stored));
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        StartupNavigationQuery query = new(db, new(db));
+        AppNavigationSettings settings = AppNavigationSettings.Default with
+        {
+            LastMainSection = stored.HasValue ? (AppMainSection)stored.Value : null
+        };
+        Assert.Equal(AppMainSection.Play, (await query.ResolveAsync(settings, Token)).Section);
+    }
 }

@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.14.0.1
+
+- Nicht mehr benötigte Installationskompatibilität entfernt: keine Bereinigung des früheren Standardspiel-Schlüssels beim Lesen der Preferences und keine Zuordnung des ehemaligen Gruppen-Tab-Werts 2. Aktuelle Navigationswerte und der Standard-Fallback bleiben erhalten.
+
 ## 0.14.0.0
 
 - Vier Haupttabs Spielen, Historie, Mitspieler und Einstellungen; Spielen löst aktuelle offene Sessions auf und erhält die Spieleübersicht als Rückziel. Alte Navigationswerte werden abgebildet, die Standardspiel-Preference entfällt.
