@@ -124,7 +124,7 @@ public sealed class GroupGameUseCaseTests
     public async Task Archive_ChecksOtherGamesAtSaveAndKeepsChangesAtomic(GameSessionStatus status)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        EditGroupUseCase useCase = new(database, new([]), []);
+        EditGroupUseCase useCase = new(database);
         // Simulate an editor loaded before a session was started in another game.
         EditGroupDetails details = (await useCase.GetAsync(database.Group.Id, cancellationToken: Token))!;
         Game other = new("other");
@@ -135,7 +135,7 @@ public sealed class GroupGameUseCaseTests
             await seed.SaveChangesAsync(Token);
         }
         await AddSessionAsync(database, other.Id, status);
-        EditGroupCommand command = new(details.Id, "Changed", true, [database.Second.Id, database.First.Id]);
+        EditGroupCommand command = new(details.Id, "Changed", true, [database.Second.Id, database.First.Id], [other.Id]);
         if (status == GameSessionStatus.Completed)
             await useCase.UpdateGroupAsync(command, Token);
         else

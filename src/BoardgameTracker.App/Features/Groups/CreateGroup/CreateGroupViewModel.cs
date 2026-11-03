@@ -15,6 +15,7 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// </summary>
 public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupColorSelectionViewModel colorSelection, IAppNavigationSettingsStore context, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
+    private Guid[] _selectedGameIds = [];
     public GroupColorSelectionViewModel ColorSelection { get; } = colorSelection;
     public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
     public ObservableCollection<GroupPlayerItemViewModel> Players { get; } = [];
@@ -65,8 +66,10 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupC
         {
             IsBusy = true;
             ErrorMessage = null;
-            if (ColorSelection.Configure(context.Get().SelectedGameKey))
-                foreach (var member in Players) member.DefaultColor = null;
+            ColorSelection.Configure(null);
+            IReadOnlyList<SelectableGroupGame> games = await createGroup.GetSelectableGamesAsync(cancellationToken);
+            string? selectedGameKey = context.Get().SelectedGameKey;
+            _selectedGameIds = games.Where(game => game.Key == selectedGameKey).Select(game => game.Id).ToArray();
             IReadOnlyList<SelectablePlayer> players =
                 await createGroup.GetSelectablePlayersAsync(cancellationToken);
 
@@ -213,7 +216,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, GroupC
             ErrorMessage = null;
 
             await createGroup.CreateGroupAsync(
-                new CreateGroupCommand(GroupName, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest, player.DefaultColor))], ColorSelection.GameKey));
+                new CreateGroupCommand(GroupName, [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest))], _selectedGameIds));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }

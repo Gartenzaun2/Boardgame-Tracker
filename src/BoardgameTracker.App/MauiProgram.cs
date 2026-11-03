@@ -79,6 +79,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EditPlayerViewModel>();
         builder.Services.AddTransient<EditPlayerPage>();
         builder.Services.AddTransient<CreateGroupUseCase>();
+        builder.Services.AddSingleton<FindGroupDuplicatesQuery>();
+        builder.Services.AddTransient<ReuseGroupUseCase>();
         builder.Services.AddSingleton<GamePlayerColorCatalog>();
         builder.Services.AddTransient<GroupColorSelectionViewModel>();
         builder.Services.AddTransient<EditGroupUseCase>();

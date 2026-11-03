@@ -1,23 +1,20 @@
 using BoardgameTracker.App.Features.Groups.Colors;
-using BoardgameTracker.Application.Groups.Colors;
-using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Diagnostics;
-using BoardgameTracker.App.Presentation.PlayerColors;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
 /// <summary>
-/// Owns game-neutral group editing; registered game rules determine optional color choices.
+/// Adapts the existing editor to game-neutral group metadata and order changes.
 /// </summary>
-public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSelectionViewModel colorSelection, IAppNavigationSettingsStore context, ILogger<EditGroupViewModel> logger) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSelectionViewModel colorSelection, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
+    private Guid[] _gameIds = [];
     public GroupColorSelectionViewModel ColorSelection { get; } = colorSelection;
     public ObservableCollection<GroupPlayerItemViewModel> Players { get; } = [];
 
@@ -57,9 +54,9 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             IsBusy = true;
             ErrorMessage = null;
 
-            ColorSelection.Configure(context.Get().SelectedGameKey);
+            ColorSelection.Configure(null);
             EditGroupDetails? details =
-                await editGroup.GetAsync(groupId, ColorSelection.GameKey, cancellationToken);
+                await editGroup.GetAsync(groupId, cancellationToken);
 
             if (details is null)
             {
@@ -67,6 +64,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
                 return;
             }
 
+            _gameIds = details.Games.Where(game => game.IsAssigned).Select(game => game.Id).ToArray();
             GroupId = details.Id;
             GroupName = details.Name;
             IsArchived = details.IsArchived;
@@ -77,8 +75,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
                 Players.Add(new GroupPlayerItemViewModel(
                     player.PlayerId,
                     player.Name,
-                    player.IsGuest,
-                    player.DefaultColor));
+                    player.IsGuest));
             }
 
             SaveCommand.NotifyCanExecuteChanged();
@@ -152,15 +149,12 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GroupColorSe
             IReadOnlyList<Guid> orderedPlayerIds =
                 [.. Players.Select(player => player.PlayerId!.Value)];
 
-            Dictionary<Guid, PlayerColor?> defaultColors = Players
-                .ToDictionary(player => player.PlayerId!.Value, player => player.DefaultColor);
-
             await editGroup.UpdateGroupAsync(new EditGroupCommand(
                 GroupId,
                 GroupName,
                 IsArchived,
                 orderedPlayerIds,
-                ColorSelection.GameKey is null ? null : new GroupColorDefaults(ColorSelection.GameKey, defaultColors)));
+                _gameIds));
 
             Saved?.Invoke(this, EventArgs.Empty);
         }

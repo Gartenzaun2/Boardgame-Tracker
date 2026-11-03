@@ -2,7 +2,6 @@ using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
-using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.Groups;
 
@@ -24,10 +23,10 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database, new([]), []);
+        EditGroupUseCase useCase = new(database);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
-            group.Id, "Neu", true, [second, first]), TestContext.Current.CancellationToken);
+            group.Id, "Neu", true, [second, first], []), TestContext.Current.CancellationToken);
 
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         group = await db.Groups.Include(g => g.Players).SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken);
@@ -50,10 +49,10 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database, new([]), []);
+        EditGroupUseCase useCase = new(database);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
-            group.Id, "Renamed", false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
+            group.Id, "Renamed", false, [group.Players.Single().PlayerId], []), TestContext.Current.CancellationToken);
 
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
         Group saved = await verify.Groups.SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken);
@@ -73,10 +72,10 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database, new([]), []);
+        EditGroupUseCase useCase = new(database);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
-            group.Id, group.Name, false, [group.Players.Single().PlayerId]), TestContext.Current.CancellationToken);
+            group.Id, group.Name, false, [group.Players.Single().PlayerId], []), TestContext.Current.CancellationToken);
 
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
         Assert.False((await verify.Groups.SingleAsync(g => g.Id == group.Id, TestContext.Current.CancellationToken)).IsArchived);
@@ -96,10 +95,10 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database, new([]), []);
+        EditGroupUseCase useCase = new(database);
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.UpdateGroupAsync(new EditGroupCommand(
-                group.Id, group.Name, false, [first, Guid.NewGuid()]), TestContext.Current.CancellationToken));
+                group.Id, group.Name, false, [first, Guid.NewGuid()], []), TestContext.Current.CancellationToken));
     }
 }

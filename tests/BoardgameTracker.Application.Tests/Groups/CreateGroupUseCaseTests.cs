@@ -1,7 +1,6 @@
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
-using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
@@ -18,14 +17,14 @@ public sealed class CreateGroupUseCaseTests
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
         Guid existingPlayerId = database.First.Id;
 
-        CreateGroupUseCase useCase = new(database, new([]), []);
+        CreateGroupUseCase useCase = new(database);
 
         Guid groupId = await useCase.CreateGroupAsync(new CreateGroupCommand(
             "Freitagabend",
             [
                 new CreateGroupPlayerInput(existingPlayerId, "Anna", false),
                 new CreateGroupPlayerInput(null, "Gast", true)
-            ]), Token);
+            ], []), Token);
 
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         Group savedGroup = await db.Groups.Include(group => group.Players).SingleAsync(group => group.Id == groupId, Token);
@@ -44,11 +43,11 @@ public sealed class CreateGroupUseCaseTests
     {
         Guid playerId = Guid.NewGuid();
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        CreateGroupUseCase useCase = new(database, new([]), []);
+        CreateGroupUseCase useCase = new(database);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.CreateGroupAsync(new CreateGroupCommand(
                 "Freitagabend",
-                [new CreateGroupPlayerInput(playerId, "Anna", false)]), Token));
+                [new CreateGroupPlayerInput(playerId, "Anna", false)], []), Token));
     }
 }
