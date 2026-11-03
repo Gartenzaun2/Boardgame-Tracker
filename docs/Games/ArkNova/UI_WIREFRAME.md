@@ -6,7 +6,7 @@ Diese Datei ergänzt `docs/UI_WIREFRAME.md` nur um **Arche-Nova-spezifische Scre
 
 ## 2. Partie vorbereiten
 
-Header: Zurück · **Partie vorbereiten** · Gruppenname; rechts Würfelbutton.
+Gemeinsamer Spielkontext-Header: Zurück · **Partie vorbereiten** · rechts Würfelbutton; darunter **[Arche Nova] Gruppenname** und Divider.
 
 Danach in dieser Reihenfolge:
 1. **Letzte Partie** mit Datum/Placements oder Leerzustand, ohne Karte;
@@ -19,16 +19,16 @@ Spielerkachel: Positionsnummer, Name, Palette/Farbstatus, zwei Zooplankacheln ne
 Zooplankacheln sind quadratisch, verwenden die Skizze mit `Fill`, zeigen die Nummer und keinen zusätzlichen Namen. Initial ist keine ausgewählt; Tap markiert die ganze Kachel.
 
 Die Partiefarbauswahl öffnet sich über Palette; die aktuell gesetzte Farbe wird
-darin nicht erneut angeboten. Ob **Starten** verfügbar ist, folgt den
+darin nicht erneut angeboten. Die aktuelle globale Gruppenreihenfolge ist der Ausgangspunkt; aus der vorherigen Partie wird kein neuer Startspieler automatisch bestimmt. Vorbereitungsänderungen verändern die Gruppen-/Farbdefaults erst beim erfolgreichen Start. Ob **Starten** verfügbar ist, folgt den
 Vorbereitungsregeln aus `PRODUCT_SPEC.md`.
 
 ## 3. Laufende Partie
 
-Header zeigt Gruppe und bisherige Dauer. Darunter Spieler in Startreihenfolge mit Name, Farbe und gewähltem Zooplan. Unten **Partie beenden** als Primary und **Verwerfen** als nachgeordnete destruktive Aktion.
+Gemeinsamer Spielkontext-Header mit Funktion **Partie**, Capsule **Arche Nova**, Gruppenname und bisheriger Dauer. Darunter Spieler in Startreihenfolge mit Name, Farbe und gewähltem Zooplan. Unten **Partie beenden** als Primary und **Verwerfen** als nachgeordnete destruktive Aktion.
 
 ## 4. Wertungsübersicht
 
-Pro Spielerkarte vier Informationszeilen: **Name/Punkte · Farbe/Zooplan · Attraktivität/Artenschutz · Spezialkartenanzahl/optional Ruf**. Das Spezialkarten-Icon selbst trägt keinen Zähler.
+Gemeinsamer Spielkontext-Header mit Funktion **Wertung**, Capsule **Arche Nova** und Gruppenname. Pro Spielerkarte vier Informationszeilen: **Name/Punkte · Farbe/Zooplan · Attraktivität/Artenschutz · Spezialkartenanzahl/optional Ruf**. Das Spezialkarten-Icon selbst trägt keinen Zähler.
 
 Navigation: Kartenfläche → Spielereingabe; Spezialkarten-Icon → Kartenwahl; Kamera → Fotoquelle/Review während `Scoring`; Info → Vorschlagsstatus; Einstellungen → Arche-Nova-Einstellungen.
 
@@ -72,13 +72,17 @@ Platz-Chips sind ca. **32 dp**, zeigen nur die Zahl und markieren den eigenen Zu
 
 ## 8. Ergebnis und historische Wertung
 
+Ergebnis-Header: Zurück · **Ergebnis** · optional Edit-Icon; darunter **[Arche Nova] Gruppenname** und in der zweiten Unterüberschrift **Datum · Dauer**, anschließend Divider. **Direkt unter dem Divider** steht die tatsächliche historische Startreihenfolge als knappe Metainformation, etwa `Start: Anna → Ben → Chris`. Es gibt keinen zusätzlichen großen Gewinnerblock.
+
 Ergebnis zeigt je Spieler **Placement/Name/Punkte**, Zooplan, Rohwerte und Spezialkarten. Nach regulärem Abschluss bleibt der Screen bis **Fertig** geöffnet; **Fertig** führt zu Gruppen.
 
-Historisch geöffnet ist dieselbe Ergebnisansicht read-only. Header: Zurück · **Ergebnis** · Edit-Icon (semantisch **Ergebnis bearbeiten**), kein Bearbeiten-Textbutton. Header-/System-Zurück führt zum aufrufenden Screen: Historie oder Einstellungen → Spieler.
+Historisch geöffnet ist dieselbe Ergebnisansicht read-only. Das Edit-Icon ist semantisch **Ergebnis bearbeiten**, kein Bearbeiten-Textbutton. Header-/System-Zurück führt zum ursprünglichen aufrufenden Screen, insbesondere der Historie.
 
 Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und **Partie löschen**. Spieler-Tap öffnet die Spielereingabe; Zurück verwirft ungespeicherte Korrekturen und zeigt wieder das Ergebnis. **Korrektur speichern** führt zum aktualisierten Ergebnis derselben Partie zurück, bei nötiger Gleichstandsauflösung über denselben Gleichstandsscreen. Das ursprüngliche Rückziel des Ergebnisses bleibt dabei erhalten.
 
 ## 9. Arche-Nova-Einstellungen
+
+Gemeinsamer Spielkontext-Header mit Capsule **Arche Nova**.
 
 Sichtbar: **Ruf erfassen · Neue Wertung/Alte Wertung · Spielmaterial/Sprache + Info · Spezialkarten**. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
 
@@ -94,7 +98,7 @@ Create/Edit: Name, Vorschau `Symbol1 → Symbol2 → Symbol3 → Name`, drei num
 
 Kamera-Aktion öffnet **Foto aufnehmen** oder **Vorhandenes Foto auswählen**. Danach liegt ein isolierter Review über der deaktivierten Wertung.
 
-Der Review-Header zeigt Zurück · **Fotowerte prüfen**. Direkt darunter steht nur das gemeinsame Info-/Hinweis-Icon. Der zugehörige Erklärungstext wird erst nach Tap auf dieses Icon in einem App-Informationsdialog angezeigt und steht nicht dauerhaft im Review.
+Der Review-Header zeigt Zurück · **Fotowerte prüfen** mit dem gemeinsamen Spielkontext-Badge. Direkt darunter steht nur das gemeinsame Info-/Hinweis-Icon. Der zugehörige Erklärungstext wird erst nach Tap auf dieses Icon in einem App-Informationsdialog angezeigt und steht nicht dauerhaft im Review.
 
 Pro Spieler stehen die erkannten Werte in kompakten Zeilen. Jede Wertzeile zeigt das Label, direkt daneben den Sicherheitsstatus `✓ Sicher`, `! Prüfen` oder `? Unsicher` und rechts den editierbaren Wert. Der Sicherheitsstatus erhält keine eigene Zeile. Bei aktivem **Ruf erfassen** gilt derselbe Aufbau für Ruf.
 

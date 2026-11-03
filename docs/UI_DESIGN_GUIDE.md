@@ -46,7 +46,10 @@ Danger DangerSurface
 DisabledSurface DisabledText
 ModalOverlay BusyOverlay IconSurface GameGraphicText BusyIndicator
 RecognitionHigh RecognitionMedium
+GameContextText GameContextBorder
 ```
+
+`GameContextText` und `GameContextBorder` dienen ausschließlich der nicht-interaktiven Spielkontext-Capsule; sie sind keine Statusfarben und nicht pro Spiel verschieden.
 
 Featurecode entscheidet nicht nach konkreten Theme-Namen. Zusätzliche semantische
 Statusrollen entstehen nur für einen realen Zustand und werden zentral bereitgestellt;
@@ -91,6 +94,10 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 | BusyIndicator | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` |
 | RecognitionHigh | `#256A37` | `#256A37` | `#8CD9A3` |
 | RecognitionMedium | `#806000` | `#806000` | `#F5D45E` |
+| GameContextText | `#466655` | `#315B9B` | `#6A84AD` |
+| GameContextBorder | `#789A85` | `#708EBE` | `#668875` |
+
+Für die beiden hellen Themes wird für die Capsule-Schrift zunächst die vorhandene `Primary`-Farbe wiederverwendet; im Dunkel-Theme die ausgewählte ruhige Blaunuance. `GameContextBorder` ist eine eigene semantische Rolle mit denselben Palettenwerten wie `SelectedBorder`, ohne einen Auswahlzustand zu signalisieren.
 
 Deep Forest bleibt ruhig/natürlich ohne beige Zusatzflächen; Königsblau ist das
 kühlere helle Theme; Dunkel ist eigenständig und verwendet keine großen rein
@@ -142,6 +149,25 @@ Kurze Filter sind kompakte Chips:
 Sie sind nicht unnötig vollbreit; lange Auswahllisten dürfen bei realem Bedarf
 suchbar werden.
 
+### Segmente und Spielkontext-Capsule
+
+**Mitspieler** verwendet den gemeinsamen Segment-Umschalter **Spieler | Gruppen** für gleichrangige Verwaltungsansichten. Ein Segment ist kein Filterchip.
+
+Screens im Kontext genau eines Spiels verwenden ein gemeinsames Header-Muster:
+
+```text
+[Hauptüberschrift]                    [Icons]
+[Spielkontext-Capsule] Erste Unterüberschrift
+Zweite Unterüberschrift
+-------------------------------------------
+```
+
+Die Hauptüberschrift beschreibt die Screenfunktion, die erste Unterüberschrift ist sichtbar kleiner, die zweite enthält optional knappe Metadaten. Es gibt höchstens zwei Unterüberschriftszeilen; nicht benötigte Zeilen entfallen. Längere Namen dürfen im verfügbaren Raum verständlich umbrechen; essenzieller Kontext wird nicht stumm abgeschnitten.
+
+Die **Spielkontext-Capsule** ist immer ein nicht-interaktives Kontextlabel und kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: transparenter Hintergrund, volle Pill-Rundung, etwa **28 dp Höhe**, **1 dp** Kontur, etwa **12 dp** seitliches Padding, etwa **13 dp** Textgröße. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
+
+Die Spieleübersicht verwendet stattdessen die vollständigen Spielnamen ohne Capsules.
+
 ## 7. Dialoge und modale Auswahl
 
 Jede reine Auswahlansicht zeigt oben links den gemeinsamen Zurück-/Exit-IconButton und keinen zusätzlichen Schließen-Textbutton unten. Auf normalen Pages navigiert er zurück, bei modaler Auswahl bricht er ab. Dies gilt auch für Single-Choice-Listen über `AppDialogPage.ChooseAsync`. Informations-, Bestätigungs-, Sicherheits- und destruktive Dialoge behalten ihre expliziten Textaktionen.
@@ -187,6 +213,8 @@ Dialoge verändern keine ungespeicherten Entwürfe der darunterliegenden Page.
 Längere Sektionserklärungen liegen hinter dem gemeinsamen Info-Icon statt als
 dauerhafte Infokarten oder wiederholte Hilfetexte.
 
+Nur bei **wirklich global null Spielern oder Gruppen** darf ein kurzer sichtbarer Einstiegshinweis den ersten notwendigen Schritt erklären. Gefilterte Listen und Spiele ohne zugeordnete Gruppen trotz vorhandener globaler Gruppen zeigen keinen solchen Onboarding-Text.
+
 Busy blockiert den betroffenen Inhalt und offene Dialogaktionen über
 `BusyOverlay` + `BusyIndicator`. Fehler werden nur angezeigt, wenn tatsächlich
 Fehlertext vorhanden ist.
@@ -220,7 +248,7 @@ Prüfschwelle. UI-Hexwerte sind keine Kamera-/Trainingswerte.
 
 Farbe ist nie die einzige Identifikation; Name/Reihenfolge/Farbname bleibt sichtbar.
 
-### Gruppenfarbauswahl
+### Spielabhängige Farbauswahl in der Partievorbereitung
 
 Wenn ein Spiel `PlayerColor` verwendet:
 
@@ -231,6 +259,8 @@ Wenn ein Spiel `PlayerColor` verwendet:
 - bei Auswahl einer bereits belegten Farbe die sichtbaren Zuordnungen tauschen
   statt eine doppelte Zuordnung darzustellen;
 - ohne Farbunterstützung Farbstatus und Palettenaktion ausblenden.
+
+Diese Auswahl steht nicht in der allgemeinen Gruppe-/Spielerverwaltung unter **Mitspieler**. Änderungen im Vorbereitungsentwurf dürfen den Gruppendefault erst beim erfolgreichen Partiestart verändern.
 
 Speicher-/Validierungsregeln: [PRODUCT_SPEC.md](PRODUCT_SPEC.md) und
 [DATA_MODEL.md](DATA_MODEL.md).

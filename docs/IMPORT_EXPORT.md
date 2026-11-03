@@ -72,6 +72,10 @@ Alle IDs sind nichtleere GUIDs. UUIDv7 ist keine Importvoraussetzung.
 
 `appVersion` und `exportedAtUtc` sind Metadaten.
 
+### Legacy-Kompatibilität von `groups[].isTemporary`
+
+Das Feld bleibt im bestehenden **Wireformat v1** ein erforderlicher boolescher Wert, obwohl das aktuelle Gruppen-Domainmodell keinen temporären Status mehr kennt. Der neue Export schreibt stets `isTemporary: false`. Beim Import werden alte Werte `true` und `false` akzeptiert, aber **nicht** ins Domainmodell übertragen. Unbekannte Felder bleiben weiterhin verboten.
+
 ## 3. Format- und Spielversionen
 
 `formatVersion` und `games[].schemaVersion` sind unabhängige positive
@@ -85,8 +89,7 @@ unterstützte Spielschema-Versionen werden als **gesamte Datei** abgelehnt. Es g
 kein Best Effort.
 
 Unterstützte ältere Versionen würden vor Matching schrittweise in aktuelle DTOs
-migriert; die Quelldatei bleibt unverändert. Aktuell existiert für Format v1 kein
-allgemeiner Altversions-Migrationsschritt.
+migriert; die Quelldatei bleibt unverändert. Der strukturelle Format-v1-Vertrag bleibt für diese Produktänderung bestehen; eine neue allgemeine Formatversion ist nicht erforderlich. Der Legacy-Wert `isTemporary` wird beim Transfer in das aktuelle Gruppenmodell ignoriert. Dies erweitert **nicht** automatisch die Unterstützung für alte spielspezifische Schemas; für Arche Nova ist nur das derzeit unterstützte Spielschema gültig. Die Spezifikation unter [Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md) nennt ausdrücklich die abgelehnte ältere Version.
 
 Custom Games werden derzeit abgelehnt, solange kein passendes registriertes
 Transferschema existiert.
@@ -110,6 +113,8 @@ Ein gemeinsamer lesender Snapshot enthält nur die für diese Sessions benötigt
 Nicht exportiert werden Preferences, nicht benötigte Stammdaten oder
 spielabhängige Gruppendefaults. Format v1 besitzt dafür kein spielabhängiges
 Group-Payload.
+
+Aktuelle `GroupGame`-Zuordnungen werden im History-Transfer nicht separat exportiert. Der Export ist kein Backup der aktuellen Spieleauswahl oder Gruppenverwaltung.
 
 Spielmodule lesen ihre Exportwerte gebündelt, nicht per N+1-Abfrage pro Partie.
 
@@ -251,18 +256,25 @@ Bei zusammengeführter Gruppe bleiben lokal:
 - Name;
 - Mitgliedschaft;
 - `DefaultOrder`;
-- `IsTemporary`;
 - `IsArchived`;
+- bestehende `GroupGame`-Zuordnungen;
 - spielabhängige lokale Gruppendefaults.
 
 Bei neuer Gruppe werden importiert:
 
 - endgültige Mitgliedschaft;
 - `DefaultOrder`;
-- `IsTemporary`;
 - `IsArchived`.
 
 Bestehende Gruppenmitgliedschaften werden niemals verändert.
+
+### Gruppen-Spiel-Zuordnungen beim Import
+
+Nur für eine **tatsächlich neu importierte Gruppe** werden `GroupGame`-Zuordnungen aus ihren tatsächlich neu importierten `GameSession`-Datensätzen abgeleitet und innerhalb derselben Transaktion angelegt. Die Zuordnungen werden je `(GroupId, GameId)` dedupliziert.
+
+Wird eine importierte Gruppe dagegen auf eine **lokal bereits vorhandene Gruppe** gemappt (per ID, Name oder manueller Resolve-Entscheidung), bleiben deren aktuelle Spielzuordnungen vollständig **unverändert**. Auch neu importierte historische Sessions eines bisher nicht zugeordneten Spiels erzeugen für diese lokale Gruppe **keine** neue Zuordnung. Damit darf eine bewusst entfernte Verknüpfung nicht durch einen späteren History-Import zurückkehren.
+
+Bereits bekannte/übersprungene Sessions lösen keine neuen Zuordnungen aus. Eine historische Session darf auch ohne aktuelle `GroupGame`-Zuordnung bestehen.
 
 ## 9. Preview
 
@@ -289,15 +301,18 @@ geprüft. Dazu gehören insbesondere:
 - Player-/Group-Namen;
 - Gruppenmitgliedschaften;
 - vorhandene Session-IDs;
+- bei neu anzulegenden Gruppen die daraus abgeleiteten `GroupGame`-Zuordnungen;
 - spielabhängiger Referenzzustand.
 
 Bei Änderung wird der Import abgebrochen und muss neu analysiert werden.
 
-Danach wird der Plan mit demselben Resolve-Stand erneut berechnet. Offene Konflikte
+Danach wird der Plan mit demselben Resolve-Stand erneut berechnet. Nur für neu anzulegende Gruppen werden dabei die aus den zu importierenden Sessions abgeleiteten Spielzuordnungen berücksichtigt. Offene Konflikte
 verhindern den Commit.
 
 Neu angelegte Player und Groups behalten ihre importierten IDs. Für bekannte Games
 wird die lokale `Game.Id` über den stabilen `Game.Key` verwendet.
+
+Die nur für neue Gruppen benötigten `GroupGame`-Zuordnungen werden in derselben Transaktion eingefügt; vorhandene Gruppen behalten ihre Zuordnungen unverändert.
 
 Alle Inserts und Spielmoduldaten werden gemeinsam gespeichert. Jede Exception rollt
 die Transaktion zurück.

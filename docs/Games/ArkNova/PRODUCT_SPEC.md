@@ -15,6 +15,8 @@ Weitere kanonische Quellen:
 
 Arche Nova unterstützt Vorbereitung, laufende Partie, persistente Wertung, Ergebnis/Korrektur, Spezialkartenverwaltung, assistierte Fotoerkennung sowie Import/Export.
 
+Der vollständige Anzeigename und der kompakte Spielkontext-Badge-Text lauten beide **Arche Nova**. Der Badge-Text wird wie bei jedem Spiel ausdrücklich im Modul bereitgestellt.
+
 Materialsprache ist aktuell ausschließlich **Deutsch (`de`)** und zugleich Default.
 
 Lokale Arche-Nova-Einstellungen umfassen insbesondere:
@@ -28,14 +30,14 @@ Diese Einstellungen sind keine historischen Partiedaten.
 ## 3. Partievorbereitung
 
 Aus einer Gruppe wird ein unpersistierter Arche-Nova-Entwurf erzeugt:
-1. Reihenfolge und Farbdefaults übernehmen;
+1. globale Gruppen-Default-Reihenfolge und Arche-Nova-Farbdefaults übernehmen;
 2. fehlende eindeutige Farben ergänzen;
 3. zwei Zooplanoptionen je Spieler bestimmen;
 4. je Spieler einen Plan wählen;
-5. Farbe/Reihenfolge bei Bedarf nur für diese Partie ändern;
+5. Farbe und Reihenfolge bei Bedarf im unpersistierten Entwurf ändern;
 6. Partie starten.
 
-Bis zum Start wird nichts davon als Partie gespeichert.
+Bis zum Start bleibt der Entwurf unpersistiert. Der erfolgreiche Start speichert die tatsächlich gewählten Sessionfarben sowie neue Arche-Nova-Gruppendefaultfarben zusammen mit der Session; ein Abbruch verändert keine Defaults. Die allgemeine Reihenfolgeübernahme beim Start folgt `docs/PRODUCT_SPEC.md`.
 
 ### Farben
 
@@ -45,7 +47,7 @@ Arche Nova erlaubt genau:
 Blue · Yellow · Red · Black
 ```
 
-Gruppendefaults werden übernommen; Änderungen in der Vorbereitung verändern sie nicht.
+Gruppendefaults werden übernommen. Fehlende eindeutige Farben werden im Entwurf automatisch ergänzt; nach erfolgreichem Start werden die tatsächlich gewählten Farben als neue Gruppendefaults übernommen.
 Vor dem Start muss jeder Partieteilnehmer eine unterschiedliche erlaubte Farbe besitzen.
 Doppelte Farben dürfen im unpersistierten Entwurf vorübergehend vorkommen; solange
 sie bestehen, kann die Partie nicht gestartet werden.
@@ -56,9 +58,9 @@ Jeder Spieler erhält zwei verschiedene Optionen und wählt genau eine. Innerhal
 
 ### Startreihenfolge
 
-Ausgangspunkt ist die Gruppenreihenfolge. Existiert für dieselbe Gruppe eine abgeschlossene letzte Arche-Nova-Partie, wird deren letztplatzierter Spieler durch zyklische Rotation Startspieler; bei geteiltem letzten Platz entscheidet der alphabetisch erste Name.
+Ausgangspunkt ist immer die aktuelle globale Gruppen-Default-Reihenfolge. **Es gibt keine automatische Startspielerrotation nach dem Letztplatzierten der vorigen Partie mehr.**
 
-Die Vorbereitung erlaubt zyklisches Rotieren, Verschieben einzelner Spieler und zufällige Startspielerwahl. Diese Aktionen bewahren soweit anwendbar die relative Reihenfolge und gelten nur für die konkrete Partie.
+Die Vorbereitung erlaubt zyklisches Rotieren, Verschieben einzelner Spieler und zufällige Startspielerwahl. Die Aktionen bewahren soweit anwendbar die relative Reihenfolge. Die tatsächliche Startreihenfolge wird beim erfolgreichen Start nach der allgemeinen Regel historisch und als neuer Gruppen-Default gespeichert.
 
 ## 4. Laufende Partie
 

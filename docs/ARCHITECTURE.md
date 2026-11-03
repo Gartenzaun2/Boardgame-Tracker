@@ -82,6 +82,7 @@ GameSession
 Group
 Player
 GroupPlayer
+GroupGame
 GameSessionPlayer
 ```
 
@@ -116,6 +117,8 @@ GroupPlayer       1 -> 0..1 <GameName>GroupPlayer
 
 Der gemeinsame Schlüssel darf als PK/FK wiederholt werden. Allgemeiner fachlicher
 Zustand wie Reihenfolge oder Placement wird nicht kopiert.
+
+`GroupGame` ist die allgemeine aktuelle Gruppe↔Spiel-Verknüpfung. Sie ist nicht Teil der historischen `GameSession`; die Spielmodule definieren keine parallele Zuordnung.
 
 Persistierte Vererbung wird nur für eine echte stabile is-a-Beziehung mit
 polymorphem Verhalten eingesetzt. Value Objects werden für echte fachliche
@@ -159,8 +162,10 @@ Allgemeiner Code arbeitet mit Spielmodulen nur über kleine fachliche Verträge.
 Der allgemeine Vertrag liegt außerhalb eines konkreten Spielmoduls; die konkrete
 Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum, z. B.:
 
+- stabile Spielidentität sowie vollständiger lokalisierter Anzeigename und explizit definierter kompakter Spiel-Badge-Text für den gemeinsamen Header;
 - Session-Navigation/Resume;
 - optionale PlayerColor-Regeln und Gruppendefault-Persistenz;
+- optionale Spiel-Einstellungsnavigation;
 - Initialisierungsschritte;
 - Import-/Export-Schema und -Persistenz.
 
@@ -215,8 +220,12 @@ registrierte Handler aufgelöst.
 Shell-Parameter verwenden zentrale Konstanten in
 `App/Navigation/NavigationParameters.cs`.
 
-Navigation, Theme und andere nicht-historische Preferences sind Hostzustand, keine
+Navigation, Theme, die aktiv geschalteten Spiele und andere nicht-historische Preferences sind Hostzustand, keine
 GameSession-Daten.
+
+Registrierte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig aktiv. Die Auswahl wird anhand der stabilen `Game.Key`-Werte geführt, nicht über konkrete Game-Typ-Switches in allgemeinen App-Features. Die frühere Standardspiel-Preference entfällt.
+
+Badge-Text ist registrierte Spiel-Präsentationsinformation und wird nicht als Feld auf `Game` oder in `GameSession` gespeichert.
 
 ### History-Transfer
 

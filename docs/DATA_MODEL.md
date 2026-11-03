@@ -47,13 +47,12 @@ Player
 `Player` ist Aggregate Root. Gaststatus und Archivierung ändern seine Identität
 nicht. `CreatedAt` ist der unveränderliche UTC-Anlagezeitpunkt.
 
-## 4. Group
+## 4. Group und Game-Zuordnung
 
 ```text
 Group
 - Id
 - Name
-- IsTemporary
 - IsArchived
 - Players
 
@@ -61,6 +60,10 @@ GroupPlayer
 - GroupId
 - PlayerId
 - DefaultOrder
+
+GroupGame
+- GroupId
+- GameId
 ```
 
 Invarianten:
@@ -69,10 +72,18 @@ Invarianten:
 - jeder Spieler höchstens einmal;
 - `DefaultOrder` positiv, eindeutig und lückenlos `1..n`;
 - Mitgliedermenge einer bestehenden Group bleibt fest;
-- nur `IsTemporary: true -> false`.
+- je Gruppe null bis beliebig viele explizite Spielzuordnungen;
+- jede Gruppe-Spiel-Kombination höchstens einmal;
+- Archivierung von `Group` nur, wenn in **keinem** Spiel eine `GameSession` dieser Gruppe `Running` oder `Scoring` ist;
+- Entfernen von `GroupGame` nur, wenn für genau dieses Paar keine offene `GameSession` existiert.
 
-`GroupPlayer` hat PK `(GroupId, PlayerId)`. `(GroupId, DefaultOrder)` ist eindeutig.
-Löschen der Group entfernt Memberships kaskadierend, nicht die referenzierten Player.
+`GroupPlayer` hat PK `(GroupId, PlayerId)`; `(GroupId, DefaultOrder)` ist eindeutig. `GroupGame` hat PK `(GroupId, GameId)`, verweist auf bestehende `Group` und `Game` und speichert ausschließlich die **aktuelle** Zuordnung zur Spielen-Auswahl. Eine historische `GameSession` erfordert **keine** gegenwärtige `GroupGame`-Zuordnung; Entfernen ändert ihre Referenzen nicht.
+
+Bewusst doppelte Gruppen mit identischer Mitgliedermenge sind zulässig. Die Dublettenerkennung beim Anlegen ist daher kein Unique-Constraint für die Spielermenge.
+
+Eine Archivierungs- oder Zuordnungsänderung wird beim Speichern gegen den aktuellen Sessionzustand geprüft. Historische `Completed`-Sessions sperren diese Aktionen nicht.
+
+Löschen der Gruppe entfernt Mitgliedschaften und Zuordnungen, nicht die referenzierten Player oder Games. Historische Session-Restrict-Regeln bleiben vorrangig.
 
 ## 5. Game
 
@@ -82,8 +93,9 @@ Game
 - Key
 ```
 
-`Key` ist sprachneutral, eindeutig und maximal 100 Zeichen. Anzeigenamen sind keine
-Identität und werden nicht in `Game` gespeichert.
+`Key` ist sprachneutral, eindeutig und maximal 100 Zeichen. Anzeigenamen und explizite kompakte Badge-Texte sind keine
+Identität und werden als registrierte Spielmetadaten statt in `Game` gespeichert.
+Aktive/deaktivierte Spiele sind Host-Preferences und keine Game-Domainfelder.
 
 ## 6. GameSession
 
@@ -124,6 +136,8 @@ nicht vor `StartedAt` bzw. `EndedAt` liegen.
 
 Die Vorbereitung ist keine persistierte `GameSession`. Spielabhängige Ergebnisfelder
 dürfen während `Scoring` nullable sein; das Spielmodul definiert Abschlussinvarianten.
+
+Die tatsächliche Startreihenfolge bleibt dauerhaft über `GameSessionPlayer.Order` erhalten. Das Aktualisieren des globalen `GroupPlayer.DefaultOrder` beim Start verändert bereits gespeicherte Sessions nicht.
 
 `GameSession` referenziert `Game` und `Group` mit Restrict. `GameSessionPlayer`
 referenziert `Player` mit Restrict. Session-Kinder werden beim Löschen kaskadierend
@@ -171,7 +185,8 @@ Nicht autoritativ persistieren, wenn zuverlässig ableitbar, z. B.:
 - Partiedauer;
 - Gewinner;
 - Siege/Gewinnquote;
-- durchschnittliche Platzierung.
+- durchschnittliche Platzierung;
+- Startpositionseffekte und daraus abgeleitete Statistiken.
 
 Spielspezifische abgeleitete Werte stehen im Spiel-Datenmodell.
 
@@ -187,7 +202,8 @@ Allgemein stabil bleiben dabei:
 - `GroupId`;
 - Teilnehmermenge;
 - `StartedAt`;
-- `EndedAt`.
+- `EndedAt`;
+- `GameSessionPlayer.Order`.
 
 Nur ausdrücklich korrekturfähige Ergebnisdaten werden atomar ersetzt. Welche das
 sind und welche Validierung gilt, definiert das Spielmodul. Aktuelle Player-,
@@ -200,6 +216,7 @@ Allgemeine relationale Schutzregeln:
 
 - eindeutige `Player.Name`, `Group.Name`, `Game.Key`;
 - PK `(GroupId, PlayerId)` und Unique `(GroupId, DefaultOrder)`;
+- PK `(GroupId, GameId)` für `GroupGame`;
 - PK `(GameSessionId, PlayerId)` und Unique `(GameSessionId, Order)`;
 - positive Checks für `DefaultOrder`, `Order` und gesetztes `Placement`;
 - Restrict auf langlebige Stammdaten;

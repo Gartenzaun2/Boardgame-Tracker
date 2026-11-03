@@ -15,46 +15,63 @@ Nicht hierher gehören Fach-/Speicherregeln (`PRODUCT_SPEC.md`), allgemeine Dars
 
 Spielspezifische Screens: `docs/Games/<GameName>/UI_WIREFRAME.md`.
 
-## 2. Hauptnavigation
+## 2. Hauptnavigation und gemeinsamer Spielkontext
 
-Permanente Tabs: **Spiele · Gruppen · Historie · Einstellungen**. Unter **Gruppen** bleibt der aktuelle Spielname sichtbar. Spiel-Tap setzt den Spielkontext und öffnet Gruppen; Gruppen-Tab öffnet die Übersicht im aktuellen Kontext. App-Start/Wiederherstellung folgen `PRODUCT_SPEC.md`.
+Permanente Tabs: **Spielen · Historie · Mitspieler · Einstellungen**.
 
-Ein expliziter Tab-Tap öffnet immer den jeweiligen Root: `GamesPage`, `GroupListPage` im aktuellen Spielkontext, `HistoryPage` oder `AppSettingsPage`; tiefere Seiten des gewählten Tabs werden verworfen.
+Ein expliziter Tab-Tap öffnet stets den Root des gewählten Hauptbereichs; tiefere Seiten werden verworfen.
 
-Öffnet ein bestehender GameSession-Screen aus **Gruppen**, **Historie** oder **Einstellungen → Spieler**, bleibt der konkrete aufrufende Screen als Rückziel erhalten: `GroupListPage`, `HistoryPage` beziehungsweise `PlayerListPage`. Interne Wechsel zwischen laufender Partie, Wertung, Ergebnis und historischer Korrektur ändern dieses Rückziel nicht. Header-/System-Zurück sowie erfolgreiches Verwerfen einer offenen Partie oder Wertung führen dorthin zurück. Ein expliziter Haupttab-Tap hat Vorrang und öffnet weiterhin den Root des gewählten Hauptbereichs.
+**Spielen** öffnet:
+- bei offenen Sessions/Wertungen für ausschließlich ein Spiel direkt dessen `GroupListPage` – auch bei mehreren offenen Gruppen desselben Spiels;
+- sonst die `GamesPage`.
 
-Reine Auswahllisten (auch Darstellung, Standardspiel und History-Filter) zeigen oben links den gemeinsamen Zurück-/Exit-IconButton und keinen unteren Schließen-Textbutton.
+`GroupListPage` hat immer `GamesPage` als direktes Rückziel, auch nach einem Shortcut.
 
-## 3. Gruppen
+Der App-Start darf eine zuletzt explizit geöffnete offene Session/Wertung wiederherstellen; ein späterer expliziter Tab-Tap folgt trotzdem der Root-Regel.
 
-### Übersicht
+Öffnet eine bestehende GameSession aus Gruppenübersicht oder Historie, bleibt der aufrufende Screen als Rückziel erhalten. Interne Wechsel zwischen laufender Partie, Wertung, Ergebnis und Korrektur verändern dieses Rückziel nicht. Header-/System-Zurück und erfolgreiches Verwerfen führen dorthin; ein Haupttab-Tap hat Vorrang.
 
-Reihenfolge: Titel **Gruppen** → aktueller Spielname → `HeaderDivider` → Filter **Temporär** und **Archiviert** nebeneinander → Gruppenliste → **Neue Gruppe**.
+### Gemeinsamer Header mit einem Spielkontext
 
-Eine Gruppenkarte zeigt Name, Mitglieder, letzte Nutzung im aktuellen Spiel, optional das Aktiv-Icon für offene Partie/Wertung und rechts eine eigene Bearbeiten-Touchfläche. Karten-Tap öffnet offene Partie/Wertung oder die Vorbereitung des Spielmoduls; Bearbeiten öffnet nur das Gruppenformular. Kein allgemeiner Gruppendetail-Screen.
+```text
+[Hauptüberschrift]                    [Icons]
+[Spielkontext-Capsule] Erste Unterüberschrift
+Zweite Unterüberschrift
+HeaderDivider
+```
 
-### Anlegen
+Unterüberschriften sind optional und höchstens zwei Zeilen. Die erste ist kleiner als die Hauptüberschrift. Die Capsule erscheint auf konkreten Spiel-Screens, nicht in der Spieleübersicht.
 
-Header: Zurück · **Gruppe anlegen** · Info · rechts **Speichern**.
+Die reine Auswahl zeigt jeweils den gemeinsamen Zurück-/Exit-IconButton oben links, ohne unteren Schließen-Textbutton; Auswahl- und Dialogverhalten folgt dem `UI_DESIGN_GUIDE.md`.
 
-Inhaltsreihenfolge:
-1. Gruppenname;
-2. Temporär-Switch;
-3. Gruppenmitglieder;
-4. **Vorhandenen Spieler hinzufügen**;
-5. neuer Spieler mit Name, Gast-Switch und **Spieler hinzufügen**.
+## 3. Spielen: Spiele und Gruppen
 
-Mitglieder erscheinen als Kacheln in aktueller Reihenfolge mit Hoch/Runter/Entfernen; bei `PlayerColor` zusätzlich Palette/Farbstatus. Drag & Drop ist nicht Teil des aktuellen Screens.
+### Spieleübersicht
 
-**Vorhandenen Spieler hinzufügen** öffnet `SelectionDialog`; Tap fügt den Eintrag dem Entwurf hinzu und schließt. Sind keine Spieler verfügbar, ersetzt ein Leerzustand den Button.
+Header **Spiele**; darunter die scrollende Liste aktiver Spiele mit **vollständigem Namen**.
 
-### Bearbeiten
+Spiele mit offenen Partien/Wertungen stehen zuerst und tragen direkt am Namen das gemeinsame Aktiv-Symbol. Danach folgen Spiele nach zuletzt gestartetem Spielbeginn, ungenutzte zuletzt. Das Statussymbol hat keine eigene Touchfläche. Tap auf den Spieleintrag öffnet die Gruppenübersicht.
 
-Gleiche Formularsprache wie beim Anlegen. Sichtbar: Name, Archiv-Switch, bei temporärer Gruppe **Permanent machen**, Mitglieder mit Reihenfolge und optionaler Farbe, **Speichern**. Keine Spieler-Hinzufügen-/Entfernen-Aktion.
+### Gruppenübersicht eines Spiels
 
-### Gruppenfarbe
+Header: Zurück · **Gruppen**; darunter die Spielkontext-Capsule, dann `HeaderDivider`.
 
-Palette öffnet `SelectionDialog` mit Titel **Farbe für <Spiel> festlegen**, Spielername, erlaubten Farben und **Keine Farbe**. Aktuelle Auswahl ist sichtbar markiert. Ohne Farbunterstützung fehlen Palette und Farbstatus.
+Eintrag: Gruppenname, Mitglieder, letzte Nutzung im aktuellen Spiel (wenn vorhanden), optional Aktiv-Symbol bei offener Partie/Wertung. Tap öffnet offene Partie/Wertung oder Vorbereitung. **Kein Bearbeiten-Stift** in der Spielliste.
+
+Die Gruppenliste zeigt ausschließlich aktive Gruppen mit aktueller Zuordnung zum Spiel. Offene Partie/Wertung steht oben, anschließend nach zuletzt gestarteter Partie der Spiel-Gruppe-Kombination; ungenutzte Gruppen zuletzt.
+
+Fest unten:
+
+```text
+[ Neue Gruppe ]      [ Vorhandene auswählen ]
+   Secondary                  Primary
+```
+
+`Vorhandene auswählen` ist deaktiviert, wenn keine aktive, noch nicht zugeordnete Gruppe verfügbar ist.
+
+Bei global null Spielern sind beide Aktionen deaktiviert und ein kurzer sichtbarer Hilfetext verweist auf die Spieleranlage. Bei mindestens einem Spieler, aber global null Gruppen, ist **Neue Gruppe** verfügbar und die zweite Aktion deaktiviert; ein kurzer sichtbarer Hilfetext erklärt den ersten Schritt. Existieren Gruppen, aber keine für das Spiel, erscheint nur **Keine Gruppen für dieses Spiel** ohne Onboarding-Text.
+
+**Vorhandene auswählen** öffnet einen `SelectionDialog` mit allen aktiven, dem Spiel noch nicht zugeordneten Gruppen. Tap auf einen Eintrag stellt die Zuordnung her, schließt den Dialog und öffnet direkt die Partievorbereitung ohne zusätzliche Bestätigung. Zurück aus der Vorbereitung führt zur Gruppenübersicht; die gespeicherte Zuordnung bleibt erhalten.
 
 ## 4. Historie
 
@@ -86,23 +103,71 @@ neuen Gruppennamen sowie **Jetzt importieren · Abbrechen**.
 Import/Export besitzt keinen zweiten Einstieg unter Einstellungen. Fachliche
 Importregeln stehen ausschließlich in `IMPORT_EXPORT.md`.
 
-## 5. Spieler
+## 5. Mitspieler: Spieler und Gruppen
 
-### Übersicht
+Root **Mitspieler** mit zwei Segmenten:
 
-Einstieg über **Einstellungen → Spieler**. Header: Zurück · **Spieler** · Info; darunter **Gäste anzeigen** und **Archivierte anzeigen**, initial beide aus.
+```text
+[ Spieler | Gruppen ]
+```
 
-Spielerkarte: Name + Bearbeiten-Icon, darunter **Erstellt <Datum>**, optionale Gast-/Archiv-Chips und eine eigene Secondary-Aktion **Zuletzt gespielt <…>**. Ohne Partie steht dort **Noch keine Partie** nicht interaktiv. Nur das Bearbeiten-Icon öffnet den Editor.
+### Spielerübersicht
 
-Bei `Running` und `Scoring` enthält die Secondary-Aktion **Zuletzt gespielt <…>** rechts neben Text/Datum dasselbe Aktiv-Icon wie in der Gruppenübersicht; bei `Completed` fehlt es. Das Icon ist Bestandteil der Buttonfläche, dient nur als Statusanzeige und besitzt keine eigene Aktion. Eine über **Zuletzt gespielt** geöffnete Partie behält die Spielerübersicht als Rückziel. Bei abgeschlossenen Ergebnissen gilt dies auch nach einer Korrektur über den Ergebnis-Screen.
+Initial Segment **Spieler**. Bei global null Spielern ist **Gruppen** deaktiviert; ein kurzer Hilfetext fordert zum Anlegen des ersten Spielers auf. Die Historie bleibt über die Hauptnavigation erreichbar.
 
-### Bearbeiten
+Filter **Gäste anzeigen** und **Archivierte anzeigen**, initial aus. Spielerkarte: Name, Erstelldatum, optionale Gast-/Archiv-Chips sowie Bearbeiten-Stift. **Keine** Zuletzt-gespielt- oder andere Spielen-Aktion. Nur der Stift öffnet den Editor.
 
-Header **Spieler bearbeiten**; Felder: Name, Archiv-Switch; unten **Speichern**. Kein Gast-Control.
+Unten **Spieler hinzufügen**.
+
+**Spieler anlegen:** Header Zurück · **Spieler anlegen**; Name, Gast-Switch, **Speichern**. Nach dem allerersten erfolgreich gespeicherten Spieler öffnet **Spielen**.
+
+**Spieler bearbeiten:** Header **Spieler bearbeiten**; Name, Archiv-Switch und **Speichern**, kein Gast-Control.
+
+### Gruppenübersicht (Verwaltung)
+
+Segment **Gruppen**. Filter **Archivierte anzeigen**; Karten mit Gruppenname, Mitgliedern und Bearbeiten-Stift. Kein Spielstart und kein **Zuletzt gespielt**. Unten **Gruppe anlegen**.
+
+### Gruppe anlegen
+
+Header: Zurück · **Gruppe anlegen** · Info; rechts **Speichern**.
+
+Inhaltsreihenfolge:
+
+1. Gruppenname;
+2. Mitglieder mit aktueller Reihenfolge, Hoch/Runter/Entfernen;
+3. **Vorhandenen Spieler hinzufügen** per `SelectionDialog`;
+4. Neuer Spieler mit Name, Gast-Switch und **Spieler hinzufügen**;
+5. **Spiele auswählen** als Mehrfachauswahl aktueller Zuordnungen.
+
+Im allgemeinen Gruppenformular gibt es keine Spiel-Farbpalette.
+
+Aus **Spielen** ist das aufrufende Spiel vorausgewählt; nach Speichern öffnet direkt dessen Vorbereitung. Aus **Mitspieler** ist kein Spiel vorausgewählt; eine leere Auswahl ist erlaubt und Speichern führt zurück zur Gruppenverwaltung.
+
+### Dublette beim Anlegen
+
+Eigene Auswahl mit Zurück-Pfeil und sichtbarem bestehenden Gruppennamen/Mitgliedern:
+
+```text
+Gruppe bereits vorhanden
+[ Gruppe übernehmen ]   Primary
+[ Neue Gruppe anlegen ]  Secondary
+```
+
+Bei archivierter Gruppe lautet die Primary-Aktion **Gruppe reaktivieren**. Zurück bricht ab, Übernehmen/Reaktivieren setzt den Flow aus dem jeweiligen Ursprung fort: aus **Spielen** zur Vorbereitung, aus **Mitspieler** zur Gruppenverwaltung.
+
+### Gruppe bearbeiten
+
+Name, Archiv-Switch, unveränderliche Mitgliedermenge mit Hoch/Runter für **Default-Reihenfolge**, **Spiele auswählen** und **Speichern**. Kein Hinzufügen/Entfernen von Mitgliedern, keine spielabhängige Farbauswahl.
+
+Ist irgendeine Session dieser Gruppe Running/Scoring, ist **Archivieren** nicht möglich; der Switch wird entsprechend deaktiviert und erläutert. Die erneute Prüfung beim Speichern liegt im Produkt-/Datenmodell. Eine zugeordnete Spielverknüpfung mit offener Session/Wertung darf ebenfalls nicht entfernt werden und wird verständlich blockiert.
 
 ## 6. Einstellungen
 
-Reihenfolge: **Darstellung · Standardspiel · Spieler · registrierte Spieleinstellungen · Über / Rechtliches**. Darstellung und Standardspiel öffnen App-Auswahldialoge. Allgemeiner Code zeigt Spieleinstellungen nur als registrierte Einstiege.
+Reihenfolge: **Darstellung · Meine Spiele · registrierte Spieleinstellungen · Über / Rechtliches**. **Standardspiel** und **Spieler** entfallen hier.
+
+Darstellung öffnet den bestehenden App-Auswahldialog.
+
+**Meine Spiele** öffnet eine Auswahlseite mit gemeinsamem Zurück-Pfeil. Jedes registrierte Spiel wird mit vollem Namen und aktivem Zustand angezeigt; ohne gespeicherte Abwahl sind alle aktiv. Spiele mit einer offenen Session/Wertung können nicht deaktiviert werden. Die UI zeigt den Grund verständlich an.
 
 Unter **Über / Rechtliches** steht zuerst die zurückhaltende, nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)** der installierten App. Danach folgt **Open-Source-Lizenzen**.
 
