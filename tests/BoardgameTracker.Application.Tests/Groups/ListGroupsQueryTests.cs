@@ -18,6 +18,7 @@ public sealed class ListGroupsQueryTests
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
             seed.Groups.Add(archived);
+            seed.GroupGames.AddRange(new GroupGame(archived.Id, database.GameId), new GroupGame(database.Group.Id, database.GameId));
             await seed.SaveChangesAsync(token);
         }
         string gameKey;
@@ -28,7 +29,7 @@ public sealed class ListGroupsQueryTests
         Assert.Equal(database.Group.Id, active.Id);
         Assert.False(active.IsArchived);
         Assert.Equal(new[] { database.First.Name, database.Second.Name }, active.PlayerNames);
-        IReadOnlyList<GroupListItem> all = await query.ListGroupsAsync(gameKey, includeArchived: true, cancellationToken: token);
+        IReadOnlyList<ManagedGroup> all = await new ListManagedGroupsQuery(database).ListAsync(includeArchived: true, cancellationToken: token);
         Assert.Equal(2, all.Count);
         Assert.Contains(all, group => group.Id == archived.Id && group.IsArchived);
     }

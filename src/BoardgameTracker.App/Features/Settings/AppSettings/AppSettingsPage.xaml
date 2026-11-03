@@ -24,17 +24,6 @@
                     <Button x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
                 </VerticalStackLayout>
             </Border>
-            <Border Padding="16" Style="{StaticResource CardBorder}">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="{x:Static res:AppResources.DefaultGame}" FontAttributes="Bold" FontSize="17" VerticalOptions="Center" />
-                        <ImageButton Grid.Column="1" Clicked="OnDefaultGameInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
-                                     SemanticProperties.Description="{x:Static res:AppResources.DefaultGameHint}"
-                                     ToolTipProperties.Text="{x:Static res:AppResources.DefaultGameHint}" />
-                    </Grid>
-                    <Button x:Name="DefaultGameChoice" Grid.Row="1" Clicked="OnDefaultGameClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.DefaultGame}" />
-                </Grid>
-            </Border>
 
 
             <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">

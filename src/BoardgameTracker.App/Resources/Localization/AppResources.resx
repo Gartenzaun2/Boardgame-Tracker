@@ -429,15 +429,6 @@
   <data name="NoSpecialCards" xml:space="preserve">
     <value>Keine besonderen Karten</value>
   </data>
-  <data name="DefaultGame" xml:space="preserve">
-    <value>Standardspiel</value>
-  </data>
-  <data name="NoDefaultGame" xml:space="preserve">
-    <value>Kein Standardspiel</value>
-  </data>
-  <data name="DefaultGameHint" xml:space="preserve">
-    <value>Ohne Standardspiel startet die App bei Spiele. Mit Standardspiel startet sie beim ersten Mal direkt in dessen Gruppenübersicht. Danach wird der zuletzt verwendete Bereich wiederhergestellt.</value>
-  </data>
   <data name="SaveCorrection" xml:space="preserve">
     <value>Korrektur speichern</value>
   </data>
@@ -894,4 +885,12 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="FirstPlayerHint" xml:space="preserve"><value>Lege zuerst einen Spieler an. Danach kannst du Gruppen erstellen.</value></data>
   <data name="ShowArchived" xml:space="preserve"><value>Archivierte anzeigen</value></data>
   <data name="ShowGuests" xml:space="preserve"><value>Gäste anzeigen</value></data>
+  <data name="Play" xml:space="preserve"><value>Spielen</value></data>
+  <data name="ChooseExistingGroup" xml:space="preserve"><value>Vorhandene auswählen</value></data>
+  <data name="OpenGameSession" xml:space="preserve"><value>Offene Partie oder Wertung</value></data>
+  <data name="FirstGroupHint" xml:space="preserve"><value>Lege eine neue Gruppe an, um mit diesem Spiel zu beginnen.</value></data>
+  <data name="NoGroupsForGame" xml:space="preserve"><value>Keine Gruppen für dieses Spiel</value></data>
+  <data name="LoadGamesFailed" xml:space="preserve"><value>Die Spiele konnten nicht geladen werden.</value></data>
+  <data name="GroupNavigationFailed" xml:space="preserve"><value>Die Gruppe wurde gespeichert. Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
+  <data name="OpenGroupFailed" xml:space="preserve"><value>Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
 </root>

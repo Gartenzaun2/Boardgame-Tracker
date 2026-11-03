@@ -1,4 +1,5 @@
 using BoardgameTracker.App.Features.Games.ListGames;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
@@ -7,6 +8,7 @@ using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Features.Settings.Licenses;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings.Navigation;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.App.Features.Players.ListPlayers;
 using BoardgameTracker.App.Features.Players.EditPlayer;
 
@@ -19,7 +21,7 @@ public partial class AppShell : Shell
 {
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly Tab _gamesTab;
-    private readonly Tab _groupsTab;
+    private readonly PlayOverviewQuery _playOverview;
     private readonly Tab _historyTab;
     private readonly Tab _settingsTab;
     private readonly Tab _participantsTab;
@@ -31,16 +33,18 @@ public partial class AppShell : Shell
     private bool _isReturningToCaller;
 
     public AppShell(
-        GroupListPage groupListPage,
         GamesPage gamesPage,
         HistoryPage historyPage,
         AppSettingsPage settingsPage,
         PlayerListPage playerListPage,
-        IAppNavigationSettingsStore navigationSettingsStore)
+        IAppNavigationSettingsStore navigationSettingsStore,
+        PlayOverviewQuery playOverview)
     {
         InitializeComponent();
         _navigationSettingsStore = navigationSettingsStore;
+        _playOverview = playOverview;
 
+        Routing.RegisterRoute(nameof(GroupListPage), typeof(GroupListPage));
         Routing.RegisterRoute(nameof(CreateGroupPage), typeof(CreateGroupPage));
         Routing.RegisterRoute(nameof(EditGroupPage), typeof(EditGroupPage));
         Routing.RegisterRoute(nameof(DuplicateGroupPage), typeof(DuplicateGroupPage));
@@ -49,12 +53,10 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(LicenseDetailPage), typeof(LicenseDetailPage));
 
         TabBar tabBar = new();
-        _gamesTab = CreateTab(AppResources.Games, "icon_games.png", gamesPage, nameof(GamesPage));
-        _groupsTab = CreateTab(AppResources.Groups, "icon_groups.png", groupListPage, nameof(GroupListPage));
+        _gamesTab = CreateTab(AppResources.Play, "icon_games.png", gamesPage, nameof(GamesPage));
         _historyTab = CreateTab(AppResources.History, "icon_history.png", historyPage, nameof(HistoryPage));
         _settingsTab = CreateTab(AppResources.Settings, "icon_settings.png", settingsPage, nameof(AppSettingsPage));
         tabBar.Items.Add(_gamesTab);
-        tabBar.Items.Add(_groupsTab);
         tabBar.Items.Add(_historyTab);
         _participantsTab = CreateTab(AppResources.Participants, "icon_groups.png", playerListPage, nameof(PlayerListPage));
         tabBar.Items.Add(_participantsTab);
@@ -67,20 +69,11 @@ public partial class AppShell : Shell
 
     public async Task NavigateToMainSectionAsync(AppMainSection section, bool remember = true)
     {
-        if (section == AppMainSection.Groups)
-        {
-            AppNavigationSettings settings = _navigationSettingsStore.Get();
-            string? gameKey = settings.SelectedGameKey ?? settings.DefaultGameKey;
-            if (string.IsNullOrWhiteSpace(gameKey))
-                section = AppMainSection.Games;
-            else if (string.IsNullOrWhiteSpace(settings.SelectedGameKey))
-                _navigationSettingsStore.Save(settings with { SelectedGameKey = gameKey });
-        }
-
+        section = AppMainSections.FromStoredValue((int)section) ?? AppMainSection.Play;
+        string? openGameKey = section == AppMainSection.Play ? await _playOverview.GetSingleOpenGameKeyAsync() : null;
         Tab target = section switch
         {
-            AppMainSection.Games => _gamesTab,
-            AppMainSection.Groups => _groupsTab,
+            AppMainSection.Play => _gamesTab,
             AppMainSection.History => _historyTab,
             AppMainSection.Settings => _settingsTab,
             AppMainSection.Participants => _participantsTab,
@@ -89,10 +82,13 @@ public partial class AppShell : Shell
 
         _gameSessionCaller = null;
         _gameSessionCallerSection = null;
+        _navigationSettingsStore.Save(_navigationSettingsStore.Get() with { LastGameSessionId = null });
         _isProgrammaticMainNavigation = true;
         try
         {
             await GoToAsync($"//{target.Route}");
+            if (openGameKey is not null)
+                await PushGameGroupsAsync(openGameKey);
         }
         finally
         {
@@ -109,23 +105,33 @@ public partial class AppShell : Shell
     public async Task NavigateToGroupsForGameAsync(string gameKey, bool remember = true)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
-
-        AppNavigationSettings current = _navigationSettingsStore.Get();
-        _navigationSettingsStore.Save(current with
+        _gameSessionCaller = null;
+        _gameSessionCallerSection = null;
+        _isProgrammaticMainNavigation = true;
+        try
         {
-            SelectedGameKey = gameKey,
-            LastMainSection = remember ? AppMainSection.Groups : current.LastMainSection,
-            LastGameSessionId = null
-        });
+            await GoToAsync($"//{_gamesTab.Route}");
+            await PushGameGroupsAsync(gameKey);
+        }
+        finally
+        {
+            _isProgrammaticMainNavigation = false;
+        }
+        if (remember) RememberMainSection(AppMainSection.Play);
+    }
 
-        await NavigateToMainSectionAsync(AppMainSection.Groups, remember);
+    private async Task PushGameGroupsAsync(string gameKey)
+    {
+        AppNavigationSettings current = _navigationSettingsStore.Get();
+        _navigationSettingsStore.Save(current with { SelectedGameKey = gameKey, LastGameSessionId = null });
+        await GoToAsync(nameof(GroupListPage), new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = gameKey });
     }
 
     public void CaptureGameSessionCaller(bool useRoot = false)
     {
         _gameSessionCallerSection = CurrentItem.CurrentItem;
         var stack = _gameSessionCallerSection.Navigation.NavigationStack;
-        _gameSessionCaller = useRoot ? stack[0] : stack[^1];
+        _gameSessionCaller = useRoot ? stack.OfType<GroupListPage>().LastOrDefault() ?? stack[0] : stack[^1];
     }
 
     public async Task ReturnToGameSessionCallerAsync()
@@ -176,8 +182,7 @@ public partial class AppShell : Shell
         }
     }
 
-    private AppMainSection GetMainSection(ShellSection tab) => tab == _gamesTab ? AppMainSection.Games
-        : tab == _groupsTab ? AppMainSection.Groups
+    private AppMainSection GetMainSection(ShellSection tab) => tab == _gamesTab ? AppMainSection.Play
         : tab == _historyTab ? AppMainSection.History
         : tab == _participantsTab ? AppMainSection.Participants
         : tab == _settingsTab ? AppMainSection.Settings
@@ -201,24 +206,6 @@ public partial class AppShell : Shell
         }
 
         AppMainSection section = GetMainSection(CurrentItem.CurrentItem);
-        if (section == AppMainSection.Groups)
-        {
-            AppNavigationSettings current = _navigationSettingsStore.Get();
-            if (string.IsNullOrWhiteSpace(current.SelectedGameKey)
-                && string.IsNullOrWhiteSpace(current.DefaultGameKey))
-            {
-                await NavigateToMainSectionAsync(AppMainSection.Games);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(current.SelectedGameKey)
-                && !string.IsNullOrWhiteSpace(current.DefaultGameKey))
-            {
-                _navigationSettingsStore.Save(current with { SelectedGameKey = current.DefaultGameKey });
-            }
-
-        }
-
         // A push inside a game must retain its resume target. Returning to a root clears it.
         RememberMainSection(section, CurrentItem.CurrentItem.Navigation.NavigationStack.Count <= 1);
     }

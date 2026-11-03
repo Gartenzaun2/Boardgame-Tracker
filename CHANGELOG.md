@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.14.0.0
+
+- Vier Haupttabs Spielen, Historie, Mitspieler und Einstellungen; Spielen löst aktuelle offene Sessions auf und erhält die Spieleübersicht als Rückziel. Alte Navigationswerte werden abgebildet, die Standardspiel-Preference entfällt.
+- Registrierte Spiele und aktuell zugeordnete aktive Gruppen werden nach offenen Sessions und letztem Partiebeginn angezeigt. Vorhandene Gruppen können im Spielkontext zugeordnet und direkt vorbereitet werden.
+- Erfolgreiche Gruppenanlage oder Übernahme im Spielkontext öffnet die Vorbereitung mit der gespeicherten Gruppen-ID. Navigationsfehler wiederholen keine Speicherung.
+- Erststart ohne Spieler öffnet die Spielerverwaltung; nur der allererste erfolgreich angelegte Spieler führt anschließend zu Spielen. Resume- und Historie-Rückziele bleiben erhalten.
+
 ## 0.13.0.0
 
 - Mitspieler-Verwaltung mit Spieler-/Gruppensegmenten, Spieleranlage und Bearbeitung sowie spielunabhängiger Gruppenliste ergänzt. Bisherige Spieleinstiege bleiben im Übergangsstand erreichbar.

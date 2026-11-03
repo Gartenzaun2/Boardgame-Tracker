@@ -9,6 +9,8 @@ namespace BoardgameTracker.App.Features.Players.EditPlayer;
 public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayerUseCase createPlayer, ILogger<EditPlayerViewModel> logger) : ObservableObject
 {
     private Guid _playerId;
+    private bool _saved;
+    public bool ShouldOpenPlay { get; private set; }
     [ObservableProperty] public partial bool IsNew { get; private set; }
     [ObservableProperty] public partial bool IsGuest { get; set; }
     public bool IsExisting => !IsNew;
@@ -56,6 +58,8 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
 
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default)
     {
+        if (_saved)
+            return true;
         if (IsBusy || (!IsNew && _playerId == Guid.Empty))
             return false;
         IsBusy = true;
@@ -63,9 +67,14 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
         try
         {
             if (IsNew)
-                await createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
+            {
+                CreatePlayerResult result = await createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
+                _playerId = result.Id;
+                ShouldOpenPlay = result.IsFirstPlayer;
+            }
             else
                 await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
+            _saved = true;
             return true;
         }
         catch (ArgumentException)

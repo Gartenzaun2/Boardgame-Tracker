@@ -40,7 +40,7 @@ public sealed class TieResolutionTests
             await completion.CompleteAsync(Token);
         }
         MainSectionNavigationTests.SettingsStore store = new();
-        var shell = MainSectionNavigationTests.CreateShell(store);
+        var shell = MainSectionNavigationTests.CreateShell(store, database);
         Shell.Current = shell;
         await shell.NavigateToMainSectionAsync(fromHistory
             ? BoardgameTracker.Application.Settings.Navigation.AppMainSection.History

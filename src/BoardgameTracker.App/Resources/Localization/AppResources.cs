@@ -346,9 +346,6 @@ public static class AppResources
     public static string AppSettingsTitle => GetString(nameof(AppSettingsTitle));
     public static string GameSettings => GetString(nameof(GameSettings));
     public static string GameSettingsHint => GetString(nameof(GameSettingsHint));
-    public static string DefaultGame => GetString(nameof(DefaultGame));
-    public static string NoDefaultGame => GetString(nameof(NoDefaultGame));
-    public static string DefaultGameHint => GetString(nameof(DefaultGameHint));
     public static string ActiveGame => GetString(nameof(ActiveGame));
     public static string AddSpecialCard => GetString(nameof(AddSpecialCard));
     public static string SpecialCards => GetString(nameof(SpecialCards));
@@ -478,4 +475,12 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string FirstPlayerHint => GetString(nameof(FirstPlayerHint));
     public static string ShowArchived => GetString(nameof(ShowArchived));
     public static string ShowGuests => GetString(nameof(ShowGuests));
+    public static string Play => GetString(nameof(Play));
+    public static string ChooseExistingGroup => GetString(nameof(ChooseExistingGroup));
+    public static string OpenGameSession => GetString(nameof(OpenGameSession));
+    public static string FirstGroupHint => GetString(nameof(FirstGroupHint));
+    public static string NoGroupsForGame => GetString(nameof(NoGroupsForGame));
+    public static string LoadGamesFailed => GetString(nameof(LoadGamesFailed));
+    public static string GroupNavigationFailed => GetString(nameof(GroupNavigationFailed));
+    public static string OpenGroupFailed => GetString(nameof(OpenGroupFailed));
 }

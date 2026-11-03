@@ -1,5 +1,4 @@
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -13,16 +12,18 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// <summary>
 /// Owns create-group screen state and translates UI input into the create-group Application command.
 /// </summary>
-public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, IEnumerable<IGameSessionNavigationHandler> games, IAppNavigationSettingsStore context, ILogger<CreateGroupViewModel> logger) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, IEnumerable<IGameSessionNavigationHandler> games, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
     private bool _loaded;
-    private bool _managementOrigin;
+    private string? _gameKey;
+    private GroupSaveOutcome? _savedOutcome;
     private CreateGroupCommand? _pendingCommand;
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
     public ObservableCollection<DuplicateGroupRow> Duplicates { get; } = [];
     public Func<Task>? ShowDuplicatesAsync { get; set; }
-    public Func<bool, Task>? SavedAsync { get; set; }
-    public void SetManagementOrigin() => _managementOrigin = true;
+    public Func<GroupSaveOutcome, Task>? SavedAsync { get; set; }
+    public void SetManagementOrigin() => _gameKey = null;
+    public void SetGameContext(string gameKey) => _gameKey = gameKey;
     public void CancelDuplicates()
     {
         _pendingCommand = null;
@@ -77,7 +78,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             IsBusy = true;
             ErrorMessage = null;
             IReadOnlyList<SelectableGroupGame> availableGames = await createGroup.GetSelectableGamesAsync(cancellationToken);
-            string? selectedGameKey = _managementOrigin ? null : context.Get().SelectedGameKey;
+            string? selectedGameKey = _gameKey;
             Games.Clear();
             foreach (SelectableGroupGame game in availableGames)
                 Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey));
@@ -221,6 +222,11 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             IsBusy = true;
             ErrorMessage = null;
 
+            if (_savedOutcome is not null)
+            {
+                await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
+                return;
+            }
             _pendingCommand = new CreateGroupCommand(GroupName,
                 [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest))],
                 Games.Where(game => game.IsSelected).Select(game => game.Id).ToArray());
@@ -235,15 +241,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             }
             else
             {
-                await createGroup.CreateGroupAsync(_pendingCommand);
-                if (SavedAsync is not null)
-                    await SavedAsync(false);
+                Guid groupId = await createGroup.CreateGroupAsync(_pendingCommand);
+                await CompleteSaveAsync(groupId, false);
             }
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not create group.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
+            ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
         }
         finally
         {
@@ -260,16 +265,20 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         ErrorMessage = null;
         try
         {
-            await reuseGroup.ReuseGroupAsync(new(row.Id,
+            if (_savedOutcome is not null)
+            {
+                await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
+                return;
+            }
+            Guid groupId = await reuseGroup.ReuseGroupAsync(new(row.Id,
                 _pendingCommand.Players.Select(player => player.ExistingPlayerId!.Value).ToArray(), _pendingCommand.GameIds,
                 row.IsArchived ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting));
-            if (SavedAsync is not null)
-                await SavedAsync(true);
+            await CompleteSaveAsync(groupId, true);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not reuse selected group.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
+            ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
         }
         finally
         {
@@ -286,19 +295,30 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         ErrorMessage = null;
         try
         {
-            await createGroup.CreateGroupAsync(_pendingCommand);
-            if (SavedAsync is not null)
-                await SavedAsync(true);
+            if (_savedOutcome is not null)
+            {
+                await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
+                return;
+            }
+            Guid groupId = await createGroup.CreateGroupAsync(_pendingCommand);
+            await CompleteSaveAsync(groupId, true);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not create additional group.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
+            ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
         }
         finally
         {
             IsBusy = false;
         }
+    }
+
+    private async Task CompleteSaveAsync(Guid groupId, bool fromDuplicates)
+    {
+        _savedOutcome ??= new(groupId, _gameKey, fromDuplicates);
+        if (SavedAsync is not null)
+            await SavedAsync(_savedOutcome);
     }
 
     private void PlayersChanged()
@@ -327,3 +347,5 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     }
 }
 
+
+public sealed record GroupSaveOutcome(Guid GroupId, string? GameKey, bool FromDuplicates);

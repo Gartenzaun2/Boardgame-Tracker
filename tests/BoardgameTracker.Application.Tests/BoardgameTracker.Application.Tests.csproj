@@ -20,7 +20,7 @@
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\Groups\**\*.cs;..\..\src\BoardgameTracker.App\Features\Groups\**\*.xaml" LogicalName="GeneralGroupFeature.%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="../../src/BoardgameTracker.App/Features/Groups/GroupFormModels.cs;../../src/BoardgameTracker.App/Features/Groups/CreateGroup/CreateGroupViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/EditGroup/EditGroupViewModel.cs;../../src/BoardgameTracker.App/Diagnostics/UserErrorMessage.cs" Link="Presentation/%(Filename)%(Extension)" />
+    <Compile Include="../../src/BoardgameTracker.App/Features/Games/ListGames/GamesViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/ListGroups/GroupListViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/GroupFormModels.cs;../../src/BoardgameTracker.App/Features/Groups/CreateGroup/CreateGroupViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/EditGroup/EditGroupViewModel.cs;../../src/BoardgameTracker.App/Diagnostics/UserErrorMessage.cs" Link="Presentation/%(Filename)%(Extension)" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

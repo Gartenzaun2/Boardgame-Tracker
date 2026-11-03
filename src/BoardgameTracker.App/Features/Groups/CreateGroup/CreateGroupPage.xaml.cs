@@ -11,16 +11,18 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 public partial class CreateGroupPage : ContentPage, IQueryAttributable
 {
     private readonly CreateGroupViewModel _viewModel;
+    private readonly IEnumerable<IGameSessionNavigationHandler> _handlers;
     public CreateGroupViewModel ViewModel => _viewModel;
 
-    public CreateGroupPage(CreateGroupViewModel viewModel)
+    public CreateGroupPage(CreateGroupViewModel viewModel, IEnumerable<IGameSessionNavigationHandler> handlers)
     {
         InitializeComponent();
 
         _viewModel = viewModel;
+        _handlers = handlers;
         _viewModel.ShowDuplicatesAsync = () => Shell.Current.GoToAsync(nameof(DuplicateGroupPage),
             new ShellNavigationQueryParameters { [NavigationParameters.GroupDraft] = _viewModel });
-        _viewModel.SavedAsync = fromDuplicates => Shell.Current.GoToAsync(fromDuplicates ? "../.." : "..");
+        _viewModel.SavedAsync = OnSavedAsync;
         BindingContext = _viewModel;
     }
 
@@ -28,6 +30,24 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
     {
         if (query.TryGetValue(NavigationParameters.GroupManagement, out object? value) && value is true)
             _viewModel.SetManagementOrigin();
+        else if (query.TryGetValue(NavigationParameters.GameKey, out object? key) && key is string gameKey)
+            _viewModel.SetGameContext(gameKey);
+    }
+
+    private async Task OnSavedAsync(GroupSaveOutcome outcome)
+    {
+        if (outcome.GameKey is null)
+        {
+            await Shell.Current.GoToAsync(outcome.FromDuplicates ? "../.." : "..");
+            return;
+        }
+        IGameSessionNavigationHandler handler = _handlers.Single(handler => handler.GameKey == outcome.GameKey);
+        await handler.OpenGroupAsync(outcome.GroupId, null, null);
+        // Only remove completed form pages after the handler successfully opened preparation.
+        var navigation = Shell.Current.CurrentItem.CurrentItem.Navigation;
+        foreach (Page page in navigation.NavigationStack.Where(page => ReferenceEquals(page, this)
+            || page is DuplicateGroupPage duplicate && ReferenceEquals(duplicate.ViewModel, _viewModel)).ToArray())
+            navigation.RemovePage(page);
     }
 
     protected override async void OnAppearing()

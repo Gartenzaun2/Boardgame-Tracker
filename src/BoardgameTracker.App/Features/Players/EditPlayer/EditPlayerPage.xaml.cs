@@ -1,4 +1,5 @@
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,12 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
         try
         {
             if (await _viewModel.SaveAsync())
-                await Shell.Current.GoToAsync("..");
+            {
+                if (_viewModel.ShouldOpenPlay && Shell.Current is AppShell shell)
+                    await shell.NavigateToMainSectionAsync(AppMainSection.Play);
+                else
+                    await Shell.Current.GoToAsync("..");
+            }
         }
         catch (Exception exception)
         {

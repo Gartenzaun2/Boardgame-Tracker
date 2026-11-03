@@ -2,155 +2,139 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.Application.Groups;
-using BoardgameTracker.Application.Settings.Navigation;
-using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.Application.Groups;
+using BoardgameTracker.Application.Games;
+using BoardgameTracker.Core.GameSessions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
-/// <summary>
-/// Owns the game-context group overview, filters and navigation re-entry protection.
-/// </summary>
-public partial class GroupListViewModel(
-    ListGroupsQuery listGroupsQuery,
-    IAppNavigationSettingsStore navigationSettingsStore,
-    ILogger<GroupListViewModel> logger,
-    IEnumerable<IGameSessionNavigationHandler> navigationHandlers) : ObservableObject
+public partial class GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCase addAssignment, PlayOverviewQuery games,
+    ILogger<GroupListViewModel> logger, IEnumerable<IGameSessionNavigationHandler> handlers) : ObservableObject
 {
-    private bool _reloadRequested;
-
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
-
+    public ObservableCollection<AvailablePlayGroup> AvailableGroups { get; } = [];
+    [ObservableProperty] public partial string SelectedGameName { get; private set; } = string.Empty;
+    [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
+    public string SelectedGameKey { get; private set; } = string.Empty;
     [ObservableProperty]
-    public partial string SelectedGameName { get; private set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string SelectedGameKey { get; private set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial bool IncludeArchived { get; set; }
-
-    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
     public partial bool IsBusy { get; private set; }
-
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
     public partial bool IsNavigating { get; private set; }
-
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
+    public partial bool IsChoosingExisting { get; set; }
+    [ObservableProperty] public partial bool CanCreate { get; private set; }
+    [ObservableProperty] public partial bool CanChoose { get; private set; }
+    [ObservableProperty] public partial string EmptyMessage { get; private set; } = string.Empty;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-
-    partial void OnIncludeArchivedChanged(bool value) => _ = LoadAsync();
-
+    public bool IsWorking => IsBusy || IsNavigating;
+    public bool CanInteract => !IsBusy && !IsNavigating && !IsChoosingExisting;
+    public bool IsEmpty => Groups.Count == 0;
+    public void SetGameContext(string key) => SelectedGameKey = key;
     public bool TryBeginNavigation()
     {
-        if (IsNavigating)
-        {
+        if (IsBusy || IsNavigating)
             return false;
-        }
-
         IsNavigating = true;
         return true;
     }
-
     public void EndNavigation() => IsNavigating = false;
-
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
-        if (IsBusy)
-        {
-            _reloadRequested = true;
+        if (IsBusy || string.IsNullOrWhiteSpace(SelectedGameKey))
             return;
-        }
-
+        IsBusy = true;
+        ErrorMessage = null;
         try
         {
-            IsBusy = true;
-
-            do
+            IGameSessionNavigationHandler handler = handlers.Single(handler => handler.GameKey == SelectedGameKey);
+            SelectedGameName = handler.DisplayName;
+            BadgeText = handler.BadgeText;
+            GroupPresence presence = await query.GetPresenceAsync(cancellationToken);
+            CanCreate = presence.HasPlayers;
+            EmptyMessage = !presence.HasPlayers ? AppResources.FirstPlayerHint : !presence.HasGroups ? AppResources.FirstGroupHint : AppResources.NoGroupsForGame;
+            IReadOnlyList<GroupListItem> rows = await query.ListGroupsAsync(SelectedGameKey, cancellationToken);
+            Groups.Clear();
+            foreach (GroupListItem row in rows)
             {
-                _reloadRequested = false;
-                ErrorMessage = null;
-
-                AppNavigationSettings navigation = navigationSettingsStore.Get();
-                string? gameKey = navigation.SelectedGameKey ?? navigation.DefaultGameKey;
-                if (string.IsNullOrWhiteSpace(gameKey))
-                {
-                    SelectedGameKey = string.Empty;
-                    SelectedGameName = string.Empty;
-                    Groups.Clear();
-                    return;
-                }
-
-                if (navigation.SelectedGameKey != gameKey)
-                {
-                    navigationSettingsStore.Save(navigation with { SelectedGameKey = gameKey });
-                }
-
-                SelectedGameKey = gameKey;
-                SelectedGameName = GetGameName(gameKey);
-
-                IReadOnlyList<GroupListItem> groups =
-                    await listGroupsQuery.ListGroupsAsync(
-                        gameKey,
-                        IncludeArchived,
-                        cancellationToken);
-
-                Groups.Clear();
-
-                foreach (GroupListItem group in groups)
-                {
-                    string lastPlayedText = group.LastPlayedAt is DateTimeOffset lastPlayed
-                        ? string.Format(
-                            CultureInfo.CurrentCulture,
-                            AppResources.LastPlayedFormat,
-                            lastPlayed.ToLocalTime().ToString("d", CultureInfo.CurrentCulture))
-                        : AppResources.NeverPlayed;
-
-                    Groups.Add(new GroupListItemViewModel(
-                        group.Id,
-                        group.Name,
-                        group.IsArchived,
-                        group.PlayerCount,
-                        string.Join(" · ", group.PlayerNames),
-                        lastPlayedText,
-                        group.OpenGameSessionId,
-                        group.OpenGameSessionStatus));
-                }
+                string lastPlayed = row.LastPlayedAt is DateTimeOffset date ? string.Format(CultureInfo.CurrentCulture,
+                    AppResources.LastPlayedFormat, date.ToLocalTime().ToString("d", CultureInfo.CurrentCulture)) : string.Empty;
+                Groups.Add(new(row.Id, row.Name, string.Join(" · ", row.PlayerNames), lastPlayed, row.OpenGameSessionId, row.OpenGameSessionStatus));
             }
-            while (_reloadRequested && !cancellationToken.IsCancellationRequested);
+            AvailableGroups.Clear();
+            foreach (ManagedGroup group in await query.GetAvailableGroupsAsync(SelectedGameKey, cancellationToken))
+                AvailableGroups.Add(new(group.Id, group.Name, string.Join(" · ", group.PlayerNames)));
+            CanChoose = presence.HasPlayers && AvailableGroups.Count > 0;
+            OnPropertyChanged(nameof(IsEmpty));
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Could not load groups.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.LoadGroupsFailed, exception);
+            logger.LogError(exception, "Could not load groups for game.");
+            ErrorMessage = AppResources.LoadGroupsFailed;
         }
         finally
         {
             IsBusy = false;
         }
     }
-
-    private string GetGameName(string gameKey) => navigationHandlers.FirstOrDefault(handler => handler.GameKey == gameKey)?.DisplayName ?? gameKey;
+    public async Task OpenGroupAsync(Guid groupId)
+    {
+        if (!TryBeginNavigation())
+            return;
+        ErrorMessage = null;
+        try
+        {
+            GroupListItem group = (await query.ListGroupsAsync(SelectedGameKey)).Single(group => group.Id == groupId);
+            await handlers.Single(handler => handler.GameKey == SelectedGameKey).OpenGroupAsync(group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not open game group.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
+        }
+        finally
+        {
+            EndNavigation();
+        }
+    }
+    public async Task SelectExistingAsync(AvailablePlayGroup group)
+    {
+        if (!AvailableGroups.Contains(group) || !TryBeginNavigation())
+            return;
+        ErrorMessage = null;
+        try
+        {
+            Guid gameId = (await games.ListAsync()).Single(game => game.Key == SelectedGameKey).Id;
+            await addAssignment.AddGroupGameAsync(group.Id, gameId);
+            IsChoosingExisting = false;
+            await handlers.Single(handler => handler.GameKey == SelectedGameKey).OpenGroupAsync(group.Id, null, null);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not assign and open game group.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
+        }
+        finally
+        {
+            EndNavigation();
+        }
+    }
 }
-
-/// <summary>
-/// Presentation model for one group card in the selected-game overview.
-/// </summary>
-public sealed record GroupListItemViewModel(
-    Guid Id,
-    string Name,
-    bool IsArchived,
-    int PlayerCount,
-    string PlayerNames,
-    string LastPlayedText,
-    Guid? OpenGameSessionId,
-    GameSessionStatus? OpenGameSessionStatus)
+public sealed record AvailablePlayGroup(Guid Id, string Name, string Members);
+public sealed record GroupListItemViewModel(Guid Id, string Name, string PlayerNames, string LastPlayedText,
+    Guid? OpenGameSessionId, GameSessionStatus? OpenGameSessionStatus)
 {
-    public bool HasOpenGameSession => OpenGameSessionId is not null;
+    public bool HasOpenGameSession => OpenGameSessionId.HasValue;
+    public bool HasLastPlayed => !string.IsNullOrWhiteSpace(LastPlayedText);
 }

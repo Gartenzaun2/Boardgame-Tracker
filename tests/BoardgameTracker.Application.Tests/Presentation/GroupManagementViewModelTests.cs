@@ -26,8 +26,9 @@ public sealed class GroupManagementViewModelTests
     }
     private static CreateGroupViewModel Draft(SliceDatabase db, bool management = true)
     {
-        CreateGroupViewModel vm = new(new(db), new(db), new(db), [], new Settings { Value = AppNavigationSettings.Default with { SelectedGameKey = "ark-nova" } }, NullLogger<CreateGroupViewModel>.Instance);
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), [], NullLogger<CreateGroupViewModel>.Instance);
         if (management) vm.SetManagementOrigin();
+        else vm.SetGameContext("ark-nova");
         return vm;
     }
     private static void AddExisting(CreateGroupViewModel vm, Guid id)
@@ -57,7 +58,7 @@ public sealed class GroupManagementViewModelTests
         vm.AddNewPlayerCommand.Execute(null);
         if (withGames) foreach (GroupGameSelection game in vm.Games) game.IsSelected = true;
         int saved = 0;
-        vm.SavedAsync = duplicate => { Assert.False(duplicate); saved++; return Task.CompletedTask; };
+        vm.SavedAsync = duplicate => { Assert.False(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
         {
             Assert.Equal(2, await verify.Players.CountAsync(Token));
@@ -156,7 +157,7 @@ public sealed class GroupManagementViewModelTests
         vm.Games.Single(game => game.Id == db.GameId).IsSelected = true;
         await vm.SaveCommand.ExecuteAsync(null);
         int saved = 0;
-        vm.SavedAsync = duplicate => { Assert.True(duplicate); saved++; return Task.CompletedTask; };
+        vm.SavedAsync = duplicate => { Assert.True(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
         await vm.ReuseDuplicateCommand.ExecuteAsync(vm.Duplicates.Single(row => row.Id == target.Id));
         Assert.False(vm.HasError);
         Assert.Equal(1, saved);
@@ -184,6 +185,10 @@ public sealed class GroupManagementViewModelTests
         Assert.False(vm.HasError);
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Equal(2, await verify.Groups.CountAsync(Token));
+        vm = Draft(db);
+        await vm.LoadAsync(Token);
+        AddExisting(vm, db.First.Id);
+        AddExisting(vm, db.Second.Id);
         vm.GroupName = "Another draft";
         await vm.SaveCommand.ExecuteAsync(null);
         DuplicateGroupRow target = vm.Duplicates.Single(row => row.Name == "Additional");

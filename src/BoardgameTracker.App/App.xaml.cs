@@ -16,7 +16,7 @@ public partial class App : Microsoft.Maui.Controls.Application
 {
     private readonly IServiceProvider _services;
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
-    private readonly OpenGameSessionQuery _openGameSessionQuery;
+    private readonly StartupNavigationQuery _startupNavigation;
     private readonly DatabaseInitializer _databaseInitializer;
     private readonly ILogger<App> _logger;
     private readonly IEnumerable<IGameSessionResumeHandler> _resumeHandlers;
@@ -28,7 +28,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         BoardgameTracker.App.Theming.ThemeManager themes,
         IAppNavigationSettingsStore settings,
         IEnumerable<IGameSessionResumeHandler> resumeHandlers,
-        OpenGameSessionQuery openGameSessionQuery)
+        StartupNavigationQuery startupNavigation)
     {
         InitializeComponent();
         themes.Apply(settings.Get().Theme, persist: false);
@@ -36,7 +36,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         // Resolving it lazily preserves resource/lifecycle ordering for its pages.
         _services = services;
         _navigationSettingsStore = settings;
-        _openGameSessionQuery = openGameSessionQuery;
+        _startupNavigation = startupNavigation;
         _databaseInitializer = databaseInitializer;
         _logger = logger;
         _resumeHandlers = resumeHandlers;
@@ -66,15 +66,11 @@ public partial class App : Microsoft.Maui.Controls.Application
 
             AppNavigationSettings state = _navigationSettingsStore.Get();
 
-            if (state.LastGameSessionId is Guid rememberedGameSessionId)
+            StartupNavigation startup = await _startupNavigation.ResolveAsync(state);
+            if (startup.Resume is OpenGameSession rememberedGameSession)
             {
-                OpenGameSession? rememberedGameSession =
-                    await _openGameSessionQuery.GetAsync(rememberedGameSessionId);
-
-                IGameSessionResumeHandler? handler = rememberedGameSession is null
-                    ? null
-                    : _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));
-                if (rememberedGameSession is not null && handler is not null)
+                IGameSessionResumeHandler? handler = _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));
+                if (handler is not null)
                 {
                     await handler.ResumeAsync(shell, rememberedGameSession);
                     shell.EnableNavigationMemory();
@@ -85,24 +81,7 @@ public partial class App : Microsoft.Maui.Controls.Application
                 _navigationSettingsStore.Save(state);
             }
 
-            AppMainSection initialSection = ResolveInitialSection(state);
-            if (initialSection == AppMainSection.Groups)
-            {
-                string? gameKey = state.SelectedGameKey ?? state.DefaultGameKey;
-                if (!string.IsNullOrWhiteSpace(gameKey))
-                {
-                    await shell.NavigateToGroupsForGameAsync(gameKey, remember: false);
-                }
-                else
-                {
-                    await shell.NavigateToMainSectionAsync(AppMainSection.Games, remember: false);
-                }
-            }
-            else
-            {
-                await shell.NavigateToMainSectionAsync(initialSection, remember: false);
-            }
-
+            await shell.NavigateToMainSectionAsync(startup.Section, remember: false);
             shell.EnableNavigationMemory();
         }
         catch (Exception exception)
@@ -110,23 +89,6 @@ public partial class App : Microsoft.Maui.Controls.Application
             _logger.LogCritical(exception, "The application database could not be initialized.");
             window.Page = CreateStartupErrorPage(window, exception);
         }
-    }
-
-    private static AppMainSection ResolveInitialSection(AppNavigationSettings state)
-    {
-        if (state.LastMainSection is AppMainSection rememberedSection)
-        {
-            if (rememberedSection != AppMainSection.Groups
-                || !string.IsNullOrWhiteSpace(state.SelectedGameKey)
-                || !string.IsNullOrWhiteSpace(state.DefaultGameKey))
-            {
-                return rememberedSection;
-            }
-        }
-
-        return !string.IsNullOrWhiteSpace(state.DefaultGameKey)
-            ? AppMainSection.Groups
-            : AppMainSection.Games;
     }
 
     private static ContentPage CreateStartupPage() =>

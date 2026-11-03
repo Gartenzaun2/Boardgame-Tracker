@@ -1,4 +1,7 @@
 using BoardgameTracker.App;
+using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Tests.Persistence;
+using Microsoft.EntityFrameworkCore;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
 
@@ -13,23 +16,23 @@ public sealed class MainSectionNavigationTests
         public void Save(AppNavigationSettings settings) => Value = settings;
     }
 
-    internal static AppShell CreateShell(SettingsStore store)
+    internal static AppShell CreateShell(SettingsStore store, IDbContextFactory<BoardgameTrackerDbContext> factory)
     {
-        AppShell shell = new(new(), new(), new(), new(), new(), store);
+        AppShell shell = new(new(), new(), new(), new(), store, new(factory));
         shell.EnableNavigationMemory();
         return shell;
     }
 
     [Theory]
-    [InlineData(AppMainSection.Games, "GamesPage")]
-    [InlineData(AppMainSection.Groups, "GroupListPage")]
+    [InlineData(AppMainSection.Play, "GamesPage")]
     [InlineData(AppMainSection.History, "HistoryPage")]
     [InlineData(AppMainSection.Settings, "AppSettingsPage")]
     [InlineData(AppMainSection.Participants, "PlayerListPage")]
     public async Task ExplicitTabTapAndReselectionOpenRootAndRememberSection(AppMainSection section, string root)
     {
         SettingsStore store = new();
-        AppShell shell = CreateShell(store);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(store, database);
         Tab target = shell.CurrentItem.Items.Single(tab => tab.Route == root);
         target.Navigation.NavigationStackPages.Add(new Page());
 
@@ -46,10 +49,11 @@ public sealed class MainSectionNavigationTests
     }
 
     [Fact]
-    public void NavigatedOnExistingSubpageRemembersActualTab()
+    public async Task NavigatedOnExistingSubpageRemembersActualTab()
     {
         SettingsStore store = new();
-        AppShell shell = CreateShell(store);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(store, database);
         Tab history = shell.CurrentItem.Items.Single(tab => tab.Route == "HistoryPage");
         history.Navigation.NavigationStackPages.Add(new Page());
         store.Value = store.Value with { LastMainSection = AppMainSection.Settings };
@@ -62,7 +66,8 @@ public sealed class MainSectionNavigationTests
     public async Task PushingOpenSessionRetainsResumeTargetButRootTapClearsIt()
     {
         SettingsStore store = new();
-        AppShell shell = CreateShell(store);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(store, database);
         await shell.NavigateToGroupsForGameAsync(ArkNovaGame.Key);
         Guid id = Guid.NewGuid();
         shell.RememberGameSession(id, ArkNovaGame.Key);
@@ -73,14 +78,18 @@ public sealed class MainSectionNavigationTests
     }
 
     [Theory]
-    [InlineData(AppMainSection.Groups)]
+    [InlineData(AppMainSection.Play)]
     [InlineData(AppMainSection.History)]
     [InlineData(AppMainSection.Settings)]
     public async Task SessionTransitionsReturnToActualCaller(AppMainSection section)
     {
         SettingsStore store = new();
-        AppShell shell = CreateShell(store);
-        await shell.NavigateToMainSectionAsync(section);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(store, database);
+        if (section == AppMainSection.Play)
+            await shell.NavigateToGroupsForGameAsync(ArkNovaGame.Key);
+        else
+            await shell.NavigateToMainSectionAsync(section);
         if (section == AppMainSection.Settings)
             await shell.GoToAsync("PlayerListPage");
         Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
@@ -108,7 +117,8 @@ public sealed class MainSectionNavigationTests
     [Fact]
     public async Task ReturningWithoutLeavingCallerDoesNotRemoveIt()
     {
-        AppShell shell = CreateShell(new SettingsStore());
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(new SettingsStore(), database);
         await shell.NavigateToMainSectionAsync(AppMainSection.Settings);
         await shell.GoToAsync("PlayerListPage");
         Page caller = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
@@ -120,7 +130,8 @@ public sealed class MainSectionNavigationTests
     [Fact]
     public async Task MainTabTapOverridesSessionCaller()
     {
-        AppShell shell = CreateShell(new SettingsStore());
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(new SettingsStore(), database);
         await shell.NavigateToMainSectionAsync(AppMainSection.Settings);
         await shell.GoToAsync("PlayerListPage");
         shell.CaptureGameSessionCaller();
@@ -137,8 +148,9 @@ public sealed class MainSectionNavigationTests
     {
         SettingsStore store = new();
         store.Value = store.Value with { LastMainSection = AppMainSection.Settings };
-        AppShell shell = CreateShell(store);
-        await shell.NavigateToMainSectionAsync(AppMainSection.Groups, remember: false);
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        AppShell shell = CreateShell(store, database);
+        await shell.NavigateToMainSectionAsync(AppMainSection.Play, remember: false);
         Assert.Equal(AppMainSection.Settings, store.Value.LastMainSection);
     }
 }

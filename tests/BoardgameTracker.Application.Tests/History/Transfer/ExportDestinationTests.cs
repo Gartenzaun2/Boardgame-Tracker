@@ -126,6 +126,7 @@ public sealed class ExportDestinationTests
     private sealed class Target(string name, bool cancel = false) : IHistoryExportTarget
     {
         public string DisplayName => name;
+        public string BadgeText => DisplayName;
         public List<BgtExportContent> Received { get; } = [];
         public Task WriteAsync(BgtExportContent content)
         {

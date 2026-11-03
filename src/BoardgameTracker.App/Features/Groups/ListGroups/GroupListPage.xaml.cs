@@ -1,102 +1,77 @@
 using BoardgameTracker.App.Features.Groups.CreateGroup;
-using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
-/// <summary>
-/// Owns group selection and form navigation; registered game handlers own game routes.
-/// Navigation re-entry state remains in the view model.
-/// </summary>
-public partial class GroupListPage : ContentPage
+public partial class GroupListPage : ContentPage, IQueryAttributable
 {
     private readonly GroupListViewModel _viewModel;
-    private readonly IEnumerable<IGameSessionNavigationHandler> _navigationHandlers;
-
-    public GroupListPage(GroupListViewModel viewModel, IEnumerable<IGameSessionNavigationHandler> navigationHandlers)
+    public GroupListPage(GroupListViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
-        _navigationHandlers = navigationHandlers;
-        BindingContext = _viewModel;
+        BindingContext = viewModel;
     }
-
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (!query.TryGetValue(NavigationParameters.GameKey, out object? value) || value is not string key || string.IsNullOrWhiteSpace(key))
+            throw new InvalidOperationException("A game context is required.");
+        _viewModel.SetGameContext(key);
+    }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        if (AppDialogPage.IsOpen(this))
+            return;
         _viewModel.EndNavigation();
         await _viewModel.LoadAsync();
     }
-
+    private async void OnBackClicked(object? sender, EventArgs e)
+    {
+        if (!_viewModel.CanInteract)
+            return;
+        await Shell.Current.GoToAsync("..");
+    }
     private async void OnCreateGroupClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.TryBeginNavigation())
-        {
+        if (!_viewModel.CanCreate || !_viewModel.TryBeginNavigation())
             return;
-        }
-
         try
         {
-            await Shell.Current.GoToAsync(nameof(CreateGroupPage));
+            await Shell.Current.GoToAsync(nameof(CreateGroupPage), new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = _viewModel.SelectedGameKey });
         }
-        catch
+        catch (Exception)
+        {
+            await AppDialogPage.ShowAsync(this, AppResources.Groups, AppResources.GroupNavigationFailed, AppResources.Ok);
+        }
+        finally
         {
             _viewModel.EndNavigation();
-            throw;
         }
     }
-
     private async void OnGroupTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Parameter is not Guid groupId || !_viewModel.TryBeginNavigation())
-        {
-            return;
-        }
-
-        GroupListItemViewModel? group = _viewModel.Groups.FirstOrDefault(candidate => candidate.Id == groupId);
-
-        if (group?.IsArchived == true)
-        {
-            _viewModel.EndNavigation();
-            return;
-        }
-
-        IGameSessionNavigationHandler? handler = _navigationHandlers.FirstOrDefault(candidate => candidate.GameKey == _viewModel.SelectedGameKey);
-        if (handler is null)
-        {
-            _viewModel.EndNavigation();
-            return;
-        }
-
-        try
-        {
-            await handler.OpenGroupAsync(groupId, group?.OpenGameSessionId, group?.OpenGameSessionStatus);
-        }
-        catch
-        {
-            _viewModel.EndNavigation();
-            throw;
-        }
+        if (e.Parameter is Guid id)
+            await _viewModel.OpenGroupAsync(id);
     }
-
-    private async void OnEditGroupClicked(object? sender, EventArgs e)
+    private void OnChooseExistingClicked(object? sender, EventArgs e)
     {
-        if (sender is not ImageButton { CommandParameter: Guid groupId }
-            || !_viewModel.TryBeginNavigation())
-        {
-            return;
-        }
-
-        try
-        {
-            await Shell.Current.GoToAsync(
-                nameof(EditGroupPage),
-                new ShellNavigationQueryParameters { [NavigationParameters.GroupId] = groupId });
-        }
-        catch
-        {
-            _viewModel.EndNavigation();
-            throw;
-        }
+        if (_viewModel.CanChoose && _viewModel.CanInteract) _viewModel.IsChoosingExisting = true;
+    }
+    private void OnCloseSelectionClicked(object? sender, EventArgs e) => _viewModel.IsChoosingExisting = false;
+    private async void OnExistingTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is AvailablePlayGroup group)
+            await _viewModel.SelectExistingAsync(group);
+    }
+    protected override bool OnBackButtonPressed()
+    {
+        if (_viewModel.IsBusy || _viewModel.IsNavigating)
+            return true;
+        if (!_viewModel.IsChoosingExisting) return base.OnBackButtonPressed();
+        _viewModel.IsChoosingExisting = false;
+        return true;
     }
 }

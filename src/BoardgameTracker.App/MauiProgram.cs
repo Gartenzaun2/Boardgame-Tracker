@@ -14,6 +14,7 @@ using BoardgameTracker.App.Features.Settings.AppSettings;
 using BoardgameTracker.App.Features.Settings.Licenses;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Groups;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.App.Features.Groups.Colors;
 using BoardgameTracker.Application.GameSessions;
@@ -72,6 +73,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<DatabaseInitializer>();
 
         builder.Services.AddSingleton<ListGroupsQuery>();
+        builder.Services.AddSingleton<PlayOverviewQuery>();
+        builder.Services.AddSingleton<StartupNavigationQuery>();
+        builder.Services.AddTransient<GamesViewModel>();
         builder.Services.AddSingleton<ListManagedGroupsQuery>();
         builder.Services.AddTransient<CreatePlayerUseCase>();
         builder.Services.AddSingleton<ListPlayersQuery>();
@@ -92,8 +96,8 @@ public static class MauiProgram
         builder.Services.AddTransient<OpenGameSessionQuery>();
         builder.Services.AddSingleton<IAppNavigationSettingsStore, MauiAppNavigationSettingsStore>();
 
-        builder.Services.AddSingleton<GroupListViewModel>();
-        builder.Services.AddSingleton<GroupListPage>();
+        builder.Services.AddTransient<GroupListViewModel>();
+        builder.Services.AddTransient<GroupListPage>();
         builder.Services.AddSingleton<GamesPage>();
         builder.Services.AddSingleton<HistoryPage>();
         builder.Services.AddSingleton<CompletedGameSessionsQuery>();

@@ -55,7 +55,7 @@ namespace Microsoft.Maui.Controls
                 stack.RemoveRange(stack.Count - count, count);
             }
             else
-                CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(new Page());
+                CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(route == "GroupListPage" ? new BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage() : new Page());
             Navigated?.Invoke(this, new());
             return Task.CompletedTask;
         }

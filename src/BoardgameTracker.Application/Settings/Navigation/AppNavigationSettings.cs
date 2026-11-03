@@ -1,33 +1,32 @@
 namespace BoardgameTracker.Application.Settings.Navigation;
 
-/// <summary>
-/// Identifies the persistent main areas of the mobile application.
-/// </summary>
 public enum AppMainSection
 {
-    Games = 1,
-    Groups = 2,
+    Play = 1,
     History = 3,
     Settings = 4,
     Participants = 5
 }
 
-/// <summary>
-/// Local navigation preferences. They describe UI context only and are not historical game data.
-/// </summary>
-public sealed record AppNavigationSettings(
-    string? DefaultGameKey,
-    string? SelectedGameKey,
-    AppMainSection? LastMainSection,
-    Guid? LastGameSessionId,
-    AppTheme Theme = AppTheme.Dark)
+public static class AppMainSections
 {
-    public static AppNavigationSettings Default { get; } = new(null, null, null, null);
+    // Old Games (1) and Groups (2) both lead to the current Play root.
+    public static AppMainSection? FromStoredValue(int? value) => value switch
+    {
+        1 or 2 => AppMainSection.Play,
+        3 => AppMainSection.History,
+        4 => AppMainSection.Settings,
+        5 => AppMainSection.Participants,
+        _ => null
+    };
 }
 
-/// <summary>
-/// Technical boundary for persisting local app-navigation context outside the game database.
-/// </summary>
+public sealed record AppNavigationSettings(string? SelectedGameKey, AppMainSection? LastMainSection,
+    Guid? LastGameSessionId, AppTheme Theme = AppTheme.Dark)
+{
+    public static AppNavigationSettings Default { get; } = new(null, null, null);
+}
+
 public interface IAppNavigationSettingsStore
 {
     AppNavigationSettings Get();

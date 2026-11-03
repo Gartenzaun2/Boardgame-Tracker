@@ -154,6 +154,7 @@ public sealed class PlayerManagementTests
     {
         public string GameKey => key;
         public string DisplayName => key;
+        public string BadgeText => DisplayName;
         public Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => throw new NotSupportedException();
         public List<Guid> Opened { get; } = [];
         public Task OpenGameSessionAsync(Guid gameSessionId)

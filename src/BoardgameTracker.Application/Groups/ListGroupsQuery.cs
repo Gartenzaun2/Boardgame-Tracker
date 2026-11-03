@@ -14,7 +14,6 @@ public sealed class ListGroupsQuery(
 {
     public async Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
-        bool includeArchived = false,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
@@ -24,7 +23,7 @@ public sealed class ListGroupsQuery(
 
         var groups = await dbContext.Groups
             .AsNoTracking()
-            .Where(group => includeArchived || !group.IsArchived)
+            .Where(group => !group.IsArchived && dbContext.GroupGames.Any(assignment => assignment.GroupId == group.Id && dbContext.Games.Any(game => game.Id == assignment.GameId && game.Key == gameKey)))
             .Select(group => new { group.Id, group.Name, group.IsArchived })
             .ToListAsync(cancellationToken);
 
@@ -119,9 +118,25 @@ public sealed class ListGroupsQuery(
                             ? openGameSession.Status
                             : null);
                 })
-                .OrderByDescending(group => group.LastPlayedAt)
+                .OrderByDescending(group => group.OpenGameSessionId.HasValue)
+                .ThenByDescending(group => group.LastPlayedAt)
                 .ThenBy(group => group.Name)
         ];
+    }
+
+    public async Task<IReadOnlyList<ManagedGroup>> GetAvailableGroupsAsync(string gameKey, CancellationToken cancellationToken = default)
+    {
+        await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        Guid gameId = await db.Games.Where(game => game.Key == gameKey).Select(game => game.Id).SingleAsync(cancellationToken);
+        Guid[] assigned = await db.GroupGames.Where(assignment => assignment.GameId == gameId).Select(assignment => assignment.GroupId).ToArrayAsync(cancellationToken);
+        IReadOnlyList<ManagedGroup> groups = await new ListManagedGroupsQuery(contextFactory).ListAsync(cancellationToken: cancellationToken);
+        return groups.Where(group => !assigned.Contains(group.Id)).ToArray();
+    }
+
+    public async Task<GroupPresence> GetPresenceAsync(CancellationToken cancellationToken = default)
+    {
+        await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        return new(await db.Players.AnyAsync(cancellationToken), await db.Groups.AnyAsync(cancellationToken));
     }
 
     private sealed record GroupGameSessionDateProjection(Guid GroupId, DateTimeOffset StartedAt);
@@ -136,6 +151,8 @@ public sealed class ListGroupsQuery(
 /// <summary>
 /// Screen-oriented Application read model for one group in the group overview.
 /// </summary>
+public sealed record GroupPresence(bool HasPlayers, bool HasGroups);
+
 public sealed record GroupListItem(
     Guid Id,
     string Name,

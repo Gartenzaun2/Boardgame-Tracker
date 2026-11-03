@@ -39,6 +39,8 @@ public static class ThemePalette
         ["IconSurface"] = "#EEF5F1",
         ["GameGraphicText"] = "#101713",
         ["BusyIndicator"] = "#FFFFFF",
+        ["GameContextText"] = "#466655",
+        ["GameContextBorder"] = "#789A85",
     });
     private static readonly IReadOnlyDictionary<string, string> RoyalBlue = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
     {
@@ -68,6 +70,8 @@ public static class ThemePalette
         ["IconSurface"] = "#EEF5F1",
         ["GameGraphicText"] = "#101713",
         ["BusyIndicator"] = "#FFFFFF",
+        ["GameContextText"] = "#315B9B",
+        ["GameContextBorder"] = "#708EBE",
     });
     private static readonly IReadOnlyDictionary<string, string> Dark = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
     {
@@ -97,5 +101,7 @@ public static class ThemePalette
         ["IconSurface"] = "#EEF5F1",
         ["GameGraphicText"] = "#101713",
         ["BusyIndicator"] = "#FFFFFF",
+        ["GameContextText"] = "#6A84AD",
+        ["GameContextBorder"] = "#668875",
     });
 }
