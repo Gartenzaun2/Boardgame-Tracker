@@ -130,16 +130,27 @@ themeunabhängig.
 `CompactActionButton` ist nur gemeinsame Stilbasis. Disabled bleibt technisch
 deaktiviert und visuell erkennbar.
 
-Icons etwa 20–24 dp; Touchziele mindestens 44–48 dp. Zurück, Info, Bearbeiten und
-Farbpalette behalten appweit dieselbe Bedeutung. Bildressourcen statt
-fontabhängiger Unicode-Icons. Iconbuttons sind transparent und haben eine
-semantische Beschreibung; Pointer darf zusätzlich Tooltip nutzen.
+Sichtbare Aktionsicons sind einheitlich zurückhaltend (etwa **20–24 dp**);
+ihre unabhängig davon mindestens **44–48 dp** großen Touchflächen bleiben erhalten.
+Zurück, Info, Bearbeiten und Farbpalette behalten appweit dieselbe Bedeutung.
+Bildressourcen statt fontabhängiger Unicode-Icons. Iconbuttons sind transparent
+und haben eine semantische Beschreibung; Pointer darf zusätzlich Tooltip nutzen.
+Die Größe der Touchfläche darf nicht unbeabsichtigt die sichtbare Icongrafik
+vergrößern.
 
 ## 6. Navigation und Filter
 
 Bottom-Navigation liegt auf `Surface`, hat eine obere `Outline` und markiert den
 aktiven Tab mit `NavigationSelectedSurface` + `NavigationSelectedText` hinter Icon
 und Beschriftung. Aktivität wird nie nur über Textfarbe vermittelt.
+
+**Spielen-Tab und Aktiv-Symbol sind verschiedene Zeichen:** Das Spielen-Tab-Icon
+zeigt das abstrahierte **App-Logo**. Das nicht interaktive Aktiv-Symbol an einem
+Spiel- oder Gruppeneintrag signalisiert ausschließlich eine aktuell offene
+Partie/Wertung; es ist **nicht** das Spielen-Tab-Logo und darf nicht durch dieses
+ausgetauscht werden. Das Aktiv-Symbol muss in allen Themes über eine geeignete
+semantische Vordergrundfarbe deutlich sichtbar sein; ein fest schwarzes Symbol
+auf dunklem Hintergrund ist unzulässig.
 
 Kurze Filter sind kompakte Chips:
 
@@ -151,7 +162,7 @@ suchbar werden.
 
 ### Segmente und gemeinsamer Seitenheader
 
-**Mitspieler** verwendet den Segment-Umschalter **Spieler | Gruppen** für gleichrangige Verwaltungsansichten. Er steht **unterhalb** des Headers und seines Dividers; Segmente sind keine Filterchips und beeinflussen die Titelposition nicht.
+**Mitspieler** verwendet den Segment-Umschalter **Spieler | Gruppen** für gleichrangige Verwaltungsansichten. Er steht **unterhalb** des Headers und seines Dividers; Segmente sind keine Filterchips und beeinflussen die Titelposition nicht. Für Segmente gelten in jedem Theme drei unterscheidbare, lesbare Zustände: ausgewählt (`SelectedSurface`/`SelectedBorder` mit kontrastreicher Schrift), nicht ausgewählt (`SurfaceSecondary` mit `TextPrimary`) und deaktiviert (sichtbar gesperrt, aber weiterhin lesbar). Die Hintergrund- und Textfarben müssen **zusammen** für den jeweiligen Zustand definiert und auf Kontrast geprüft werden; bloßes Herabsetzen der gesamten Opazität darf Beschriftungen nicht unleserlich machen. Ein eigener gemeinsamer Segment-Stil ist gegenüber seitenlokalen Trigger-Kombinationen vorzuziehen.
 
 Alle regulären Pages verwenden **eine wiederverwendbare allgemeine Header-Komponente** mit zwei Varianten:
 
@@ -162,19 +173,20 @@ HeaderDivider
 
 Unterseite:
 [Zurück] [Titel]                                     [Aktionsicons]
-         [Spielkontext-Capsule] [erste Unterüberschrift]
-         [zweite Unterüberschrift]
+[Spielkontext-Capsule] [erste Unterüberschrift]
+[zweite Unterüberschrift]
 HeaderDivider
 ```
 
 - **Feste Geometrie:** Innerhalb jeder Variante beginnen Titel immer an exakt derselben horizontalen und vertikalen Position, mit identischer Schriftgröße/-stärke, Titelzeilenhöhe und oberem Abstand. Die Titel der beiden Varianten stehen vertikal auf derselben Höhe; horizontal unterscheidet sich die Unterseite durch den stets reservierten Zurück-Bereich, selbst wenn der Pfeil ausgeblendet ist. Unterschiedliche Aktionsicons oder optionale Kontextzeilen dürfen den Titel nicht verschieben.
 - **Zurück und Aktionen:** Zurück-Pfeil und rechte Aktionsicons haben feste Größe, Touchfläche und Anker. Der rechte Icon-Bereich ist rechtsbündig: Das äußerste rechte Icon sitzt stets an derselben Stelle, zusätzliche Icons wachsen mit festem Abstand **nach links**. Fällt ein linkes Icon weg, bleiben rechts davon verankerte Icons an ihrem Platz; entfällt das äußerste rechte Icon, besetzt das nun rechte Icon dessen Anker. Der Titel behält seine Startposition und darf nicht mit Aktionen überlappen.
-- **Kontextzeilen:** Die Spielkontext-Capsule und die erste Unterüberschrift haben feste Positionen in der zweiten Zeile, die optionale zweite Unterüberschrift in der dritten. Fehlt ein Element, rücken andere vorhandene Header-Elemente nicht an dessen Stelle. Es werden nur tatsächlich benötigte Unterüberschriftszeilen angezeigt; lange Namen dürfen innerhalb des vorgesehenen Bereichs verständlich umbrechen.
+- **Kontextzeilen:** Die Spielkontext-Capsule steht in jeder Unterseite mit Spielkontext **ganz links am festen Header-Inhaltsrand**, unabhängig von der eingerückten Titelposition und ohne reservierte Zurück-Pfeil-Spalte davor. Die erste Unterüberschrift steht daneben; die optionale zweite Unterüberschrift beginnt am gleichen linken Inhaltsrand in der dritten Zeile. Ihre jeweiligen Anker bleiben über Seitenwechsel unverändert. Fehlt ein Element, rücken andere vorhandene Header-Elemente nicht an dessen Stelle. Es werden nur tatsächlich benötigte Unterüberschriftszeilen angezeigt; lange Namen dürfen innerhalb des vorgesehenen Bereichs verständlich umbrechen.
+- **Kompakte Abstände und Padding:** Der vertikale Abstand zwischen Titelzeile und erster Kontextzeile ist knapp (Richtwert **4 dp**), ebenso zwischen den Kontextzeilen; die Header-Komponente besitzt einen zentral definierten Inhaltsrand und Abstand. Seiten-Padding für den übrigen Inhalt darf davon abweichen, ohne die Header-Geometrie zu beeinflussen. Seitenlokale negative Ausgleichs-Margins zur Korrektur unterschiedlicher Page-Paddings sind zu vermeiden; vorhandene auf diesen Zweck zurückgehende Ausgleichswerte werden bei der Umstellung durch eine konsistente Einbettung ersetzt.
 - **Divider:** Nur seine **vertikale Position** hängt von der Anzahl und tatsächlichen Höhe der vorhandenen Unterüberschriftszeilen ab. Er folgt mit einheitlichem Abstand auf die letzte verwendete Zeile. Anker, Titel und Icons bleiben unverändert.
 - **Verwandte Screens:** Beim Wechsel zwischen Screens desselben Ablaufs, insbesondere Wertung, Gleichstände, Ergebnis und Korrektur, dürfen Titel, Zurück, Badge und unveränderte Icons nicht springen. Kein Page-eigenes Header-Layout mit abweichenden lokalen Fontgrößen oder Paddingwerten.
 - **Zuständigkeit:** Die Komponente regelt Darstellung und Slots, nicht Rücknavigation, Screenzustand oder konkrete Spieltypen. Pages liefern Handler/Aktionen; Spielmodule liefern Badge-Text und vollständigen Spielnamen. Modal- und Auswahlheader verwenden dieselbe Geometrie, soweit sie als reguläre Seitenheader auftreten; Dialoge behalten ihre dokumentierten Dialogmuster.
 
-Die **Spielkontext-Capsule** ist ein nicht-interaktives Kontextlabel, kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: transparenter Hintergrund, volle Pill-Rundung, etwa **28 dp Höhe**, **1 dp** Kontur, etwa **12 dp** seitliches Padding, etwa **13 dp** Textgröße. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
+Die **Spielkontext-Capsule** ist ein nicht-interaktives Kontextlabel, kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: transparenter Hintergrund, volle Pill-Rundung, etwa **28 dp Höhe**, **1 dp** Kontur, etwa **12 dp** seitliches Padding, etwa **13 dp** Textgröße und **fette Schrift (Bold)**. Die Schrift wird nicht vergrößert, um die stärkere Betonung zu erreichen. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
 
 **Badge-Regel:** Jede Unterseite mit genau einem konkreten Spielkontext zeigt die Capsule; rein allgemeine Unterseiten (etwa Spieler oder Gruppe anlegen/bearbeiten, Meine Spiele) sowie die Spieleübersicht zeigen keine. Der Titel benennt die **Funktion** (z. B. „Einstellungen“), die Capsule das **Spiel**. Der allgemeine Header kennt keine konkreten Spiele.
 
