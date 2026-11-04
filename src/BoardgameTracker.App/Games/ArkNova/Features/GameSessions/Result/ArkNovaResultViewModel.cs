@@ -34,7 +34,7 @@ public partial class ArkNovaResultViewModel(
         DurationText = gameSession.StartedAt.ToLocalTime().ToString("g") + " · "
             + FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
         StartingOrderText = string.Format(AppResources.StartingOrderFormat,
-            string.Join(" -> ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name)));
+            string.Join(" → ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name)));
         StartingOrderPlayers.Clear();
         foreach (var player in gameSession.Players.OrderBy(player => player.Order))
             StartingOrderPlayers.Add(new(player.Name, StartingOrderPlayers.Count > 0));
