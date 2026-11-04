@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation" xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
              x:Class="BoardgameTracker.App.Games.ArkNova.Features.Settings.ArkNovaPhotoDatasetPage"
              Shell.NavBarIsVisible="False">
     <Grid Padding="18" RowDefinitions="Auto,*" RowSpacing="20">
         <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" />
-                <Label Grid.Column="1" Text="{x:Static res:AppResources.PhotoDatasetTitle}" FontSize="23" FontAttributes="Bold" VerticalOptions="Center" />
-            </Grid>
-            <BoxView Style="{StaticResource HeaderDivider}" />
+            <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.PhotoDatasetTitle}"
+                Variant="Subpage"
+                BackClicked="OnBackClicked"
+                GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
+                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
+                Margin="-18,-18,-18,0" />
         </VerticalStackLayout>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout x:Name="Actions" Spacing="12">

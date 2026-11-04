@@ -18,7 +18,7 @@ public partial class ArkNovaResultPage
         {
             _gameSessionId = gameSessionId;
             bool historical = query.TryGetValue(NavigationParameters.ResultIsHistorical, out object? context) && context is true;
-            BackButton.IsVisible = historical;
+            PageHeader.ShowBack = historical;
             EditButton.IsVisible = historical;
             DoneButton.IsVisible = !historical;
             return;

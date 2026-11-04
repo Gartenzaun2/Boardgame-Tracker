@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="BoardgameTracker.App.Games.ArkNova.Features.SpecialCards.ArkNovaSpecialCardsPage"
+<ContentPage xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation" xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" x:Class="BoardgameTracker.App.Games.ArkNova.Features.SpecialCards.ArkNovaSpecialCardsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.SpecialCards"
@@ -18,13 +18,18 @@
                 </MultiTrigger>
             </Grid.Triggers>
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                    <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" />
-                    <Label Grid.Column="1" Text="{x:Static res:AppResources.SpecialCardManagementTitle}" FontSize="23" FontAttributes="Bold" VerticalOptions="Center" />
-                    <ImageButton Grid.Column="2" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked"
+                <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.SpecialCardManagementTitle}"
+                Variant="Subpage"
+                BackClicked="OnBackClicked"
+                GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
+                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
+                Margin="-18,-18,-18,0">
+                <header:AppPageHeader.Actions>
+                    <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked"
                                  SemanticProperties.Description="{x:Static res:AppResources.SpecialCardManagementTitle}" />
-                </Grid>
-                <BoxView Style="{StaticResource HeaderDivider}" />
+                </header:AppPageHeader.Actions>
+            </header:AppPageHeader>
             </VerticalStackLayout>
             <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
                 <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />

@@ -26,7 +26,7 @@ public sealed class ArkNovaScoringNavigationTests
         Assert.Equal(sessionId, SessionId(page));
         if (page is ArkNovaResultPage result)
         {
-            Assert.True(result.BackButton.IsVisible);
+            Assert.True(result.PageHeader.ShowBack);
             Assert.True(result.EditButton.IsVisible);
             Assert.False(result.DoneButton.IsVisible);
         }
@@ -81,16 +81,18 @@ public sealed class ArkNovaScoringNavigationTests
     [InlineData("ArkNovaScoringPage")]
     [InlineData("ArkNovaTieResolutionPage")]
     [InlineData("ArkNovaResultPage")]
+    [InlineData("ArkNovaPlayerScoringPage")]
+    [InlineData("ArkNovaSettingsPage")]
+    [InlineData("ArkNovaSpecialCardsPage")]
+    [InlineData("ArkNovaSpecialCardEditorPage")]
+    [InlineData("ArkNovaPhotoDatasetPage")]
     public void GameScreensHaveAccessibleRegisteredCapsule(string page)
     {
-        using StreamReader reader = new(typeof(ArkNovaScoringNavigationTests).Assembly.GetManifestResourceStream("UxContract." + page + ".xaml")!);
-        var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
-        var capsule = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Stroke") == "{DynamicResource GameContextBorder}");
-        Assert.Equal("{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}", (string?)capsule.Attribute("SemanticProperties.Description"));
-        Assert.Equal("28", (string?)capsule.Attribute("HeightRequest"));
-        Assert.Equal("RoundRectangle 14", (string?)capsule.Attribute("StrokeShape"));
-        Assert.Contains(capsule.Descendants(), element => (string?)element.Attribute("Text") == "{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}");
-        Assert.DoesNotContain(capsule.Descendants(), element => element.Name.LocalName.Contains("Gesture", StringComparison.Ordinal));
+        var document = AppPageHeaderTests.ReadPage(page);
+        var header = Assert.Single(document.Descendants(), element => element.Name.LocalName == "AppPageHeader" && (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Name") == "PageHeader");
+        Assert.Equal("{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}", (string?)header.Attribute("GameName"));
+        Assert.Equal("{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}", (string?)header.Attribute("BadgeText"));
+        Assert.DoesNotContain(header.Descendants(), element => element.Name.LocalName == "Border");
     }
 
     private static Guid SessionId(object page) =>

@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.1
+
+- Gemeinsamen spielneutralen Seitenheader mit Hauptbereichs-/Unterseitenvariante, festen Titel-/Aktionsankern und optionalen Kontextzeilen eingeführt.
+- Reguläre Seiten und Arche-Nova-Unterseiten vereinheitlicht, fehlende Spielbadges ergänzt und sichtbare deutsche Anlage-/Hinzufügen-Begriffe konsolidiert.
+
 ## 0.17.0.0
 
 - Direkte Shell-Zielnavigation für Spielen-Shortcuts und Resume mit erhaltenen Rückzielen; Seitenwechsel ohne Übergangsanimationen.

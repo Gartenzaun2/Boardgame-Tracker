@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="BoardgameTracker.App.Features.History.HistoryPage"
+<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" x:Class="BoardgameTracker.App.Features.History.HistoryPage"
  xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
  xmlns:local="clr-namespace:BoardgameTracker.App.Features.History" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" Shell.NavBarIsVisible="False">
  <Grid>
@@ -14,8 +14,10 @@
              </MultiTrigger>
          </Grid.Triggers>
       <VerticalStackLayout Spacing="8">
-          <Label Text="{x:Static res:AppResources.History}" FontSize="28" FontAttributes="Bold" />
-          <BoxView Style="{StaticResource HeaderDivider}" />
+          <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.History}"
+                Variant="MainSection"
+                Margin="-16,-16,-16,0" />
       </VerticalStackLayout>
       <VerticalStackLayout Grid.Row="1" Spacing="0">
        <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Start">

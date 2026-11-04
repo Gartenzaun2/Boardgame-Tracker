@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage
+<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls"
     x:Class="BoardgameTracker.App.Features.Groups.CreateGroup.CreateGroupPage"
     x:Name="Page"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -25,43 +25,23 @@
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
             </Grid.Triggers>
-            <Grid
-                Padding="8,8,12,8"
-                ColumnDefinitions="Auto,*,Auto"
-                ColumnSpacing="4">
-                <ImageButton
-                    Clicked="OnBackClicked"
-                    Source="icon_back.png"
-                    Style="{StaticResource IconButton}"
-                    SemanticProperties.Description="{x:Static res:AppResources.Back}"
-                    ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
-
-                <HorizontalStackLayout
-                    Grid.Column="1"
-                    Spacing="2"
-                    VerticalOptions="Center">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="21"
-                        Text="{x:Static res:AppResources.CreateGroup}"
-                        VerticalOptions="Center" />
-                    <ImageButton
+            <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.CreateGroup}"
+                Variant="Subpage"
+                BackClicked="OnBackClicked">
+                <header:AppPageHeader.Actions>
+                    <ImageButton WidthRequest="48" HeightRequest="48"
                         Clicked="OnInfoClicked"
                         Source="icon_info.png"
                         Style="{StaticResource IconButton}"
                         SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
                         ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
-                </HorizontalStackLayout>
-
-                <Button
-                    Grid.Column="2"
+                    <Button
                     Command="{Binding SaveCommand}"
                     Style="{StaticResource PrimaryCompactButton}"
-                    Text="{x:Static res:AppResources.Save}"
-                    VerticalOptions="Center" />
-            </Grid>
-
-            <BoxView Grid.Row="1" Style="{StaticResource HeaderDivider}" />
+                    Text="{x:Static res:AppResources.Save}" />
+                </header:AppPageHeader.Actions>
+            </header:AppPageHeader>
             <ScrollView Grid.Row="2">
                 <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
                     <VerticalStackLayout Spacing="16">
@@ -180,7 +160,7 @@
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="Auto,*">
                         <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCancelNewPlayerClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-                        <Label Grid.Column="1" Text="{x:Static res:AppResources.NewPlayerTitle}" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.AddPlayer}" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" />
                     </Grid>
                     <Label Text="{x:Static res:AppResources.PlayerNameLabel}" />
                     <Entry Text="{Binding NewPlayerName}" Style="{StaticResource InlineFormEntry}" />

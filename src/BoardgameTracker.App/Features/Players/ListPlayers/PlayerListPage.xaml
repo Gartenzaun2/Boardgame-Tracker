@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.ListPlayers" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Players.ListPlayers.PlayerListPage" x:DataType="local:PlayerListViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid Padding="18" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding IsIdle}">
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Text="{x:Static res:AppResources.Participants}" FontSize="24" FontAttributes="Bold" VerticalOptions="Center" />
-                    <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
-                </Grid>
+                <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.Participants}"
+                Variant="MainSection"
+                Margin="-18,-18,-18,0">
+                <header:AppPageHeader.Actions>
+                    <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
+                </header:AppPageHeader.Actions>
+            </header:AppPageHeader>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
                     <Button Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SecondaryActionButton}">
                         <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowPlayers}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
@@ -17,7 +21,6 @@
                         <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowGroups}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
                     </Button>
                 </Grid>
-                <BoxView Style="{StaticResource HeaderDivider}" />
                 <Label Text="{x:Static res:AppResources.FirstPlayerHint}" IsVisible="{Binding HasNoPlayers}" />
             </VerticalStackLayout>
             <HorizontalStackLayout Grid.Row="1" Spacing="16" IsVisible="{Binding ShowPlayers}">

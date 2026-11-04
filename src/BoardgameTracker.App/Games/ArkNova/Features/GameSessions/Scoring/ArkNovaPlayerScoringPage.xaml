@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage
+<ContentPage xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation" xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls"
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring.ArkNovaPlayerScoringPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -21,14 +21,20 @@
     </ContentPage.Resources>
     <Grid x:Name="ScoringInput" Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="18" IsEnabled="{Binding IsIdle}">
         <VerticalStackLayout Spacing="8">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
-                <Label Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="23" VerticalOptions="Center" />
-                <ImageButton Grid.Column="2" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+            <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.Scoring}"
+                Variant="Subpage"
+                BackClicked="OnBackClicked"
+                GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
+                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
+                Subtitle="{Binding Name}"
+                Margin="-18,-18,-18,0">
+                <header:AppPageHeader.Actions>
+                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
                     SemanticProperties.Description="{x:Static res:AppResources.ScoringInputHelpTitle}"
                     ToolTipProperties.Text="{x:Static res:AppResources.ScoringInputHelpTitle}" />
-            </Grid>
-            <BoxView Style="{StaticResource HeaderDivider}" />
+                </header:AppPageHeader.Actions>
+            </header:AppPageHeader>
         </VerticalStackLayout>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="16">

@@ -146,10 +146,12 @@ public sealed class LicensePresentationTests
             XDocument document = XDocument.Parse(text);
             Assert.NotNull(document.Root!.Attribute(xaml + "DataType"));
             Assert.DoesNotContain("WebView", text);
-            Assert.Contains("{StaticResource HeaderDivider}", text);
+            Assert.Contains("header:AppPageHeader", text);
+            Assert.Contains("{StaticResource HeaderDivider}", AppPageHeaderTests.ReadHeaderText());
             Assert.Contains("{Binding IsIdle}", text);
             Assert.Contains("{DynamicResource BusyOverlay}", text);
-            Assert.Contains("icon_back.png", text);
+            Assert.Contains("BackClicked=\"OnBackClicked\"", text);
+            Assert.Contains("icon_back.png", AppPageHeaderTests.ReadHeaderText());
         }
         string shell = await ReadResourceAsync("LicenseNavigation.AppShell.xaml.cs");
         Assert.Contains("Routing.RegisterRoute(nameof(LicenseListPage)", shell);

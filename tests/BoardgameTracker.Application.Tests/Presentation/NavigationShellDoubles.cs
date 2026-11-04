@@ -88,10 +88,11 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running { pub
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring { public partial class ArkNovaScoringPage : Page; }
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result { public partial class ArkNovaResultPage : Page
     {
-        public TestButton BackButton { get; } = new();
+        public TestHeader PageHeader { get; } = new();
         public TestButton EditButton { get; } = new();
         public TestButton DoneButton { get; } = new();
     }
+    public sealed class TestHeader { public bool ShowBack { get; set; } }
     public sealed class TestButton { public bool IsVisible { get; set; } } }
 
 namespace BoardgameTracker.App.Features.Settings.MyGames { public sealed class MyGamesPage : Page; }

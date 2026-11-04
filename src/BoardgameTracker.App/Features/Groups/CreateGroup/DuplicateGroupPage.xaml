@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.CreateGroup" xmlns:models="clr-namespace:BoardgameTracker.App.Features.Groups"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" x:Class="BoardgameTracker.App.Features.Groups.CreateGroup.DuplicateGroupPage"
     x:Name="Page" x:DataType="local:CreateGroupViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid Padding="18" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="16" IsEnabled="{Binding IsIdle}">
             <VerticalStackLayout Spacing="8">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                    <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-                    <Label Grid.Column="1" Text="{x:Static res:AppResources.DuplicateGroupTitle}" FontSize="21" FontAttributes="Bold" VerticalOptions="Center" />
-                </Grid>
-                <BoxView Style="{StaticResource HeaderDivider}" />
+                <header:AppPageHeader x:Name="PageHeader"
+                Title="{x:Static res:AppResources.DuplicateGroupTitle}"
+                Variant="Subpage"
+                BackClicked="OnBackClicked"
+                Margin="-18,-18,-18,0" />
             </VerticalStackLayout>
             <CollectionView Grid.Row="1" ItemsSource="{Binding Duplicates}" SelectionMode="None">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
