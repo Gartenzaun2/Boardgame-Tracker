@@ -272,20 +272,20 @@ public sealed class AppPageHeaderTests
     public void HistoricalOrderUsesCenteredWrappingPairsAndRetainsAccessibleText()
     {
         var page = ReadPage("ArkNovaResultPage");
-        var flow = Assert.Single(page.Descendants(), element => element.Name.LocalName == "FlexLayout");
-        Assert.Equal("Wrap", (string?)flow.Attribute("Wrap"));
-        Assert.Equal("Center", (string?)flow.Attribute("AlignItems"));
+        var flow = Assert.Single(page.Descendants(), element => element.Name.LocalName == "ArkNovaStartingOrderLayout");
         Assert.Equal("{Binding StartingOrderPlayers}", (string?)flow.Attribute("BindableLayout.ItemsSource"));
-        var arrow = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "→");
+        var leading = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "{Binding LeadingText}");
         var name = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Name}");
-        Assert.Same(arrow.Parent, name.Parent);
-        Assert.Equal("{Binding HasPrevious}", (string?)arrow.Attribute("IsVisible"));
-        Assert.Equal("Center", (string?)arrow.Attribute("VerticalOptions"));
+        Assert.Same(leading.Parent, name.Parent);
+        Assert.Equal("ArkNovaStartingOrderSection", leading.Parent!.Name.LocalName);
+        Assert.Equal("{Binding HasPrevious}", (string?)leading.Parent.Attribute("HasPrevious"));
+        Assert.Equal("Center", (string?)leading.Attribute("VerticalOptions"));
         Assert.Equal("Center", (string?)name.Attribute("VerticalOptions"));
         Assert.Equal("WordWrap", (string?)name.Attribute("LineBreakMode"));
         Assert.Null(name.Attribute("MaxLines"));
-        Assert.NotNull(name.Parent!.Attribute("MaximumWidthRequest"));
-        Assert.Contains(flow.Ancestors(), element => (string?)element.Attribute("SemanticProperties.Description") == "{Binding StartingOrderText}");
+        Assert.Null(leading.Parent.Attribute("ColumnDefinitions"));
+        Assert.Null(leading.Parent.Attribute("WidthRequest"));
+        Assert.Equal("{Binding StartingOrderText}", (string?)flow.Attribute("SemanticProperties.Description"));
     }
 
     [Theory]

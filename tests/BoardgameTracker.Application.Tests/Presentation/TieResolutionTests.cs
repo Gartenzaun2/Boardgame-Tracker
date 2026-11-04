@@ -288,6 +288,7 @@ public sealed class TieResolutionTests
         Assert.Equal("Start: Anna → Bernd → Clara → Dirk", result.StartingOrderText);
         Assert.Equal(new[] { "Anna", "Bernd", "Clara", "Dirk" }, result.StartingOrderPlayers.Select(player => player.Name));
         Assert.Equal(new[] { false, true, true, true }, result.StartingOrderPlayers.Select(player => player.HasPrevious));
+        Assert.Equal(new[] { "Start:", "→", "→", "→" }, result.StartingOrderPlayers.Select(player => player.LeadingText));
         Assert.Equal(new[] { "Dirk", "Clara", "Bernd", "Anna" }, result.Players.Select(player => player.Name));
         await using (var db = database.CreateDbContext())
         {
@@ -302,6 +303,7 @@ public sealed class TieResolutionTests
         await result.LoadAsync(database.Session.Id, Token);
         Assert.Equal("Start: Anna → Bernd → Clara → Dirk", result.StartingOrderText);
         Assert.Equal(new[] { 1, 2, 3, 4 }, result.Players.Select(player => player.Placement));
+        Assert.Equal(new[] { "Anna", "Bernd", "Clara", "Dirk" }, result.StartingOrderPlayers.Select(player => player.Name));
     }
 
     private sealed class ResultSettings : BoardgameTracker.Application.Games.ArkNova.Settings.IArkNovaSettingsStore

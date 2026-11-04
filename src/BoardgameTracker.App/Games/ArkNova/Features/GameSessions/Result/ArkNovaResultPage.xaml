@@ -27,24 +27,17 @@
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             <VerticalStackLayout Padding="18,0,18,0" Spacing="8">
-<Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" SemanticProperties.Description="{Binding StartingOrderText}">
-    <Label Text="{Binding StartingOrderCaption}" FontSize="13" VerticalOptions="Start" />
-    <FlexLayout x:Name="StartingOrderFlow" Grid.Column="1" Direction="Row" Wrap="Wrap" AlignItems="Center"
-        BindableLayout.ItemsSource="{Binding StartingOrderPlayers}">
-        <BindableLayout.ItemTemplate>
-            <DataTemplate x:DataType="vm:ArkNovaStartingOrderPlayer">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" Margin="0,0,6,4" FlexLayout.Shrink="1"
-                    MaximumWidthRequest="{Binding Width, Source={x:Reference StartingOrderFlow}, x:DataType=FlexLayout}">
-                    <Grid.Triggers>
-                        <DataTrigger TargetType="Grid" Binding="{Binding HasPrevious}" Value="False"><Setter Property="ColumnSpacing" Value="0" /></DataTrigger>
-                    </Grid.Triggers>
-                    <Label Text="→" IsVisible="{Binding HasPrevious}" FontSize="13" VerticalOptions="Center" VerticalTextAlignment="Center" />
-                    <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" LineBreakMode="WordWrap" VerticalOptions="Center" VerticalTextAlignment="Center" />
-                </Grid>
-            </DataTemplate>
-        </BindableLayout.ItemTemplate>
-    </FlexLayout>
-</Grid>
+<vm:ArkNovaStartingOrderLayout BindableLayout.ItemsSource="{Binding StartingOrderPlayers}"
+    SemanticProperties.Description="{Binding StartingOrderText}">
+    <BindableLayout.ItemTemplate>
+        <DataTemplate x:DataType="vm:ArkNovaStartingOrderPlayer">
+            <vm:ArkNovaStartingOrderSection HasPrevious="{Binding HasPrevious}">
+                <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center" VerticalTextAlignment="Center" />
+                <Label Text="{Binding Name}" FontSize="13" LineBreakMode="WordWrap" VerticalOptions="Center" VerticalTextAlignment="Center" />
+            </vm:ArkNovaStartingOrderSection>
+        </DataTemplate>
+    </BindableLayout.ItemTemplate>
+</vm:ArkNovaStartingOrderLayout>
 </VerticalStackLayout>
         </VerticalStackLayout>
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="14">
