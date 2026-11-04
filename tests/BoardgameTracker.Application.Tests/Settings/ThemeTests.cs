@@ -121,6 +121,20 @@ public sealed class ThemeTests
         Assert.Contains("{StaticResource HeaderIconButton}", Presentation.AppPageHeaderTests.ReadHeaderText());
     }
 
+    [Theory]
+    [InlineData(AppTheme.DeepForest, "#176B80")]
+    [InlineData(AppTheme.RoyalBlue, "#704089")]
+    [InlineData(AppTheme.Dark, "#678AB8")]
+    public void GameContextUsesIndependentMatchingTextAndBorderAccent(AppTheme theme, string accent)
+    {
+        var palette = ThemePalette.Get(theme);
+        Assert.Equal(accent, palette["GameContextText"]);
+        Assert.Equal(accent, palette["GameContextBorder"]);
+        Assert.NotEqual(palette["Primary"], accent);
+        Assert.NotEqual(palette["SelectedBorder"], accent);
+        Assert.NotEqual(palette["NavigationSelectedText"], accent);
+    }
+
     private static System.Xml.Linq.XDocument ReadStyles()
     {
         using StreamReader reader = new(typeof(ThemeTests).Assembly.GetManifestResourceStream("ThemeContract.App.xaml")!);

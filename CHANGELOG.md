@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.3
+
+- Spielkontext-Badge auf 24 dp Gesamthöhe mit 2-dp-Kontur und 13-dp-Bold-Text komprimiert; Gruppenname mit 6 dp Abstand an die tatsächliche Badge-Breite gekoppelt.
+- Theme-Akzente für Badge-Text und Kontur auf Petrolblau, Aubergine und dezentes Dunkel-Blau vereinheitlicht; ohne Badge entfällt der reservierte Platz.
+
 ## 0.17.0.2
 
 - Headerkontext am linken Inhaltsrand ausgerichtet, Abstände kompakter und Badge-Text fett dargestellt; Header- und Inhaltsabstände getrennt.
