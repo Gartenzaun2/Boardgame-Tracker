@@ -96,9 +96,9 @@
             </Style>
 
             <Style x:Key="HeaderIconButton" TargetType="ImageButton" BasedOn="{StaticResource IconButton}">
-                <Setter Property="WidthRequest" Value="48" />
-                <Setter Property="HeightRequest" Value="48" />
-                <Setter Property="Padding" Value="12" />
+                <Setter Property="WidthRequest" Value="44" />
+                <Setter Property="HeightRequest" Value="44" />
+                <Setter Property="Padding" Value="10" />
                 <Setter Property="Aspect" Value="AspectFit" />
             </Style>
             <Style x:Key="SegmentButton" TargetType="controls:SegmentButton">

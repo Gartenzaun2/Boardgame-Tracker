@@ -286,6 +286,8 @@ public sealed class TieResolutionTests
         var result = new BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result.ArkNovaResultViewModel(new(database, database.Scoring), new ResultSettings());
         await result.LoadAsync(database.Session.Id, Token);
         Assert.Equal("Start: Anna → Bernd → Clara → Dirk", result.StartingOrderText);
+        Assert.Equal(new[] { "Anna", "Bernd", "Clara", "Dirk" }, result.StartingOrderPlayers.Select(player => player.Name));
+        Assert.Equal(new[] { false, true, true, true }, result.StartingOrderPlayers.Select(player => player.HasPrevious));
         Assert.Equal(new[] { "Dirk", "Clara", "Bernd", "Anna" }, result.Players.Select(player => player.Name));
         await using (var db = database.CreateDbContext())
         {

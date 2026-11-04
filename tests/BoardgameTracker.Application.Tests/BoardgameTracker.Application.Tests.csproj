@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderGeometry.cs" Link="Presentation/AppPageHeaderGeometry.cs" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderLayout.cs" LogicalName="HeaderContract.AppPageHeaderLayout.cs" />
+  </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../src/BoardgameTracker.App/App.xaml" LogicalName="ThemeContract.App.xaml" /></ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeader.xaml;../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeader.xaml.cs;../../src/BoardgameTracker.App/Features/Games/ListGames/GamesPage.xaml;../../src/BoardgameTracker.App/Features/History/HistoryPage.xaml;../../src/BoardgameTracker.App/Features/Settings/MyGames/MyGamesPage.xaml;../../src/BoardgameTracker.App/Games/ArkNova/Features/Settings/*Page.xaml;../../src/BoardgameTracker.App/Games/ArkNova/Features/SpecialCards/*Page.xaml" LogicalName="HeaderContract.%(Filename)%(Extension)" />

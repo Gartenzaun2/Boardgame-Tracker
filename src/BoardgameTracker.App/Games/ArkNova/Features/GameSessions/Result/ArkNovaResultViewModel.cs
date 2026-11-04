@@ -21,6 +21,9 @@ public partial class ArkNovaResultViewModel(
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string DurationText { get; private set; } = string.Empty;
 
+    public ObservableCollection<ArkNovaStartingOrderPlayer> StartingOrderPlayers { get; } = [];
+    public string StartingOrderCaption => string.Format(AppResources.StartingOrderFormat, string.Empty).TrimEnd();
+
     [ObservableProperty] public partial string StartingOrderText { get; private set; } = string.Empty;
 
     public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
@@ -33,6 +36,9 @@ public partial class ArkNovaResultViewModel(
             + FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
         StartingOrderText = string.Format(AppResources.StartingOrderFormat,
             string.Join(" → ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name)));
+        StartingOrderPlayers.Clear();
+        foreach (var player in gameSession.Players.OrderBy(player => player.Order))
+            StartingOrderPlayers.Add(new(player.Name, StartingOrderPlayers.Count > 0));
         Players.Clear();
 
         foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players
@@ -95,3 +101,6 @@ public sealed class ArkNovaResultPlayerViewModel
     public string ScoreText => string.Format(AppResources.PointsFormat, Score);
     public IReadOnlyList<ArkNovaSpecialCardData> Cards { get; }
 }
+
+/// <summary>One historical name, kept together with its preceding arrow when wrapping.</summary>
+public sealed record ArkNovaStartingOrderPlayer(string Name, bool HasPrevious);

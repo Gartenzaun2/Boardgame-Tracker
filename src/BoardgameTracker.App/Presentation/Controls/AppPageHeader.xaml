@@ -3,19 +3,12 @@
     xmlns:controls="clr-namespace:BoardgameTracker.App.Presentation.Controls"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Presentation.Controls.AppPageHeader" x:Name="Header" x:DataType="controls:AppPageHeader">
-    <VerticalStackLayout Padding="18,8,18,0" Spacing="4">
-        <Grid ColumnSpacing="8" MinimumHeightRequest="48">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="BackSlot" Width="48" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ImageButton Source="icon_back.png" Style="{StaticResource HeaderIconButton}" WidthRequest="48" HeightRequest="48" VerticalOptions="Start"
-                IsVisible="{Binding IsBackVisible, Source={x:Reference Header}}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-            <Label Grid.Column="1" Text="{Binding Title, Source={x:Reference Header}}" Margin="0,8,0,8"
-                FontSize="24" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation" SemanticProperties.Description="{Binding Title, Source={x:Reference Header}}" VerticalOptions="Start" SemanticProperties.HeadingLevel="Level1" />
-            <HorizontalStackLayout x:Name="ActionItems" Grid.Column="2" Spacing="4" HorizontalOptions="End" VerticalOptions="Start" />
-        </Grid>
+    <controls:AppPageHeaderLayout Variant="{Binding Variant, Source={x:Reference Header}}">
+        <ImageButton Source="icon_back.png" Style="{StaticResource HeaderIconButton}"
+            IsVisible="{Binding IsBackVisible, Source={x:Reference Header}}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+        <Label Text="{Binding Title, Source={x:Reference Header}}" FontSize="24" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation"
+            SemanticProperties.Description="{Binding Title, Source={x:Reference Header}}" VerticalOptions="Center" VerticalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
+        <HorizontalStackLayout x:Name="ActionItems" Spacing="0" HorizontalOptions="End" VerticalOptions="Center" />
         <Grid IsVisible="{Binding HasContextRow, Source={x:Reference Header}}" ColumnDefinitions="Auto,*" ColumnSpacing="6">
             <Grid.Triggers>
                 <DataTrigger TargetType="Grid" Binding="{Binding HasBadge, Source={x:Reference Header}}" Value="False">
@@ -33,5 +26,5 @@
             <Label Text="{Binding Metadata, Source={x:Reference Header}}" FontSize="12" TextColor="{DynamicResource TextSecondary}" LineBreakMode="WordWrap" />
         </Grid>
         <BoxView Style="{StaticResource HeaderDivider}" />
-    </VerticalStackLayout>
+    </controls:AppPageHeaderLayout>
 </ContentView>

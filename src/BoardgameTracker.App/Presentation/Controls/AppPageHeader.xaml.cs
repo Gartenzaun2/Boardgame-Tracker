@@ -5,7 +5,21 @@ public enum AppPageHeaderVariant { MainSection, Subpage }
 /// <summary>Shared header geometry and presentation slots; pages retain navigation ownership.</summary>
 public partial class AppPageHeader : ContentView
 {
-    public AppPageHeader() => InitializeComponent();
+    public AppPageHeader()
+    {
+        InitializeComponent();
+        ActionItems.ChildAdded += (_, args) =>
+        {
+            if (args.Element is ImageButton image)
+            {
+                // Old pages may still supply 48-dp local requests. Header spacing
+                // is owned here, independent of page padding and action count.
+                image.WidthRequest = 44;
+                image.HeightRequest = 44;
+                image.VerticalOptions = LayoutOptions.Center;
+            }
+        };
+    }
 
     public static readonly BindableProperty VariantProperty = BindableProperty.Create(nameof(Variant), typeof(AppPageHeaderVariant), typeof(AppPageHeader), AppPageHeaderVariant.Subpage, propertyChanged: HeaderChanged);
     public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string), typeof(AppPageHeader), string.Empty);
@@ -26,16 +40,15 @@ public partial class AppPageHeader : ContentView
     public bool IsBackVisible => Variant == AppPageHeaderVariant.Subpage && ShowBack;
     public bool HasBadge => !string.IsNullOrWhiteSpace(BadgeText);
     public bool HasMetadata => !string.IsNullOrWhiteSpace(Metadata);
-    // A metadata-only header still reserves the second-line anchor.
-    public bool HasContextRow => HasBadge || !string.IsNullOrWhiteSpace(Subtitle) || HasMetadata;
+    // Metadata is measured separately; an absent context row consumes no height.
+    public bool HasContextRow => HasBadge || !string.IsNullOrWhiteSpace(Subtitle);
     public event EventHandler? BackClicked;
     private void OnBackClicked(object? sender, EventArgs e) => BackClicked?.Invoke(this, e);
 
     private static void HeaderChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var header = (AppPageHeader)bindable;
-        // Hide only the back control on subpages, never its reserved column.
-        header.BackSlot.Width = header.Variant == AppPageHeaderVariant.MainSection ? 0 : 48;
+        // Visibility changes never alter the subpage title anchor.
         header.OnPropertyChanged(nameof(IsBackVisible));
         header.OnPropertyChanged(nameof(HasBadge));
         header.OnPropertyChanged(nameof(HasMetadata));

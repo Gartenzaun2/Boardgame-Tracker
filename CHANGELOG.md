@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.4
+
+- Header auf gemeinsamen sichtbaren 16-dp-Anker, kompakte zentrierte Titelzeile und dichter gesetzte 44-dp-Aktionen abgestimmt; Touchflächen von der sichtbaren Zeilenhöhe entkoppelt.
+- Historische Startreihenfolge im Arche-Nova-Ergebnis mit getrennten, zentrierten und umbrechenden Namens-/Pfeilelementen dargestellt; historische Sortierung erhalten.
+
 ## 0.17.0.3
 
 - Spielkontext-Badge auf 24 dp Gesamthöhe mit 2-dp-Kontur und 13-dp-Bold-Text komprimiert; Gruppenname mit 6 dp Abstand an die tatsächliche Badge-Breite gekoppelt.

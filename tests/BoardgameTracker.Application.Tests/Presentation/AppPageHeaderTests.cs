@@ -1,4 +1,5 @@
 using System.Reflection;
+using BoardgameTracker.App.Presentation.Controls;
 using System.Xml.Linq;
 using BoardgameTracker.App.Resources.Localization;
 
@@ -89,14 +90,18 @@ public sealed class AppPageHeaderTests
     {
         var template = XDocument.Parse(ReadHeaderText());
         var title = Assert.Single(template.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Title, Source={x:Reference Header}}");
-        Assert.Equal("1", (string?)title.Attribute("Grid.Column"));
+        Assert.Null(title.Attribute("Margin"));
+        Assert.Null(title.Attribute("Grid.Column"));
+        Assert.Equal("AppPageHeaderLayout", title.Parent!.Name.LocalName);
         Assert.Equal("24", (string?)title.Attribute("FontSize"));
-        Assert.Equal("Start", (string?)title.Attribute("VerticalOptions"));
+        Assert.Equal("Center", (string?)title.Attribute("VerticalOptions"));
+        Assert.Equal("Center", (string?)title.Attribute("VerticalTextAlignment"));
         Assert.Equal("{Binding Title, Source={x:Reference Header}}", (string?)title.Attribute("SemanticProperties.Description"));
         var actionRow = Assert.Single(template.Descendants(), element => element.Name.LocalName == "HorizontalStackLayout");
         Assert.Equal("End", (string?)actionRow.Attribute("HorizontalOptions"));
-        Assert.Equal("4", (string?)actionRow.Attribute("Spacing"));
-        Assert.Equal("Auto", (string?)title.Parent!.Elements().First(element => element.Name.LocalName == "Grid.ColumnDefinitions").Elements().Last().Attribute("Width"));
+        Assert.Equal("0", (string?)actionRow.Attribute("Spacing"));
+        Assert.Equal("Center", (string?)actionRow.Attribute("VerticalOptions"));
+        Assert.Equal(6, title.Parent!.Elements().Count());
         var capsule = Assert.Single(template.Descendants(), element => element.Name.LocalName == "Border");
         Assert.Equal("RoundRectangle 12", (string?)capsule.Attribute("StrokeShape"));
         Assert.Equal("{Binding GameName, Source={x:Reference Header}}", (string?)capsule.Attribute("SemanticProperties.Description"));
@@ -129,8 +134,8 @@ public sealed class AppPageHeaderTests
         var spacing = Assert.Single(noBadge.Elements());
         Assert.Equal("ColumnSpacing", (string?)spacing.Attribute("Property"));
         Assert.Equal("0", (string?)spacing.Attribute("Value"));
-        Assert.Same(title.Parent!.Parent, capsule.Parent.Parent);
-        Assert.Equal("4", (string?)template.Root!.Elements().Single().Attribute("Spacing"));
+        Assert.Same(title.Parent, capsule.Parent.Parent);
+        Assert.Null(template.Root!.Elements().Single().Attribute("Margin"));
         var metadata = Assert.Single(template.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Metadata, Source={x:Reference Header}}");
         Assert.Null(metadata.Attribute("Grid.Column"));
         Assert.Null(metadata.Parent!.Attribute("ColumnDefinitions"));
@@ -144,8 +149,9 @@ public sealed class AppPageHeaderTests
         Assert.Equal("BoxView", template.Root!.Elements().Single().Elements().Last().Name.LocalName);
         using StreamReader code = new(Assembly.GetManifestResourceStream("HeaderContract.AppPageHeader.xaml.cs")!);
         string source = code.ReadToEnd();
-        Assert.Contains("HasBadge || !string.IsNullOrWhiteSpace(Subtitle) || HasMetadata", source);
-        Assert.Contains("MainSection ? 0 : 48", source);
+        Assert.Contains("HasBadge || !string.IsNullOrWhiteSpace(Subtitle);", source);
+        Assert.Contains("image.WidthRequest = 44", source);
+        Assert.Contains("image.HeightRequest = 44", source);
         Assert.DoesNotContain("ArkNova", source);
         Assert.DoesNotContain("GoToAsync", source);
         Assert.DoesNotContain("Shell", source);
@@ -198,5 +204,107 @@ public sealed class AppPageHeaderTests
             element.Name.LocalName == "Label" && (string?)element.Attribute("Text") == "{x:Static res:AppResources.AddPlayer}");
         Assert.Contains(overlayTitle.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsAddingNewPlayer}");
         Assert.Equal("{x:Static res:AppResources.Settings}", (string?)Header(ReadPage("ArkNovaSettingsPage")).Attribute("Title"));
+    }
+
+    [Theory]
+    [InlineData(false, 29)]
+    [InlineData(true, 29)]
+    [InlineData(false, 60)]
+    [InlineData(true, 60)]
+    public void MeasuredHeaderAlignsVisibleAnchorsCentersAndCompleteTouchAreas(bool subpage, double titleHeight)
+    {
+        var frame = AppPageHeaderGeometry.Create(360, titleHeight, 132, 44, 24, 18, 1, subpage);
+        double Center(HeaderBox box) => box.Y + box.Height / 2;
+        Assert.Equal(16, frame.Context.X);
+        Assert.Equal(16, frame.Metadata.X);
+        // icon_back.svg has its tip at x=4 and rightmost point at x=20,
+        // within a 24-dp image inside ten dp of touch padding.
+        Assert.Equal(16, frame.Back.X + 10 + 4);
+        Assert.Equal(subpage ? 44 : 16, frame.Title.X);
+        if (subpage) Assert.Equal(12, frame.Title.X - (frame.Back.X + 10 + 20));
+        Assert.Equal(Center(frame.Title), Center(frame.Back));
+        Assert.Equal(Center(frame.Title), Center(frame.Actions));
+        Assert.Equal(44, frame.Back.Height);
+        Assert.True(frame.Back.Y >= 0);
+        Assert.True(frame.Back.Y + frame.Back.Height <= frame.Context.Y);
+        Assert.True(frame.Actions.Y + frame.Actions.Height <= frame.Context.Y);
+        Assert.True(frame.Back.X + frame.Back.Width <= frame.Actions.X);
+        Assert.True(frame.Title.X + frame.Title.Width <= frame.Actions.X);
+        Assert.Equal(4, frame.Context.Y - (frame.Title.Y + frame.Title.Height));
+        Assert.Equal(4, frame.Metadata.Y - (frame.Context.Y + frame.Context.Height));
+        Assert.Equal(4, frame.Divider.Y - (frame.Metadata.Y + frame.Metadata.Height));
+    }
+
+    [Fact]
+    public void IconCountAndMissingContextOnlyChangeTheirOwnSpace()
+    {
+        var one = AppPageHeaderGeometry.Create(320, 29, 44, 44, 0, 0, 1, true);
+        var three = AppPageHeaderGeometry.Create(320, 29, 132, 44, 24, 18, 1, true);
+        Assert.Equal(one.Title.X, three.Title.X);
+        Assert.Equal(one.Title.Y, three.Title.Y);
+        Assert.Equal(one.Back, three.Back);
+        Assert.Equal(one.Actions.X + 22, three.Actions.X + 2 * 44 + 22);
+        Assert.Equal(44, (three.Actions.X + 44 + 22) - (three.Actions.X + 22));
+        Assert.Equal(44, one.Divider.Y);
+        Assert.Equal(45, one.Height);
+        Assert.True(one.Back.Y + one.Back.Height <= one.Height);
+        Assert.True(three.Height > one.Height);
+        var metadataOnly = AppPageHeaderGeometry.Create(320, 29, 0, 0, 0, 18, 1, false);
+        Assert.Equal(44, metadataOnly.Metadata.Y);
+        Assert.Equal(66, metadataOnly.Divider.Y);
+    }
+
+    [Theory]
+    [InlineData(240)]
+    [InlineData(320)]
+    [InlineData(768)]
+    public void NarrowWidthsAndLongContextKeepTouchAreasOutOfContext(double width)
+    {
+        var frame = AppPageHeaderGeometry.Create(width, 60, 132, 44, 96, 36, 1, true);
+        Assert.True(frame.Title.Width >= 0);
+        Assert.Equal(width - 32, frame.Context.Width);
+        Assert.True(frame.Actions.Y + frame.Actions.Height <= frame.Context.Y);
+        Assert.True(frame.Back.Y + frame.Back.Height <= frame.Context.Y);
+        Assert.Equal(frame.Context.Y + 96 + 4, frame.Metadata.Y);
+    }
+
+    [Fact]
+    public void HistoricalOrderUsesCenteredWrappingPairsAndRetainsAccessibleText()
+    {
+        var page = ReadPage("ArkNovaResultPage");
+        var flow = Assert.Single(page.Descendants(), element => element.Name.LocalName == "FlexLayout");
+        Assert.Equal("Wrap", (string?)flow.Attribute("Wrap"));
+        Assert.Equal("Center", (string?)flow.Attribute("AlignItems"));
+        Assert.Equal("{Binding StartingOrderPlayers}", (string?)flow.Attribute("BindableLayout.ItemsSource"));
+        var arrow = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "→");
+        var name = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Name}");
+        Assert.Same(arrow.Parent, name.Parent);
+        Assert.Equal("{Binding HasPrevious}", (string?)arrow.Attribute("IsVisible"));
+        Assert.Equal("Center", (string?)arrow.Attribute("VerticalOptions"));
+        Assert.Equal("Center", (string?)name.Attribute("VerticalOptions"));
+        Assert.Equal("WordWrap", (string?)name.Attribute("LineBreakMode"));
+        Assert.Null(name.Attribute("MaxLines"));
+        Assert.NotNull(name.Parent!.Attribute("MaximumWidthRequest"));
+        Assert.Contains(flow.Ancestors(), element => (string?)element.Attribute("SemanticProperties.Description") == "{Binding StartingOrderText}");
+    }
+
+    [Theory]
+    [InlineData(240)]
+    [InlineData(320)]
+    [InlineData(768)]
+    public void DividerHasIndependentSixDpInsetsForBothVariants(double width)
+    {
+        foreach (bool subpage in new[] { false, true })
+        {
+            var frame = AppPageHeaderGeometry.Create(width, 29, 44, 44, 24, 18, 1, subpage);
+            Assert.Equal(6, frame.Divider.X);
+            Assert.Equal(width - 12, frame.Divider.Width);
+            Assert.Equal(6, width - frame.Divider.X - frame.Divider.Width);
+            Assert.Equal(1, frame.Divider.Height);
+            Assert.Equal(16, frame.Context.X);
+            Assert.Equal(16, frame.Metadata.X);
+            Assert.Equal(subpage ? 44 : 16, frame.Title.X);
+            Assert.Equal(94, frame.Divider.Y);
+        }
     }
 }

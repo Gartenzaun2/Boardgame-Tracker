@@ -109,14 +109,14 @@ public sealed class ThemeTests
     }
 
     [Fact]
-    public void HeaderIconStyleSeparatesTwentyFourDpArtworkFromFortyEightDpTouchArea()
+    public void HeaderIconStyleSeparatesTwentyFourDpArtworkFromFortyFourDpTouchArea()
     {
         var style = Assert.Single(ReadStyles().Descendants(), element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Key") == "HeaderIconButton");
         string Value(string property) => Assert.Single(style.Elements(), element => (string?)element.Attribute("Property") == property).Attribute("Value")!.Value;
         Assert.Equal("{StaticResource IconButton}", (string?)style.Attribute("BasedOn"));
-        Assert.Equal("48", Value("WidthRequest"));
-        Assert.Equal("48", Value("HeightRequest"));
-        Assert.Equal("12", Value("Padding"));
+        Assert.Equal("44", Value("WidthRequest"));
+        Assert.Equal("44", Value("HeightRequest"));
+        Assert.Equal("10", Value("Padding"));
         Assert.Equal("AspectFit", Value("Aspect"));
         Assert.Contains("{StaticResource HeaderIconButton}", Presentation.AppPageHeaderTests.ReadHeaderText());
     }

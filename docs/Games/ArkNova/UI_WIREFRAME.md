@@ -74,7 +74,7 @@ Platz-Chips sind ca. **32 dp**, zeigen nur die Zahl und markieren den eigenen Zu
 
 ## 8. Ergebnis und historische Wertung
 
-Ergebnis-Header: Zurück · **Ergebnis** · optional Edit-Icon; darunter **[Arche Nova] Gruppenname** und in der zweiten Unterüberschrift **Datum · Dauer**, anschließend Divider. **Direkt unter dem Divider** steht die tatsächliche historische Startreihenfolge als knappe Metainformation, etwa `Start: Anna → Ben → Chris`. Die Namen werden ausschließlich nach historischem `GameSessionPlayer.Order` sortiert; aktuelle Gruppendefaults und Platzierungen ändern diese Zeile nicht. Die Ergebnisliste bleibt nach Platzierung sortiert. Es gibt keinen zusätzlichen großen Gewinnerblock.
+Ergebnis-Header: Zurück · **Ergebnis** · optional Edit-Icon; darunter **[Arche Nova] Gruppenname** und in der zweiten Unterüberschrift **Datum · Dauer**, anschließend Divider. **Direkt unter dem Divider** steht die tatsächliche historische Startreihenfolge als knappe Metainformation, etwa `Start: Anna → Ben → Chris`. Namen und Pfeile sind separate, vertikal zentrierte Präsentationselemente mit gleichmäßigem Abstand. Bei schmalem Platz bricht die Folge um; ein Pfeil bleibt mit seinem nachfolgenden Namen zusammen, lange Namen dürfen vollständig umbrechen. Die Textdarstellung bleibt für Accessibility verfügbar. Die Namen werden ausschließlich nach historischem `GameSessionPlayer.Order` sortiert; aktuelle Gruppendefaults und Platzierungen ändern diese Zeile nicht. Die Ergebnisliste bleibt nach Platzierung sortiert. Es gibt keinen zusätzlichen großen Gewinnerblock.
 
 Ergebnis zeigt je Spieler **Placement/Name/Punkte**, Zooplan, Rohwerte und Spezialkarten. Nach regulärem Abschluss bleibt der Screen bis **Fertig** geöffnet; **Fertig** führt zu Gruppen.
 
