@@ -149,24 +149,34 @@ Kurze Filter sind kompakte Chips:
 Sie sind nicht unnötig vollbreit; lange Auswahllisten dürfen bei realem Bedarf
 suchbar werden.
 
-### Segmente und Spielkontext-Capsule
+### Segmente und gemeinsamer Seitenheader
 
-**Mitspieler** verwendet den gemeinsamen Segment-Umschalter **Spieler | Gruppen** für gleichrangige Verwaltungsansichten. Ein Segment ist kein Filterchip.
+**Mitspieler** verwendet den Segment-Umschalter **Spieler | Gruppen** für gleichrangige Verwaltungsansichten. Er steht **unterhalb** des Headers und seines Dividers; Segmente sind keine Filterchips und beeinflussen die Titelposition nicht.
 
-Screens im Kontext genau eines Spiels verwenden ein gemeinsames Header-Muster:
+Alle regulären Pages verwenden **eine wiederverwendbare allgemeine Header-Komponente** mit zwei Varianten:
 
 ```text
-[Hauptüberschrift]                    [Icons]
-[Spielkontext-Capsule] Erste Unterüberschrift
-Zweite Unterüberschrift
--------------------------------------------
+Hauptbereich (Spielen, Historie, Mitspieler, Einstellungen):
+[Titel]                                              [Aktionsicons]
+HeaderDivider
+
+Unterseite:
+[Zurück] [Titel]                                     [Aktionsicons]
+         [Spielkontext-Capsule] [erste Unterüberschrift]
+         [zweite Unterüberschrift]
+HeaderDivider
 ```
 
-Die Hauptüberschrift beschreibt die Screenfunktion, die erste Unterüberschrift ist sichtbar kleiner, die zweite enthält optional knappe Metadaten. Es gibt höchstens zwei Unterüberschriftszeilen; nicht benötigte Zeilen entfallen. Längere Namen dürfen im verfügbaren Raum verständlich umbrechen; essenzieller Kontext wird nicht stumm abgeschnitten.
+- **Feste Geometrie:** Innerhalb jeder Variante beginnen Titel immer an exakt derselben horizontalen und vertikalen Position, mit identischer Schriftgröße/-stärke, Titelzeilenhöhe und oberem Abstand. Die Titel der beiden Varianten stehen vertikal auf derselben Höhe; horizontal unterscheidet sich die Unterseite durch den stets reservierten Zurück-Bereich, selbst wenn der Pfeil ausgeblendet ist. Unterschiedliche Aktionsicons oder optionale Kontextzeilen dürfen den Titel nicht verschieben.
+- **Zurück und Aktionen:** Zurück-Pfeil und rechte Aktionsicons haben feste Größe, Touchfläche und Anker. Der rechte Icon-Bereich ist rechtsbündig: Das äußerste rechte Icon sitzt stets an derselben Stelle, zusätzliche Icons wachsen mit festem Abstand **nach links**. Fällt ein linkes Icon weg, bleiben rechts davon verankerte Icons an ihrem Platz; entfällt das äußerste rechte Icon, besetzt das nun rechte Icon dessen Anker. Der Titel behält seine Startposition und darf nicht mit Aktionen überlappen.
+- **Kontextzeilen:** Die Spielkontext-Capsule und die erste Unterüberschrift haben feste Positionen in der zweiten Zeile, die optionale zweite Unterüberschrift in der dritten. Fehlt ein Element, rücken andere vorhandene Header-Elemente nicht an dessen Stelle. Es werden nur tatsächlich benötigte Unterüberschriftszeilen angezeigt; lange Namen dürfen innerhalb des vorgesehenen Bereichs verständlich umbrechen.
+- **Divider:** Nur seine **vertikale Position** hängt von der Anzahl und tatsächlichen Höhe der vorhandenen Unterüberschriftszeilen ab. Er folgt mit einheitlichem Abstand auf die letzte verwendete Zeile. Anker, Titel und Icons bleiben unverändert.
+- **Verwandte Screens:** Beim Wechsel zwischen Screens desselben Ablaufs, insbesondere Wertung, Gleichstände, Ergebnis und Korrektur, dürfen Titel, Zurück, Badge und unveränderte Icons nicht springen. Kein Page-eigenes Header-Layout mit abweichenden lokalen Fontgrößen oder Paddingwerten.
+- **Zuständigkeit:** Die Komponente regelt Darstellung und Slots, nicht Rücknavigation, Screenzustand oder konkrete Spieltypen. Pages liefern Handler/Aktionen; Spielmodule liefern Badge-Text und vollständigen Spielnamen. Modal- und Auswahlheader verwenden dieselbe Geometrie, soweit sie als reguläre Seitenheader auftreten; Dialoge behalten ihre dokumentierten Dialogmuster.
 
-Die **Spielkontext-Capsule** ist immer ein nicht-interaktives Kontextlabel und kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: transparenter Hintergrund, volle Pill-Rundung, etwa **28 dp Höhe**, **1 dp** Kontur, etwa **12 dp** seitliches Padding, etwa **13 dp** Textgröße. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
+Die **Spielkontext-Capsule** ist ein nicht-interaktives Kontextlabel, kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: transparenter Hintergrund, volle Pill-Rundung, etwa **28 dp Höhe**, **1 dp** Kontur, etwa **12 dp** seitliches Padding, etwa **13 dp** Textgröße. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
 
-Die Spieleübersicht verwendet stattdessen die vollständigen Spielnamen ohne Capsules.
+**Badge-Regel:** Jede Unterseite mit genau einem konkreten Spielkontext zeigt die Capsule; rein allgemeine Unterseiten (etwa Spieler oder Gruppe anlegen/bearbeiten, Meine Spiele) sowie die Spieleübersicht zeigen keine. Der Titel benennt die **Funktion** (z. B. „Einstellungen“), die Capsule das **Spiel**. Der allgemeine Header kennt keine konkreten Spiele.
 
 ## 7. Dialoge und modale Auswahl
 
@@ -290,6 +300,7 @@ nur durch Farbe. Die fachliche Bedeutung definiert das jeweilige Feature/Spielmo
 - Alle sichtbaren App-Texte laufen über Lokalisierung.
 - Deutsch verwendet sichtbar konsequent **Spieler**; technische Typen bleiben
   `Player`.
+- Für sichtbare Aktionen einheitliches Vokabular: **anlegen** für neue eigenständige Entitäten (Spieler, Gruppe, Spezialkarte), **hinzufügen** für die Zuordnung zu einer Liste/einem Entwurf, **auswählen** für die Wahl eines bestehenden Eintrags, **bearbeiten** für Änderungen an Bestehendem, **speichern** für deren Übernahme. **Fertig** beendet einen vorgesehenen Ablauf. Kürzere Beschriftungen wie „Neuer Spieler“ sind im engen Aktionskontext zulässig; der zugehörige Seitentitel lautet „Spieler anlegen“. Fachaktionen wie „Partie starten“, „Wertung abschließen“, „Gruppe übernehmen“ bleiben präzise und werden nicht mechanisch umbenannt. Dieselbe Aktion erhält auf unterschiedlichen Screens dieselbe Bezeichnung.
 
 ## 12. Gemeinsame Styles
 

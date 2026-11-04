@@ -34,7 +34,7 @@ Navigation: Kartenfläche → Spielereingabe; Spezialkarten-Icon → Kartenwahl;
 
 ## 5. Spielereingabe
 
-Unter Header/Spielername liegen **Attraktivität** und **Artenschutz** in zwei gleich breiten Spalten.
+Unter dem gemeinsamen Unterseitenheader mit **Arche Nova**-Badge und Spielername als Funktions-/Kontextinformation liegen **Attraktivität** und **Artenschutz** in zwei gleich breiten Spalten.
 
 Verbindliche Maße:
 | Element | Maß |
@@ -84,7 +84,7 @@ Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und 
 
 ## 9. Arche-Nova-Einstellungen
 
-Gemeinsamer Spielkontext-Header mit Capsule **Arche Nova**.
+Gemeinsamer Unterseitenheader mit Titel **Einstellungen** und Capsule **Arche Nova**; kein zusätzlicher Spielname im Titel.
 
 Sichtbar: **Ruf erfassen · Neue Wertung/Alte Wertung · Spielmaterial/Sprache + Info · Spezialkarten**. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
 
@@ -92,15 +92,17 @@ Info bei Spielmaterial: „Betrifft nur sprachabhängiges Spielmaterial. Die App
 
 ## 10. Spezialkartenverwaltung
 
-Liste: Header Zurück · **Spezialkarten** · Info; darunter **Archivierte anzeigen**, scrollbare Kartenliste und unten **Neue Spezialkarte**. Eintrag zeigt 0–3 Symbole in Reihenfolge, Name, optional **Archiviert** und direkt das Bearbeiten-Icon. Keine Lösch-/Archivaktion in der Liste.
+Sowohl Spezialkartenübersicht als auch Spezialkarteneditor verwenden den gemeinsamen Unterseitenheader mit **Arche Nova**-Badge.
 
-Create/Edit: Name, Vorschau `Symbol1 → Symbol2 → Symbol3 → Name`, drei nummerierte Symbolpositionen, bei Edit zusätzlich Archiv-Switch, unten **Speichern**. Symbolwahl öffnet `SelectionDialog` mit Grafik, Name und sichtbarer aktueller Auswahl; Wiederholungen sind möglich. Nach Leeren einer Position schließen sichtbare Folgepositionen lückenlos auf.
+Liste: Header Zurück · **Spezialkarten** · Info; darunter **Archivierte anzeigen**, scrollbare Kartenliste und unten **Spezialkarte anlegen**. Eintrag zeigt 0–3 Symbole in Reihenfolge, Name, optional **Archiviert** und direkt das Bearbeiten-Icon. Keine Lösch-/Archivaktion in der Liste.
+
+Create/Edit: Header **Spezialkarte anlegen** bzw. **Spezialkarte bearbeiten** mit **Arche Nova**-Badge; darunter Name, Vorschau `Symbol1 → Symbol2 → Symbol3 → Name`, drei nummerierte Symbolpositionen, bei Edit zusätzlich Archiv-Switch, unten **Speichern**. Symbolwahl öffnet `SelectionDialog` mit Grafik, Name und sichtbarer aktueller Auswahl; Wiederholungen sind möglich. Nach Leeren einer Position schließen sichtbare Folgepositionen lückenlos auf.
 
 ## 11. Fotoquelle und Review
 
 Kamera-Aktion öffnet **Foto aufnehmen** oder **Vorhandenes Foto auswählen**. Danach liegt ein isolierter Review über der deaktivierten Wertung.
 
-Der Review-Header zeigt Zurück · **Fotowerte prüfen** mit dem gemeinsamen Spielkontext-Badge. Direkt darunter steht nur das gemeinsame Info-/Hinweis-Icon. Der zugehörige Erklärungstext wird erst nach Tap auf dieses Icon in einem App-Informationsdialog angezeigt und steht nicht dauerhaft im Review.
+Der Review-Header zeigt Zurück · **Fotowerte prüfen** mit dem gemeinsamen **Arche Nova**-Badge. Direkt darunter steht nur das gemeinsame Info-/Hinweis-Icon. Der zugehörige Erklärungstext wird erst nach Tap auf dieses Icon in einem App-Informationsdialog angezeigt und steht nicht dauerhaft im Review.
 
 Pro Spieler stehen die erkannten Werte in kompakten Zeilen. Jede Wertzeile zeigt das Label, direkt daneben den Sicherheitsstatus `✓ Sicher`, `! Prüfen` oder `? Unsicher` und rechts den editierbaren Wert. Der Sicherheitsstatus erhält keine eigene Zeile. Bei aktivem **Ruf erfassen** gilt derselbe Aufbau für Ruf.
 
@@ -117,7 +119,7 @@ Allgemeine Screens: `docs/UI_WIREFRAME.md` · Produkt: `docs/Games/ArkNova/PRODU
 ## 14. Debug → Bilderkennungsdaten
 
 Unter Arche-Nova-Einstellungen steht ein Abschnitt **Debug** mit dem Einstieg
-**Bilderkennungsdaten**. Der Screen besitzt Header-Zurück, Titel und Divider sowie
+**Bilderkennungsdaten**. Der Screen besitzt den gemeinsamen Unterseitenheader mit Zurück, Titel **Bilderkennungsdaten**, **Arche Nova**-Badge und Divider sowie
 scrollbaren Inhalt: lokaler Datenschutzhinweis, **Sammlung aktiv** als Switch,
 Anzahl gespeicherter Aufnahmen und Speicher in MB, **Dataset als ZIP exportieren**
 und die getrennte Danger-Aktion **Aufnahmen löschen**. Bei leerer Sammlung sind

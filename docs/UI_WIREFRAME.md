@@ -33,18 +33,27 @@ Der App-Start darf eine zuletzt explizit geöffnete offene Session/Wertung wiede
 
 Öffnet eine bestehende GameSession aus Gruppenübersicht oder Historie, bleibt der aufrufende Screen als Rückziel erhalten. Interne Wechsel zwischen laufender Partie, Wertung, Ergebnis und Korrektur verändern dieses Rückziel nicht. Header-/System-Zurück und erfolgreiches Verwerfen führen dorthin; ein Haupttab-Tap hat Vorrang.
 
-### Gemeinsamer Header mit einem Spielkontext
+### Gemeinsame Seitenheader
+
+Es gibt zwei Varianten **einer gemeinsamen Header-Komponente**:
 
 ```text
-[Hauptüberschrift]                    [Icons]
-[Spielkontext-Capsule] Erste Unterüberschrift
-Zweite Unterüberschrift
-HeaderDivider
+Hauptbereich: [Titel]                              [Icons]
+              HeaderDivider
+
+Unterseite:   [Zurück] [Titel]                      [Icons]
+                         [Spielbadge] [erste Unterüberschrift]
+                         [zweite Unterüberschrift]
+              HeaderDivider
 ```
 
-Unterüberschriften sind optional und höchstens zwei Zeilen. Die erste ist kleiner als die Hauptüberschrift. Die Capsule erscheint auf konkreten Spiel-Screens, nicht in der Spieleübersicht.
+Die vier Hauptbereiche **Spielen, Historie, Mitspieler, Einstellungen** nutzen den Hauptbereichsheader ohne Zurück. Segmentbuttons, Filter und sonstige Bedienelemente stehen erst **unter** dessen Divider.
 
-Die reine Auswahl zeigt jeweils den gemeinsamen Zurück-/Exit-IconButton oben links, ohne unteren Schließen-Textbutton; Auswahl- und Dialogverhalten folgt dem `UI_DESIGN_GUIDE.md`.
+Alle anderen regulären Screens nutzen den Unterseitenheader mit fest reserviertem, gegebenenfalls ausgeblendetem Zurück-Pfeil. Bei einem konkreten Spielkontext ist die Spielkontext-Capsule verpflichtend, insbesondere auf spielbezogenen Einstellungen, Spezialkarten- und Wertungsseiten. Allgemeine Spieler-, Gruppen-, Einstellungs- und Lizenz-Unterseiten haben keinen Spielbadge.
+
+Titel, Zurück und rechts verankerte Aktionsicons stehen in jeder jeweiligen Variante stets an denselben festen Positionen. Rechts wächst die Iconfolge von rechts nach links; nur die Höhe des Dividers richtet sich nach den vorhandenen optionalen Unterüberschriften. Die geometrischen Regeln stehen ausschließlich im `UI_DESIGN_GUIDE.md`.
+
+Reine Auswahlseiten verwenden den gemeinsamen Zurück-/Exit-IconButton ohne unteren Schließen-Textbutton; Auswahl- und Dialogverhalten folgt dem `UI_DESIGN_GUIDE.md`.
 
 ## 3. Spielen: Spiele und Gruppen
 
@@ -119,7 +128,7 @@ Initial Segment **Spieler**. Bei global null Spielern ist **Gruppen** deaktivier
 
 Filter **Gäste anzeigen** und **Archivierte anzeigen**, initial aus. Spielerkarte: Name, Erstelldatum, optionale Gast-/Archiv-Chips sowie Bearbeiten-Stift. **Keine** Zuletzt-gespielt- oder andere Spielen-Aktion. Nur der Stift öffnet den Editor.
 
-Unten **Spieler hinzufügen**.
+Unten **Spieler anlegen** (neue eigenständige Entität, keine Zuordnung zu einer Gruppe).
 
 **Spieler anlegen:** Header Zurück · **Spieler anlegen**; Name und Gast-Switch. Unten links **Weiteren hinzufügen** (Secondary), rechts **Fertig** (Primary). Kein automatischer Wechsel zu Spielen. Verhalten beim Speichern und Abbrechen siehe `PRODUCT_SPEC.md`.
 
@@ -139,7 +148,7 @@ Inhaltsreihenfolge:
 2. **Gruppenmitglieder** mit Positionsnummer, Name, Hoch/Runter (Randaktionen deaktiviert) und kleinem Entfernen-X; darunter nebeneinander **Vorhandenen Spieler hinzufügen** und **Neuer Spieler**, gleichwertig Secondary;
 3. **Spiele** mit vollständigen lokalisierten Namen der ausgewählten Spiele und Entfernen-X; darunter **Spiel hinzufügen**. Die Auswahl zeigt nur noch nicht enthaltene Spiele und übernimmt einen Tap direkt in den Entwurf.
 
-Vorhandene Spieler werden per `SelectionDialog` gewählt, bereits enthaltene Spieler fehlen in der Auswahl. **Neuer Spieler** öffnet ein Overlay mit gemeinsamem Zurück-Pfeil, Titel **Neuer Spieler**, Name, Gast-Switch und **Hinzufügen**. Hinzufügen übernimmt nur in den Gruppenentwurf; Zurück verwirft nur den Overlay-Entwurf. Das Gruppenformular bleibt erhalten. Spieler und Gruppe werden erst beim Gruppenspeichern gemeinsam angelegt.
+Vorhandene Spieler werden per `SelectionDialog` gewählt, bereits enthaltene Spieler fehlen in der Auswahl. **Neuer Spieler** öffnet ein Overlay mit gemeinsamem Zurück-Pfeil, Titel **Spieler anlegen**, Name, Gast-Switch und **Hinzufügen**. Hinzufügen übernimmt nur in den Gruppenentwurf; Zurück verwirft nur den Overlay-Entwurf. Das Gruppenformular bleibt erhalten. Spieler und Gruppe werden erst beim Gruppenspeichern gemeinsam angelegt.
 
 Im allgemeinen Gruppenformular gibt es keine Spiel-Farbpalette.
 
