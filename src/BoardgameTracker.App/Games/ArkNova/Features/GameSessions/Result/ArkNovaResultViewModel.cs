@@ -104,5 +104,5 @@ public sealed class ArkNovaResultPlayerViewModel
 /// <summary>One historical name, kept together with its preceding arrow when wrapping.</summary>
 public sealed record ArkNovaStartingOrderPlayer(string Name, bool HasPrevious)
 {
-    public string LeadingText => HasPrevious ? "→" : string.Format(AppResources.StartingOrderFormat, string.Empty).TrimEnd();
+    public string LeadingText => HasPrevious ? string.Empty : string.Format(AppResources.StartingOrderFormat, string.Empty).TrimEnd();
 }

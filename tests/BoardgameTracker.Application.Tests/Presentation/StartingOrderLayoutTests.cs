@@ -28,7 +28,7 @@ public sealed class StartingOrderLayoutTests
     public void IntrinsicSectionsHaveExactlyOneFiveDpGapPerTransition()
     {
         Assert.Equal("0,0,5,4", (string?)Section.Attribute("Margin"));
-        var labels = Section.Elements().ToArray();
+        var labels = Section.Elements().Where(element => element.Name.LocalName == "Label").ToArray();
         Assert.Equal(2, labels.Length);
         Assert.Equal("{Binding LeadingText}", (string?)labels[0].Attribute("Text"));
         Assert.Null(labels[0].Attribute("Margin"));
@@ -38,7 +38,7 @@ public sealed class StartingOrderLayoutTests
         Assert.Equal("1", (string?)labels[1].Attribute("Grid.Column"));
         foreach (var element in Flow.DescendantsAndSelf())
         {
-            Assert.Null(element.Attribute("WidthRequest"));
+            if (element.Name.LocalName != "Image") Assert.Null(element.Attribute("WidthRequest"));
             Assert.Null(element.Attribute("Padding"));
             Assert.Null(element.Attribute("FlexLayout.Basis"));
         }
@@ -47,7 +47,7 @@ public sealed class StartingOrderLayoutTests
     [Fact]
     public void NamesCanShrinkAndWrapWhileTheirLeadingElementRemainsVisible()
     {
-        var labels = Section.Elements().ToArray();
+        var labels = Section.Elements().Where(element => element.Name.LocalName == "Label").ToArray();
         Assert.Equal("Auto,*", (string?)Section.Attribute("ColumnDefinitions"));
         Assert.Equal("WordWrap", (string?)labels[1].Attribute("LineBreakMode"));
         Assert.Null(labels[1].Attribute("MaxLines"));
@@ -69,6 +69,26 @@ public sealed class StartingOrderLayoutTests
         var first = new BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result.ArkNovaStartingOrderPlayer("Claudi", false);
         Assert.Equal("Start:", first.LeadingText);
         Assert.Equal("Claudi", first.Name);
-        Assert.Equal("→", new BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result.ArkNovaStartingOrderPlayer("Franz", true).LeadingText);
+        Assert.Empty(new BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result.ArkNovaStartingOrderPlayer("Franz", true).LeadingText);
+    }
+    [Fact]
+    public void ArrowIsASmallCenteredThemedDecorativeImageOnlyAfterTheFirstPlayer()
+    {
+        var image = Assert.Single(Section.Elements(), element => element.Name.LocalName == "Image");
+        Assert.Equal("icon_starting_order_arrow.png", (string?)image.Attribute("Source"));
+        Assert.Equal("14", (string?)image.Attribute("WidthRequest"));
+        Assert.Equal("12", (string?)image.Attribute("HeightRequest"));
+        Assert.Equal("Center", (string?)image.Attribute("VerticalOptions"));
+        Assert.Equal("{Binding HasPrevious}", (string?)image.Attribute("IsVisible"));
+        Assert.Equal("{DynamicResource TextPrimary}", (string?)image.Attribute(XName.Get("IconTint.Color", "clr-namespace:BoardgameTracker.App.Presentation")));
+        Assert.Equal("False", (string?)image.Attribute("AutomationProperties.IsInAccessibleTree"));
+        Assert.Null(image.Attribute("SemanticProperties.Description"));
+        var trigger = Assert.Single(Section.Descendants(), element => element.Name.LocalName == "DataTrigger");
+        Assert.Equal("{Binding HasPrevious}", (string?)trigger.Attribute("Binding"));
+        Assert.Equal("True", (string?)trigger.Attribute("Value"));
+        var setter = Assert.Single(trigger.Elements());
+        Assert.Equal("IsVisible", (string?)setter.Attribute("Property"));
+        Assert.Equal("False", (string?)setter.Attribute("Value"));
+        Assert.DoesNotContain(Section.Descendants(), element => (string?)element.Attribute("Text") == "→");
     }
 }

@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.7
+
+- Pfeile der historischen Startreihenfolge als zentrierte, themeabhängig eingefärbte SVG-Grafik statt Unicode-Zeichen dargestellt; zugängliche Textbeschreibung erhalten.
+
 ## 0.17.0.6
 
 - Historische Startreihenfolge mit MAUI-Standardlayouts und einheitlichen 5-dp-Abständen vereinfacht; eigene Layoutmanager entfernt. Verschachtelte FlexLayouts zur Vermeidung ungültiger Layoutkoordinaten beim Öffnen historischer Ergebnisse durch Grid-Paare ersetzt.

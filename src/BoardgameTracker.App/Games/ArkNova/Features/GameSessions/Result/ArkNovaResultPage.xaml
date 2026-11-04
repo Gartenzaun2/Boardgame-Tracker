@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:data="clr-namespace:BoardgameTracker.Application.Games.ArkNova.SpecialCards;assembly=BoardgameTracker.Application"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result"
     x:DataType="vm:ArkNovaResultViewModel"
     Shell.NavBarIsVisible="False">
@@ -35,7 +36,17 @@
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="5" HorizontalOptions="Start"
                 FlexLayout.Grow="0" FlexLayout.Shrink="1" Margin="0,0,5,4">
                 <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center"
-                    VerticalTextAlignment="Center" />
+                    VerticalTextAlignment="Center">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding HasPrevious}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Image Source="icon_starting_order_arrow.png" WidthRequest="14" HeightRequest="12"
+                    IsVisible="{Binding HasPrevious}" VerticalOptions="Center" Aspect="AspectFit"
+                    presentation:IconTint.Color="{DynamicResource TextPrimary}"
+                    AutomationProperties.IsInAccessibleTree="False" InputTransparent="True" />
                 <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center"
                     LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
             </Grid>
