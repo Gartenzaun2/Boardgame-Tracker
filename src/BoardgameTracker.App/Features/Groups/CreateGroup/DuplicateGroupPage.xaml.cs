@@ -18,7 +18,7 @@ public partial class DuplicateGroupPage : ContentPage, IQueryAttributable
         if (ViewModel.IsBusy)
             return;
         ViewModel.CancelDuplicates();
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..", false);
     }
     protected override bool OnBackButtonPressed()
     {

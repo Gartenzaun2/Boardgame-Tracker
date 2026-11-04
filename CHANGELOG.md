@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.0
+
+- Direkte Shell-Zielnavigation für Spielen-Shortcuts und Resume mit erhaltenen Rückzielen; Seitenwechsel ohne Übergangsanimationen.
+- Spieleranlage mit „Weiteren hinzufügen“ und „Fertig“; Gruppenformulare mit ausgewählten Mitgliedern/Spielen und unpersistiertem Neue-Spieler-Overlay.
+- Arche-Nova-Header um Spielkontext-Capsules und Ergebnis um historische Startreihenfolge ergänzt; Spielen-Tab auf monochromes SVG umgestellt.
+- Spielabhängige Einstellungsnavigation im Spielmodul registriert und allgemeine Settings-Abhängigkeit entfernt.
+
 ## 0.16.0.0 – Lernende Gruppendefaults
 
 - Arche-Nova-Vorbereitung übernimmt die gespeicherte Reihenfolge ohne automatische Rotation und ergänzt fehlende gültige Farben.

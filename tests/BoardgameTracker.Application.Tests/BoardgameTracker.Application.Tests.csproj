@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Include="../../src/BoardgameTracker.App/Navigation/IGameSettingsNavigation.cs;../../src/BoardgameTracker.App/Games/ArkNova/Navigation/ArkNovaSettingsNavigation.cs;../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaResultViewModel.cs" Link="Presentation/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Features/Settings/AppSettings/*.xaml;../../src/BoardgameTracker.App/Games/ArkNova/ArkNovaServiceCollectionExtensions.cs;../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/**/*.xaml;../../src/BoardgameTracker.App/Features/Players/EditPlayer/EditPlayerPage.xaml" LogicalName="UxContract.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Preparation/ArkNovaPreparationViewModel.cs;../../src/BoardgameTracker.App/Games/ArkNova/ArkNovaZooPlanPresentation.cs;../../src/BoardgameTracker.App/Presentation/PlayerColors/PlayerColorPresentation.cs" Link="Presentation/%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>

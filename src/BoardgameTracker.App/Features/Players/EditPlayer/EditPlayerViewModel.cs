@@ -10,13 +10,18 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
 {
     private Guid _playerId;
     private bool _saved;
-    public bool ShouldOpenPlay { get; private set; }
     [ObservableProperty] public partial bool IsNew { get; private set; }
     [ObservableProperty] public partial bool IsGuest { get; set; }
     public bool IsExisting => !IsNew;
     public string Title => IsNew ? AppResources.AddPlayer : AppResources.EditPlayer;
     public void InitializeNew()
     {
+        _playerId = Guid.Empty;
+        _saved = false;
+        Name = string.Empty;
+        IsGuest = false;
+        IsArchived = false;
+        ErrorMessage = null;
         IsNew = true;
         OnPropertyChanged(nameof(IsExisting));
         OnPropertyChanged(nameof(Title));
@@ -56,6 +61,14 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
         }
     }
 
+    public async Task<bool> SaveAndAddAnotherAsync(CancellationToken cancellationToken = default)
+    {
+        if (!IsNew || !await SaveAsync(cancellationToken))
+            return false;
+        InitializeNew();
+        return true;
+    }
+
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default)
     {
         if (_saved)
@@ -70,7 +83,6 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
             {
                 CreatePlayerResult result = await createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
                 _playerId = result.Id;
-                ShouldOpenPlay = result.IsFirstPlayer;
             }
             else
                 await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);

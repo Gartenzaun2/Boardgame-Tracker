@@ -36,10 +36,9 @@ public partial class ArkNovaSpecialCardsPage : ContentPage
         try
         {
             if (back)
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("..", false);
             else
-                await Shell.Current.GoToAsync(nameof(ArkNovaSpecialCardEditorPage),
-                    new ShellNavigationQueryParameters { [NavigationParameters.SpecialCardId] = id! });
+                await Shell.Current.GoToAsync(nameof(ArkNovaSpecialCardEditorPage), false, new ShellNavigationQueryParameters { [NavigationParameters.SpecialCardId] = id! });
         }
         finally
         {

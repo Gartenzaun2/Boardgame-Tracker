@@ -16,7 +16,7 @@ Unter **Mitspieler → Spieler** werden Spieler angelegt und verwaltet. Standard
 
 Spielerverwaltung ist keine Spielnavigation. Es gibt dort weder „Zuletzt gespielt“ noch Start-/Fortsetzen-Aktionen.
 
-Bei appweit **null Spielern** startet die App ohne Onboarding-Wizard in **Mitspieler → Spieler** mit einem kurzen sichtbaren Hilfetext. Das Segment **Gruppen** ist zunächst deaktiviert. Historie und Einstellungen bleiben erreichbar, damit insbesondere ein History-Import auf einer frischen Installation möglich bleibt. Nach erfolgreichem Anlegen des ersten Spielers öffnet die App **Spielen**.
+Bei appweit **null Spielern** startet die App ohne Onboarding-Wizard in **Mitspieler → Spieler** mit einem kurzen sichtbaren Hilfetext. Das Segment **Gruppen** ist zunächst deaktiviert. Historie und Einstellungen bleiben erreichbar, damit insbesondere ein History-Import auf einer frischen Installation möglich bleibt. Auch nach Anlage des ersten Spielers bleibt die App unter **Mitspieler → Spieler**. In der eigenständigen Spieleranlage speichert **Weiteren hinzufügen** den Spieler und öffnet einen leeren Entwurf mit zurückgesetztem Gaststatus. **Fertig** speichert und kehrt zur Spielerübersicht zurück. Zurück verwirft nur den aktuellen ungespeicherten Entwurf; bei Speicherfehler bleiben die Eingaben erhalten.
 
 ## 3. Gruppen
 

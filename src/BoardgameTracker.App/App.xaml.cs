@@ -62,11 +62,11 @@ public partial class App : Microsoft.Maui.Controls.Application
         {
             await _databaseInitializer.InitializeAsync();
             AppShell shell = _services.GetRequiredService<AppShell>();
-            window.Page = shell;
 
             AppNavigationSettings state = _navigationSettingsStore.Get();
 
             StartupNavigation startup = await _startupNavigation.ResolveAsync(state);
+            window.Page = shell;
             if (startup.Resume is OpenGameSession rememberedGameSession)
             {
                 IGameSessionResumeHandler? handler = _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));

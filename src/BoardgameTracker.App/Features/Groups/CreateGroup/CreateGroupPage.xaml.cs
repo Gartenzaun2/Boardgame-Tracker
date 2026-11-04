@@ -20,8 +20,7 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
 
         _viewModel = viewModel;
         _handlers = handlers;
-        _viewModel.ShowDuplicatesAsync = () => Shell.Current.GoToAsync(nameof(DuplicateGroupPage),
-            new ShellNavigationQueryParameters { [NavigationParameters.GroupDraft] = _viewModel });
+        _viewModel.ShowDuplicatesAsync = () => Shell.Current.GoToAsync(nameof(DuplicateGroupPage), false, new ShellNavigationQueryParameters { [NavigationParameters.GroupDraft] = _viewModel });
         _viewModel.SavedAsync = OnSavedAsync;
         BindingContext = _viewModel;
     }
@@ -38,7 +37,7 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
     {
         if (outcome.GameKey is null)
         {
-            await Shell.Current.GoToAsync(outcome.FromDuplicates ? "../.." : "..");
+            await Shell.Current.GoToAsync(outcome.FromDuplicates ? "../.." : "..", false);
             return;
         }
         IGameSessionNavigationHandler handler = _handlers.Single(handler => handler.GameKey == outcome.GameKey);
@@ -61,7 +60,7 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_viewModel.IsBusy)
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e)
@@ -80,6 +79,9 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
             AppResources.Ok);
     }
 
+    private void OnNewPlayerClicked(object? sender, EventArgs e) => _viewModel.BeginNewPlayer();
+    private void OnCancelNewPlayerClicked(object? sender, EventArgs e) => _viewModel.CancelNewPlayer();
+
     private void OnChooseExistingPlayerClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsBusy || !_viewModel.HasAvailablePlayers)
@@ -95,10 +97,23 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
         _viewModel.SelectedExistingPlayer = player;
         if (_viewModel.AddSelectedPlayerCommand.CanExecute(null)) _viewModel.AddSelectedPlayerCommand.Execute(null);
     }
+    private void OnChooseGameClicked(object? sender, EventArgs e)
+    {
+        if (!_viewModel.IsBusy) _viewModel.IsChoosingGame = true;
+    }
+    private void OnCloseGameClicked(object? sender, EventArgs e) => _viewModel.IsChoosingGame = false;
+    private void OnGameTapped(object? sender, TappedEventArgs e)
+    {
+        if (_viewModel.IsChoosingGame && e.Parameter is GroupGameSelection game)
+            _viewModel.AddGameCommand.Execute(game);
+    }
+
     protected override bool OnBackButtonPressed()
     {
         if (_viewModel.IsBusy)
             return true;
+        if (_viewModel.IsChoosingGame) { _viewModel.IsChoosingGame = false; return true; }
+        if (_viewModel.IsAddingNewPlayer) { _viewModel.CancelNewPlayer(); return true; }
         if (!ExistingPlayerOverlay.IsVisible) return base.OnBackButtonPressed();
         ExistingPlayerOverlay.IsVisible = false;
         return true;

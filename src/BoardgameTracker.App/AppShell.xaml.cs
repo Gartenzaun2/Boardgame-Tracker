@@ -88,9 +88,18 @@ public partial class AppShell : Shell
         _isProgrammaticMainNavigation = true;
         try
         {
-            await GoToAsync($"//{target.Route}");
+            if (section == AppMainSection.Participants && _participantsTab.Items[0].Content is PlayerListPage players)
+                players.SelectPlayers();
+            string route = $"//{target.Route}";
+            ShellNavigationQueryParameters parameters = new();
             if (openGameKey is not null)
-                await PushGameGroupsAsync(openGameKey);
+            {
+                route += $"/{nameof(GroupListPage)}";
+                parameters[NavigationParameters.GameKey] = openGameKey;
+                RememberSelectedGame(openGameKey);
+            }
+            // One Shell request builds the logical stack and presents only its final page.
+            await GoToAsync(route, false, parameters);
         }
         finally
         {
@@ -104,7 +113,8 @@ public partial class AppShell : Shell
     }
 
 
-    public async Task NavigateToGroupsForGameAsync(string gameKey, bool remember = true)
+    public async Task NavigateToGroupsForGameAsync(string gameKey, bool remember = true,
+        string? destinationRoute = null, ShellNavigationQueryParameters? parameters = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
         _gameSessionCaller = null;
@@ -112,8 +122,13 @@ public partial class AppShell : Shell
         _isProgrammaticMainNavigation = true;
         try
         {
-            await GoToAsync($"//{_gamesTab.Route}");
-            await PushGameGroupsAsync(gameKey);
+            RememberSelectedGame(gameKey);
+            parameters ??= new();
+            parameters[NavigationParameters.GameKey] = gameKey;
+            string route = $"//{_gamesTab.Route}/{nameof(GroupListPage)}";
+            if (destinationRoute is not null)
+                route += $"/{destinationRoute}";
+            await GoToAsync(route, false, parameters);
         }
         finally
         {
@@ -122,11 +137,10 @@ public partial class AppShell : Shell
         if (remember) RememberMainSection(AppMainSection.Play);
     }
 
-    private async Task PushGameGroupsAsync(string gameKey)
+    private void RememberSelectedGame(string gameKey)
     {
         AppNavigationSettings current = _navigationSettingsStore.Get();
         _navigationSettingsStore.Save(current with { SelectedGameKey = gameKey, LastGameSessionId = null });
-        await GoToAsync(nameof(GroupListPage), new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = gameKey });
     }
 
     public void CaptureGameSessionCaller(bool useRoot = false)
@@ -153,7 +167,7 @@ public partial class AppShell : Shell
                 && navigation.NavigationStack.Count > 1 && navigation.NavigationStack[^2] != caller)
                 navigation.RemovePage(navigation.NavigationStack[^2]);
             if (navigation.NavigationStack[^1] != caller)
-                await GoToAsync("..");
+                await GoToAsync("..", false);
             // Leaving the session flow ends resume even when its caller is below the section root.
             AppNavigationSettings current = _navigationSettingsStore.Get();
             _navigationSettingsStore.Save(current with { LastGameSessionId = null });

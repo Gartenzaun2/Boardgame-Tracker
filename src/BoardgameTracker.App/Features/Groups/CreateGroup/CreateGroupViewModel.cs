@@ -19,6 +19,33 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     private GroupSaveOutcome? _savedOutcome;
     private CreateGroupCommand? _pendingCommand;
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
+    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected).ToArray();
+    public bool HasAvailableGames => AvailableGames.Count > 0;
+    [ObservableProperty] public partial bool IsChoosingGame { get; set; }
+
+    private void GamesChanged()
+    {
+        OnPropertyChanged(nameof(SelectedGames));
+        OnPropertyChanged(nameof(AvailableGames));
+        OnPropertyChanged(nameof(HasAvailableGames));
+    }
+
+    [RelayCommand]
+    private void AddGame(GroupGameSelection? game)
+    {
+        if (IsBusy || game is null || !Games.Contains(game)) return;
+        game.IsSelected = true;
+        IsChoosingGame = false;
+    }
+
+    [RelayCommand]
+    private void RemoveGame(GroupGameSelection? game)
+    {
+        if (IsBusy || game is null || !Games.Contains(game) || !game.CanChange) return;
+        game.IsSelected = false;
+    }
+
     public ObservableCollection<DuplicateGroupRow> Duplicates { get; } = [];
     public Func<Task>? ShowDuplicatesAsync { get; set; }
     public Func<GroupSaveOutcome, Task>? SavedAsync { get; set; }
@@ -39,6 +66,22 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
     public partial SelectablePlayer? SelectedExistingPlayer { get; set; }
+
+    [ObservableProperty] public partial bool IsAddingNewPlayer { get; set; }
+
+    public void BeginNewPlayer()
+    {
+        NewPlayerName = string.Empty;
+        NewPlayerIsGuest = false;
+        IsAddingNewPlayer = true;
+    }
+
+    public void CancelNewPlayer()
+    {
+        NewPlayerName = string.Empty;
+        NewPlayerIsGuest = false;
+        IsAddingNewPlayer = false;
+    }
 
     [ObservableProperty]
     public partial string NewPlayerName { get; set; } = string.Empty;
@@ -82,6 +125,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             Games.Clear();
             foreach (SelectableGroupGame game in availableGames)
                 Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey));
+            foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
+            GamesChanged();
             IReadOnlyList<SelectablePlayer> players =
                 await createGroup.GetSelectablePlayersAsync(cancellationToken);
 
@@ -147,6 +192,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         }
 
         Players.Add(new GroupMemberDraft(null, name, NewPlayerIsGuest));
+        IsAddingNewPlayer = false;
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
         ErrorMessage = null;
@@ -186,6 +232,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         if (index > 0)
         {
             Players.Move(index, index - 1);
+            GroupMemberDraft.UpdatePositions(Players);
         }
     }
 
@@ -201,6 +248,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         if (index >= 0 && index < Players.Count - 1)
         {
             Players.Move(index, index + 1);
+            GroupMemberDraft.UpdatePositions(Players);
         }
     }
 
@@ -323,6 +371,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
 
     private void PlayersChanged()
     {
+        GroupMemberDraft.UpdatePositions(Players);
         SaveCommand.NotifyCanExecuteChanged();
         UpdateCollectionStates();
     }

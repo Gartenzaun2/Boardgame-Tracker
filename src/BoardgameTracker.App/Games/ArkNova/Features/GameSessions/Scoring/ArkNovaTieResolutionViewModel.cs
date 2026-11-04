@@ -24,6 +24,7 @@ public partial class ArkNovaTieResolutionViewModel(
     private bool _loaded;
     private bool _completed;
 
+    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     public ObservableCollection<ArkNovaPlacementPlayerViewModel> Players { get; } = [];
     public ObservableCollection<ArkNovaPlacementGroupViewModel> PlacementGroups { get; } = [];
     [ObservableProperty] public partial Guid GameSessionId { get; private set; }
@@ -56,6 +57,7 @@ public partial class ArkNovaTieResolutionViewModel(
                 ? correction.CreateCorrectionCompletionPlan(Draft)
                 : await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
 
+            GroupName = gameSession.GroupName;
             GameSessionId = gameSessionId;
             _scores.Clear();
             _placements.Clear();

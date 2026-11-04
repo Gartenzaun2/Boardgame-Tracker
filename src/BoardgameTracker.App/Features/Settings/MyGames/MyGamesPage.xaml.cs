@@ -25,7 +25,7 @@ public partial class MyGamesPage : ContentPage
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_viewModel.IsBusy)
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
     }
     protected override bool OnBackButtonPressed() => _viewModel.IsBusy || base.OnBackButtonPressed();
 }

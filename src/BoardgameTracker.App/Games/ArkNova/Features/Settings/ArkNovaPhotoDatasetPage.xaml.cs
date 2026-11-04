@@ -110,7 +110,7 @@ public partial class ArkNovaPhotoDatasetPage : ContentPage
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_busy)
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
     }
 
     protected override bool OnBackButtonPressed() => _busy || base.OnBackButtonPressed();

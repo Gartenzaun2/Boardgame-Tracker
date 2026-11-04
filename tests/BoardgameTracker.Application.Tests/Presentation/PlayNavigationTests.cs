@@ -62,10 +62,13 @@ public sealed class PlayNavigationTests
             seed.GameSessions.Add(new(gameId, second.Id, DateTimeOffset.UtcNow, [db.First.Id]));
             await seed.SaveChangesAsync(Token);
         }
+        int callsBeforeTap = shell.Calls.Count;
         await shell.NavigateFromMainTabTapAsync(shell.CurrentItem.Items[0]);
+        Assert.Equal(callsBeforeTap + 1, shell.Calls.Count);
+        Assert.False(shell.Animations[^1]);
         bool expectGroups = scenario is 1 or 2;
         Assert.Equal(expectGroups ? 2 : 1, shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
-        Assert.Equal(expectGroups ? "GroupListPage" : "//GamesPage", shell.Calls[^1].Route);
+        Assert.Equal(expectGroups ? "//GamesPage/GroupListPage" : "//GamesPage", shell.Calls[^1].Route);
         Assert.Null(store.Value.LastGameSessionId);
         if (expectGroups)
         {
@@ -213,7 +216,7 @@ public sealed class PlayNavigationTests
     }
 
     [Fact]
-    public async Task StartupAndPlayerCreation_OnlyFirstSuccessfulPlayerOpensPlay()
+    public async Task StartupAndPlayerCreation_SaveStaysInParticipantsAndOnlyStartupUsesFallback()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await using (BoardgameTrackerDbContext clear = db.CreateDbContext())
@@ -228,16 +231,16 @@ public sealed class PlayNavigationTests
         EditPlayerViewModel first = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
         first.InitializeNew();
         Assert.False(await first.SaveAsync(Token));
-        Assert.False(first.ShouldOpenPlay);
+        Assert.True(first.IsNew);
         first.Name = "First";
         Assert.True(await first.SaveAsync(Token));
-        Assert.True(first.ShouldOpenPlay);
+        Assert.True(first.IsNew);
         Assert.Equal(AppMainSection.Play, (await query.ResolveAsync(AppNavigationSettings.Default, Token)).Section);
         EditPlayerViewModel second = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
         second.InitializeNew();
         second.Name = "Second";
         Assert.True(await second.SaveAsync(Token));
-        Assert.False(second.ShouldOpenPlay);
+        Assert.True(second.IsNew);
         Assert.Equal(AppMainSection.History, (await query.ResolveAsync(AppNavigationSettings.Default with { LastMainSection = AppMainSection.History }, Token)).Section);
     }
 

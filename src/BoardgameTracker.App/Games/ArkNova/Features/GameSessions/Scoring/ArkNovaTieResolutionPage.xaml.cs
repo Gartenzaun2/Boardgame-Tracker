@@ -63,12 +63,10 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
             persisted = true;
             if (_viewModel.Draft is not null)
             {
-                await Shell.Current.GoToAsync("../..");
+                await Shell.Current.GoToAsync("../..", false);
                 return;
             }
-            await Shell.Current.GoToAsync(
-                nameof(ArkNovaResultPage),
-                new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
+            await Shell.Current.GoToAsync(nameof(ArkNovaResultPage), false, new ShellNavigationQueryParameters { [NavigationParameters.GameSessionId] = _gameSessionId });
         }
         catch (Exception exception)
         {
@@ -83,6 +81,6 @@ public partial class ArkNovaTieResolutionPage : ContentPage, IQueryAttributable
         }
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..");
+    private async void OnBackClicked(object? sender, EventArgs e) => await Shell.Current.GoToAsync("..", false);
     protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
 }

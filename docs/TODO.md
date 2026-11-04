@@ -52,18 +52,6 @@ besitzen. Spielkatalog/Navigation sollen über eine allgemeine Registrierung ode
 ein kleines allgemeines Read Model erfolgen; die konkrete Ark-Nova-Implementierung
 bleibt im Spielmodul.
 
-### Spielabhängige Einstellungen im allgemeinen Settings-Feature
-
-**Status:** offen
-
-`src/BoardgameTracker.App/Features/Settings/AppSettings/AppSettingsPage.xaml.cs`
-kennt aktuell `ArkNovaGame` und `ArkNovaSettingsPage` direkt und baut die
-Default-Spielauswahl mit Ark Nova hart auf.
-
-**Ziel:** Allgemeine App-Einstellungen dürfen keine konkreten Spieltypen oder
-Spielseiten kennen. Registrierte Spiele und deren Settings-Einstieg sollen über
-eine kleine allgemeine Modulgrenze bereitgestellt werden.
-
 ### Ark-Nova-Buildverdrahtung in der allgemeinen App-Projektdatei
 
 **Status:** beobachten / bei weiterem Wachstum auslagern

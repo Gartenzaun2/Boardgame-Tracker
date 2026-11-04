@@ -1,5 +1,4 @@
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Extensions.Logging;
@@ -40,7 +39,10 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
             await _viewModel.LoadAsync(_playerId);
     }
 
-    private async void OnSaveClicked(object? sender, EventArgs e)
+    private async void OnSaveClicked(object? sender, EventArgs e) => await SaveAsync(false);
+    private async void OnAddAnotherClicked(object? sender, EventArgs e) => await SaveAsync(true);
+
+    private async Task SaveAsync(bool addAnother)
     {
         if (_saving)
             return;
@@ -48,12 +50,15 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
         EditorContent.IsEnabled = false;
         try
         {
-            if (await _viewModel.SaveAsync())
+            if (addAnother ? await _viewModel.SaveAndAddAnotherAsync() : await _viewModel.SaveAsync())
             {
-                if (_viewModel.ShouldOpenPlay && Shell.Current is AppShell shell)
-                    await shell.NavigateToMainSectionAsync(AppMainSection.Play);
-                else
-                    await Shell.Current.GoToAsync("..");
+                if (!addAnother)
+                {
+                    if (_viewModel.IsNew && Shell.Current is AppShell shell)
+                        await shell.NavigateToMainSectionAsync(BoardgameTracker.Application.Settings.Navigation.AppMainSection.Participants);
+                    else
+                        await Shell.Current.GoToAsync("..", false);
+                }
             }
         }
         catch (Exception exception)
@@ -71,7 +76,7 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_saving)
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
     }
     protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
 }

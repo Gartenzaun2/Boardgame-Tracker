@@ -15,8 +15,10 @@ namespace BoardgameTracker.App.Games.ArkNova.Navigation;
 public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase scoring) : IGameSessionNavigationHandler, IGameSessionResumeHandler
 {
     public string GameKey => ArkNovaGame.Key;
-    public string DisplayName => AppResources.ArkNova;
-    public string BadgeText => AppResources.ArkNova;
+    public static string GameDisplayName => AppResources.ArkNova;
+    public static string GameBadgeText => AppResources.ArkNova;
+    public string DisplayName => GameDisplayName;
+    public string BadgeText => GameBadgeText;
 
     public async Task OpenGameSessionAsync(Guid gameSessionId)
     {
@@ -46,7 +48,7 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
             await NavigateToGameSessionAsync(Shell.Current, gameSessionId, openGameSessionStatus.Value);
             return;
         }
-        await Shell.Current.GoToAsync(nameof(ArkNovaPreparationPage), new ShellNavigationQueryParameters
+        await Shell.Current.GoToAsync(nameof(ArkNovaPreparationPage), false, new ShellNavigationQueryParameters
         {
             [NavigationParameters.GroupId] = groupId
         });
@@ -55,28 +57,30 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
 
     public async Task ResumeAsync(AppShell shell, OpenGameSession gameSession)
     {
-        await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false);
-        shell.CaptureGameSessionCaller();
-        shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
-        // Resume restores context only for open GameSessions; history also opens Completed.
         if (gameSession.Status is not (GameSessionStatus.Running or GameSessionStatus.Scoring))
             return;
-        await NavigateToGameSessionAsync(shell, gameSession.GameSessionId, gameSession.Status);
+        await shell.NavigateToGroupsForGameAsync(gameSession.GameKey, remember: false,
+            destinationRoute: GetSessionRoute(gameSession.Status),
+            parameters: new() { [NavigationParameters.GameSessionId] = gameSession.GameSessionId });
+        shell.CaptureGameSessionCaller(useRoot: true);
+        shell.RememberGameSession(gameSession.GameSessionId, gameSession.GameKey);
     }
 
     private static Task NavigateToGameSessionAsync(Shell shell, Guid gameSessionId, GameSessionStatus status)
     {
-        string route = status switch
+        string route = GetSessionRoute(status);
+        return shell.GoToAsync(route, false, new ShellNavigationQueryParameters
+        {
+            [NavigationParameters.GameSessionId] = gameSessionId,
+            [NavigationParameters.ResultIsHistorical] = status == GameSessionStatus.Completed
+        });
+    }
+
+    private static string GetSessionRoute(GameSessionStatus status) => status switch
         {
             GameSessionStatus.Running => nameof(ArkNovaRunningPage),
             GameSessionStatus.Scoring => nameof(ArkNovaScoringPage),
             GameSessionStatus.Completed => nameof(ArkNovaResultPage),
             _ => throw new InvalidOperationException($"Unsupported GameSession status '{status}'.")
         };
-        return shell.GoToAsync(route, new ShellNavigationQueryParameters
-        {
-            [NavigationParameters.GameSessionId] = gameSessionId,
-            [NavigationParameters.ResultIsHistorical] = status == GameSessionStatus.Completed
-        });
-    }
 }

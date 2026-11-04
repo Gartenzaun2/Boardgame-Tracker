@@ -50,14 +50,14 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (!_viewModel.IsBusy)
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e)
     {
         await AppDialogPage.ShowAsync(this,
             AppResources.EditGroup,
-            AppResources.EditGroupHint,
+            AppResources.EditGroupHint + "\n\n" + AppResources.ArchiveHint,
             AppResources.Ok);
     }
 
@@ -69,15 +69,27 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
             AppResources.Ok);
     }
 
+    private void OnChooseGameClicked(object? sender, EventArgs e)
+    {
+        if (!_viewModel.IsBusy) _viewModel.IsChoosingGame = true;
+    }
+    private void OnCloseGameClicked(object? sender, EventArgs e) => _viewModel.IsChoosingGame = false;
+    private void OnGameTapped(object? sender, TappedEventArgs e)
+    {
+        if (_viewModel.IsChoosingGame && e.Parameter is GroupGameSelection game)
+            _viewModel.AddGameCommand.Execute(game);
+    }
+
     protected override bool OnBackButtonPressed()
     {
         if (_viewModel.IsBusy)
             return true;
+        if (_viewModel.IsChoosingGame) { _viewModel.IsChoosingGame = false; return true; }
         return base.OnBackButtonPressed();
     }
 
     private async void OnSaved(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..", false);
     }
 }

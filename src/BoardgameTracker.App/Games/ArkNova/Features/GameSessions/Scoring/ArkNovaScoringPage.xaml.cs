@@ -46,9 +46,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
 
         try
         {
-            await Shell.Current.GoToAsync(
-                nameof(ArkNovaPlayerScoringPage),
-                new ShellNavigationQueryParameters
+            await Shell.Current.GoToAsync(nameof(ArkNovaPlayerScoringPage), false, new ShellNavigationQueryParameters
                 {
                     [NavigationParameters.GameSessionId] = _gameSessionId,
                     [NavigationParameters.PlayerId] = player.PlayerId,
@@ -140,7 +138,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             {
                 await _viewModel.CompleteWithoutTieAsync(plan.DefaultPlacements);
                 persisted = true;
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("..", false);
                 return;
             }
             string route = plan.HasTies ? nameof(ArkNovaTieResolutionPage) : nameof(ArkNovaResultPage);
@@ -153,9 +151,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             ShellNavigationQueryParameters parameters = new() { [NavigationParameters.GameSessionId] = _gameSessionId };
             if (_viewModel.Draft is not null)
                 parameters[NavigationParameters.CorrectionDraft] = _viewModel.Draft;
-            await Shell.Current.GoToAsync(
-                route,
-                parameters);
+            await Shell.Current.GoToAsync(route, false, parameters);
         }
 
         catch (Exception exception)
@@ -218,13 +214,13 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnSettingsClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
-            await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+            await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage), false);
     }
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
-            await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..") : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
+            await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..", false) : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
     }
 
     protected override bool OnBackButtonPressed()
@@ -247,7 +243,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             return true;
         }
 
-        Dispatcher.Dispatch(async () => await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..") : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync()));
+        Dispatcher.Dispatch(async () => await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..", false) : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync()));
         return true;
     }
 }

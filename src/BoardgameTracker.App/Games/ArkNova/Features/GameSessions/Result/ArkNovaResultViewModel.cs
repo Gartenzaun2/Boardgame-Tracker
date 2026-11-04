@@ -21,13 +21,18 @@ public partial class ArkNovaResultViewModel(
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string DurationText { get; private set; } = string.Empty;
 
+    [ObservableProperty] public partial string StartingOrderText { get; private set; } = string.Empty;
+
     public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
         ArkNovaGameSessionResultData gameSession = await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
             ?? throw new InvalidOperationException("The completed Ark Nova GameSession does not exist.");
         ArkNovaScoringDisplayMode mode = settingsStore.Get().ScoringDisplayMode;
         GroupName = gameSession.GroupName;
-        DurationText = FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
+        DurationText = gameSession.StartedAt.ToLocalTime().ToString("g") + " · "
+            + FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
+        StartingOrderText = string.Format(AppResources.StartingOrderFormat,
+            string.Join(" → ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name)));
         Players.Clear();
 
         foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players

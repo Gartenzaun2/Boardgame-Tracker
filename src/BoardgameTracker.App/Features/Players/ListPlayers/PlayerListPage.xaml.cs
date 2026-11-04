@@ -25,6 +25,7 @@ public partial class PlayerListPage : ContentPage
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this)) await _viewModel.LoadAsync();
     }
+    public void SelectPlayers() => _viewModel.SelectPlayers();
     private void OnPlayersSegmentClicked(object? sender, EventArgs e) => _viewModel.SelectPlayers();
     private void OnGroupsSegmentClicked(object? sender, EventArgs e) => _viewModel.SelectGroups();
     private async void OnInfoClicked(object? sender, EventArgs e) =>
@@ -48,7 +49,7 @@ public partial class PlayerListPage : ContentPage
         if (_navigating || _viewModel.IsBusy) return;
         _navigating = true;
         IsEnabled = false;
-        try { await Shell.Current.GoToAsync(route, parameters); }
+        try { await Shell.Current.GoToAsync(route, false, parameters); }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not open management editor.");

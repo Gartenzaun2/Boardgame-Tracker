@@ -32,7 +32,7 @@ public partial class GroupListPage : ContentPage, IQueryAttributable
     {
         if (!_viewModel.CanInteract)
             return;
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..", false);
     }
     private async void OnCreateGroupClicked(object? sender, EventArgs e)
     {
@@ -40,7 +40,7 @@ public partial class GroupListPage : ContentPage, IQueryAttributable
             return;
         try
         {
-            await Shell.Current.GoToAsync(nameof(CreateGroupPage), new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = _viewModel.SelectedGameKey });
+            await Shell.Current.GoToAsync(nameof(CreateGroupPage), false, new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = _viewModel.SelectedGameKey });
         }
         catch (Exception)
         {

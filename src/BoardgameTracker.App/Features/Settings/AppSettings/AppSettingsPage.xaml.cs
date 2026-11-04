@@ -2,9 +2,8 @@ using Microsoft.Maui.ApplicationModel;
 using BoardgameTracker.App.Features.Settings.MyGames;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Games.ArkNova.Features.Settings;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Settings.Navigation;
-using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.App.Features.Settings.Licenses;
 
 namespace BoardgameTracker.App.Features.Settings.AppSettings;
@@ -15,12 +14,13 @@ public partial class AppSettingsPage : ContentPage
     private readonly BoardgameTracker.App.Theming.ThemeManager _themes;
     private bool _choosing;
 
-    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
+    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes, IEnumerable<IGameSettingsNavigation> gameSettings)
     {
         InitializeComponent();
         AppVersionLabel.Text = string.Format(AppResources.AppVersionFormat, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
         _navigationSettingsStore = navigationSettingsStore;
         _themes = themes;
+        BindableLayout.SetItemsSource(GameSettingsEntries, gameSettings.ToArray());
 
     }
 
@@ -42,8 +42,13 @@ public partial class AppSettingsPage : ContentPage
     private async void OnInfoClicked(object? sender, EventArgs e) =>
         await AppDialogPage.ShowAsync(this, AppResources.AppSettingsTitle, AppResources.GameSettingsHint, AppResources.Ok);
 
-    private async void OnArkNovaSettingsTapped(object? sender, TappedEventArgs e) =>
-        await Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage));
+    private async void OnGameSettingsTapped(object? sender, TappedEventArgs e)
+    {
+        if (_choosing || e.Parameter is not IGameSettingsNavigation entry) return;
+        _choosing = true;
+        try { await entry.OpenAsync(); }
+        finally { _choosing = false; }
+    }
 
     private async void OnMyGamesClicked(object? sender, EventArgs e)
     {
@@ -52,7 +57,7 @@ public partial class AppSettingsPage : ContentPage
         _choosing = true;
         try
         {
-            await Shell.Current.GoToAsync(nameof(MyGamesPage));
+            await Shell.Current.GoToAsync(nameof(MyGamesPage), false);
         }
         finally
         {
@@ -67,7 +72,7 @@ public partial class AppSettingsPage : ContentPage
         _choosing = true;
         try
         {
-            await Shell.Current.GoToAsync(nameof(LicenseListPage));
+            await Shell.Current.GoToAsync(nameof(LicenseListPage), false);
         }
         finally
         {

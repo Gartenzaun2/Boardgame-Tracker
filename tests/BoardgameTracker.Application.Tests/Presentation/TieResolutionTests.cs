@@ -257,6 +257,57 @@ public sealed class TieResolutionTests
         Assert.Equal(database.Players[3].Id, reopened.Data.Players[3].PlayerId);
     }
 
+    [Theory]
+    [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage")]
+    [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage")]
+    public async Task Resume_IsOneFinalShellTargetWithGroupsAsCaller(GameSessionStatus status, string route)
+    {
+        await using var database = await TieDatabase.CreateAsync(running: status == GameSessionStatus.Running);
+        var shell = MainSectionNavigationTests.CreateShell(new(), database);
+        Shell.Current = shell;
+        var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));
+        await handler.ResumeAsync(shell, new(database.Session.Id, "ark-nova", status, DateTimeOffset.UtcNow));
+        Assert.Equal("//GamesPage/GroupListPage/" + route, Assert.Single(shell.Calls).Route);
+        Assert.False(Assert.Single(shell.Animations));
+        Assert.Equal(3, shell.CurrentItem.CurrentItem.Navigation.NavigationStack.Count);
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.IsType<BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage>(shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        await shell.GoToAsync("..");
+        Assert.Single(shell.CurrentItem.CurrentItem.Navigation.NavigationStack);
+    }
+
+    [Fact]
+    public async Task Result_UsesHistoricalStartOrderWhilePlacementsAndDefaultsDiffer()
+    {
+        await using var database = await TieDatabase.CreateAsync(scores: [80, 90, 100, 110]);
+        var completion = database.CreateViewModel();
+        await completion.LoadAsync(database.Session.Id, Token);
+        await completion.CompleteAsync(Token);
+        var result = new BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result.ArkNovaResultViewModel(new(database, database.Scoring), new ResultSettings());
+        await result.LoadAsync(database.Session.Id, Token);
+        Assert.Equal("Start: Anna → Bernd → Clara → Dirk", result.StartingOrderText);
+        Assert.Equal(new[] { "Dirk", "Clara", "Bernd", "Anna" }, result.Players.Select(player => player.Name));
+        await using (var db = database.CreateDbContext())
+        {
+            await db.GroupPlayers.ExecuteUpdateAsync(setters => setters.SetProperty(player => player.DefaultOrder, player => player.DefaultOrder + 100), Token);
+            for (int index = 0; index < database.Players.Length; index++)
+            {
+                Guid id = database.Players[index].Id;
+                int order = database.Players.Length - index;
+                await db.GroupPlayers.Where(player => player.PlayerId == id).ExecuteUpdateAsync(setters => setters.SetProperty(player => player.DefaultOrder, order), Token);
+            }
+        }
+        await result.LoadAsync(database.Session.Id, Token);
+        Assert.Equal("Start: Anna → Bernd → Clara → Dirk", result.StartingOrderText);
+        Assert.Equal(new[] { 1, 2, 3, 4 }, result.Players.Select(player => player.Placement));
+    }
+
+    private sealed class ResultSettings : BoardgameTracker.Application.Games.ArkNova.Settings.IArkNovaSettingsStore
+    {
+        public BoardgameTracker.Application.Games.ArkNova.Settings.ArkNovaSettings Get() => BoardgameTracker.Application.Games.ArkNova.Settings.ArkNovaSettings.Default;
+        public void Save(BoardgameTracker.Application.Games.ArkNova.Settings.ArkNovaSettings settings) { }
+    }
+
     private sealed class TieDatabase : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         public SaveProbe SaveInterceptor { get; set; } = new();

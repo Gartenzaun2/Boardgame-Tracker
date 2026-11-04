@@ -66,13 +66,15 @@ Bestätigung liegt darüber als App-Dialog.
 
 ## 7. Gleichstände bearbeiten
 
+Header Zurück · **Gleichstände bearbeiten** · Info; darunter **[Arche Nova] Gruppenname** und Divider.
+
 Jeder Platz `1..n` besitzt eine neutrale Überschrift; auch leere zulässige Zielgruppen bleiben sichtbar. Darunter Spielerzeilen mit Name, erlaubten Platz-Chips und rechtsbündigen Punkten. Die Platznummer wird nicht nochmals am Namen angezeigt.
 
 Platz-Chips sind ca. **32 dp**, zeigen nur die Zahl und markieren den eigenen Zustand sichtbar. Tap verschiebt nur diese Spielerzeile in die gewählte Platzgruppe. Keine Pfeile, kein Drag & Drop.
 
 ## 8. Ergebnis und historische Wertung
 
-Ergebnis-Header: Zurück · **Ergebnis** · optional Edit-Icon; darunter **[Arche Nova] Gruppenname** und in der zweiten Unterüberschrift **Datum · Dauer**, anschließend Divider. **Direkt unter dem Divider** steht die tatsächliche historische Startreihenfolge als knappe Metainformation, etwa `Start: Anna → Ben → Chris`. Es gibt keinen zusätzlichen großen Gewinnerblock.
+Ergebnis-Header: Zurück · **Ergebnis** · optional Edit-Icon; darunter **[Arche Nova] Gruppenname** und in der zweiten Unterüberschrift **Datum · Dauer**, anschließend Divider. **Direkt unter dem Divider** steht die tatsächliche historische Startreihenfolge als knappe Metainformation, etwa `Start: Anna → Ben → Chris`. Die Namen werden ausschließlich nach historischem `GameSessionPlayer.Order` sortiert; aktuelle Gruppendefaults und Platzierungen ändern diese Zeile nicht. Die Ergebnisliste bleibt nach Platzierung sortiert. Es gibt keinen zusätzlichen großen Gewinnerblock.
 
 Ergebnis zeigt je Spieler **Placement/Name/Punkte**, Zooplan, Rohwerte und Spezialkarten. Nach regulärem Abschluss bleibt der Screen bis **Fertig** geöffnet; **Fertig** führt zu Gruppen.
 

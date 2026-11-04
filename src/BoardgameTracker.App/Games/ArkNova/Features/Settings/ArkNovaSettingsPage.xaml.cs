@@ -31,7 +31,7 @@ public partial class ArkNovaSettingsPage : ContentPage {
         if (_choosing)
             return;
         _choosing = true;
-        try { await Shell.Current.GoToAsync(nameof(ArkNovaPhotoDatasetPage)); }
+        try { await Shell.Current.GoToAsync(nameof(ArkNovaPhotoDatasetPage), false); }
         finally { _choosing = false; }
     }
 
@@ -40,7 +40,7 @@ public partial class ArkNovaSettingsPage : ContentPage {
             return;
         _openingCards = true;
         try {
-            await Shell.Current.GoToAsync(nameof(ArkNovaSpecialCardsPage));
+            await Shell.Current.GoToAsync(nameof(ArkNovaSpecialCardsPage), false);
         } finally {
             _openingCards = false;
         }
@@ -48,7 +48,7 @@ public partial class ArkNovaSettingsPage : ContentPage {
 
     private async void OnBackClicked(object? sender, EventArgs e) {
         _viewModel.Save();
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..", false);
     }
 
     private async void OnMaterialInfoClicked(object? sender, EventArgs e)

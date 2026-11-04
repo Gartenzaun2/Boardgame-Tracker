@@ -25,6 +25,10 @@
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </VerticalStackLayout>
         </ScrollView>
-        <Button Grid.Row="2" Text="{x:Static res:AppResources.Save}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
+            <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsIdle}" />
+            <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+        </Grid>
+        <Button IsVisible="{Binding IsExisting}" Grid.Row="2" Text="{x:Static res:AppResources.Save}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
     </Grid>
 </ContentPage>

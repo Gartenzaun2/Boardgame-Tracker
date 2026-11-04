@@ -35,7 +35,7 @@ public partial class LicenseDetailPage : ContentPage, IQueryAttributable
         _navigating = true;
         try
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
         }
         finally
         {

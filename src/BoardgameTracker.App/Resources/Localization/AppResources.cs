@@ -9,6 +9,12 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string AddAnotherPlayer => GetString(nameof(AddAnotherPlayer));
+    public static string NewPlayerTitle => GetString(nameof(NewPlayerTitle));
+    public static string AddToDraft => GetString(nameof(AddToDraft));
+    public static string GamesSection => GetString(nameof(GamesSection));
+    public static string AddGame => GetString(nameof(AddGame));
+    public static string StartingOrderFormat => GetString(nameof(StartingOrderFormat));
     public static string DebugSettings => GetString(nameof(DebugSettings));
     public static string PhotoDatasetTitle => GetString(nameof(PhotoDatasetTitle));
     public static string PhotoDatasetCollection => GetString(nameof(PhotoDatasetCollection));

@@ -42,6 +42,7 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddSingleton<IGameTransferSchema, ArkNovaTransferSchema>();
         services.AddSingleton<IGameTransferPersistence, ArkNovaTransferPersistence>();
         services.AddTransient<IGameSessionNavigationHandler, ArkNovaGameSessionNavigationHandler>();
+        services.AddTransient<IGameSettingsNavigation, ArkNovaSettingsNavigation>();
         services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         services.AddSingleton(ArkNovaPlayerColors.Rules);
         services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();

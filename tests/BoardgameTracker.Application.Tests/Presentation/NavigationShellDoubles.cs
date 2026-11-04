@@ -39,14 +39,20 @@ namespace Microsoft.Maui.Controls
         public TabBar CurrentItem => Items[0];
         public List<(string Route, ShellNavigationQueryParameters Parameters)> Calls { get; } = [];
         public event EventHandler<ShellNavigatedEventArgs>? Navigated;
-        public Task GoToAsync(string route, ShellNavigationQueryParameters? parameters = null)
+        public List<bool> Animations { get; } = [];
+        public Task GoToAsync(string route, ShellNavigationQueryParameters? parameters = null) => GoToAsync(route, true, parameters);
+        public Task GoToAsync(string route, bool animate, ShellNavigationQueryParameters? parameters = null)
         {
             Calls.Add((route, parameters ?? []));
+            Animations.Add(animate);
             if (route.StartsWith("//", StringComparison.Ordinal))
             {
-                CurrentItem.CurrentItem = CurrentItem.Items.Single(tab => tab.Route == route[2..]);
+                string[] parts = route[2..].Split('/');
+                CurrentItem.CurrentItem = CurrentItem.Items.Single(tab => tab.Route == parts[0]);
                 CurrentItem.CurrentItem.Navigation.NavigationStackPages.RemoveRange(1,
                     CurrentItem.CurrentItem.Navigation.NavigationStack.Count - 1);
+                foreach (string part in parts.Skip(1))
+                    CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(part == "GroupListPage" ? new BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage() : new Page());
             }
             else if (route == ".." || route == "../..")
             {
@@ -75,7 +81,7 @@ namespace BoardgameTracker.App.Features.Settings.Licenses
     public sealed class LicenseListPage : Page;
     public sealed class LicenseDetailPage : Page;
 }
-namespace BoardgameTracker.App.Features.Players.ListPlayers { public sealed class PlayerListPage : Page; }
+namespace BoardgameTracker.App.Features.Players.ListPlayers { public sealed class PlayerListPage : Page { public void SelectPlayers() { } } }
 namespace BoardgameTracker.App.Features.Players.EditPlayer { public sealed class EditPlayerPage : Page; }
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation { public sealed class ArkNovaPreparationPage : Page; }
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running { public partial class ArkNovaRunningPage : Page; }
@@ -89,3 +95,5 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result { publ
     public sealed class TestButton { public bool IsVisible { get; set; } } }
 
 namespace BoardgameTracker.App.Features.Settings.MyGames { public sealed class MyGamesPage : Page; }
+
+namespace BoardgameTracker.App.Games.ArkNova.Features.Settings { public sealed class ArkNovaSettingsPage : Page; }

@@ -28,7 +28,7 @@ public partial class ArkNovaResultPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e) => await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
 
     private async void OnEditClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), new ShellNavigationQueryParameters
+        await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), false, new ShellNavigationQueryParameters
         {
             [NavigationParameters.GameSessionId] = _gameSessionId
         });

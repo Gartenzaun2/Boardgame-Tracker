@@ -17,8 +17,8 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.16.0.0</ApplicationDisplayVersion>
-    <ApplicationVersion>94</ApplicationVersion>
+    <ApplicationDisplayVersion>0.17.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>95</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 

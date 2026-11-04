@@ -64,9 +64,7 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
             return;
         }
 
-        await Shell.Current.GoToAsync(
-            nameof(ArkNovaScoringPage),
-            new ShellNavigationQueryParameters
+        await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), false, new ShellNavigationQueryParameters
             {
                 [NavigationParameters.GameSessionId] = _viewModel.GameSessionId
             });

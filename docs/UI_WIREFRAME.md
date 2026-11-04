@@ -17,6 +17,8 @@ Spielspezifische Screens: `docs/Games/<GameName>/UI_WIREFRAME.md`.
 
 ## 2. Hauptnavigation und gemeinsamer Spielkontext
 
+**Direkte Zielanzeige:** Jeder Seitenwechsel zeigt unmittelbar die beabsichtigte Zielseite, ohne sichtbare Zwischenstationen. Zusammengehörige Weiterleitungen werden als ein Shell-Ziel geöffnet; technische Stackseiten dürfen nicht zwischenrendern. Auch ein erneuter Haupttab-Tap verwirft den Unterstack und den bisherigen Session-Rückkontext. Die logische Kette Spieleübersicht → Gruppenübersicht → Session sowie tatsächliche Aufrufer (insbesondere Historie) bleiben als Rückziele erhalten.
+
 Permanente Tabs: **Spielen · Historie · Mitspieler · Einstellungen**.
 
 Ein expliziter Tab-Tap öffnet stets den Root des gewählten Hauptbereichs; tiefere Seiten werden verworfen.
@@ -119,7 +121,7 @@ Filter **Gäste anzeigen** und **Archivierte anzeigen**, initial aus. Spielerkar
 
 Unten **Spieler hinzufügen**.
 
-**Spieler anlegen:** Header Zurück · **Spieler anlegen**; Name, Gast-Switch, **Speichern**. Nach dem allerersten erfolgreich gespeicherten Spieler öffnet **Spielen**.
+**Spieler anlegen:** Header Zurück · **Spieler anlegen**; Name und Gast-Switch. Unten links **Weiteren hinzufügen** (Secondary), rechts **Fertig** (Primary). Kein automatischer Wechsel zu Spielen. Verhalten beim Speichern und Abbrechen siehe `PRODUCT_SPEC.md`.
 
 **Spieler bearbeiten:** Header **Spieler bearbeiten**; Name, Archiv-Switch und **Speichern**, kein Gast-Control.
 
@@ -133,11 +135,11 @@ Header: Zurück · **Gruppe anlegen** · Info; rechts **Speichern**.
 
 Inhaltsreihenfolge:
 
-1. Gruppenname;
-2. Mitglieder mit aktueller Reihenfolge, Hoch/Runter/Entfernen;
-3. **Vorhandenen Spieler hinzufügen** per `SelectionDialog`;
-4. Neuer Spieler mit Name, Gast-Switch und **Spieler hinzufügen**;
-5. **Spiele auswählen** als Mehrfachauswahl aktueller Zuordnungen.
+1. **Gruppenname** als normale Abschnittsüberschrift, darunter ein eigenes Eingabefeld;
+2. **Gruppenmitglieder** mit Positionsnummer, Name, Hoch/Runter (Randaktionen deaktiviert) und kleinem Entfernen-X; darunter nebeneinander **Vorhandenen Spieler hinzufügen** und **Neuer Spieler**, gleichwertig Secondary;
+3. **Spiele** mit vollständigen lokalisierten Namen der ausgewählten Spiele und Entfernen-X; darunter **Spiel hinzufügen**. Die Auswahl zeigt nur noch nicht enthaltene Spiele und übernimmt einen Tap direkt in den Entwurf.
+
+Vorhandene Spieler werden per `SelectionDialog` gewählt, bereits enthaltene Spieler fehlen in der Auswahl. **Neuer Spieler** öffnet ein Overlay mit gemeinsamem Zurück-Pfeil, Titel **Neuer Spieler**, Name, Gast-Switch und **Hinzufügen**. Hinzufügen übernimmt nur in den Gruppenentwurf; Zurück verwirft nur den Overlay-Entwurf. Das Gruppenformular bleibt erhalten. Spieler und Gruppe werden erst beim Gruppenspeichern gemeinsam angelegt.
 
 Im allgemeinen Gruppenformular gibt es keine Spiel-Farbpalette.
 
@@ -178,7 +180,9 @@ stehen in `PRODUCT_SPEC.md`.
 
 ### Gruppe bearbeiten
 
-Name, Archiv-Switch, unveränderliche Mitgliedermenge mit Hoch/Runter für **Default-Reihenfolge**, **Spiele auswählen** und **Speichern**. Kein Hinzufügen/Entfernen von Mitgliedern, keine spielabhängige Farbauswahl.
+Abschnitte **Gruppenname → Gruppenmitglieder → Spiele**. Mitgliedermenge fest: Positionsnummer und Hoch/Runter, keine Hinzufügen-/Entfernen-Aktionen für Mitglieder. Spiele als ausgewählte Einträge mit Entfernen und darunter **Spiel hinzufügen**. Gesperrte Zuordnungen zeigen den Grund direkt am deaktivierten Entfernen. Die allgemeine Archivierungserklärung steht in der Gruppen-Info; konkrete Archivierungssperren bleiben am Switch sichtbar.
+
+Archiv-Switch und **Speichern** bleiben erhalten; keine spielabhängige Farbauswahl.
 
 Ist irgendeine Session dieser Gruppe Running/Scoring, ist **Archivieren** nicht möglich; der Switch wird entsprechend deaktiviert und erläutert. Die erneute Prüfung beim Speichern liegt im Produkt-/Datenmodell. Eine zugeordnete Spielverknüpfung mit offener Session/Wertung darf ebenfalls nicht entfernt werden und wird verständlich blockiert.
 

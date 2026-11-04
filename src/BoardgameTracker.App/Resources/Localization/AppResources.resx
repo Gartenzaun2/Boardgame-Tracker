@@ -604,7 +604,7 @@
     <value>Neuen Spieler anlegen</value>
   </data>
   <data name="AddExistingPlayerAction" xml:space="preserve">
-    <value>+ Vorhandenen Spieler hinzufügen</value>
+    <value>Vorhandenen Spieler hinzufügen</value>
   </data>
   <data name="SelectExistingPlayerTitle" xml:space="preserve">
     <value>Vorhandenen Spieler auswählen</value>
@@ -899,4 +899,10 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameDisableBlocked" xml:space="preserve"><value>Dieses Spiel bleibt aktiviert, solange eine Partie oder Wertung offen ist.</value></data>
   <data name="MyGamesLoadFailed" xml:space="preserve"><value>Die Spieleinstellungen konnten nicht geladen werden.</value></data>
   <data name="GameActivationSaveFailed" xml:space="preserve"><value>Die Aktivierung konnte nicht gespeichert werden. Bitte erneut versuchen.</value></data>
+  <data name="AddAnotherPlayer" xml:space="preserve"><value>Weiteren hinzufügen</value></data>
+  <data name="NewPlayerTitle" xml:space="preserve"><value>Neuer Spieler</value></data>
+  <data name="AddToDraft" xml:space="preserve"><value>Hinzufügen</value></data>
+  <data name="GamesSection" xml:space="preserve"><value>Spiele</value></data>
+  <data name="AddGame" xml:space="preserve"><value>Spiel hinzufügen</value></data>
+  <data name="StartingOrderFormat" xml:space="preserve"><value>Start: {0}</value></data>
 </root>

@@ -153,4 +153,16 @@ public sealed class MainSectionNavigationTests
         await shell.NavigateToMainSectionAsync(AppMainSection.Play, remember: false);
         Assert.Equal(AppMainSection.Settings, store.Value.LastMainSection);
     }
+    [Fact]
+    public async Task ModuleSettingsEntryOpensItsOwnRoute()
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        var shell = CreateShell(new(), database);
+        Shell.Current = shell;
+        BoardgameTracker.App.Navigation.IGameSettingsNavigation entry = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaSettingsNavigation();
+        await entry.OpenAsync();
+        Assert.Equal("ArkNovaSettingsPage", Assert.Single(shell.Calls).Route);
+        Assert.False(Assert.Single(shell.Animations));
+        Assert.Equal(BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler.GameDisplayName, entry.DisplayName);
+    }
 }

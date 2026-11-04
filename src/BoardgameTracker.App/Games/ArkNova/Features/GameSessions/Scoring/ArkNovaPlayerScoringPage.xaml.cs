@@ -90,7 +90,7 @@ public partial class ArkNovaPlayerScoringPage : ContentPage, IQueryAttributable
             }
             await _viewModel.FlushAsync();
             persisted = true;
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
         }
         catch (Exception exception)
         {

@@ -15,6 +15,33 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<IGameSessionNavigationHandler> games, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
+    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected).ToArray();
+    public bool HasAvailableGames => AvailableGames.Count > 0;
+    [ObservableProperty] public partial bool IsChoosingGame { get; set; }
+
+    private void GamesChanged()
+    {
+        OnPropertyChanged(nameof(SelectedGames));
+        OnPropertyChanged(nameof(AvailableGames));
+        OnPropertyChanged(nameof(HasAvailableGames));
+    }
+
+    [RelayCommand]
+    private void AddGame(GroupGameSelection? game)
+    {
+        if (IsBusy || game is null || !Games.Contains(game)) return;
+        game.IsSelected = true;
+        IsChoosingGame = false;
+    }
+
+    [RelayCommand]
+    private void RemoveGame(GroupGameSelection? game)
+    {
+        if (IsBusy || game is null || !Games.Contains(game) || !game.CanChange) return;
+        game.IsSelected = false;
+    }
+
     [ObservableProperty] public partial bool CanArchive { get; private set; }
     public bool ArchiveLocked => !CanArchive;
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
@@ -67,6 +94,8 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
             Games.Clear();
             foreach (EditGroupGame game in details.Games)
                 Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.IsAssigned, game.CanRemove));
+            foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
+            GamesChanged();
             CanArchive = details.CanArchive;
             OnPropertyChanged(nameof(ArchiveLocked));
             GroupId = details.Id;
@@ -82,6 +111,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
                     player.IsGuest));
             }
 
+            GroupMemberDraft.UpdatePositions(Players);
             SaveCommand.NotifyCanExecuteChanged();
         }
         catch (Exception exception)
@@ -107,6 +137,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
         if (index > 0)
         {
             Players.Move(index, index - 1);
+            GroupMemberDraft.UpdatePositions(Players);
         }
     }
 
@@ -122,6 +153,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
         if (index >= 0 && index < Players.Count - 1)
         {
             Players.Move(index, index + 1);
+            GroupMemberDraft.UpdatePositions(Players);
         }
     }
 

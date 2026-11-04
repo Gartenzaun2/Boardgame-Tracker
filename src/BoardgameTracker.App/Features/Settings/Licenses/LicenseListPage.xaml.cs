@@ -32,7 +32,7 @@ public partial class LicenseListPage : ContentPage
         _navigating = true;
         try
         {
-            await Shell.Current.GoToAsync(nameof(LicenseDetailPage), new ShellNavigationQueryParameters
+            await Shell.Current.GoToAsync(nameof(LicenseDetailPage), false, new ShellNavigationQueryParameters
             {
                 [NavigationParameters.LicenseComponentId] = id
             });
@@ -55,7 +55,7 @@ public partial class LicenseListPage : ContentPage
         _navigating = true;
         try
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
         }
         finally
         {

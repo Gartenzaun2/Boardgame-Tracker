@@ -226,7 +226,7 @@ public sealed class GameActivationTests
         // A session started from a preparation already on the stack must never disappear.
         GameSession session = await db.AddSessionAsync(scoring: true);
         await shell.NavigateFromMainTabTapAsync(shell.CurrentItem.Items[0]);
-        Assert.Equal("GroupListPage", shell.Calls[^1].Route);
+        Assert.Equal("//GamesPage/GroupListPage", shell.Calls[^1].Route);
         Assert.True(Assert.Single(await new PlayOverviewQuery(db, store).ListAsync(Token)).HasOpenSession);
         Assert.Equal(session.Id, (await new OpenGameSessionQuery(db).GetAsync(session.Id, Token))!.GameSessionId);
         GameActivationState state = Assert.Single(await new GameActivationUseCase(db, store).GetGamesAsync(Token));

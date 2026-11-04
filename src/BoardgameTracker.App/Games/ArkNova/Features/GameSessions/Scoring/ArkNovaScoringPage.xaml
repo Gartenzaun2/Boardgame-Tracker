@@ -2,6 +2,7 @@
 <ContentPage
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring.ArkNovaScoringPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
     xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
@@ -17,14 +18,21 @@
                     <ImageButton Clicked="OnBackClicked" Source="icon_back.png" Style="{StaticResource IconButton}" />
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                         <Label Text="{x:Static res:AppResources.Scoring}" FontAttributes="Bold" FontSize="22" />
-                        <Label Text="{Binding GroupName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" />
-                        <Label Text="{Binding DateText}" FontSize="11" TextColor="{DynamicResource TextPrimary}" />
+
+
                     </VerticalStackLayout>
                     <ImageButton Grid.Column="2" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
                     <ImageButton Grid.Column="3" IsVisible="{Binding IsLiveScoring}" Clicked="OnPhotoInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
                         SemanticProperties.Description="{x:Static res:AppResources.PhotoHelpTitle}" />
                     <ImageButton Grid.Column="4" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
                 </Grid>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Border BackgroundColor="Transparent" Stroke="{DynamicResource GameContextBorder}" StrokeThickness="1" StrokeShape="RoundRectangle 14" HeightRequest="28" Padding="12,0" HorizontalOptions="Start" SemanticProperties.Description="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}">
+                    <Label Text="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" FontSize="13" TextColor="{DynamicResource GameContextText}" VerticalOptions="Center" />
+                </Border>
+                    <Label Grid.Column="1" Text="{Binding GroupName}" FontSize="14" VerticalOptions="Center" />
+                </Grid>
+                <Label Text="{Binding DateText}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                 <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
 

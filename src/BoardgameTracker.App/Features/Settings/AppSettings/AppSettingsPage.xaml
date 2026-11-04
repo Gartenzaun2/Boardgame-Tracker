@@ -3,6 +3,7 @@
     x:Class="BoardgameTracker.App.Features.Settings.AppSettings.AppSettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:BoardgameTracker.App.Navigation"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
     <Grid Padding="20,22" RowDefinitions="Auto,*" RowSpacing="14">
@@ -28,18 +29,22 @@
 
             <Button Text="{x:Static res:AppResources.MyGames}" Clicked="OnMyGamesClicked" Style="{StaticResource SecondaryActionButton}" />
 
-            <Border Padding="16" Style="{StaticResource CardBorder}" VerticalOptions="Start">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnArkNovaSettingsTapped" />
-                </Border.GestureRecognizers>
-                <Grid ColumnDefinitions="*,Auto">
-                    <VerticalStackLayout Spacing="3">
-                        <Label Text="{x:Static res:AppResources.ArkNova}" FontAttributes="Bold" FontSize="18" />
-                        <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                    </VerticalStackLayout>
-                    <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
-                </Grid>
-            </Border>
+            <VerticalStackLayout x:Name="GameSettingsEntries" Spacing="12">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="nav:IGameSettingsNavigation">
+                        <Border Padding="16" Style="{StaticResource CardBorder}">
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameSettingsTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="3">
+                                    <Label Text="{Binding DisplayName}" FontAttributes="Bold" FontSize="18" />
+                                    <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
             <Label Text="{x:Static res:AppResources.AboutLegal}" FontAttributes="Bold" FontSize="17" Margin="0,8,0,0" SemanticProperties.HeadingLevel="Level2" />
             <Label x:Name="AppVersionLabel" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
             <Button Text="{x:Static res:AppResources.OpenSourceLicenses}" Clicked="OnLicensesClicked" Style="{StaticResource SecondaryActionButton}" />

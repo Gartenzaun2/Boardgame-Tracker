@@ -3,7 +3,25 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BoardgameTracker.App.Features.Groups;
 
-public sealed record GroupMemberDraft(Guid? PlayerId, string Name, bool IsGuest);
+public sealed partial class GroupMemberDraft(Guid? playerId, string name, bool isGuest) : ObservableObject
+{
+    public Guid? PlayerId { get; } = playerId;
+    public string Name { get; } = name;
+    public bool IsGuest { get; } = isGuest;
+    [ObservableProperty] public partial int Position { get; set; }
+    [ObservableProperty] public partial bool CanMoveUp { get; set; }
+    [ObservableProperty] public partial bool CanMoveDown { get; set; }
+
+    public static void UpdatePositions(IReadOnlyList<GroupMemberDraft> players)
+    {
+        for (int index = 0; index < players.Count; index++)
+        {
+            players[index].Position = index + 1;
+            players[index].CanMoveUp = index > 0;
+            players[index].CanMoveDown = index < players.Count - 1;
+        }
+    }
+}
 
 public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true) : ObservableObject
 {

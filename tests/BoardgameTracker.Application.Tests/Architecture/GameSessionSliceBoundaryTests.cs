@@ -72,6 +72,20 @@ public sealed class GameSessionSliceBoundaryTests
     }
 
     [Fact]
+    public void GeneralSettingsUsesOnlyRegisteredModuleEntries()
+    {
+        Assembly assembly = typeof(GameSessionSliceBoundaryTests).Assembly;
+        foreach (string extension in new[] { ".xaml", ".xaml.cs" })
+        {
+            using StreamReader reader = new(assembly.GetManifestResourceStream(assembly.GetManifestResourceNames().Single(name => name.EndsWith("AppSettingsPage" + extension, StringComparison.Ordinal)))!);
+            string source = reader.ReadToEnd();
+            Assert.DoesNotContain("ArkNova", source, StringComparison.Ordinal);
+        }
+        using StreamReader module = new(assembly.GetManifestResourceStream("UxContract.ArkNovaServiceCollectionExtensions.cs")!);
+        Assert.Contains("AddTransient<IGameSettingsNavigation, ArkNovaSettingsNavigation>", module.ReadToEnd(), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void CoreAndApplicationDoNotReferenceInfrastructureOrMaui()
     {
         foreach (Assembly assembly in new[] { typeof(Player).Assembly, typeof(ArkNovaScoringUseCase).Assembly })

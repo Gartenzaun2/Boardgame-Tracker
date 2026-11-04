@@ -213,6 +213,8 @@ public sealed class GroupManagementViewModelTests
         await vm.LoadAsync(db.Group.Id, Token);
         Assert.False(vm.CanArchive);
         Assert.True(vm.ArchiveLocked);
+        vm.RemoveGameCommand.Execute(Assert.Single(vm.SelectedGames));
+        Assert.Single(vm.SelectedGames);
         GroupGameSelection game = Assert.Single(vm.Games);
         Assert.True(game.IsLocked);
         Assert.NotEmpty(game.LockReason);
@@ -266,5 +268,121 @@ public sealed class GroupManagementViewModelTests
         Assert.True((await final.Players.SingleAsync(player => player.Name == "Guest", Token)).IsGuest);
         Assert.Null(typeof(PlayerListViewModel).GetMethod("OpenLastGameSessionAsync"));
         Assert.Null(typeof(ManagedGroupRow).GetProperty("LastPlayedAt"));
+    }
+
+    [Fact]
+    public async Task OverlayCancelAndDraftActions_KeepFormAndDoNotPersistPlayers()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        var vm = Draft(db);
+        await vm.LoadAsync(Token);
+        vm.GroupName = "Kept group";
+        AddExisting(vm, db.First.Id);
+        vm.BeginNewPlayer();
+        vm.NewPlayerName = "Discarded";
+        vm.NewPlayerIsGuest = true;
+        vm.CancelNewPlayer();
+        Assert.False(vm.IsAddingNewPlayer);
+        Assert.Single(vm.Players);
+        Assert.Equal("Kept group", vm.GroupName);
+        vm.BeginNewPlayer();
+        Assert.Empty(vm.NewPlayerName);
+        Assert.False(vm.NewPlayerIsGuest);
+        vm.NewPlayerName = "Draft guest";
+        vm.AddNewPlayerCommand.Execute(null);
+        Assert.False(vm.IsAddingNewPlayer);
+        Assert.Equal(new[] { 1, 2 }, vm.Players.Select(player => player.Position));
+        Assert.False(vm.Players[0].CanMoveUp);
+        Assert.False(vm.Players[1].CanMoveDown);
+        vm.MovePlayerUpCommand.Execute(vm.Players[1]);
+        Assert.Equal("Draft guest", vm.Players[0].Name);
+        Assert.Equal(new[] { 1, 2 }, vm.Players.Select(player => player.Position));
+        vm.RemovePlayerCommand.Execute(vm.Players[1]);
+        Assert.Single(vm.Players);
+        Assert.Contains(vm.AvailablePlayers, player => player.Id == db.First.Id);
+        Assert.Empty(vm.SelectedGames);
+        var game = Assert.Single(vm.AvailableGames);
+        vm.AddGameCommand.Execute(game);
+        Assert.Same(game, Assert.Single(vm.SelectedGames));
+        Assert.False(vm.HasAvailableGames);
+        vm.RemoveGameCommand.Execute(game);
+        Assert.Empty(vm.SelectedGames);
+        Assert.True(vm.HasAvailableGames);
+        await using var verify = db.CreateDbContext();
+        Assert.Equal(2, await verify.Players.CountAsync(Token));
+        Assert.Single(await verify.Groups.ToArrayAsync(Token));
+    }
+
+    [Fact]
+    public async Task StandalonePlayer_AddAnotherResetsOnlyAfterSuccessfulSave()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        var vm = new EditPlayerViewModel(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        vm.InitializeNew();
+        vm.Name = "First new";
+        vm.IsGuest = true;
+        Assert.True(await vm.SaveAndAddAnotherAsync(Token));
+        Assert.Empty(vm.Name);
+        Assert.False(vm.IsGuest);
+        vm.Name = "Second new";
+        Assert.True(await vm.SaveAndAddAnotherAsync(Token));
+        await using (var failing = db.CreateDbContext())
+            await failing.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_player BEFORE INSERT ON Players BEGIN SELECT RAISE(ABORT, 'test player failure'); END", Token);
+        vm.Name = "Kept input";
+        vm.IsGuest = true;
+        Assert.False(await vm.SaveAndAddAnotherAsync(Token));
+        Assert.Equal("Kept input", vm.Name);
+        Assert.True(vm.IsGuest);
+        Assert.True(vm.HasError);
+        await using (var restore = db.CreateDbContext())
+            await restore.Database.ExecuteSqlRawAsync("DROP TRIGGER reject_player", Token);
+        Assert.True(await vm.SaveAsync(Token));
+        Assert.True(await vm.SaveAsync(Token)); // A navigation retry must not create another player.
+        await using var verify = db.CreateDbContext();
+        Assert.Equal(5, await verify.Players.CountAsync(Token));
+        Assert.True((await verify.Players.SingleAsync(player => player.Name == "First new", Token)).IsGuest);
+        Assert.False((await verify.Players.SingleAsync(player => player.Name == "Second new", Token)).IsGuest);
+    }
+
+    [Theory]
+    [InlineData("Create")]
+    [InlineData("Edit")]
+    public void GroupForm_ListsSelectionsBeforeAddActionsAndKeepsMembershipRules(string kind)
+    {
+        var assembly = typeof(GroupManagementViewModelTests).Assembly;
+        using StreamReader reader = new(assembly.GetManifestResourceStream("GeneralGroupFeature." + kind + "GroupPage.xaml")!);
+        var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
+        var elements = document.Descendants().ToArray();
+        int members = Array.FindIndex(elements, element => (string?)element.Attribute("BindableLayout.ItemsSource") == "{Binding Players}");
+        int games = Array.FindIndex(elements, element => (string?)element.Attribute("BindableLayout.ItemsSource") == "{Binding SelectedGames}");
+        int addGame = Array.FindIndex(elements, element => (string?)element.Attribute("Clicked") == "OnChooseGameClicked");
+        Assert.True(members >= 0 && games > members && addGame > games);
+        Assert.DoesNotContain(elements, element => element.Name.LocalName == "CheckBox");
+        Assert.Contains(elements, element => (string?)element.Attribute("IsEnabled") == "{Binding CanMoveUp}");
+        Assert.Contains(elements, element => (string?)element.Attribute("IsEnabled") == "{Binding CanMoveDown}");
+        if (kind == "Create")
+        {
+            int addPlayer = Array.FindIndex(elements, element => (string?)element.Attribute("Clicked") == "OnChooseExistingPlayerClicked");
+            Assert.True(addPlayer > members && addPlayer < games);
+            var entry = Assert.Single(elements, element => (string?)element.Attribute("Text") == "{Binding NewPlayerName}");
+            Assert.Contains(entry.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsAddingNewPlayer}");
+        }
+        else
+        {
+            Assert.DoesNotContain(elements, element => ((string?)element.Attribute("Command"))?.Contains("RemovePlayerCommand", StringComparison.Ordinal) == true);
+            Assert.DoesNotContain(elements, element => (string?)element.Attribute("Clicked") == "OnChooseExistingPlayerClicked");
+            Assert.Contains(elements, element => (string?)element.Attribute("IsEnabled") == "{Binding CanArchive}");
+        }
+    }
+
+    [Fact]
+    public void PlayerCreationActionsAreSeparateFromExistingPlayerSave()
+    {
+        using StreamReader reader = new(typeof(GroupManagementViewModelTests).Assembly.GetManifestResourceStream("UxContract.EditPlayerPage.xaml")!);
+        var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
+        var add = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Clicked") == "OnAddAnotherClicked");
+        Assert.Contains(add.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew}");
+        var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsExisting}" && element.Name.LocalName == "Button");
+        Assert.Equal("{x:Static res:AppResources.Save}", (string?)editorSave.Attribute("Text"));
     }
 }

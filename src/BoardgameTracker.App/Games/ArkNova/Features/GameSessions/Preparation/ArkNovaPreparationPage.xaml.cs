@@ -49,7 +49,7 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("..", false);
 
     private void OnMoveUpClicked(object? sender, EventArgs e)
     {
@@ -168,9 +168,7 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
             shell.RememberGameSession(gameSessionId.Value, ArkNovaGame.Key);
         }
 
-        await Shell.Current.GoToAsync(
-            nameof(ArkNovaRunningPage),
-            new ShellNavigationQueryParameters
+        await Shell.Current.GoToAsync(nameof(ArkNovaRunningPage), false, new ShellNavigationQueryParameters
             {
                 [NavigationParameters.GameSessionId] = gameSessionId.Value
             });

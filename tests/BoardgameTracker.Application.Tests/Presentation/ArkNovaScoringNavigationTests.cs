@@ -75,6 +75,24 @@ public sealed class ArkNovaScoringNavigationTests
         Assert.Equal(next, SessionId(page));
     }
 
+    [Theory]
+    [InlineData("ArkNovaPreparationPage")]
+    [InlineData("ArkNovaRunningPage")]
+    [InlineData("ArkNovaScoringPage")]
+    [InlineData("ArkNovaTieResolutionPage")]
+    [InlineData("ArkNovaResultPage")]
+    public void GameScreensHaveAccessibleRegisteredCapsule(string page)
+    {
+        using StreamReader reader = new(typeof(ArkNovaScoringNavigationTests).Assembly.GetManifestResourceStream("UxContract." + page + ".xaml")!);
+        var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
+        var capsule = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Stroke") == "{DynamicResource GameContextBorder}");
+        Assert.Equal("{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}", (string?)capsule.Attribute("SemanticProperties.Description"));
+        Assert.Equal("28", (string?)capsule.Attribute("HeightRequest"));
+        Assert.Equal("RoundRectangle 14", (string?)capsule.Attribute("StrokeShape"));
+        Assert.Contains(capsule.Descendants(), element => (string?)element.Attribute("Text") == "{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}");
+        Assert.DoesNotContain(capsule.Descendants(), element => element.Name.LocalName.Contains("Gesture", StringComparison.Ordinal));
+    }
+
     private static Guid SessionId(object page) =>
         (Guid)page.GetType().GetField("_gameSessionId", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(page)!;
 

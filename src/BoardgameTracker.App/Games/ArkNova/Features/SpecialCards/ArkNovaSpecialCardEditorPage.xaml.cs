@@ -35,7 +35,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
         try
         {
             if (await _viewModel.SaveAsync())
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("..", false);
         }
         finally
         {
@@ -49,7 +49,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
         _leaving = true;
         try
         {
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync("..", false);
         }
         finally
         {

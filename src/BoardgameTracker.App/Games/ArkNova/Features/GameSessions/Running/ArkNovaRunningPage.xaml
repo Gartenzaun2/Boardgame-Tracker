@@ -2,6 +2,7 @@
 <ContentPage
     x:Class="BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running.ArkNovaRunningPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
@@ -28,16 +29,17 @@
                         SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                         <Label FontAttributes="Bold" FontSize="23" Text="{x:Static res:AppResources.RunningGame}" />
-                        <Label
-                            FontSize="13"
-                            Text="{Binding GroupName}"
-                            TextColor="{DynamicResource TextPrimary}" />
-                        <Label
-                            FontSize="13"
-                            Text="{Binding DurationText}"
-                            TextColor="{DynamicResource TextPrimary}" />
+
+
                     </VerticalStackLayout>
                 </Grid>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                    <Border BackgroundColor="Transparent" Stroke="{DynamicResource GameContextBorder}" StrokeThickness="1" StrokeShape="RoundRectangle 14" HeightRequest="28" Padding="12,0" HorizontalOptions="Start" SemanticProperties.Description="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}">
+                    <Label Text="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" FontSize="13" TextColor="{DynamicResource GameContextText}" VerticalOptions="Center" />
+                </Border>
+                    <Label Grid.Column="1" Text="{Binding GroupName}" FontSize="14" VerticalOptions="Center" />
+                </Grid>
+                <Label Text="{Binding DurationText}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                 <BoxView Style="{StaticResource HeaderDivider}" />
             </VerticalStackLayout>
 
