@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.2
+
+- Headerkontext am linken Inhaltsrand ausgerichtet, Abstände kompakter und Badge-Text fett dargestellt; Header- und Inhaltsabstände getrennt.
+- Headericons bei unveränderten Touchflächen auf 24 dp begrenzt, Aktiv-Symbole themefähig eingefärbt und lesbare Segmentzustände vereinheitlicht.
+
 ## 0.17.0.1
 
 - Gemeinsamen spielneutralen Seitenheader mit Hauptbereichs-/Unterseitenvariante, festen Titel-/Aktionsankern und optionalen Kontextzeilen eingeführt.

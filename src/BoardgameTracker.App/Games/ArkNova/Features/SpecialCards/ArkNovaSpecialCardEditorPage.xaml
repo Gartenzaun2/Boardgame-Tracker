@@ -9,17 +9,18 @@
     x:DataType="vm:ArkNovaSpecialCardEditorViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="16" IsEnabled="{Binding IsEditorContentEnabled}">
-            <VerticalStackLayout Spacing="8">
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="16" IsEnabled="{Binding IsEditorContentEnabled}">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{Binding Title}"
                 Variant="Subpage"
                 BackClicked="OnBackClicked"
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
-                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
-                Margin="-18,-18,-18,0" />
+                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
             </VerticalStackLayout>
-            <ScrollView Grid.Row="1">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="16">
+<ScrollView Grid.Row="0">
                 <VerticalStackLayout Spacing="16">
                     <Label Text="{x:Static res:AppResources.SpecialCardName}" FontAttributes="Bold" />
                     <Entry Text="{Binding NameText}" MaxLength="{x:Static content:ArkNovaUserContent.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
@@ -43,8 +44,9 @@
                     <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 </VerticalStackLayout>
             </ScrollView>
-            <Button Grid.Row="2" Text="{x:Static res:AppResources.Save}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
-        </Grid>
+<Button Grid.Row="1" Text="{x:Static res:AppResources.Save}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
+</Grid>
+</Grid>
 
         <Grid IsVisible="{Binding IsSymbolPickerVisible}" IsEnabled="{Binding IsIdle}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="12">
             <Border Style="{StaticResource SelectionDialog}">

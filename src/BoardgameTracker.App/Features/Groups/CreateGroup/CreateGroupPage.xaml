@@ -33,7 +33,7 @@
                     <ImageButton WidthRequest="48" HeightRequest="48"
                         Clicked="OnInfoClicked"
                         Source="icon_info.png"
-                        Style="{StaticResource IconButton}"
+                        Style="{StaticResource HeaderIconButton}"
                         SemanticProperties.Description="{x:Static res:AppResources.CreateGroupHint}"
                         ToolTipProperties.Text="{x:Static res:AppResources.CreateGroupHint}" />
                     <Button

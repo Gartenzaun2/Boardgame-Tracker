@@ -4,17 +4,18 @@
              xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
              x:Class="BoardgameTracker.App.Games.ArkNova.Features.Settings.ArkNovaPhotoDatasetPage"
              Shell.NavBarIsVisible="False">
-    <Grid Padding="18" RowDefinitions="Auto,*" RowSpacing="20">
-        <VerticalStackLayout Spacing="8">
+    <Grid RowDefinitions="Auto,*" RowSpacing="20">
+
+<VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.PhotoDatasetTitle}"
                 Variant="Subpage"
                 BackClicked="OnBackClicked"
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
-                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
-                Margin="-18,-18,-18,0" />
+                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
         </VerticalStackLayout>
-        <ScrollView Grid.Row="1">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="20">
+<ScrollView Grid.Row="0">
             <VerticalStackLayout x:Name="Actions" Spacing="12">
                 <Border Style="{StaticResource CardBorder}" Padding="16">
                     <VerticalStackLayout Spacing="12">
@@ -31,5 +32,6 @@
                 <Label x:Name="ErrorLabel" TextColor="{DynamicResource TextPrimary}" IsVisible="False" />
             </VerticalStackLayout>
         </ScrollView>
-    </Grid>
+</Grid>
+</Grid>
 </ContentPage>

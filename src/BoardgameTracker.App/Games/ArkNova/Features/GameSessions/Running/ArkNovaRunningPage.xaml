@@ -11,8 +11,8 @@
 
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
-            <Grid.Triggers>
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="False">
+<Grid.Triggers>
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>
                         <BindingCondition Binding="{Binding IsBusy}" Value="False" />
@@ -20,7 +20,7 @@
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
             </Grid.Triggers>
-            <VerticalStackLayout Spacing="8">
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.RunningGame}"
                 Variant="Subpage"
@@ -28,17 +28,15 @@
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
                 BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
                 Subtitle="{Binding GroupName}"
-                Metadata="{Binding DurationText}"
-                Margin="-18,-18,-18,0" />
+                Metadata="{Binding DurationText}" />
             </VerticalStackLayout>
-
-            <Label
-                Grid.Row="1"
+<Grid Grid.Row="1" Padding="18,0,18,14" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+<Label
+                Grid.Row="0"
                 IsVisible="{Binding HasError}"
                 Text="{Binding ErrorMessage}"
                 TextColor="{DynamicResource Danger}" />
-
-            <ScrollView Grid.Row="2">
+<ScrollView Grid.Row="1">
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" Spacing="10">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="local:ArkNovaRunningPlayerViewModel">
@@ -97,8 +95,7 @@
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
             </ScrollView>
-
-            <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+<Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="10">
                 <Button
                     Clicked="OnEndClicked"
                     Style="{StaticResource PrimaryCompactButton}"
@@ -108,7 +105,8 @@
                     Clicked="OnDiscardClicked"
                     Text="{x:Static res:AppResources.Discard}" />
             </Grid>
-        </Grid>
+</Grid>
+</Grid>
 
         <Grid
             BackgroundColor="{DynamicResource BusyOverlay}"

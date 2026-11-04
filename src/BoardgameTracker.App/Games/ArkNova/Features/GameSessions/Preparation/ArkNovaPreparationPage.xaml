@@ -13,8 +13,8 @@
 
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" Padding="18,18,18,14" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="False">
-            <Grid.Triggers>
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="False">
+<Grid.Triggers>
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>
                         <BindingCondition Binding="{Binding IsBusy}" Value="False" />
@@ -22,34 +22,32 @@
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
             </Grid.Triggers>
-            <VerticalStackLayout Spacing="8">
+<VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.PrepareGame}"
                 Variant="Subpage"
                 BackClicked="OnBackClicked"
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
                 BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
-                Subtitle="{Binding GroupName}"
-                Margin="-18,-18,-18,0">
+                Subtitle="{Binding GroupName}">
                 <header:AppPageHeader.Actions>
                     <ImageButton WidthRequest="48" HeightRequest="48"
                             x:Name="RandomStartButton"
                             Clicked="OnRandomStartClicked"
                             Source="icon_dice.png"
-                            Style="{StaticResource IconButton}"
+                            Style="{StaticResource HeaderIconButton}"
                             SemanticProperties.Description="{x:Static res:AppResources.DetermineStartingPlayer}"
                             ToolTipProperties.Text="{x:Static res:AppResources.DetermineStartingPlayer}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             </VerticalStackLayout>
-
-            <Label
-                Grid.Row="1"
+<Grid Grid.Row="1" Padding="18,0,18,14" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+<Label
+                Grid.Row="0"
                 IsVisible="{Binding HasError}"
                 Text="{Binding ErrorMessage}"
                 TextColor="{DynamicResource Danger}" />
-
-            <ScrollView Grid.Row="2" Margin="0,-6,0,0">
+<ScrollView Grid.Row="1" Margin="0,-6,0,0">
                 <VerticalStackLayout Spacing="12">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="{x:Static res:AppResources.PreviousGameSection}" FontSize="12" FontAttributes="Bold" />
@@ -235,14 +233,14 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
-
-            <Button
-                Grid.Row="3"
+<Button
+                Grid.Row="2"
                 Clicked="OnStartClicked"
                 IsEnabled="{Binding CanStart}"
                 Style="{StaticResource PrimaryCompactButton}"
                 Text="{x:Static res:AppResources.StartGame}" />
-        </Grid>
+</Grid>
+</Grid>
 
         <Grid
             BackgroundColor="{DynamicResource BusyOverlay}"

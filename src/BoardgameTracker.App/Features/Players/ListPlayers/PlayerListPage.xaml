@@ -3,32 +3,31 @@
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.ListPlayers" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Players.ListPlayers.PlayerListPage" x:DataType="local:PlayerListViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid Padding="18" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding IsIdle}">
-            <VerticalStackLayout Spacing="8">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsIdle}">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.Participants}"
-                Variant="MainSection"
-                Margin="-18,-18,-18,0">
+                Variant="MainSection">
                 <header:AppPageHeader.Actions>
-                    <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
+                    <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
-                    <Button Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SecondaryActionButton}">
-                        <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowPlayers}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
-                    </Button>
-                    <Button Grid.Column="1" Text="{x:Static res:AppResources.Groups}" Clicked="OnGroupsSegmentClicked" IsEnabled="{Binding HasPlayers}" Style="{StaticResource SecondaryActionButton}">
-                        <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ShowGroups}" Value="True"><Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" /><Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" /><Setter Property="BorderWidth" Value="2" /></DataTrigger></Button.Triggers>
-                    </Button>
+                <VerticalStackLayout Padding="18,0,18,0" Spacing="8">
+<Grid ColumnDefinitions="*,*" ColumnSpacing="4">
+                    <header:SegmentButton Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SegmentButton}" IsSelected="{Binding ShowPlayers}" />
+                    <header:SegmentButton Grid.Column="1" Text="{x:Static res:AppResources.Groups}" Clicked="OnGroupsSegmentClicked" IsEnabled="{Binding HasPlayers}" Style="{StaticResource SegmentButton}" IsSelected="{Binding ShowGroups}" />
                 </Grid>
                 <Label Text="{x:Static res:AppResources.FirstPlayerHint}" IsVisible="{Binding HasNoPlayers}" />
+</VerticalStackLayout>
             </VerticalStackLayout>
-            <HorizontalStackLayout Grid.Row="1" Spacing="16" IsVisible="{Binding ShowPlayers}">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+<HorizontalStackLayout Grid.Row="0" Spacing="16" IsVisible="{Binding ShowPlayers}">
                 <HorizontalStackLayout Spacing="4"><Switch IsToggled="{Binding IncludeGuests}" /><Label Text="{x:Static res:AppResources.ShowGuests}" VerticalOptions="Center" /></HorizontalStackLayout>
                 <HorizontalStackLayout Spacing="4"><Switch IsToggled="{Binding IncludeArchived}" /><Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" /></HorizontalStackLayout>
             </HorizontalStackLayout>
-            <HorizontalStackLayout Grid.Row="1" Spacing="4" IsVisible="{Binding ShowGroups}"><Switch IsToggled="{Binding IncludeArchivedGroups}" /><Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" /></HorizontalStackLayout>
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Players}" SelectionMode="None" IsVisible="{Binding ShowPlayers}">
+<HorizontalStackLayout Grid.Row="0" Spacing="4" IsVisible="{Binding ShowGroups}"><Switch IsToggled="{Binding IncludeArchivedGroups}" /><Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" /></HorizontalStackLayout>
+<CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" IsVisible="{Binding ShowPlayers}">
                 <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.PlayersEmpty}" /></CollectionView.EmptyView>
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
@@ -49,7 +48,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Groups}" SelectionMode="None" IsVisible="{Binding ShowGroups}">
+<CollectionView Grid.Row="1" ItemsSource="{Binding Groups}" SelectionMode="None" IsVisible="{Binding ShowGroups}">
                 <CollectionView.EmptyView><Label Text="{x:Static res:AppResources.NoGroupsYet}" /></CollectionView.EmptyView>
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
@@ -67,12 +66,13 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <VerticalStackLayout Grid.Row="3" Spacing="8">
+<VerticalStackLayout Grid.Row="2" Spacing="8">
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 <Button Text="{x:Static res:AppResources.AddPlayer}" IsVisible="{Binding ShowPlayers}" Clicked="OnAddPlayerClicked" Style="{StaticResource PrimaryCompactButton}" />
                 <Button Text="{x:Static res:AppResources.CreateGroup}" IsVisible="{Binding ShowGroups}" Clicked="OnAddGroupClicked" Style="{StaticResource PrimaryCompactButton}" />
             </VerticalStackLayout>
-        </Grid>
+</Grid>
+</Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>
     </Grid>
 </ContentPage>

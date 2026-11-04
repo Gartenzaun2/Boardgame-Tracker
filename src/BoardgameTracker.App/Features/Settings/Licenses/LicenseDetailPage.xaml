@@ -4,15 +4,16 @@
     x:Class="BoardgameTracker.App.Features.Settings.Licenses.LicenseDetailPage" x:DataType="local:LicenseDetailViewModel"
     Title="{Binding DisplayName}" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid x:Name="PageContent" Padding="18" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
-            <VerticalStackLayout Spacing="8">
+        <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{Binding DisplayName}"
                 Variant="Subpage"
-                BackClicked="OnBackClicked"
-                Margin="-18,-18,-18,0" />
+                BackClicked="OnBackClicked" />
             </VerticalStackLayout>
-            <ScrollView Grid.Row="1">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="12">
+<ScrollView Grid.Row="0">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="{Binding VersionText}" IsVisible="{Binding HasVersion}" FontSize="14" />
                     <Label Text="{Binding LicenseDisplayName}" FontSize="17" FontAttributes="Bold" />
@@ -25,7 +26,8 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
-        </Grid>
+</Grid>
+</Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

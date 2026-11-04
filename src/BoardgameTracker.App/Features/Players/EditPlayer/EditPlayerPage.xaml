@@ -2,15 +2,16 @@
 <ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.EditPlayer" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerPage" x:DataType="local:EditPlayerViewModel" Shell.NavBarIsVisible="False">
-    <Grid Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="12" x:Name="EditorContent">
-        <VerticalStackLayout Spacing="8">
+    <Grid RowDefinitions="Auto,*" RowSpacing="12" x:Name="EditorContent">
+
+<VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{Binding Title}"
                 Variant="Subpage"
-                BackClicked="OnBackClicked"
-                Margin="-18,-18,-18,0" />
+                BackClicked="OnBackClicked" />
         </VerticalStackLayout>
-        <ScrollView Grid.Row="1">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+<ScrollView Grid.Row="0">
             <VerticalStackLayout Spacing="12" IsEnabled="{Binding IsIdle}">
                 <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
                 <Entry Text="{Binding Name}" Style="{StaticResource InlineFormEntry}" />
@@ -25,10 +26,11 @@
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </VerticalStackLayout>
         </ScrollView>
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
+<Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
             <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsIdle}" />
             <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
         </Grid>
-        <Button IsVisible="{Binding IsExisting}" Grid.Row="2" Text="{x:Static res:AppResources.Save}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
-    </Grid>
+<Button IsVisible="{Binding IsExisting}" Grid.Row="1" Text="{x:Static res:AppResources.Save}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+</Grid>
+</Grid>
 </ContentPage>

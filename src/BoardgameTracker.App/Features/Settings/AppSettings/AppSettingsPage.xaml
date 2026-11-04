@@ -6,21 +6,21 @@
     xmlns:nav="clr-namespace:BoardgameTracker.App.Navigation"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
-    <Grid Padding="20,22" RowDefinitions="Auto,*" RowSpacing="14">
-        <VerticalStackLayout Spacing="8">
+    <Grid RowDefinitions="Auto,*" RowSpacing="14">
+
+<VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.AppSettingsTitle}"
-                Variant="MainSection"
-                Margin="-20,-22,-20,0">
+                Variant="MainSection">
                 <header:AppPageHeader.Actions>
-                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
                              SemanticProperties.Description="{x:Static res:AppResources.GameSettingsHint}"
                              ToolTipProperties.Text="{x:Static res:AppResources.GameSettingsHint}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
         </VerticalStackLayout>
-
-        <ScrollView Grid.Row="1">
+<Grid Grid.Row="1" Padding="20,0,20,22" RowDefinitions="*" RowSpacing="14">
+<ScrollView Grid.Row="0">
         <VerticalStackLayout Spacing="12">
             <Border Padding="16" Style="{StaticResource CardBorder}">
                 <VerticalStackLayout Spacing="8">
@@ -53,5 +53,6 @@
             <Button Text="{x:Static res:AppResources.OpenSourceLicenses}" Clicked="OnLicensesClicked" Style="{StaticResource SecondaryActionButton}" />
         </VerticalStackLayout>
         </ScrollView>
-    </Grid>
+</Grid>
+</Grid>
 </ContentPage>

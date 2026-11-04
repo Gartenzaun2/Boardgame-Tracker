@@ -28,7 +28,7 @@
                 Variant="Subpage"
                 BackClicked="OnBackClicked">
                 <header:AppPageHeader.Actions>
-                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
+                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
                     <Button Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>

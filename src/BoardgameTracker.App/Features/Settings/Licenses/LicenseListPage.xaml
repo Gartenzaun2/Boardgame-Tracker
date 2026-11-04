@@ -4,16 +4,17 @@
     x:Class="BoardgameTracker.App.Features.Settings.Licenses.LicenseListPage" x:DataType="local:LicenseListViewModel"
     Title="{x:Static res:AppResources.OpenSourceLicenses}" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid x:Name="PageContent" Padding="18" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-            <VerticalStackLayout Spacing="8">
+        <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.OpenSourceLicenses}"
                 Variant="Subpage"
-                BackClicked="OnBackClicked"
-                Margin="-18,-18,-18,0" />
+                BackClicked="OnBackClicked" />
             </VerticalStackLayout>
-            <Label Grid.Row="1" Text="{Binding IjgAttribution}" FontSize="12" LineBreakMode="WordWrap" />
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Components}" SelectionMode="None">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+<Label Grid.Row="0" Text="{Binding IjgAttribution}" FontSize="12" LineBreakMode="WordWrap" />
+<CollectionView Grid.Row="1" ItemsSource="{Binding Components}" SelectionMode="None">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="8" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:ThirdPartyLicense">
@@ -30,11 +31,12 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <VerticalStackLayout Grid.Row="3" IsVisible="{Binding HasError}" Spacing="8">
+<VerticalStackLayout Grid.Row="2" IsVisible="{Binding HasError}" Spacing="8">
                 <Label Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                 <Button Text="{x:Static res:AppResources.LicensesRetry}" Clicked="OnRetryClicked" Style="{StaticResource SecondaryActionButton}" />
             </VerticalStackLayout>
-        </Grid>
+</Grid>
+</Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

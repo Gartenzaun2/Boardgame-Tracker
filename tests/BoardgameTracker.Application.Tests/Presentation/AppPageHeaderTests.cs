@@ -34,6 +34,8 @@ public sealed class AppPageHeaderTests
         Assert.Equal("MainSection", (string?)header.Attribute("Variant"));
         Assert.Null(header.Attribute("BadgeText"));
         Assert.Null(header.Attribute("BackClicked"));
+        Assert.Null(header.Attribute("Margin"));
+        Assert.DoesNotContain(header.Ancestors(), element => element.Attribute("Padding") is not null);
         if (page == "PlayerListPage")
         {
             var segments = document.Descendants().Where(element => (string?)element.Attribute("Clicked") is "OnPlayersSegmentClicked" or "OnGroupsSegmentClicked").ToArray();
@@ -73,14 +75,11 @@ public sealed class AppPageHeaderTests
         Assert.Equal("Subpage", (string?)header.Attribute("Variant"));
         Assert.Equal("{Binding GroupName}", (string?)header.Attribute("Subtitle"));
         Assert.Equal(metadata, (string?)header.Attribute("Metadata"));
-        // Pages keep their body padding. The header cancels it so its own anchors
-        // are identical even where the body uses a narrower scoring layout.
-        var parent = header.Ancestors().First(element => element.Attribute("Padding") is not null);
-        double padding = double.Parse(parent.Attribute("Padding")!.Value, System.Globalization.CultureInfo.InvariantCulture);
-        double[] margin = header.Attribute("Margin")!.Value.Split(',').Select(value => double.Parse(value, System.Globalization.CultureInfo.InvariantCulture)).ToArray();
-        Assert.Equal(0, padding + margin[0]);
-        Assert.Equal(0, padding + margin[1]);
-        Assert.Equal(0, padding + margin[2]);
+        Assert.Null(header.Attribute("Margin"));
+        Assert.DoesNotContain(header.Ancestors(), element => element.Attribute("Padding") is not null);
+        var body = Assert.Single(header.Ancestors().First(element => element.Name.LocalName == "Grid").Elements(),
+            element => (string?)element.Attribute("Grid.Row") == "1" && element.Attribute("Padding") is not null);
+        Assert.Equal(page == "ArkNovaScoringPage" ? "14,0,14,14" : "18,0,18,18", (string?)body.Attribute("Padding"));
         Assert.Null(header.Attribute("FontSize"));
         Assert.Null(header.Attribute("Padding"));
     }
@@ -103,6 +102,15 @@ public sealed class AppPageHeaderTests
         Assert.Equal("{Binding GameName, Source={x:Reference Header}}", (string?)capsule.Attribute("SemanticProperties.Description"));
         Assert.Equal("28", (string?)capsule.Attribute("MinimumHeightRequest"));
         Assert.Null(capsule.Attribute("HeightRequest"));
+        Assert.Equal("Bold", (string?)capsule.Elements().Single().Attribute("FontAttributes"));
+        Assert.Equal("13", (string?)capsule.Elements().Single().Attribute("FontSize"));
+        Assert.Null(capsule.Attribute("Grid.Column"));
+        Assert.Equal("112,*", (string?)capsule.Parent!.Attribute("ColumnDefinitions"));
+        Assert.Same(title.Parent!.Parent, capsule.Parent.Parent);
+        Assert.Equal("4", (string?)template.Root!.Elements().Single().Attribute("Spacing"));
+        var metadata = Assert.Single(template.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Metadata, Source={x:Reference Header}}");
+        Assert.Null(metadata.Attribute("Grid.Column"));
+        Assert.Null(metadata.Parent!.Attribute("ColumnDefinitions"));
         foreach (string text in new[] { "Subtitle", "Metadata" })
         {
             var label = Assert.Single(template.Descendants(), element => (string?)element.Attribute("Text") == "{Binding " + text + ", Source={x:Reference Header}}");
@@ -133,6 +141,8 @@ public sealed class AppPageHeaderTests
         {
             Assert.Null(action.Attribute("Grid.Column"));
             Assert.Null(action.Attribute("Margin"));
+            if (action.Name.LocalName == "ImageButton")
+                Assert.Equal("{StaticResource HeaderIconButton}", (string?)action.Attribute("Style"));
         }
         if (page == "ArkNovaScoringPage")
         {

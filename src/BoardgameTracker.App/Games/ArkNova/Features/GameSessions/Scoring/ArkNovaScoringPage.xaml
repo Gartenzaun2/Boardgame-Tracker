@@ -12,8 +12,9 @@
 
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" Padding="14" RowDefinitions="Auto,*,Auto" RowSpacing="10" IsEnabled="{Binding IsScoringContentEnabled}">
-            <VerticalStackLayout Spacing="8">
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="10" IsEnabled="{Binding IsScoringContentEnabled}">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.Scoring}"
                 Variant="Subpage"
@@ -21,18 +22,17 @@
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
                 BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}"
                 Subtitle="{Binding GroupName}"
-                Metadata="{Binding DateText}"
-                Margin="-14,-14,-14,0">
+                Metadata="{Binding DateText}">
                 <header:AppPageHeader.Actions>
-                    <ImageButton WidthRequest="48" HeightRequest="48" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource IconButton}" />
-                    <ImageButton WidthRequest="48" HeightRequest="48" IsVisible="{Binding IsLiveScoring}" Clicked="OnPhotoInfoClicked" Source="icon_info.png" Style="{StaticResource IconButton}"
+                    <ImageButton WidthRequest="48" HeightRequest="48" IsVisible="{Binding IsLiveScoring}" Clicked="OnCameraClicked" Source="icon_camera.png" Style="{StaticResource HeaderIconButton}" />
+                    <ImageButton WidthRequest="48" HeightRequest="48" IsVisible="{Binding IsLiveScoring}" Clicked="OnPhotoInfoClicked" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
                         SemanticProperties.Description="{x:Static res:AppResources.PhotoHelpTitle}" />
-                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource IconButton}" />
+                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnSettingsClicked" Source="icon_settings.png" Style="{StaticResource HeaderIconButton}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             </VerticalStackLayout>
-
-            <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" VerticalScrollBarVisibility="Never">
+<Grid Grid.Row="1" Padding="14,0,14,14" RowDefinitions="*,Auto" RowSpacing="10">
+<CollectionView Grid.Row="0" ItemsSource="{Binding Players}" SelectionMode="None" VerticalScrollBarVisibility="Never">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="7" />
                 </CollectionView.ItemsLayout>
@@ -77,8 +77,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <VerticalStackLayout Grid.Row="2" Spacing="6">
+<VerticalStackLayout Grid.Row="1" Spacing="6">
             <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                 <Button Style="{StaticResource DangerButton}" Text="{Binding DeleteText}"
@@ -88,7 +87,8 @@
             </Grid>
 
             </VerticalStackLayout>
-        </Grid>
+</Grid>
+</Grid>
 
         <Grid IsVisible="{Binding IsSpecialCardPickerVisible}" IsEnabled="{Binding IsIdle}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}">
@@ -149,7 +149,7 @@
                         GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
                         BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}">
                         <header:AppPageHeader.Actions>
-                            <ImageButton Source="icon_info.png" Style="{StaticResource IconButton}" WidthRequest="48" HeightRequest="48" Clicked="OnPhotoReviewInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.PhotoReviewTitle}" />
+                            <ImageButton Source="icon_info.png" Style="{StaticResource HeaderIconButton}" WidthRequest="48" HeightRequest="48" Clicked="OnPhotoReviewInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.PhotoReviewTitle}" />
                         </header:AppPageHeader.Actions>
                     </header:AppPageHeader>
                     <CollectionView ItemsSource="{Binding PhotoPlayers}" HeightRequest="350" SelectionMode="None">

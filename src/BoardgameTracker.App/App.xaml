@@ -2,6 +2,7 @@
 <Application
     x:Class="BoardgameTracker.App.App"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:controls="clr-namespace:BoardgameTracker.App.Presentation.Controls"
     xmlns:groupColors="clr-namespace:BoardgameTracker.App.Features.Groups.Colors"
     xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
@@ -92,6 +93,49 @@
                 <Setter Property="HeightRequest" Value="44" />
                 <Setter Property="WidthRequest" Value="44" />
                 <Setter Property="Padding" Value="10" />
+            </Style>
+
+            <Style x:Key="HeaderIconButton" TargetType="ImageButton" BasedOn="{StaticResource IconButton}">
+                <Setter Property="WidthRequest" Value="48" />
+                <Setter Property="HeightRequest" Value="48" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Aspect" Value="AspectFit" />
+            </Style>
+            <Style x:Key="SegmentButton" TargetType="controls:SegmentButton">
+                <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceSecondary}" />
+                <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="12,6" />
+                <Setter Property="MinimumHeightRequest" Value="44" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal"><VisualState.Setters><Setter Property="Opacity" Value="1" /></VisualState.Setters></VisualState>
+                            <VisualState x:Name="Disabled"><VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+                                <Setter Property="TextColor" Value="{DynamicResource TextSecondary}" />
+                                <Setter Property="BorderColor" Value="{DynamicResource Outline}" />
+                                <Setter Property="BorderWidth" Value="1" />
+                                <Setter Property="Opacity" Value="1" />
+                            </VisualState.Setters></VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+                <Style.Triggers>
+                    <MultiTrigger TargetType="controls:SegmentButton">
+                        <MultiTrigger.Conditions>
+                            <PropertyCondition Property="IsSelected" Value="True" />
+                            <PropertyCondition Property="IsEnabled" Value="True" />
+                        </MultiTrigger.Conditions>
+                        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+                        <Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" />
+                        <Setter Property="BorderWidth" Value="2" />
+                    </MultiTrigger>
+                </Style.Triggers>
             </Style>
 
             <Style x:Key="CardBorder" TargetType="Border">

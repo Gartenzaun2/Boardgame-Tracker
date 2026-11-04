@@ -3,15 +3,16 @@
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Settings.MyGames.MyGamesPage" x:DataType="local:MyGamesViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid Padding="18" RowDefinitions="Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding IsIdle}">
-            <VerticalStackLayout Spacing="8">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsIdle}">
+
+<VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.MyGames}"
                 Variant="Subpage"
-                BackClicked="OnBackClicked"
-                Margin="-18,-18,-18,0" />
+                BackClicked="OnBackClicked" />
             </VerticalStackLayout>
-            <CollectionView Grid.Row="1" ItemsSource="{Binding Games}" SelectionMode="None">
+<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+<CollectionView Grid.Row="0" ItemsSource="{Binding Games}" SelectionMode="None">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:GameActivationRow">
@@ -28,8 +29,9 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <Label Grid.Row="2" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
-        </Grid>
+<Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+</Grid>
+</Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>
     </Grid>
 </ContentPage>
