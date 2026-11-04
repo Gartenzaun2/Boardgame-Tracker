@@ -27,17 +27,21 @@
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             <VerticalStackLayout Padding="18,0,18,0" Spacing="8">
-<vm:ArkNovaStartingOrderLayout BindableLayout.ItemsSource="{Binding StartingOrderPlayers}"
+<FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignItems="Center" AlignContent="Start"
+    BindableLayout.ItemsSource="{Binding StartingOrderPlayers}"
     SemanticProperties.Description="{Binding StartingOrderText}">
     <BindableLayout.ItemTemplate>
         <DataTemplate x:DataType="vm:ArkNovaStartingOrderPlayer">
-            <vm:ArkNovaStartingOrderSection HasPrevious="{Binding HasPrevious}">
-                <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center" VerticalTextAlignment="Center" />
-                <Label Text="{Binding Name}" FontSize="13" LineBreakMode="WordWrap" VerticalOptions="Center" VerticalTextAlignment="Center" />
-            </vm:ArkNovaStartingOrderSection>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="5" HorizontalOptions="Start"
+                FlexLayout.Grow="0" FlexLayout.Shrink="1" Margin="0,0,5,4">
+                <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center"
+                    VerticalTextAlignment="Center" />
+                <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center"
+                    LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
+            </Grid>
         </DataTemplate>
     </BindableLayout.ItemTemplate>
-</vm:ArkNovaStartingOrderLayout>
+</FlexLayout>
 </VerticalStackLayout>
         </VerticalStackLayout>
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="14">

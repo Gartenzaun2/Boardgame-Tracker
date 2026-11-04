@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/Features/GameSessions/Result/ArkNovaStartingOrderGeometry.cs" Link="Presentation/ArkNovaStartingOrderGeometry.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderGeometry.cs" Link="Presentation/AppPageHeaderGeometry.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderLayout.cs" LogicalName="HeaderContract.AppPageHeaderLayout.cs" />
   </ItemGroup>

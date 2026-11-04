@@ -272,18 +272,19 @@ public sealed class AppPageHeaderTests
     public void HistoricalOrderUsesCenteredWrappingPairsAndRetainsAccessibleText()
     {
         var page = ReadPage("ArkNovaResultPage");
-        var flow = Assert.Single(page.Descendants(), element => element.Name.LocalName == "ArkNovaStartingOrderLayout");
+        var flow = Assert.Single(page.Descendants(), element => element.Name.LocalName == "FlexLayout" && element.Attribute("BindableLayout.ItemsSource") is not null);
         Assert.Equal("{Binding StartingOrderPlayers}", (string?)flow.Attribute("BindableLayout.ItemsSource"));
         var leading = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "{Binding LeadingText}");
         var name = Assert.Single(flow.Descendants(), element => (string?)element.Attribute("Text") == "{Binding Name}");
         Assert.Same(leading.Parent, name.Parent);
-        Assert.Equal("ArkNovaStartingOrderSection", leading.Parent!.Name.LocalName);
-        Assert.Equal("{Binding HasPrevious}", (string?)leading.Parent.Attribute("HasPrevious"));
+        Assert.Equal("Grid", leading.Parent!.Name.LocalName);
         Assert.Equal("Center", (string?)leading.Attribute("VerticalOptions"));
         Assert.Equal("Center", (string?)name.Attribute("VerticalOptions"));
+        Assert.Equal("Center", (string?)leading.Attribute("VerticalTextAlignment"));
+        Assert.Equal("Center", (string?)name.Attribute("VerticalTextAlignment"));
         Assert.Equal("WordWrap", (string?)name.Attribute("LineBreakMode"));
         Assert.Null(name.Attribute("MaxLines"));
-        Assert.Null(leading.Parent.Attribute("ColumnDefinitions"));
+        Assert.Equal("Auto,*", (string?)leading.Parent.Attribute("ColumnDefinitions"));
         Assert.Null(leading.Parent.Attribute("WidthRequest"));
         Assert.Equal("{Binding StartingOrderText}", (string?)flow.Attribute("SemanticProperties.Description"));
     }
