@@ -1,3 +1,5 @@
+using BoardgameTracker.App.Features.Settings.MyGames;
+using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
@@ -7,17 +9,35 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.Settings;
 public partial class ArkNovaSettingsPage : ContentPage {
     private readonly ArkNovaSettingsViewModel _viewModel;
     private bool _choosing;
+    private readonly MyGamesViewModel _visibility;
 
-    public ArkNovaSettingsPage(ArkNovaSettingsViewModel viewModel) {
+    public ArkNovaSettingsPage(ArkNovaSettingsViewModel viewModel, MyGamesViewModel visibility) {
         InitializeComponent();
         _viewModel = viewModel;
+        _visibility = visibility;
         BindingContext = viewModel;
     }
 
-    protected override void OnAppearing() {
+    protected override async void OnAppearing() {
         base.OnAppearing();
-        if(!AppDialogPage.IsOpen(this))
-            _viewModel.Load();
+        if (AppDialogPage.IsOpen(this)) return;
+        _viewModel.Load();
+        VisibilityPanel.IsEnabled = false;
+        await _visibility.LoadAsync();
+        VisibilityPanel.BindingContext = _visibility.Games.SingleOrDefault(game => game.GameKey == ArkNovaGame.Key);
+        VisibilityPanel.IsEnabled = !_visibility.HasError && VisibilityPanel.BindingContext is not null;
+        VisibilityError.Text = _visibility.ErrorMessage;
+        VisibilityError.IsVisible = _visibility.HasError;
+    }
+
+    private async void OnGameVisibilityToggled(object? sender, ToggledEventArgs e)
+    {
+        if (sender is not Switch { BindingContext: GameActivationRow row } || _visibility.IsBusy) return;
+        VisibilityPanel.IsEnabled = false;
+        await _visibility.SetEnabledAsync(row, e.Value);
+        VisibilityPanel.IsEnabled = true;
+        VisibilityError.Text = _visibility.ErrorMessage;
+        VisibilityError.IsVisible = _visibility.HasError;
     }
 
     protected override void OnDisappearing() {

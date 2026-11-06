@@ -2,7 +2,6 @@ using Microsoft.Maui.ApplicationModel;
 using BoardgameTracker.App.Features.Settings.MyGames;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Features.Settings.Licenses;
 
@@ -14,13 +13,13 @@ public partial class AppSettingsPage : ContentPage
     private readonly BoardgameTracker.App.Theming.ThemeManager _themes;
     private bool _choosing;
 
-    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes, IEnumerable<IGameSettingsNavigation> gameSettings)
+    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
     {
         InitializeComponent();
         AppVersionLabel.Text = string.Format(AppResources.AppVersionFormat, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
         _navigationSettingsStore = navigationSettingsStore;
         _themes = themes;
-        BindableLayout.SetItemsSource(GameSettingsEntries, gameSettings.ToArray());
+
 
     }
 
@@ -42,11 +41,11 @@ public partial class AppSettingsPage : ContentPage
     private async void OnInfoClicked(object? sender, EventArgs e) =>
         await AppDialogPage.ShowAsync(this, AppResources.AppSettingsTitle, AppResources.GameSettingsHint, AppResources.Ok);
 
-    private async void OnGameSettingsTapped(object? sender, TappedEventArgs e)
+    private async void OnLanguageClicked(object? sender, EventArgs e)
     {
-        if (_choosing || e.Parameter is not IGameSettingsNavigation entry) return;
+        if (_choosing) return;
         _choosing = true;
-        try { await entry.OpenAsync(); }
+        try { await AppDialogPage.ChooseAsync(this, AppResources.AppLanguage, [AppResources.ContentLanguageGerman], 0); }
         finally { _choosing = false; }
     }
 

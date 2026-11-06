@@ -33,8 +33,7 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable
             foreach (GameActivationState state in states)
             {
                 IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.GameKey == state.GameKey);
-                if (handler is not null)
-                    Games.Add(new(handler.DisplayName, state));
+                Games.Add(new(handler?.DisplayName ?? state.GameKey, state));
             }
         }
         catch (Exception exception)

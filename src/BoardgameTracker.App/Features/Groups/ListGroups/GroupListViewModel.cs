@@ -69,7 +69,7 @@ public partial class GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCa
             foreach (GroupListItem row in rows)
             {
                 string lastPlayed = row.LastPlayedAt is DateTimeOffset date ? string.Format(CultureInfo.CurrentCulture,
-                    AppResources.LastPlayedFormat, date.ToLocalTime().ToString("d", CultureInfo.CurrentCulture)) : string.Empty;
+                    AppResources.LastPlayedFormat, date.ToLocalTime().ToString("g", CultureInfo.CurrentCulture)) : string.Empty;
                 Groups.Add(new(row.Id, row.Name, string.Join(" · ", row.PlayerNames), lastPlayed, row.OpenGameSessionId, row.OpenGameSessionStatus));
             }
             AvailableGroups.Clear();

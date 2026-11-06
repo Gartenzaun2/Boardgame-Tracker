@@ -92,7 +92,7 @@ public sealed record PlayerListRow(PlayerListItem Data)
     public bool IsGuest => Data.IsGuest;
     public bool IsArchived => Data.IsArchived;
     public bool HasStatus => IsGuest || IsArchived;
-    public string CreatedText => string.Format(AppResources.PlayerCreatedFormat, Data.CreatedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture));
+    public string CreatedText => string.Format(AppResources.PlayerCreatedFormat, Data.CreatedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
 }
 
 public sealed record ManagedGroupRow(Guid Id, string Name, string Members, bool IsArchived);

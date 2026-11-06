@@ -855,7 +855,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="PhotoValuesInvalid" xml:space="preserve"><value>Bitte prüfe die Zahlenbereiche: Attraktivität 0–113, Artenschutz 0–41, Ruf 1–15. Nicht erfasste Werte dürfen leer bleiben.</value></data>
   <data name="OpenSourceLicenses" xml:space="preserve"><value>Open-Source-Lizenzen</value></data>
   <data name="AppVersionFormat" xml:space="preserve"><value>Version {0} (Build {1})</value></data>
-  <data name="AboutLegal" xml:space="preserve"><value>Über / Rechtliches</value></data>
+  <data name="AboutLegal" xml:space="preserve"><value>Über &amp; Rechtliches</value></data>
   <data name="LicenseOpenHint" xml:space="preserve"><value>Vollständigen Lizenztext und Hinweise öffnen</value></data>
   <data name="LicenseVersionFormat" xml:space="preserve"><value>Version {0}</value></data>
   <data name="LicenseSpdxFormat" xml:space="preserve"><value>SPDX: {0}</value></data>
@@ -893,7 +893,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="LoadGamesFailed" xml:space="preserve"><value>Die Spiele konnten nicht geladen werden.</value></data>
   <data name="GroupNavigationFailed" xml:space="preserve"><value>Die Gruppe wurde gespeichert. Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
   <data name="OpenGroupFailed" xml:space="preserve"><value>Der Spielablauf konnte nicht geöffnet werden. Bitte erneut versuchen.</value></data>
-  <data name="MyGames" xml:space="preserve"><value>Meine Spiele</value></data>
+  <data name="MyGames" xml:space="preserve"><value>Spiele verwalten</value></data>
   <data name="GameEnabled" xml:space="preserve"><value>Aktiviert</value></data>
   <data name="GameDisabled" xml:space="preserve"><value>Deaktiviert</value></data>
   <data name="GameDisableBlocked" xml:space="preserve"><value>Dieses Spiel bleibt aktiviert, solange eine Partie oder Wertung offen ist.</value></data>
@@ -905,4 +905,9 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GamesSection" xml:space="preserve"><value>Spiele</value></data>
   <data name="AddGame" xml:space="preserve"><value>Spiel hinzufügen</value></data>
   <data name="StartingOrderFormat" xml:space="preserve"><value>Start: {0}</value></data>
+  <data name="SettingsGeneral" xml:space="preserve"><value>Allgemein</value></data>
+  <data name="AppLanguage" xml:space="preserve"><value>Sprache</value></data>
+  <data name="ShowGame" xml:space="preserve"><value>Spiel anzeigen</value></data>
+  <data name="GameSettingsUnavailable" xml:space="preserve"><value>Für dieses Spiel sind keine Einstellungen registriert.</value></data>
+  <data name="ExportHiddenGamesHint" xml:space="preserve"><value>Der Export enthält auch ausgeblendete Spiele.</value></data>
 </root>

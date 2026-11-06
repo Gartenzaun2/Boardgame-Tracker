@@ -61,13 +61,13 @@ Reine Auswahlseiten verwenden den gemeinsamen Zurück-/Exit-IconButton ohne unte
 
 Header **Spiele**; darunter die scrollende Liste aktiver Spiele mit **vollständigem Namen**.
 
-Spiele mit offenen Partien/Wertungen stehen zuerst und tragen direkt am Namen das gemeinsame Aktiv-Symbol. Danach folgen Spiele nach zuletzt gestartetem Spielbeginn, ungenutzte zuletzt. Das Statussymbol hat keine eigene Touchfläche. Tap auf den Spieleintrag öffnet die Gruppenübersicht.
+Spiele mit offenen Partien/Wertungen stehen zuerst und tragen direkt am Namen das gemeinsame Aktiv-Symbol. Danach folgen Spiele nach zuletzt gestartetem Spielbeginn, ungenutzte zuletzt. Das Statussymbol hat keine eigene Touchfläche. Die gesamte Spieleintrag-Fläche mit rechtem Chevron öffnet die Gruppenübersicht.
 
 ### Gruppenübersicht eines Spiels
 
 Header: Zurück · **Gruppen**; darunter die Spielkontext-Capsule, dann `HeaderDivider`.
 
-Eintrag: Gruppenname, Mitglieder, letzte Nutzung im aktuellen Spiel (wenn vorhanden), optional Aktiv-Symbol bei offener Partie/Wertung. Tap öffnet offene Partie/Wertung oder Vorbereitung. **Kein Bearbeiten-Stift** in der Spielliste.
+Eintrag: Gruppenname, Mitglieder, letzte Nutzung im aktuellen Spiel (wenn vorhanden), optional Aktiv-Symbol bei offener Partie/Wertung. Die gesamte Gruppenfläche mit rechtem Chevron öffnet offene Partie/Wertung oder Vorbereitung. **Kein Bearbeiten-Stift** in der Spielliste.
 
 Die Gruppenliste zeigt ausschließlich aktive Gruppen mit aktueller Zuordnung zum Spiel. Offene Partie/Wertung steht oben, anschließend nach zuletzt gestarteter Partie der Spiel-Gruppe-Kombination; ungenutzte Gruppen zuletzt.
 
@@ -93,16 +93,18 @@ Monatsüberschriften sind einfache, nicht-sticky Texte.
 
 Partiekarte mit ungefähr drei umbrechenden Zeilen:
 ```text
-<Spiel> · <Dauer> · <Datum>
+<Spiel> · <Dauer> · <lokales Datum mit Uhrzeit>
 <Gruppe>
 1. Anna · 1. Ben · 3. Chris
 ```
 
-Tap öffnet die Ergebnisansicht des zuständigen Spielmoduls. Die Liste besitzt
+Die gesamte Partiekarte mit rechtem Chevron öffnet die Ergebnisansicht des zuständigen Spielmoduls. Verborgene Spiele fehlen in der Liste und den Spiel-Filteroptionen. Die Liste besitzt
 einen eigenen Leer-/Fehlerzustand; Busy blockiert den betroffenen Screen gemäß
 `UI_DESIGN_GUIDE.md`.
 
 Unter der scrollenden Liste liegt fest: **Importieren** (Secondary) und **N Partien exportieren** (Primary); Export ist bei `N = 0` deaktiviert.
+
+Export berücksichtigt weiterhin alle gespeicherten Partien im gewählten Filterumfang, auch die regulär ausgeblendeten Spiele bei „Alle Spiele“. Wenn der Export mehr Partien als die sichtbare Liste umfasst, erklärt ein kurzer Hinweis diesen Umfang.
 
 Export öffnet den App-Dialog **Exportieren** mit **Speichern · Teilen · Abbrechen**. Speichern öffnet den System-Dokumentflow, Teilen den Share-Sheet.
 
@@ -197,17 +199,17 @@ Ist irgendeine Session dieser Gruppe Running/Scoring, ist **Archivieren** nicht 
 
 ## 6. Einstellungen
 
-Reihenfolge: **Darstellung · Meine Spiele · registrierte Spieleinstellungen · Über / Rechtliches**. **Standardspiel** und **Spieler** entfallen hier.
+Die Root-Seite bleibt flach und scrollt. Reihenfolge der deutlich hervorgehobenen Gruppen:
 
-Darstellung öffnet den bestehenden App-Auswahldialog.
+1. **Allgemein**: **Sprache** (nur Deutsch) und **Darstellung** (bestehende Themes). Beide öffnen denselben App-Auswahldialog über rechtsbündige, 160 dp breite Lookup-Buttons.
+2. **Spiele**: genau ein navigierbarer Eintrag **Spiele verwalten** mit Chevron.
+3. **Über & Rechtliches**: nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)**, danach der Eintrag **Open-Source-Lizenzen** mit Chevron direkt zur bestehenden Lizenzübersicht.
 
-**Meine Spiele** öffnet eine Auswahlseite mit gemeinsamem Zurück-Pfeil. Jedes registrierte Spiel wird mit vollem Namen und aktivem Zustand angezeigt; ohne gespeicherte Abwahl sind alle aktiv. Spiele mit einer offenen Session/Wertung können nicht deaktiviert werden. Die UI zeigt den Grund verständlich an.
-
-Unter **Über / Rechtliches** steht zuerst die zurückhaltende, nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)** der installierten App. Danach folgt **Open-Source-Lizenzen**.
+**Spiele verwalten** ist eine eigene scrollbare Liste sämtlicher registrierter Spiele, einschließlich verborgener Spiele. Jede Zeile zeigt Name, Sichtbarkeitsstatus und Chevron; die ganze Zeile öffnet die spielspezifischen Einstellungen. Dort steht **Spiel anzeigen** an erster Stelle. Bei offener Partie/Wertung ist Abschalten gesperrt und der Grund sichtbar. Reaktivierung erfolgt über denselben administrativen Weg.
 
 ## 7. Open-Source-Lizenzen
 
-Übersicht: Header mit Zurück/Divider, direkt darunter der erforderliche IJG-Hinweis, dann eine Liste aus **Komponentenname + Version** und **Lizenzbezeichnung**. Tap öffnet die Detailseite.
+Übersicht: Header mit Zurück/Divider, direkt darunter der erforderliche IJG-Hinweis, dann eine Liste aus **Komponentenname + Version** und **Lizenzbezeichnung**. Die gesamte Zeile mit rechtem Chevron öffnet die Detailseite.
 
 Detail: Zurück/Divider, Version, Lizenzname, optional SPDX, Attribution/Copyright und scrollbarer lokaler Lizenz-/NOTICE-Text. Kein Browser/WebView und keine Zustimmung/Checkbox. Fehlendes lokales Asset zeigt Fehler + **Wiederholen**.
 

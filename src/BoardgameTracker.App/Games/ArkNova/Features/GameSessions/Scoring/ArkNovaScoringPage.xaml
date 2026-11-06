@@ -5,6 +5,7 @@
     xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation"
     xmlns:ark="clr-namespace:BoardgameTracker.App.Games.ArkNova"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:DataType="vm:ArkNovaScoringViewModel"
@@ -40,7 +41,7 @@
                     <DataTemplate x:DataType="vm:ArkNovaScoringPlayerViewModel">
                         <Border Padding="10,8" BackgroundColor="{Binding Tint}" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
                             <Grid ColumnDefinitions="*,58" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="2">
-                                <Grid Grid.RowSpan="4">
+                                <Grid Grid.RowSpan="4" ColumnDefinitions="*,Auto" ColumnSpacing="6" MinimumHeightRequest="44">
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnPlayerTapped" CommandParameter="{Binding .}" />
                                     </Grid.GestureRecognizers>
@@ -50,6 +51,7 @@
                                         <Label TextColor="{Binding PlayerTextColor}" Grid.Row="2" Text="{Binding RawValuesText}" FontSize="12" />
                                         <Label Grid.Row="3" Text="{Binding SecondaryValuesText}" FontSize="12" TextColor="{Binding PlayerTextColor}" />
                                     </Grid>
+                                    <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" presentation:IconTint.Color="{Binding PlayerTextColor}" />
                                 </Grid>
 
                                 <Grid Grid.Column="1" Grid.RowSpan="4"
@@ -61,15 +63,15 @@
                                     <Grid.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnAddSpecialCardTapped" CommandParameter="{Binding PlayerId}" />
                                     </Grid.GestureRecognizers>
-                                    <Border Padding="5"
-                                            BackgroundColor="{DynamicResource IconSurface}"
+                                    <Border Padding="0"
+                                            BackgroundColor="Transparent"
                                             Stroke="{DynamicResource Outline}"
                                             StrokeShape="RoundRectangle 9"
                                             HorizontalOptions="Fill"
                                             VerticalOptions="Fill">
                                         <Image Source="icon_special_card.png"
                                                Aspect="AspectFit"
-                                               Margin="3" />
+                                               WidthRequest="40" HeightRequest="52" InputTransparent="True" AutomationProperties.IsInAccessibleTree="False" />
                                     </Border>
                                 </Grid>
                             </Grid>

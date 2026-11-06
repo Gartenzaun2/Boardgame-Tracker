@@ -34,17 +34,23 @@
         </DataTemplate>
        </CollectionView.GroupHeaderTemplate>
        <CollectionView.ItemTemplate><DataTemplate x:DataType="local:HistoryCard"><Border Padding="12,9" Margin="0,4" Style="{StaticResource CardBorder}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" MinimumHeightRequest="44">
         <VerticalStackLayout Spacing="3">
          <Label Text="{Binding Header}" FontSize="13" />
          <Label Text="{Binding GroupName}" FontAttributes="Bold" FontSize="15" />
          <Label Text="{Binding Placements}" FontSize="13" LineBreakMode="WordWrap" />
         </VerticalStackLayout>
+        <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+        </Grid>
        </Border></DataTemplate></CollectionView.ItemTemplate>
       </CollectionView>
-<Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8">
+<VerticalStackLayout Grid.Row="3" Spacing="4">
+<Label x:Name="ExportScopeHint" Text="{x:Static res:AppResources.ExportHiddenGamesHint}" FontSize="12" TextColor="{DynamicResource TextSecondary}" IsVisible="False" />
+<Grid ColumnDefinitions="*,*" ColumnSpacing="8">
        <Button Text="{x:Static res:AppResources.TransferImport}" Clicked="OnImportClicked" Style="{StaticResource SecondaryActionButton}" />
        <Button Grid.Column="1" x:Name="ExportButton" Text="{x:Static res:AppResources.TransferExportMany}" Clicked="OnExportClicked" IsEnabled="False" Style="{StaticResource PrimaryCompactButton}" />
       </Grid>
+</VerticalStackLayout>
 </Grid>
 </Grid>
 

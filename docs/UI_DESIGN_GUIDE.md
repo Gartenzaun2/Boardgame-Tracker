@@ -138,6 +138,12 @@ und haben eine semantische Beschreibung; Pointer darf zusätzlich Tooltip nutzen
 Die Größe der Touchfläche darf nicht unbeabsichtigt die sichtbare Icongrafik
 vergrößern.
 
+Navigierbare ganze Listenzeilen/Karten zeigen rechts eine dekorative Chevron-Grafik. Die gesamte vorgesehene Navigationsfläche öffnet genau ein Ziel; der Chevron erhält keine eigene Tap- oder Fokusaktion. Separate Aktionen (Bearbeiten, Kamera, Info, Palette, Hoch/Runter, Spezialkarten) behalten eigene, nicht überlappende Touchflächen. Rein informative Karten haben weder Chevron noch Tap-Verhalten. In der Spieler-/Gruppenverwaltung öffnet weiterhin ausschließlich der Stift den Editor. Auswahlkacheln erhalten keinen Navigations-Chevron.
+
+Einstellungsübersichten sind flach: deutlich größere, markante Gruppenüberschriften gliedern die Inhalte ohne dekorative Karten. Vergleichbare Auswahlen verwenden gleichartige kompakte Lookup-Buttons in fester Breite und rechtsbündiger Ausrichtung; Switches sind booleschen Einstellungen vorbehalten.
+
+Sichtbare echte Zeitpunkte werden lokal im kulturabhängigen kurzen Datum-/Uhrzeitformat dargestellt (bei deutscher Kultur etwa 31.07.2026 13:55). Reine Kalenderdaten und Monatsüberschriften behalten ihr fachlich passendes Format. Persistenz, Offset-/UTC-Behandlung und Serialisierung werden dadurch nicht verändert.
+
 ## 6. Navigation und Filter
 
 Bottom-Navigation liegt auf `Surface`, hat eine obere `Outline` und markiert den
@@ -188,7 +194,7 @@ HeaderDivider
 
 Die **Spielkontext-Capsule** ist ein nicht-interaktives Kontextlabel, kein Button oder Auswahlchip. Einheitlich für alle Spiele innerhalb desselben Themes: **24 dp Gesamthöhe einschließlich Kontur und Innenabstand**, transparenter Hintergrund, vollständig gerundete Pill-Form, **2 dp** Kontur, **8 dp** horizontaler Innenabstand, keine zusätzliche Mindestbreite, **13 dp** Textgröße und **fette Schrift (Bold)**. Vertikales Padding darf die 24-dp-Gesamthöhe nicht vergrößern; der Text sitzt mittig in der Pille. Die Capsule-Breite ergibt sich aus dem Text und dem Innenabstand, nicht aus einer festen Spalte. Die Schrift wird nicht vergrößert, um die stärkere Betonung zu erreichen. Nur der explizit pro Spiel registrierte Badge-Text variiert. Ein Screenreader erhält stets den vollständigen Spielnamen, auch wenn die Capsule visuell ein Kürzel zeigt.
 
-**Badge-Regel:** Jede Unterseite mit genau einem konkreten Spielkontext zeigt die Capsule; rein allgemeine Unterseiten (etwa Spieler oder Gruppe anlegen/bearbeiten, Meine Spiele) sowie die Spieleübersicht zeigen keine. Der Titel benennt die **Funktion** (z. B. „Einstellungen“), die Capsule das **Spiel**. Der allgemeine Header kennt keine konkreten Spiele.
+**Badge-Regel:** Jede Unterseite mit genau einem konkreten Spielkontext zeigt die Capsule; rein allgemeine Unterseiten (etwa Spieler oder Gruppe anlegen/bearbeiten, Spiele verwalten) sowie die Spieleübersicht zeigen keine. Der Titel benennt die **Funktion** (z. B. „Einstellungen“), die Capsule das **Spiel**. Der allgemeine Header kennt keine konkreten Spiele.
 
 ## 7. Dialoge und modale Auswahl
 

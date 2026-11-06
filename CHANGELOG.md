@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.8
+
+- Navigation mit grafischen Chevrons und getrennten Aktionen konsolidiert; Arche-Nova-Spezialkartenaktion mit weißem Kartenfächer versehen.
+- Flache Einstellungen mit Sprache/Darstellung, Spiele verwalten und direktem Lizenzzugang umgesetzt; Spiel-Sichtbarkeit auf reguläre Listen und Auswahlen erweitert, ohne Daten oder Transferumfang zu ändern.
+- Sichtbare Zeitpunkte kulturabhängig mit Datum und Uhrzeit vereinheitlicht; kanonische UI-/Produktdokumentation synchronisiert.
+
 ## 0.17.0.7
 
 - Pfeile der historischen Startreihenfolge als zentrierte, themeabhängig eingefärbte SVG-Grafik statt Unicode-Zeichen dargestellt; zugängliche Textbeschreibung erhalten.

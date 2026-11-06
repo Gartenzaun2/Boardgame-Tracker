@@ -36,7 +36,9 @@ Wertungskarten trennen visuell:
 - Spezialkarten/Ruf.
 
 Fehlende Werte erscheinen als `–`. Das Karten-Icon trägt keinen Zähler; die Anzahl
-steht in der Informationszeile.
+steht in der Informationszeile. Die Informations-/Navigationsfläche zeigt rechts einen Chevron in der zugehörigen Spielertextfarbe und öffnet die Spielereingabe. Die separate Spezialkarten-Touchfläche öffnet ausschließlich die Kartenwahl.
+
+Das Spezialkarten-Aktionsicon zeigt drei aufgefächerte, weiß gefüllte Karten mit dunklen Rändern und einem dunklen Stern auf der vordersten Karte. Der Fächer wird mit 40 × 52 dp dargestellt und bleibt untinted. Der Freiraum bis zur dezenten äußeren Buttonkontur bleibt transparent und zeigt die Spielerfarbe; es gibt keine zusätzliche helle Rechteckkachel. Die fachlichen `ark_symbol_*`-Grafiken bleiben unverändert.
 
 Farbige Spielerflächen verwenden ihr PlayerColor-Textpaar; eingebettete Controls
 bleiben neutrales App-Chrome.

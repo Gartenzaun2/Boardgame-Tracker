@@ -20,6 +20,7 @@
                     <DataTemplate x:DataType="local:GroupListItemViewModel">
                         <Border Style="{StaticResource CardBorder}" Padding="12">
                             <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGroupTapped" CommandParameter="{Binding Id}" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" MinimumHeightRequest="44">
                             <VerticalStackLayout Spacing="4">
                                 <HorizontalStackLayout Spacing="8">
                                     <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
@@ -28,6 +29,8 @@
                                 <Label Text="{Binding PlayerNames}" />
                                 <Label Text="{Binding LastPlayedText}" IsVisible="{Binding HasLastPlayed}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                             </VerticalStackLayout>
+                            <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

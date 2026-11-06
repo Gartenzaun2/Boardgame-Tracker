@@ -225,6 +225,8 @@ GameSession-Daten.
 
 Registrierte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig aktiv. Die Auswahl wird anhand der stabilen `Game.Key`-Werte geführt, nicht über konkrete Game-Typ-Switches in allgemeinen App-Features. Die frühere Standardspiel-Preference entfällt.
 
+Der Host ordnet registrierte Spieleinstellungen über `IGameSettingsNavigation.GameKey` zu; konkrete Zielseiten bleiben im Modul. Die vorhandene Spielaktivierung ist die einzige Sichtbarkeitsquelle. Reguläre UI-Listen und Auswahlflächen filtern anhand dieser Quelle; Daten- und Transferqueries bleiben vollständig. Beim Bearbeiten von Gruppen bleiben verborgene Zuordnungen im Entwurf erhalten und werden beim Speichern nicht entfernt.
+
 Badge-Text ist registrierte Spiel-Präsentationsinformation und wird nicht als Feld auf `Game` oder in `GameSession` gespeichert.
 
 ### History-Transfer

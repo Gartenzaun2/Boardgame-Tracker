@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation" xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Settings.MyGames.MyGamesPage" x:DataType="local:MyGamesViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsIdle}">
@@ -16,14 +16,14 @@
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:GameActivationRow">
-                        <Border Style="{StaticResource CardBorder}" Padding="12">
+                        <Border Style="{StaticResource CardBorder}" Padding="12" MinimumHeightRequest="48">
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                 <VerticalStackLayout Spacing="4">
                                     <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
                                     <Label Text="{Binding StateText}" FontSize="13" />
-                                    <Label Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsLocked}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
                                 </VerticalStackLayout>
-                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanToggle}" Toggled="OnGameToggled" SemanticProperties.Description="{Binding Name}" VerticalOptions="Center" />
+                                <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:visibility="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.Settings"
     x:DataType="vm:ArkNovaSettingsViewModel"
     Shell.NavBarIsVisible="False">
@@ -20,6 +21,12 @@
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="20">
 <ScrollView Grid.Row="0">
             <VerticalStackLayout Spacing="12">
+                <Grid x:Name="VisibilityPanel" x:DataType="visibility:GameActivationRow" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                    <Label Text="{x:Static res:AppResources.ShowGame}" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanToggle}" Toggled="OnGameVisibilityToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
+                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsLocked}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                </Grid>
+                <Label x:Name="VisibilityError" IsVisible="False" TextColor="{DynamicResource Danger}" />
                 <Border Padding="16" Style="{StaticResource CardBorder}">
                     <Grid ColumnDefinitions="*,Auto">
                         <VerticalStackLayout Spacing="3">

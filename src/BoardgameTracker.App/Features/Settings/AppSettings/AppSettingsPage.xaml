@@ -3,7 +3,6 @@
     x:Class="BoardgameTracker.App.Features.Settings.AppSettings.AppSettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:nav="clr-namespace:BoardgameTracker.App.Navigation"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="Auto,*" RowSpacing="14">
@@ -22,35 +21,28 @@
 <Grid Grid.Row="1" Padding="20,0,20,22" RowDefinitions="*" RowSpacing="14">
 <ScrollView Grid.Row="0">
         <VerticalStackLayout Spacing="12">
-            <Border Padding="16" Style="{StaticResource CardBorder}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="{x:Static res:AppResources.AppearanceTheme}" FontAttributes="Bold" />
-                    <Button x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SecondaryActionButton}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
-                </VerticalStackLayout>
-            </Border>
-
-
-            <Button Text="{x:Static res:AppResources.MyGames}" Clicked="OnMyGamesClicked" Style="{StaticResource SecondaryActionButton}" />
-
-            <VerticalStackLayout x:Name="GameSettingsEntries" Spacing="12">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="nav:IGameSettingsNavigation">
-                        <Border Padding="16" Style="{StaticResource CardBorder}">
-                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameSettingsTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Spacing="3">
-                                    <Label Text="{Binding DisplayName}" FontAttributes="Bold" FontSize="18" />
-                                    <Label Text="{x:Static res:AppResources.GameSettings}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                                </VerticalStackLayout>
-                                <Label Grid.Column="1" Text="›" FontSize="26" VerticalOptions="Center" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-            <Label Text="{x:Static res:AppResources.AboutLegal}" FontAttributes="Bold" FontSize="17" Margin="0,8,0,0" SemanticProperties.HeadingLevel="Level2" />
+            <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label Text="{x:Static res:AppResources.AppLanguage}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static res:AppResources.ContentLanguageGerman}" Clicked="OnLanguageClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppLanguage}" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label Text="{x:Static res:AppResources.AppearanceTheme}" VerticalOptions="Center" />
+                <Button Grid.Column="1" x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
+            </Grid>
+            <Label Text="{x:Static res:AppResources.GamesSection}" Style="{StaticResource SettingsSectionTitle}" />
+            <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48" ColumnSpacing="12">
+                <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnMyGamesClicked" /></Grid.GestureRecognizers>
+                <Label Text="{x:Static res:AppResources.MyGames}" VerticalOptions="Center" />
+                <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+            </Grid>
+            <Label Text="{x:Static res:AppResources.AboutLegal}" Style="{StaticResource SettingsSectionTitle}" />
             <Label x:Name="AppVersionLabel" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-            <Button Text="{x:Static res:AppResources.OpenSourceLicenses}" Clicked="OnLicensesClicked" Style="{StaticResource SecondaryActionButton}" />
+            <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48" ColumnSpacing="12">
+                <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnLicensesClicked" /></Grid.GestureRecognizers>
+                <Label Text="{x:Static res:AppResources.OpenSourceLicenses}" VerticalOptions="Center" />
+                <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+            </Grid>
         </VerticalStackLayout>
         </ScrollView>
 </Grid>

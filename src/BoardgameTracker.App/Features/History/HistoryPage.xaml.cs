@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Settings;
 using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.App.Presentation.Controls;
@@ -13,6 +14,8 @@ namespace BoardgameTracker.App.Features.History;
 public partial class HistoryPage : ContentPage
 {
     private readonly CompletedGameSessionsQuery _query;
+    private readonly GameActivationUseCase _activation;
+    private IReadOnlyList<HistoryGameSession> _exportSessions = [];
     private readonly HistoryTransferUseCase _transfer;
     private readonly HistoryExportFlow _exportFlow;
     private Guid[] _visibleIds = [];
@@ -30,11 +33,12 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow)
+    public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow, GameActivationUseCase activation)
     {
         InitializeComponent();
         ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);
         _query = query;
+        _activation = activation;
         _transfer = transfer;
         _exportFlow = exportFlow;
         _settings = settings;
@@ -64,7 +68,9 @@ public partial class HistoryPage : ContentPage
         {
             string? game = _games.Length > 0 ? _games[_gameIndex] : null;
             Guid? group = _groups.Length > 0 ? _groups[_groupIndex] : null;
-            _all = await _query.ListAsync();
+            _exportSessions = await _query.ListAsync();
+            HashSet<string> visibleGames = (await _activation.GetGamesAsync()).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
+            _all = _exportSessions.Where(session => visibleGames.Contains(session.GameKey)).ToArray();
             _games = new string?[] { null }.Concat(_all.Select(s => s.GameKey).Distinct().OrderBy(k => k)).ToArray();
             _groups = new Guid?[] { null }.Concat(_all.Select(s => (Guid?)s.GroupId).Distinct()).ToArray();
             if (!_initialized)
@@ -142,7 +148,9 @@ public partial class HistoryPage : ContentPage
             .Where(session => (game is null || session.GameKey == game) && (group is null || session.GroupId == group))
             .Select(session => new HistoryCard(session, GameName(session.GameKey)));
         HistoryCard[] visible = cards.ToArray();
-        _visibleIds = visible.Select(card => card.Data.GameSessionId).ToArray();
+        _visibleIds = _exportSessions.Where(session => (game is null || session.GameKey == game) && (group is null || session.GroupId == group))
+            .Select(session => session.GameSessionId).ToArray();
+        ExportScopeHint.IsVisible = _visibleIds.Length > visible.Length;
         ExportButton.Text = string.Format(_visibleIds.Length == 1 ? AppResources.TransferExportOne : AppResources.TransferExportMany, _visibleIds.Length);
         ExportButton.IsEnabled = HistoryExportFlow.CanExport(_visibleIds);
         var months = visible.GroupBy(card => (card.Data.StartedAt.ToLocalTime().Year, card.Data.StartedAt.ToLocalTime().Month));
@@ -186,7 +194,7 @@ public sealed record HistoryCard(HistoryGameSession Data, string GameName)
 {
     public string GroupName => Data.GroupName;
     public string Header => string.Format(AppResources.HistoryHeaderFormat, GameName,
-        Duration, Data.StartedAt.ToLocalTime().ToString("dd.MM.yy"));
+        Duration, Data.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
     public string Duration
     {
         get

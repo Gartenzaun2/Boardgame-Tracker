@@ -21,10 +21,13 @@
                     <DataTemplate x:DataType="local:PlayGameRow">
                         <Border Style="{StaticResource CardBorder}" Padding="16">
                             <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding Key}" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" MinimumHeightRequest="44">
                             <HorizontalStackLayout Spacing="8">
                                 <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" />
                                 <Image Source="icon_active_session.png" presentation:IconTint.Color="{DynamicResource TextPrimary}" IsVisible="{Binding HasOpenSession}" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" SemanticProperties.Description="{x:Static res:AppResources.OpenGameSession}" />
                             </HorizontalStackLayout>
+                            <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -19,12 +19,13 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:ThirdPartyLicense">
                         <Border Style="{StaticResource CardBorder}">
-                            <Grid MinimumHeightRequest="76">
+                            <Grid MinimumHeightRequest="76" ColumnDefinitions="*,Auto">
                                 <VerticalStackLayout Padding="16,12" Spacing="4" InputTransparent="True" AutomationProperties.IsInAccessibleTree="False">
                                     <Label Text="{Binding DisplayTitle}" FontSize="17" FontAttributes="Bold" LineBreakMode="WordWrap" />
                                     <Label Text="{Binding LicenseDisplayName}" FontSize="12" TextColor="{DynamicResource TextSecondary}" LineBreakMode="WordWrap" />
                                 </VerticalStackLayout>
-                                <Button Style="{StaticResource TextActionButton}" Clicked="OnLicenseClicked" CommandParameter="{Binding Id}"
+                                <Image Grid.Column="1" Margin="0,0,16,0" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                                <Button Grid.ColumnSpan="2" Style="{StaticResource TextActionButton}" Clicked="OnLicenseClicked" CommandParameter="{Binding Id}"
                                         SemanticProperties.Description="{Binding OverviewText}" SemanticProperties.Hint="{x:Static res:AppResources.LicenseOpenHint}" />
                             </Grid>
                         </Border>

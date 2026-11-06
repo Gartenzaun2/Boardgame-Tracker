@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Settings;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -12,11 +13,11 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// <summary>
 /// Adapts the existing editor to game-neutral group metadata and order changes.
 /// </summary>
-public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<IGameSessionNavigationHandler> games, ILogger<EditGroupViewModel> logger) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<IGameSessionNavigationHandler> games, GameActivationUseCase activation, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
-    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
-    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected).ToArray();
+    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected && game.IsVisible).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.IsVisible).ToArray();
     public bool HasAvailableGames => AvailableGames.Count > 0;
     [ObservableProperty] public partial bool IsChoosingGame { get; set; }
 
@@ -30,7 +31,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
     [RelayCommand]
     private void AddGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game)) return;
+        if (IsBusy || game is null || !game.IsVisible || !Games.Contains(game)) return;
         game.IsSelected = true;
         IsChoosingGame = false;
     }
@@ -91,9 +92,10 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
                 return;
             }
 
+            HashSet<string> visibleGames = (await activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
             foreach (EditGroupGame game in details.Games)
-                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.IsAssigned, game.CanRemove));
+                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.IsAssigned, game.CanRemove, visibleGames.Contains(game.Key)));
             foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();
             CanArchive = details.CanArchive;

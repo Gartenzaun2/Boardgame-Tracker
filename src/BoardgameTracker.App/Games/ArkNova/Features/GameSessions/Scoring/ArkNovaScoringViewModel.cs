@@ -120,7 +120,7 @@ public partial class ArkNovaScoringViewModel(
             GameSessionId = data.GameSessionId;
             CompletionSaved = false;
             GroupName = data.GroupName;
-            DateText = data.StartedAt.ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
+            DateText = data.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
             _cardCatalog = data.CardCatalog;
             Players.Clear();
             foreach (ArkNovaGameSessionResultPlayerData player in data.Players)

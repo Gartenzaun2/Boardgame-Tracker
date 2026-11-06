@@ -256,7 +256,7 @@ public partial class ArkNovaPreparationViewModel(
             return AppResources.NoPreviousGameSession;
         }
 
-        string header = lastGameSession.StartedAt.ToLocalTime().ToString("d");
+        string header = lastGameSession.StartedAt.ToLocalTime().ToString("g");
 
         if (lastGameSession.Placements.Count == 0)
         {

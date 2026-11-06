@@ -23,11 +23,12 @@ public sealed partial class GroupMemberDraft(Guid? playerId, string name, bool i
     }
 }
 
-public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true) : ObservableObject
+public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true, bool isVisible = true) : ObservableObject
 {
     private bool _isSelected = isSelected;
     public Guid Id { get; } = id;
     public string Name { get; } = name;
+    public bool IsVisible { get; } = isVisible;
     public bool CanChange { get; } = !isSelected || canRemove;
     public bool IsLocked => !CanChange;
     public string LockReason => AppResources.GroupGameLocked;

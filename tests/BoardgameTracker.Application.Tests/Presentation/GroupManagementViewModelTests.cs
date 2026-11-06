@@ -26,7 +26,7 @@ public sealed class GroupManagementViewModelTests
     }
     private static CreateGroupViewModel Draft(SliceDatabase db, bool management = true)
     {
-        CreateGroupViewModel vm = new(new(db), new(db), new(db), [], NullLogger<CreateGroupViewModel>.Instance);
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), [], new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
         if (management) vm.SetManagementOrigin();
         else vm.SetGameContext("ark-nova");
         return vm;
@@ -35,6 +35,33 @@ public sealed class GroupManagementViewModelTests
     {
         vm.SelectedExistingPlayer = vm.AvailablePlayers.Single(player => player.Id == id);
         vm.AddSelectedPlayerCommand.Execute(null);
+    }
+
+    [Fact]
+    public async Task HiddenGameIsAbsentFromSelectionsButItsAssignmentSurvivesEditingAndReactivation()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
+        TestGameActivationStore store = new();
+        BoardgameTracker.Application.Settings.GameActivationUseCase visibility = new(db, store);
+        await visibility.SetEnabledAsync("ark-nova", false, Token);
+        CreateGroupViewModel draft = new(new(db), new(db), new(db), [], visibility, NullLogger<CreateGroupViewModel>.Instance);
+        await draft.LoadAsync(Token);
+        Assert.Empty(draft.Games);
+        EditGroupViewModel editor = new(new(db), [], visibility, NullLogger<EditGroupViewModel>.Instance);
+        await editor.LoadAsync(db.Group.Id, Token);
+        Assert.Empty(editor.SelectedGames);
+        Assert.Empty(editor.AvailableGames);
+        Assert.True(Assert.Single(editor.Games).IsSelected);
+        editor.GroupName = "Changed while hidden";
+        await editor.SaveCommand.ExecuteAsync(null);
+        Assert.False(editor.HasError);
+        await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
+            Assert.Equal(db.GameId, (await verify.GroupGames.SingleAsync(Token)).GameId);
+        await visibility.SetEnabledAsync("ark-nova", true, Token);
+        editor = new(new(db), [], visibility, NullLogger<EditGroupViewModel>.Instance);
+        await editor.LoadAsync(db.Group.Id, Token);
+        Assert.Equal(db.GameId, Assert.Single(editor.SelectedGames).Id);
     }
 
     [Theory]
@@ -209,7 +236,7 @@ public sealed class GroupManagementViewModelTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
         await db.AddSessionAsync(scoring);
-        EditGroupViewModel vm = new(new(db), [], NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel vm = new(new(db), [], new(db, new TestGameActivationStore()), NullLogger<EditGroupViewModel>.Instance);
         await vm.LoadAsync(db.Group.Id, Token);
         Assert.False(vm.CanArchive);
         Assert.True(vm.ArchiveLocked);
@@ -233,7 +260,7 @@ public sealed class GroupManagementViewModelTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
-        EditGroupViewModel vm = new(new(db), [], NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel vm = new(new(db), [], new(db, new TestGameActivationStore()), NullLogger<EditGroupViewModel>.Instance);
         await vm.LoadAsync(db.Group.Id, Token);
         vm.GroupName = "Edited";
         vm.Games[0].IsSelected = false;

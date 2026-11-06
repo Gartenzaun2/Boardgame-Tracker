@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Settings;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// <summary>
 /// Owns create-group screen state and translates UI input into the create-group Application command.
 /// </summary>
-public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, IEnumerable<IGameSessionNavigationHandler> games, ILogger<CreateGroupViewModel> logger) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, IEnumerable<IGameSessionNavigationHandler> games, GameActivationUseCase activation, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
     private bool _loaded;
     private string? _gameKey;
@@ -122,8 +123,9 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             ErrorMessage = null;
             IReadOnlyList<SelectableGroupGame> availableGames = await createGroup.GetSelectableGamesAsync(cancellationToken);
             string? selectedGameKey = _gameKey;
+            HashSet<string> visibleGames = (await activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
-            foreach (SelectableGroupGame game in availableGames)
+            foreach (SelectableGroupGame game in availableGames.Where(game => visibleGames.Contains(game.Key)))
                 Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey));
             foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();

@@ -30,7 +30,7 @@ Gemeinsamer Spielkontext-Header mit Funktion **Partie**, Capsule **Arche Nova**,
 
 Gemeinsamer Spielkontext-Header mit Funktion **Wertung**, Capsule **Arche Nova** und Gruppenname. Pro Spielerkarte vier Informationszeilen: **Name/Punkte · Farbe/Zooplan · Attraktivität/Artenschutz · Spezialkartenanzahl/optional Ruf**. Das Spezialkarten-Icon selbst trägt keinen Zähler.
 
-Navigation: Kartenfläche → Spielereingabe; Spezialkarten-Icon → Kartenwahl; Kamera → Fotoquelle/Review während `Scoring`; Info → Vorschlagsstatus; Einstellungen → Arche-Nova-Einstellungen.
+Navigation: Die Informationsfläche mit rechtem Chevron → Spielereingabe; die räumlich getrennte Spezialkarten-Touchfläche mit weißem Dreierfächer/Stern → Kartenwahl, ohne Auslösen der Spielereingabe; Kamera → Fotoquelle/Review während `Scoring`; Info → Vorschlagsstatus; Einstellungen → Arche-Nova-Einstellungen.
 
 ## 5. Spielereingabe
 
@@ -86,7 +86,7 @@ Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und 
 
 Gemeinsamer Unterseitenheader mit Titel **Einstellungen** und Capsule **Arche Nova**; kein zusätzlicher Spielname im Titel.
 
-Sichtbar: **Ruf erfassen · Neue Wertung/Alte Wertung · Spielmaterial/Sprache + Info · Spezialkarten**. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
+Erreichbar über **Einstellungen → Spiele verwalten → Arche Nova**, auch bei verborgenem Spiel. An erster Stelle steht **Spiel anzeigen**, mit sichtbarer Sperrbegründung bei offener Partie/Wertung. Danach bleiben **Ruf erfassen · Neue Wertung/Alte Wertung · Spielmaterial/Sprache + Info · Spezialkarten** sowie bestehende Debug-Einstellungen erhalten. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
 
 Info bei Spielmaterial: „Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.“
 

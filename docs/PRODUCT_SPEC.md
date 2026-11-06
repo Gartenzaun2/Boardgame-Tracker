@@ -62,7 +62,7 @@ Materialsprache verändert weder App-Kultur noch historische Partiedaten und wir
 
 Die Spieleübersicht zeigt aktive registrierte Spiele mit vollständigem Namen. Ein Spielmodul definiert seinen kompakten **Badge-Text** ausdrücklich; dieser wird nicht automatisch aus dem vollständigen Namen abgeleitet. Eine aktive Session/Wertung wird mit demselben nicht-interaktiven Aktiv-Symbol wie in der Gruppenübersicht am Spielnamen gekennzeichnet.
 
-Die Spieleübersicht sortiert zunächst Spiele mit offener Session/Wertung, dann nach der **zuletzt gestarteten** Partie und schließlich Spiele ohne Partien. Deaktivierte Spiele verschwinden aus der Spieleübersicht, nicht aus der Historie.
+Die Spieleübersicht sortiert zunächst Spiele mit offener Session/Wertung, dann nach der **zuletzt gestarteten** Partie und schließlich Spiele ohne Partien. Verborgene Spiele erscheinen in keiner regulären spielbezogenen Liste oder Auswahl. Die administrative Gesamtliste unter Einstellungen bleibt zur Reaktivierung erreichbar.
 
 Die Gruppenübersicht eines Spiels zeigt nur **aktive und diesem Spiel zugeordnete** Gruppen. Sie sortiert zuerst Gruppen mit offener Session/Wertung dieser Spiel-Gruppe-Kombination, dann nach der zuletzt gestarteten Partie in diesem Spiel; Gruppen ohne entsprechende Partie folgen zuletzt. Tap auf eine Gruppe setzt die offene Partie/Wertung fort oder öffnet die Vorbereitung.
 
@@ -133,9 +133,9 @@ Statistik ist ein späterer, von der Partienliste unabhängiger Slice. Allgemein
 
 ## 12. Einstellungen
 
-Allgemeine Einstellungen enthalten mindestens Theme-Auswahl, **Meine Spiele**, rechtliche/Open-Source-Informationen und Einstiege in registrierte Spieleinstellungen. Spieler und Gruppen werden unter **Mitspieler** verwaltet. Ein Standardspiel gibt es nicht.
+Allgemeine Einstellungen enthalten die App-Sprache (derzeit nur Deutsch), die Auswahl bestehender Themes, **Spiele verwalten**, die installierte Version/Build und Open-Source-Lizenzen. Spieler und Gruppen werden unter **Mitspieler** verwaltet. Ein Standardspiel gibt es nicht. Die App-Sprache und die Sprache des Spielmaterials sind getrennte Einstellungen.
 
-Unter **Meine Spiele** sind alle registrierten unterstützten Spiele standardmäßig aktiv. Ein Spiel kann deaktiviert werden, wenn **keine** offene Partie/Wertung dieses Spiels existiert. Deaktivieren blendet das Spiel in **Spielen** aus; historische Partien und Spiel-/Gruppendaten bleiben erhalten.
+Unter **Spiele verwalten** sind alle registrierten unterstützten Spiele unabhängig von ihrer Sichtbarkeit erreichbar und standardmäßig sichtbar. Der Spieleintrag öffnet seine spielspezifischen Einstellungen mit **Spiel anzeigen**. Verbergen ist bei einer offenen Partie/Wertung (Running/Scoring) dieses Spiels gesperrt und wird beim Speichern erneut validiert. Verborgene Spiele verschwinden aus Spielen, den Spiel-Gruppenansichten, regulären Gruppen-Spielauswahlen sowie der Historienliste und ihrem Spiel-Filter. Sessions, Ergebnisse, Zuordnungen und Defaults bleiben unverändert gespeichert; Reaktivierung macht sie wieder sichtbar. Import und Export bleiben unabhängig von dieser UI-Sichtbarkeit vollständig; die administrative Gesamtliste bleibt die Ausnahme der regulären Ausblendung.
 
 Verfügbare Themes, Default, visuelle Tokens und Wechselverhalten stehen ausschließlich in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 Drittanbieter-Lizenzanforderungen stehen ausschließlich in [THIRD_PARTY_LICENSE_POLICY.md](THIRD_PARTY_LICENSE_POLICY.md).
