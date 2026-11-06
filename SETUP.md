@@ -186,6 +186,67 @@ Clean/Rebuild, Cache-Löschung, erneuter Restore oder erneuter Native-Build nur 
 einem konkreten technischen Grund. Keinen zweiten Build derselben Konfiguration
 allein „zur Sicherheit“ ausführen.
 
+### iOS-Geräte-Deployment und Signing unter macOS
+
+Für ein angeschlossenes iPhone kann die lokale Deployment-Konfiguration unter
+`.local/ios/` verwendet werden. `deploy-iphone.sh`, `signing.py`, `config.sh` und
+das bei Bedarf erzeugte Xcode-Hilfsprojekt sind **nicht versioniert** und auf
+anderen Rechnern nicht automatisch vorhanden. Die folgenden Befehle setzen diese
+lokalen Skripte voraus und werden vom Repository-Root ausgeführt:
+
+```bash
+# Nur iOS-Signing prüfen; kein Build, keine Installation und kein App-Start:
+bash .local/ios/deploy-iphone.sh --check-signing
+
+# iOS-Provisioning bei Bedarf über Xcode erneuern; ohne App-Installation/-Start:
+bash .local/ios/deploy-iphone.sh --repair-signing
+
+# Vollständiges iOS-Deployment: Signing, Release-Build, Installation und Start:
+bash .local/ios/deploy-iphone.sh
+```
+
+Voraussetzungen sind eine in Xcode angemeldete Apple-ID mit passenden
+Signing-Berechtigungen, ein nutzbares Apple-Development-Zertifikat samt privatem
+Schlüssel im Schlüsselbund und das verbundene, entsperrte iPhone mit eingerichteter
+Entwicklerverbindung. Das Zielgerät wird ausschließlich lokal in `config.sh`
+konfiguriert. SDK und Workloads werden gemäß dem Abschnitt
+„Gemeinsame SDK-Konfiguration und macOS/iOS“ über `.local/ios/global.json`
+ausgewählt; der lokale Skript-Einstieg muss zu diesem Pin passen.
+
+Die lokale Signing-Prüfung berücksichtigt beide macOS-Profilordner
+`~/Library/Developer/Xcode/UserData/Provisioning Profiles` und
+`~/Library/MobileDevice/Provisioning Profiles`. Sie prüft die Bundle-ID
+`de.boardgametracker.app`, das Ablaufdatum, die Aufnahme des Zielgeräts und die
+Zuordnung zu einer verfügbaren Signing-Identität. Ein gültiges Zertifikat allein
+genügt nicht: Das Entwicklungsprofil kann unabhängig davon ablaufen.
+
+Fehlt ein nutzbares Profil, verwendet die lokale Reparatur Xcode Automatic Signing
+mit `-allowProvisioningUpdates` und `-allowProvisioningDeviceRegistration`.
+Dafür wird ein kleines Hilfsprojekt unter `.local/ios/SigningHelper/` gebaut,
+aber **nicht auf dem iPhone installiert**. Das bisherige Team und die Bundle-ID
+bleiben erhalten; bei uneindeutiger Team-Zuordnung wird abgebrochen. Ein separates
+Signing-Testprojekt muss nicht manuell geöffnet werden. Nach der Erneuerung wird
+das Profil erneut geprüft, bevor das eigentliche iOS-Deployment fortgesetzt wird.
+
+Auch `--repair-signing` kann einen Geräte-Build des Hilfsprojekts auslösen.
+Agenten holen deshalb unmittelbar vor dessen Ausführung beziehungsweise vor dem
+Geräte-Build mit Installation/Start die ausdrückliche Freigabe gemäß `AGENTS.md`
+ein. Bei erforderlicher Apple-ID-Anmeldung oder Schlüsselbundfreigabe anhalten:
+den bestehenden Account unter **Xcode → Settings → Accounts** erneut anmelden
+beziehungsweise die angeforderte Schlüsselbundfreigabe manuell erteilen.
+
+Nach erfolgreicher Installation kann iOS den Start wegen fehlenden
+Entwicklervertrauens blockieren. Bei gültiger Signatur und passendem eingebettetem
+Profil auf dem iPhone unter **Einstellungen → Allgemein → VPN und Geräteverwaltung
+→ Entwickler-App** dem bisherigen Entwickler vertrauen, sofern iOS diesen Schritt
+anbietet. Bleibt die Startsperre bestehen, Signatur und Entitlements gezielt prüfen;
+keine automatische Deinstallation oder Datenlöschung als Reparatur durchführen.
+Das bestehende App-Datenverzeichnis soll beim Update erhalten bleiben.
+
+Team- und Gerätekennungen, Zertifikatsdaten und Signing-Rohlogs bleiben lokal und
+unversioniert. Für weitergegebene Diagnosen gelten die Redaktionsregeln unter
+„Repository- und Log-Sicherheit“.
+
 ### iOS-Simulator-Builds
 
 Für normale UI-/Navigationsprüfungen im iOS-Simulator `Debug` mit
