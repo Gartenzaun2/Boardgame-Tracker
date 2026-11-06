@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.1.0
+
+- Segmentbuttons auf vollständige, gemeinsam gesteuerte VisualStates umgestellt, damit Farben und Auswahl nach Lade-/Aktivierungswechseln konsistent wiederhergestellt werden. Theme-Paletten und Segmentgeometrie bleiben erhalten.
+
 ## 0.17.0.11
 
 - Einstellungseinträge mit gemeinsamer lesbarer Typografie und kompakteren Auswahlfeldern bei erhaltener Touchfläche versehen.

@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/SegmentButton.cs" LogicalName="ThemeContract.SegmentButton.cs" /></ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Features/History/HistoryPage.xaml.cs;../../src/BoardgameTracker.App/Resources/Images/icon_special_card.svg" LogicalName="UxConsolidation.%(Filename)%(Extension)" />
   </ItemGroup>

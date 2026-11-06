@@ -73,14 +73,14 @@ public sealed class ThemeTests
         var document = ReadStyles();
         var style = Assert.Single(document.Descendants(), element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Key") == "SegmentButton");
         Assert.Null(style.Attribute("BasedOn"));
-        var selected = Assert.Single(style.Descendants(), element => element.Name.LocalName == "MultiTrigger");
-        Assert.Contains(selected.Descendants(), element => (string?)element.Attribute("Property") == "IsSelected" && (string?)element.Attribute("Value") == "True");
-        Assert.Contains(selected.Descendants(), element => (string?)element.Attribute("Property") == "IsEnabled" && (string?)element.Attribute("Value") == "True");
-        var disabled = Assert.Single(style.Descendants(), element => element.Name.LocalName == "VisualState" && (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Name") == "Disabled");
+        Assert.DoesNotContain(style.Descendants(), element => element.Name.LocalName is "MultiTrigger" or "Trigger" or "DataTrigger");
+        var states = style.Descendants().Where(element => element.Name.LocalName == "VisualState").ToArray();
+        Assert.Equal(new[] { "Normal", "Selected", "Disabled" }, states.Select(state => (string?)state.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Name")));
+        System.Xml.Linq.XElement State(string name) => Assert.Single(states, element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Name") == name);
         var palette = ThemePalette.Get(theme);
-        var normalSetters = style.Elements().Where(element => element.Name.LocalName == "Setter").ToArray();
-        var selectedSetters = selected.Elements().Where(element => element.Name.LocalName == "Setter").ToArray();
-        var disabledSetters = disabled.Descendants().Where(element => element.Name.LocalName == "Setter").ToArray();
+        var normalSetters = State("Normal").Descendants().Where(element => element.Name.LocalName == "Setter").ToArray();
+        var selectedSetters = State("Selected").Descendants().Where(element => element.Name.LocalName == "Setter").ToArray();
+        var disabledSetters = State("Disabled").Descendants().Where(element => element.Name.LocalName == "Setter").ToArray();
         string Value(IEnumerable<System.Xml.Linq.XElement> setters, string property) => Assert.Single(setters, setter => (string?)setter.Attribute("Property") == property).Attribute("Value")!.Value;
         string Color(IEnumerable<System.Xml.Linq.XElement> setters, string property)
         {
@@ -89,7 +89,21 @@ public sealed class ThemeTests
             return palette[token[17..^1]];
         }
         foreach (var state in new[] { normalSetters, selectedSetters, disabledSetters })
+        {
+            Assert.Equal(new[] { "BackgroundColor", "BorderColor", "BorderWidth", "Opacity", "TextColor" }, state.Select(setter => (string?)setter.Attribute("Property")).Order());
+            Assert.StartsWith("{DynamicResource ", Value(state, "BorderColor"));
             Assert.True(Contrast(Color(state, "TextColor"), Color(state, "BackgroundColor")) >= 4.5);
+            Assert.Equal("1", Value(state, "Opacity"));
+        }
+        Assert.Equal("{DynamicResource SurfaceSecondary}", Value(normalSetters, "BackgroundColor"));
+        Assert.Equal("{DynamicResource TextPrimary}", Value(normalSetters, "TextColor"));
+        Assert.Equal("{DynamicResource Outline}", Value(normalSetters, "BorderColor"));
+        Assert.Equal("{DynamicResource SelectedSurface}", Value(selectedSetters, "BackgroundColor"));
+        Assert.Equal("{DynamicResource TextPrimary}", Value(selectedSetters, "TextColor"));
+        Assert.Equal("{DynamicResource SelectedBorder}", Value(selectedSetters, "BorderColor"));
+        Assert.Equal("{DynamicResource Surface}", Value(disabledSetters, "BackgroundColor"));
+        Assert.Equal("{DynamicResource TextSecondary}", Value(disabledSetters, "TextColor"));
+        Assert.Equal("{DynamicResource Outline}", Value(disabledSetters, "BorderColor"));
         Assert.NotEqual(Color(normalSetters, "BackgroundColor"), Color(selectedSetters, "BackgroundColor"));
         Assert.Equal("2", Value(selectedSetters, "BorderWidth"));
         Assert.Equal("1", Value(normalSetters, "BorderWidth"));
@@ -103,6 +117,24 @@ public sealed class ThemeTests
         Assert.All(segments, segment => Assert.Equal("{StaticResource SegmentButton}", (string?)segment.Attribute("Style")));
         Assert.Equal("{Binding HasPlayers}", (string?)segments[1].Attribute("IsEnabled"));
         Assert.All(segments, segment => Assert.Empty(segment.Elements()));
+    }
+
+    [Fact]
+    public void SegmentStateChangesUseOnePathWithDisabledPriorityAndRetainSelectionBindings()
+    {
+        using StreamReader reader = new(typeof(ThemeTests).Assembly.GetManifestResourceStream("ThemeContract.SegmentButton.cs")!);
+        string source = reader.ReadToEnd();
+        Assert.Contains("propertyChanged: (bindable, _, _) => ((SegmentButton)bindable).ChangeVisualState()", source);
+        Assert.Contains("protected override void ChangeVisualState()", source);
+        Assert.Contains("!IsEnabled ? VisualStateManager.CommonStates.Disabled", source);
+        Assert.Contains(": IsSelected ? VisualStateManager.CommonStates.Selected", source);
+        Assert.Contains(": VisualStateManager.CommonStates.Normal", source);
+        Assert.Contains("VisualStateManager.GoToState(this, state)", source);
+        Assert.DoesNotContain("base.ChangeVisualState()", source);
+        var page = Presentation.AppPageHeaderTests.ReadPage("PlayerListPage");
+        var segments = page.Descendants().Where(element => element.Name.LocalName == "SegmentButton").ToArray();
+        Assert.Equal(new[] { "{Binding ShowPlayers}", "{Binding ShowGroups}" }, segments.Select(element => (string?)element.Attribute("IsSelected")));
+        Assert.Contains(page.Descendants(), element => (string?)element.Attribute("IsEnabled") == "{Binding IsIdle}");
     }
 
     [Theory]
