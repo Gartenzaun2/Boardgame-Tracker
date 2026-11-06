@@ -88,8 +88,8 @@ Gemeinsamer Unterseitenheader mit Titel **Einstellungen** und Capsule **Arche No
 
 Erreichbar über **Einstellungen → Spiele verwalten → Arche Nova**, auch bei verborgenem Spiel. Die Seite ist flach und scrollt, mit den gemeinsamen Einstellungsstyles und folgenden Gruppen:
 
-1. **Allgemein**: **Spiel anzeigen**, mit sichtbarer Sperrbegründung bei offener Partie/Wertung.
-2. **Wertung**: **Ruf erfassen** und **Neue Wertung/Alte Wertung**, jeweils mit bestehendem Erklärungstext und Switch.
+1. **Allgemein**: **Spiel anzeigen**, mit sichtbarer Sperrbegründung ausschließlich bei offener Partie/Wertung; beim normal bedienbaren Switch erscheint kein Untertext.
+2. **Wertung**: **Ruf erfassen** und **Alte Punkteanzeige**, jeweils mit Info-Icon zwischen Beschriftung und Switch. Das Info-Icon öffnet den bisherigen Erklärungstext im App-Informationsdialog; kein dauerhafter Untertext. Info und Switch besitzen getrennte Touchbereiche.
 3. **Spielmaterial**: bestehendes Info-Icon an der Gruppenüberschrift; darunter **Sprache** als gemeinsamer Lookup mit Chevron nach unten und die navigierbare **Spezialkartenverwaltung** mit rechtem Chevron.
 4. **Debug-Einstellungen**: bestehender Einstieg in die **CV-Datensammlung** mit rechtem Chevron.
 

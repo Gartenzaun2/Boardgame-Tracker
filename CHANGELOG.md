@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.11
+
+- Einstellungseinträge mit gemeinsamer lesbarer Typografie und kompakteren Auswahlfeldern bei erhaltener Touchfläche versehen.
+- Erklärungstexte für Ruf und alte Punkteanzeige in Info-Dialoge verschoben; konkrete Sichtbarkeitssperre weiterhin direkt angezeigt.
+
 ## 0.17.0.10
 
 - Dunkel durch „Dark (Arche Nova)“ mit der verbindlichen Ark-Nova-Midnight-Palette ersetzt; Theme-ID 2 und Default erhalten.

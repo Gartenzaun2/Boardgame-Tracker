@@ -23,25 +23,25 @@
             <VerticalStackLayout Style="{StaticResource SettingsContent}">
                 <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
                 <Grid x:Name="VisibilityPanel" x:DataType="visibility:GameActivationRow" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4" Style="{StaticResource SettingsRow}">
-                    <Label Text="{x:Static res:AppResources.ShowGame}" VerticalOptions="Center" />
+                    <Label Text="{x:Static res:AppResources.ShowGame}" Style="{StaticResource SettingsItemLabel}" />
                     <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanToggle}" Toggled="OnGameVisibilityToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
-                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsLocked}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsLocked}" Style="{StaticResource SettingsHintLabel}" />
                 </Grid>
                 <Label x:Name="VisibilityError" IsVisible="False" TextColor="{DynamicResource Danger}" />
                 <Label Text="{x:Static res:AppResources.Scoring}" Style="{StaticResource SettingsSectionTitle}" />
-                <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                    <VerticalStackLayout Spacing="3" VerticalOptions="Center">
-                        <Label Text="{x:Static res:AppResources.CaptureReputation}" />
-                        <Label Text="{x:Static res:AppResources.CaptureReputationHint}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                    </VerticalStackLayout>
-                    <Switch Grid.Column="1" IsToggled="{Binding CaptureReputation}" SemanticProperties.Description="{x:Static res:AppResources.CaptureReputation}" />
+                <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsRow}">
+                    <Label Text="{x:Static res:AppResources.CaptureReputation}" Style="{StaticResource SettingsItemLabel}" />
+                    <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}"
+                                 Clicked="OnCaptureReputationInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.CaptureReputation}"
+                                 ToolTipProperties.Text="{x:Static res:AppResources.CaptureReputationHint}" />
+                    <Switch Grid.Column="2" IsToggled="{Binding CaptureReputation}" SemanticProperties.Description="{x:Static res:AppResources.CaptureReputation}" />
                 </Grid>
-                <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                    <VerticalStackLayout Spacing="3" VerticalOptions="Center">
-                        <Label Text="{x:Static res:AppResources.OldScoringDisplay}" />
-                        <Label Text="{x:Static res:AppResources.OldScoringDisplayHint}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                    </VerticalStackLayout>
-                    <Switch Grid.Column="1" IsToggled="{Binding UseOldScoring}" SemanticProperties.Description="{x:Static res:AppResources.OldScoringDisplay}" />
+                <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsRow}">
+                    <Label Text="{x:Static res:AppResources.OldScoringDisplay}" Style="{StaticResource SettingsItemLabel}" />
+                    <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}"
+                                 Clicked="OnOldScoringInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.OldScoringDisplay}"
+                                 ToolTipProperties.Text="{x:Static res:AppResources.OldScoringDisplayHint}" />
+                    <Switch Grid.Column="2" IsToggled="{Binding UseOldScoring}" SemanticProperties.Description="{x:Static res:AppResources.OldScoringDisplay}" />
                 </Grid>
                 <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                     <Label Text="{x:Static res:AppResources.GameMaterial}" Style="{StaticResource SettingsSectionTitle}" />
@@ -50,18 +50,21 @@
                                  ToolTipProperties.Text="{x:Static res:AppResources.GameMaterialHint}" />
                 </Grid>
                 <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                    <Label Text="{x:Static res:AppResources.ContentLanguage}" VerticalOptions="Center" />
-                    <Button Grid.Column="1" Text="{Binding SelectedContentLanguage.Name}" Clicked="OnContentLanguageClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.ContentLanguage}" />
+                    <Label Text="{x:Static res:AppResources.ContentLanguage}" Style="{StaticResource SettingsItemLabel}" />
+                    <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
+                        <Border Style="{StaticResource SettingsLookupFrame}" />
+                        <Button Text="{Binding SelectedContentLanguage.Name}" Clicked="OnContentLanguageClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.ContentLanguage}" />
+                    </Grid>
                 </Grid>
                 <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                     <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnSpecialCardsClicked" /></Grid.GestureRecognizers>
-                    <Label Text="{x:Static res:AppResources.SpecialCardManagementTitle}" VerticalOptions="Center" />
+                    <Label Text="{x:Static res:AppResources.SpecialCardManagementTitle}" Style="{StaticResource SettingsItemLabel}" />
                     <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
                 </Grid>
                 <Label Text="{x:Static res:AppResources.DebugSettings}" Style="{StaticResource SettingsSectionTitle}" />
                 <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                     <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnPhotoDatasetClicked" /></Grid.GestureRecognizers>
-                    <Label Text="{x:Static res:AppResources.PhotoDatasetTitle}" VerticalOptions="Center" />
+                    <Label Text="{x:Static res:AppResources.PhotoDatasetTitle}" Style="{StaticResource SettingsItemLabel}" />
                     <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
                 </Grid>
             </VerticalStackLayout>

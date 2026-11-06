@@ -71,6 +71,12 @@ public partial class ArkNovaSettingsPage : ContentPage {
         await Shell.Current.GoToAsync("..", false);
     }
 
+    private async void OnCaptureReputationInfoClicked(object? sender, EventArgs e) =>
+        await AppDialogPage.ShowAsync(this, AppResources.CaptureReputation, AppResources.CaptureReputationHint, AppResources.Ok);
+
+    private async void OnOldScoringInfoClicked(object? sender, EventArgs e) =>
+        await AppDialogPage.ShowAsync(this, AppResources.OldScoringDisplay, AppResources.OldScoringDisplayHint, AppResources.Ok);
+
     private async void OnMaterialInfoClicked(object? sender, EventArgs e)
     {
         await AppDialogPage.ShowAsync(this, AppResources.GameMaterial, AppResources.GameMaterialHint, AppResources.Ok);
