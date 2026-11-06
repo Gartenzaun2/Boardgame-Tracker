@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.1.3
+
+- Königsblau durch TFM (hell) mit Polar-Mars-/Balanced-Copper-Palette ersetzt; interne Theme-ID 1, Default und übrige Paletten erhalten.
+
 ## 0.17.1.2
 
 - Deep Forest durch Arche Nova (hell) mit Lagoon-Blue-/Natural-Leaf-Palette ersetzt; Dark-Themes in Arche Nova (Dunkel) und TFM (Dunkel) umbenannt. Gespeicherte IDs und Default erhalten.

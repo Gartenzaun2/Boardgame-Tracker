@@ -22,7 +22,7 @@ Themes:
 
 ```text
 Arche Nova (hell)
-Königsblau
+TFM (hell)
 Arche Nova (Dunkel)
 TFM (Dunkel)
 ```
@@ -67,29 +67,29 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 
 ## 3. Paletten
 
-| Rolle | Arche Nova (hell) | Königsblau | Arche Nova (Dunkel) | TFM (Dunkel) |
+| Rolle | Arche Nova (hell) | TFM (hell) | Arche Nova (Dunkel) | TFM (Dunkel) |
 |---|---|---|---|---|
-| AppBackground | `#E5F2EC` | `#DCE5F4` | `#101A1B` | `#141214` |
-| Surface | `#F7FBF9` | `#FFFFFF` | `#1B2B30` | `#231C1D` |
-| CardSurface | `#D5ECF2` | `#FFFFFF` | `#263D49` | `#482A2B` |
-| CardOutline | `#78B0BE` | `#BCCAE1` | `#426070` | `#80504A` |
-| SurfaceSecondary | `#E5F0DA` | `#EEF3FB` | `#213B37` | `#2B2223` |
-| Primary | `#427C35` | `#315B9B` | `#70A98E` | `#B97849` |
-| PrimaryPressed | `#326427` | `#274A80` | `#61977E` | `#AF7047` |
+| AppBackground | `#E5F2EC` | `#F3EEE8` | `#101A1B` | `#141214` |
+| Surface | `#F7FBF9` | `#FCFAF7` | `#1B2B30` | `#231C1D` |
+| CardSurface | `#D5ECF2` | `#E8C6BE` | `#263D49` | `#482A2B` |
+| CardOutline | `#78B0BE` | `#C18575` | `#426070` | `#80504A` |
+| SurfaceSecondary | `#E5F0DA` | `#F1E8E0` | `#213B37` | `#2B2223` |
+| Primary | `#427C35` | `#A8643B` | `#70A98E` | `#B97849` |
+| PrimaryPressed | `#326427` | `#8C512E` | `#61977E` | `#AF7047` |
 | PrimaryForeground | `#FFFFFF` | `#FFFFFF` | `#10251C` | `#1C130F` |
-| SelectedSurface | `#D6EABC` | `#C8D8F1` | `#34594E` | `#5A3332` |
-| SelectedBorder | `#6F9C4E` | `#708EBE` | `#729B87` | `#D09464` |
-| TextPrimary | `#263D32` | `#18386A` | `#F0F5F6` | `#F5EEE8` |
-| TextSecondary | `#4F696B` | `#66758E` | `#C0D0D7` | `#D3BEB5` |
-| Outline | `#BBD4CE` | `#BCCAE1` | `#354A49` | `#4C3A36` |
-| NavigationBackground | `#F7FBF9` | `#FFFFFF` | `#172326` | `#1A1516` |
-| NavigationText | `#4F696B` | `#65748D` | `#AEBBB4` | `#B8AAA2` |
-| NavigationSelectedSurface | `#DCECC7` | `#C8D8F1` | `#34594E` | `#5A3332` |
-| NavigationSelectedText | `#263D32` | `#18386A` | `#F0F5F6` | `#FFF7F1` |
+| SelectedSurface | `#D6EABC` | `#E7D6C8` | `#34594E` | `#5A3332` |
+| SelectedBorder | `#6F9C4E` | `#B97C56` | `#729B87` | `#D09464` |
+| TextPrimary | `#263D32` | `#43342E` | `#F0F5F6` | `#F5EEE8` |
+| TextSecondary | `#4F696B` | `#625047` | `#C0D0D7` | `#D3BEB5` |
+| Outline | `#BBD4CE` | `#D7C9BD` | `#354A49` | `#4C3A36` |
+| NavigationBackground | `#F7FBF9` | `#FCFAF7` | `#172326` | `#1A1516` |
+| NavigationText | `#4F696B` | `#625047` | `#AEBBB4` | `#B8AAA2` |
+| NavigationSelectedSurface | `#DCECC7` | `#E8DCD2` | `#34594E` | `#5A3332` |
+| NavigationSelectedText | `#263D32` | `#43342E` | `#F0F5F6` | `#FFF7F1` |
 | Danger | `#B3261E` | `#B3261E` | `#FFB4AB` | `#FFB4AB` |
 | DangerSurface | `#F9DEDC` | `#F9DEDC` | `#5F2423` | `#5F2423` |
-| DisabledSurface | `#DAE4DF` | `#FFFFFF` | `#222A26` | `#231C1D` |
-| DisabledText | `#4F696B` | `#18386A` | `#F0F4F1` | `#D3BEB5` |
+| DisabledSurface | `#DAE4DF` | `#E8E3DE` | `#222A26` | `#231C1D` |
+| DisabledText | `#4F696B` | `#625047` | `#F0F4F1` | `#D3BEB5` |
 | BusyOverlay | `#99000000` | `#99000000` | `#99000000` | `#99000000` |
 | ModalOverlay | `#66000000` | `#66000000` | `#66000000` | `#66000000` |
 | IconSurface | `#EEF5F1` | `#EEF3FB` | `#EEF5F1` | `#EEF5F1` |
@@ -97,12 +97,12 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 | BusyIndicator | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` |
 | RecognitionHigh | `#256A37` | `#256A37` | `#8CD9A3` | `#8CD9A3` |
 | RecognitionMedium | `#806000` | `#806000` | `#F5D45E` | `#F5D45E` |
-| GameContextText | `#176B80` | `#704089` | `#678AB8` | `#D8AA87` |
-| GameContextBorder | `#176B80` | `#704089` | `#678AB8` | `#D8AA87` |
+| GameContextText | `#176B80` | `#4B6C78` | `#678AB8` | `#D8AA87` |
+| GameContextBorder | `#176B80` | `#4B6C78` | `#678AB8` | `#D8AA87` |
 
-Die Spielkontext-Capsule verwendet in jedem Theme eine bewusst eigenständige Akzentfarbe, die nicht einfach die allgemeine `Primary`- oder `SelectedBorder`-Farbe übernimmt: Petrolblau (`#176B80`) in Arche Nova (hell), Aubergine (`#704089`) in Königsblau und dezentes Blau (`#678AB8`) in Arche Nova (Dunkel). `GameContextText` und `GameContextBorder` verwenden innerhalb eines Themes denselben Farbwert. Diese semantischen Rollen dienen der nicht-interaktiven Spielkennzeichnung und dürfen nicht als Auswahlzustand interpretiert werden.
+Die Spielkontext-Capsule verwendet in jedem Theme eine bewusst eigenständige Akzentfarbe, die nicht einfach die allgemeine `Primary`- oder `SelectedBorder`-Farbe übernimmt: Petrolblau (`#176B80`) in Arche Nova (hell), Blaugrau (`#4B6C78`) in TFM (hell) und dezentes Blau (`#678AB8`) in Arche Nova (Dunkel). `GameContextText` und `GameContextBorder` verwenden innerhalb eines Themes denselben Farbwert. Diese semantischen Rollen dienen der nicht-interaktiven Spielkennzeichnung und dürfen nicht als Auswahlzustand interpretiert werden.
 
-Arche Nova (hell) verwendet **Arche Nova Light – Lagoon Blue + Natural Leaf**: hellgrünlicher Hintergrund, lagoonblaue Inhaltskarten, blattgrüne Aktionen und frischgrüne Auswahlflächen. Die interne Identität bleibt `DeepForest = 0`; Königsblau bleibt unverändert. Arche Nova (Dunkel) verwendet die Farbwelt **Ark Nova Midnight**: dunkelgrünliche Grundfläche, blaugraue Inhaltskarten und gedämpftes Salbeigrün für Hauptaktionen. Seine gespeicherte Identität bleibt `AppTheme.Dark = 2`; diese Identität bleibt auch mit dem zusätzlichen Theme unverändert; eine Migration ist nicht erforderlich. Nicht neu festgelegte Sonderrollen behalten ihre bisherigen Werte.
+Arche Nova (hell) verwendet **Arche Nova Light – Lagoon Blue + Natural Leaf**: hellgrünlicher Hintergrund, lagoonblaue Inhaltskarten, blattgrüne Aktionen und frischgrüne Auswahlflächen. Die interne Identität bleibt `DeepForest = 0`; TFM (hell) verwendet **Polar Mars – Balanced Copper**: neutral-warmer Polar-Hintergrund, kupferrosafarbene Inhaltskarten und kupferbraune Hauptaktionen. Die interne ID `RoyalBlue = 1` und der native Light-Modus bleiben erhalten. Arche Nova (Dunkel) verwendet die Farbwelt **Ark Nova Midnight**: dunkelgrünliche Grundfläche, blaugraue Inhaltskarten und gedämpftes Salbeigrün für Hauptaktionen. Seine gespeicherte Identität bleibt `AppTheme.Dark = 2`; diese Identität bleibt auch mit dem zusätzlichen Theme unverändert; eine Migration ist nicht erforderlich. Nicht neu festgelegte Sonderrollen behalten ihre bisherigen Werte.
 
 TFM (Dunkel) verwendet Terraforming Mars Dark – Marsrot V2 und die gespeicherte ID `DarkTfm = 3`. Basalt-Hintergrund, marsrote Karten und kupferne Aktionen bleiben über eigene semantische Rollen von Navigation und Auswahl getrennt. Beide Dark-Themes verwenden den nativen Dark-Modus. Die Theme-Auswahl gilt appweit und unabhängig vom ausgewählten Spiel.
 

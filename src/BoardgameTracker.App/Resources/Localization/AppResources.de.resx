@@ -364,7 +364,7 @@
 <data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
 <data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
 <data name="ThemeDeepForest" xml:space="preserve"><value>Arche Nova (hell)</value></data>
-<data name="ThemeRoyalBlue" xml:space="preserve"><value>Königsblau</value></data>
+<data name="ThemeRoyalBlue" xml:space="preserve"><value>TFM (hell)</value></data>
 <data name="ThemeDark" xml:space="preserve"><value>Arche Nova (Dunkel)</value></data>
 <data name="HistoryFilterSelectedFormat" xml:space="preserve"><value>✓ {0} ▾</value></data>
 <data name="HistoryFilterFormat" xml:space="preserve"><value>{0} ▾</value></data>

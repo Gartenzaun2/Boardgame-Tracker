@@ -63,6 +63,8 @@ public sealed class ThemeTests
         {
             if (theme == AppTheme.DeepForest)
                 Assert.Equal("#DAE4DF", palette["DisabledSurface"]);
+            else if (theme == AppTheme.RoyalBlue)
+                Assert.Equal("#E8E3DE", palette["DisabledSurface"]);
             else
                 Assert.Equal(palette["Surface"], palette["DisabledSurface"]);
             if (theme == AppTheme.DarkTfm)
@@ -179,7 +181,7 @@ public sealed class ThemeTests
 
     [Theory]
     [InlineData(AppTheme.DeepForest, "#176B80")]
-    [InlineData(AppTheme.RoyalBlue, "#704089")]
+    [InlineData(AppTheme.RoyalBlue, "#4B6C78")]
     [InlineData(AppTheme.Dark, "#678AB8")]
     public void GameContextUsesIndependentMatchingTextAndBorderAccent(AppTheme theme, string accent)
     {
@@ -230,11 +232,12 @@ public sealed class ThemeTests
         => Assert.Equal(expected, ThemePalette.Get(AppTheme.Dark)[role]);
 
     [Theory]
-    [InlineData(AppTheme.DeepForest, "#B8CAC0")]
-    [InlineData(AppTheme.RoyalBlue, "#BCCAE1")]
-    public void LightCardsRetainTheirOriginalSurfacesAndOutlines(AppTheme theme, string outline)
+    [InlineData(AppTheme.DeepForest, "#BBD4CE")]
+    [InlineData(AppTheme.RoyalBlue, "#D7C9BD")]
+    public void LightCardsUseTheirApprovedSurfacesAndOutlines(AppTheme theme, string outline)
     {
         var palette = ThemePalette.Get(theme);
+        Assert.Equal(outline, palette["Outline"]);
         if (theme == AppTheme.DeepForest)
         {
             Assert.Equal("#F7FBF9", palette["Surface"]);
@@ -244,10 +247,11 @@ public sealed class ThemeTests
         }
         else
         {
-            Assert.Equal("#FFFFFF", palette["Surface"]);
-            Assert.Equal(outline, palette["Outline"]);
-            Assert.Equal(palette["Surface"], palette["CardSurface"]);
-            Assert.Equal(palette["Outline"], palette["CardOutline"]);
+            Assert.Equal("#FCFAF7", palette["Surface"]);
+            Assert.Equal("#D7C9BD", palette["Outline"]);
+            Assert.Equal("#E8C6BE", palette["CardSurface"]);
+            Assert.Equal("#C18575", palette["CardOutline"]);
+            Assert.NotEqual(palette["CardSurface"], palette["NavigationBackground"]);
         }
     }
 
@@ -324,6 +328,30 @@ public sealed class ThemeTests
     [InlineData("GameContextText", "#176B80")]
     [InlineData("GameContextBorder", "#176B80")]
     public void LightArcheNovaUsesApprovedPalette(string role, string color) => Assert.Equal(color, ThemePalette.Get(AppTheme.DeepForest)[role]);
+
+    [Theory]
+    [InlineData("AppBackground", "#F3EEE8")]
+    [InlineData("Surface", "#FCFAF7")]
+    [InlineData("CardSurface", "#E8C6BE")]
+    [InlineData("CardOutline", "#C18575")]
+    [InlineData("SurfaceSecondary", "#F1E8E0")]
+    [InlineData("Primary", "#A8643B")]
+    [InlineData("PrimaryPressed", "#8C512E")]
+    [InlineData("PrimaryForeground", "#FFFFFF")]
+    [InlineData("SelectedSurface", "#E7D6C8")]
+    [InlineData("SelectedBorder", "#B97C56")]
+    [InlineData("TextPrimary", "#43342E")]
+    [InlineData("TextSecondary", "#625047")]
+    [InlineData("Outline", "#D7C9BD")]
+    [InlineData("NavigationBackground", "#FCFAF7")]
+    [InlineData("NavigationText", "#625047")]
+    [InlineData("NavigationSelectedSurface", "#E8DCD2")]
+    [InlineData("NavigationSelectedText", "#43342E")]
+    [InlineData("DisabledSurface", "#E8E3DE")]
+    [InlineData("DisabledText", "#625047")]
+    [InlineData("GameContextText", "#4B6C78")]
+    [InlineData("GameContextBorder", "#4B6C78")]
+    public void LightTfmUsesApprovedPalette(string role, string color) => Assert.Equal(color, ThemePalette.Get(AppTheme.RoyalBlue)[role]);
 
     private static System.Xml.Linq.XDocument ReadStyles()
     {
