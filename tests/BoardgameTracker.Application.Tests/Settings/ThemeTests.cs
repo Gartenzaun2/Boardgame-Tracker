@@ -31,13 +31,16 @@ public sealed class ThemeTests
     {
         var palette = ThemePalette.Get(theme);
         Assert.Equal(ThemePalette.Get(AppTheme.DeepForest).Keys.Order(), palette.Keys.Order());
-        string[] roles = ["AppBackground", "Surface", "SurfaceSecondary", "Primary", "PrimaryPressed", "PrimaryForeground",
+        string[] roles = ["AppBackground", "Surface", "CardSurface", "CardOutline", "SurfaceSecondary", "Primary", "PrimaryPressed", "PrimaryForeground",
             "SelectedSurface", "SelectedBorder", "TextPrimary", "TextSecondary", "Outline", "NavigationBackground",
-            "NavigationText", "NavigationSelectedSurface", "NavigationSelectedText", "Danger", "DangerSurface"];
-        Assert.All(roles, role => Assert.True(palette.ContainsKey(role)));
-        foreach (var surface in new[] { "AppBackground", "Surface", "SurfaceSecondary", "SelectedSurface" })
+            "NavigationText", "NavigationSelectedSurface", "NavigationSelectedText", "Danger", "DangerSurface",
+            "DisabledSurface", "DisabledText", "RecognitionHigh", "RecognitionMedium", "GameContextText", "GameContextBorder",
+            "IconSurface", "GameGraphicText", "ModalOverlay", "BusyOverlay", "BusyIndicator"];
+        Assert.Equal(roles.Order(), palette.Keys.Order());
+        foreach (var surface in new[] { "AppBackground", "Surface", "CardSurface", "SurfaceSecondary", "SelectedSurface" })
             Assert.True(Contrast(palette["TextPrimary"], palette[surface]) >= 4.5, surface);
         Assert.True(Contrast(palette["TextSecondary"], palette["Surface"]) >= 4.5);
+        Assert.True(Contrast(palette["TextSecondary"], palette["CardSurface"]) >= 4.5);
         Assert.True(Contrast(palette["NavigationText"], palette["NavigationBackground"]) >= 4.5);
         Assert.True(Contrast(palette["PrimaryForeground"], palette["Primary"]) >= 4.5);
         Assert.True(Contrast(palette["PrimaryForeground"], palette["PrimaryPressed"]) >= 4.5);
@@ -46,8 +49,19 @@ public sealed class ThemeTests
         Assert.True(Contrast(palette["DisabledText"], palette["DisabledSurface"]) >= 4.5);
         Assert.NotEqual(palette["Outline"], palette["Surface"]);
         Assert.NotEqual(palette["Surface"], palette["SurfaceSecondary"]);
-        Assert.Equal(palette["Surface"], palette["DisabledSurface"]);
-        Assert.Equal(palette["Surface"], palette["NavigationBackground"]);
+        Assert.NotEqual(palette["CardSurface"], palette["CardOutline"]);
+        if (theme == AppTheme.Dark)
+        {
+            Assert.Equal("#222A26", palette["DisabledSurface"]);
+            Assert.NotEqual(palette["Surface"], palette["DisabledSurface"]);
+            Assert.NotEqual(palette["Surface"], palette["NavigationBackground"]);
+            Assert.NotEqual(palette["CardSurface"], palette["NavigationBackground"]);
+        }
+        else
+        {
+            Assert.Equal(palette["Surface"], palette["DisabledSurface"]);
+            Assert.Equal(palette["Surface"], palette["NavigationBackground"]);
+        }
         Assert.True(Contrast(palette["GameGraphicText"], "#FFFFFF") >= 4.5);
     }
     [Theory]
@@ -103,7 +117,7 @@ public sealed class ThemeTests
             var image = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Source") == "icon_active_session.png");
             Assert.Equal("{DynamicResource TextPrimary}", image.Attributes().Single(attribute => attribute.Name.LocalName == "IconTint.Color").Value);
             var palette = ThemePalette.Get(theme);
-            Assert.True(Contrast(palette["TextPrimary"], palette["Surface"]) >= 4.5);
+            Assert.True(Contrast(palette["TextPrimary"], palette["CardSurface"]) >= 4.5);
             Assert.NotNull(image.Attribute("IsVisible"));
         }
     }
@@ -133,6 +147,72 @@ public sealed class ThemeTests
         Assert.NotEqual(palette["Primary"], accent);
         Assert.NotEqual(palette["SelectedBorder"], accent);
         Assert.NotEqual(palette["NavigationSelectedText"], accent);
+    }
+
+    [Theory]
+    [InlineData("AppBackground", "#101A1B")]
+    [InlineData("Surface", "#1B2B30")]
+    [InlineData("CardSurface", "#263D49")]
+    [InlineData("CardOutline", "#426070")]
+    [InlineData("SurfaceSecondary", "#213B37")]
+    [InlineData("Primary", "#70A98E")]
+    [InlineData("PrimaryPressed", "#61977E")]
+    [InlineData("PrimaryForeground", "#10251C")]
+    [InlineData("SelectedSurface", "#34594E")]
+    [InlineData("SelectedBorder", "#729B87")]
+    [InlineData("TextPrimary", "#F0F5F6")]
+    [InlineData("TextSecondary", "#C0D0D7")]
+    [InlineData("Outline", "#354A49")]
+    [InlineData("NavigationBackground", "#172326")]
+    [InlineData("NavigationText", "#AEBBB4")]
+    [InlineData("NavigationSelectedSurface", "#34594E")]
+    [InlineData("NavigationSelectedText", "#F0F5F6")]
+    public void DarkUsesApprovedMidnightColors(string role, string expected)
+        => Assert.Equal(expected, ThemePalette.Get(AppTheme.Dark)[role]);
+
+    [Theory]
+    [InlineData("Danger", "#FFB4AB")]
+    [InlineData("DangerSurface", "#5F2423")]
+    [InlineData("RecognitionHigh", "#8CD9A3")]
+    [InlineData("RecognitionMedium", "#F5D45E")]
+    [InlineData("GameContextText", "#678AB8")]
+    [InlineData("GameContextBorder", "#678AB8")]
+    [InlineData("IconSurface", "#EEF5F1")]
+    [InlineData("GameGraphicText", "#101713")]
+    [InlineData("ModalOverlay", "#66000000")]
+    [InlineData("BusyOverlay", "#99000000")]
+    [InlineData("BusyIndicator", "#FFFFFF")]
+    [InlineData("DisabledSurface", "#222A26")]
+    [InlineData("DisabledText", "#F0F4F1")]
+    public void DarkPreservesExistingSpecialRoles(string role, string expected)
+        => Assert.Equal(expected, ThemePalette.Get(AppTheme.Dark)[role]);
+
+    [Theory]
+    [InlineData(AppTheme.DeepForest, "#B8CAC0")]
+    [InlineData(AppTheme.RoyalBlue, "#BCCAE1")]
+    public void LightCardsRetainTheirOriginalSurfacesAndOutlines(AppTheme theme, string outline)
+    {
+        var palette = ThemePalette.Get(theme);
+        Assert.Equal("#FFFFFF", palette["Surface"]);
+        Assert.Equal(outline, palette["Outline"]);
+        Assert.Equal(palette["Surface"], palette["CardSurface"]);
+        Assert.Equal(palette["Outline"], palette["CardOutline"]);
+    }
+
+    [Fact]
+    public void ThemeIdentityAndCentralCardResourcesRemainSemantic()
+    {
+        Assert.Equal(3, Enum.GetValues<AppTheme>().Length);
+        Assert.Equal(2, (int)AppTheme.Dark);
+        Assert.Equal(AppTheme.Dark, AppNavigationSettings.Default.Theme);
+        Assert.Equal("Dark (Arche Nova)", BoardgameTracker.App.Resources.Localization.AppResources.ThemeDark);
+        var styles = ReadStyles();
+        var card = Assert.Single(styles.Descendants(), element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Key") == "CardBorder");
+        Assert.Contains(card.Elements(), element => (string?)element.Attribute("Property") == "BackgroundColor" && (string?)element.Attribute("Value") == "{DynamicResource CardSurface}");
+        Assert.Contains(card.Elements(), element => (string?)element.Attribute("Property") == "Stroke" && (string?)element.Attribute("Value") == "{DynamicResource CardOutline}");
+        var dialog = Assert.Single(styles.Descendants(), element => (string?)element.Attribute("{http://schemas.microsoft.com/winfx/2009/xaml}Key") == "SelectionDialog");
+        Assert.Contains(dialog.Elements(), element => (string?)element.Attribute("Property") == "BackgroundColor" && (string?)element.Attribute("Value") == "{DynamicResource AppBackground}");
+        Assert.Contains(dialog.Elements(), element => (string?)element.Attribute("Property") == "Stroke" && (string?)element.Attribute("Value") == "{DynamicResource Outline}");
     }
 
     private static System.Xml.Linq.XDocument ReadStyles()

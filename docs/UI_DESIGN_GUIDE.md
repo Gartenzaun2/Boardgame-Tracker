@@ -23,10 +23,10 @@ Themes:
 ```text
 Deep Forest
 Königsblau
-Dunkel
+Dark (Arche Nova)
 ```
 
-**Dunkel ist der Default**, wenn keine gültige Auswahl gespeichert ist. Eine
+**Dark (Arche Nova) ist der Default**, wenn keine gültige Auswahl gespeichert ist. Eine
 gespeicherte Auswahl wird vor der ersten App-Ansicht angewendet; Wechsel wirken ohne
 Neustart.
 
@@ -36,7 +36,7 @@ MAUI-Preferences entsteht.
 Screens verwenden semantische Ressourcen statt Theme-Namen:
 
 ```text
-AppBackground Surface SurfaceSecondary
+AppBackground Surface CardSurface CardOutline SurfaceSecondary
 Primary PrimaryPressed PrimaryForeground
 SelectedSurface SelectedBorder
 TextPrimary TextSecondary Outline
@@ -66,23 +66,25 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 
 ## 3. Paletten
 
-| Rolle | Deep Forest | Königsblau | Dunkel |
+| Rolle | Deep Forest | Königsblau | Dark (Arche Nova) |
 |---|---|---|---|
-| AppBackground | `#D9E6DF` | `#DCE5F4` | `#141A17` |
-| Surface | `#FFFFFF` | `#FFFFFF` | `#222A26` |
-| SurfaceSecondary | `#EEF5F1` | `#EEF3FB` | `#29352F` |
-| Primary | `#466655` | `#315B9B` | `#5B8A70` |
-| PrimaryPressed | `#385346` | `#274A80` | `#6D9B82` |
-| PrimaryForeground | `#FFFFFF` | `#FFFFFF` | `#101713` |
-| SelectedSurface | `#C7DCCF` | `#C8D8F1` | `#355244` |
-| SelectedBorder | `#789A85` | `#708EBE` | `#668875` |
-| TextPrimary | `#263D31` | `#18386A` | `#F0F4F1` |
-| TextSecondary | `#68776F` | `#66758E` | `#C6D0CA` |
-| Outline | `#B8CAC0` | `#BCCAE1` | `#3B4942` |
-| NavigationBackground | `#FFFFFF` | `#FFFFFF` | `#222A26` |
+| AppBackground | `#D9E6DF` | `#DCE5F4` | `#101A1B` |
+| Surface | `#FFFFFF` | `#FFFFFF` | `#1B2B30` |
+| CardSurface | `#FFFFFF` | `#FFFFFF` | `#263D49` |
+| CardOutline | `#B8CAC0` | `#BCCAE1` | `#426070` |
+| SurfaceSecondary | `#EEF5F1` | `#EEF3FB` | `#213B37` |
+| Primary | `#466655` | `#315B9B` | `#70A98E` |
+| PrimaryPressed | `#385346` | `#274A80` | `#61977E` |
+| PrimaryForeground | `#FFFFFF` | `#FFFFFF` | `#10251C` |
+| SelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` |
+| SelectedBorder | `#789A85` | `#708EBE` | `#729B87` |
+| TextPrimary | `#263D31` | `#18386A` | `#F0F5F6` |
+| TextSecondary | `#68776F` | `#66758E` | `#C0D0D7` |
+| Outline | `#B8CAC0` | `#BCCAE1` | `#354A49` |
+| NavigationBackground | `#FFFFFF` | `#FFFFFF` | `#172326` |
 | NavigationText | `#68776F` | `#65748D` | `#AEBBB4` |
-| NavigationSelectedSurface | `#C7DCCF` | `#C8D8F1` | `#355244` |
-| NavigationSelectedText | `#263D31` | `#18386A` | `#FFFFFF` |
+| NavigationSelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` |
+| NavigationSelectedText | `#263D31` | `#18386A` | `#F0F5F6` |
 | Danger | `#B3261E` | `#B3261E` | `#FFB4AB` |
 | DangerSurface | `#F9DEDC` | `#F9DEDC` | `#5F2423` |
 | DisabledSurface | `#FFFFFF` | `#FFFFFF` | `#222A26` |
@@ -97,16 +99,17 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 | GameContextText | `#176B80` | `#704089` | `#678AB8` |
 | GameContextBorder | `#176B80` | `#704089` | `#678AB8` |
 
-Die Spielkontext-Capsule verwendet in jedem Theme eine bewusst eigenständige Akzentfarbe, die nicht einfach die allgemeine `Primary`- oder `SelectedBorder`-Farbe übernimmt: Petrolblau (`#176B80`) in Deep Forest, Aubergine (`#704089`) in Königsblau und dezentes Blau (`#678AB8`) in Dunkel. `GameContextText` und `GameContextBorder` verwenden innerhalb eines Themes denselben Farbwert. Diese semantischen Rollen dienen der nicht-interaktiven Spielkennzeichnung und dürfen nicht als Auswahlzustand interpretiert werden.
+Die Spielkontext-Capsule verwendet in jedem Theme eine bewusst eigenständige Akzentfarbe, die nicht einfach die allgemeine `Primary`- oder `SelectedBorder`-Farbe übernimmt: Petrolblau (`#176B80`) in Deep Forest, Aubergine (`#704089`) in Königsblau und dezentes Blau (`#678AB8`) in Dark (Arche Nova). `GameContextText` und `GameContextBorder` verwenden innerhalb eines Themes denselben Farbwert. Diese semantischen Rollen dienen der nicht-interaktiven Spielkennzeichnung und dürfen nicht als Auswahlzustand interpretiert werden.
 
 Deep Forest bleibt ruhig/natürlich ohne beige Zusatzflächen; Königsblau ist das
-kühlere helle Theme; Dunkel ist eigenständig und verwendet keine großen rein
-schwarzen Flächen oder rein weißen Konturen.
+kühlere helle Theme. Dark (Arche Nova) verwendet die Farbwelt **Ark Nova Midnight**: dunkelgrünliche Grundfläche, blaugraue Inhaltskarten und gedämpftes Salbeigrün für Hauptaktionen. Seine gespeicherte Identität bleibt `AppTheme.Dark = 2`; es entstehen keine zusätzliche Theme-Auswahl und keine Migration. Nicht neu festgelegte Sonderrollen behalten ihre bisherigen Werte.
 
 ## 4. Flächen und Formulare
 
 - `AppBackground`: Screen-Grundfläche.
-- `Surface`: eigenständige Inhalts-/Interaktionseinheit.
+- `Surface`: allgemeine Interaktionsfläche, etwa Formularelemente.
+- `CardSurface` / `CardOutline`: Hintergrund und Kontur normaler Inhaltskarten über den zentralen `CardBorder`-Stil. Fachlich eingefärbte Spielerflächen und bewusst farbcodierte Elemente behalten ihre eigenen Ressourcen; ausgewählte Elemente ihre Auswahlfarben. Dialoge behalten ihre Dialogressourcen.
+- `NavigationBackground`: eigene Bottom-Navigationsfläche, unabhängig von Inhaltskarten.
 - `SelectedSurface`: tatsächlich ausgewählter Zustand.
 - `SurfaceSecondary`: leichte Fläche sekundärer Aktionen, keine weitere Kartenebene.
 

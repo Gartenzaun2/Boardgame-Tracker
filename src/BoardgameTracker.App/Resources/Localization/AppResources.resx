@@ -553,7 +553,7 @@
     <value>Königsblau</value>
   </data>
   <data name="ThemeDark" xml:space="preserve">
-    <value>Dunkel</value>
+    <value>Dark (Arche Nova)</value>
   </data>
   <data name="HistoryFilterSelectedFormat" xml:space="preserve">
     <value>✓ {0} ▾</value>

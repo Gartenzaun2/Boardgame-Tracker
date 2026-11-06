@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.10
+
+- Dunkel durch „Dark (Arche Nova)“ mit der verbindlichen Ark-Nova-Midnight-Palette ersetzt; Theme-ID 2 und Default erhalten.
+- Inhaltskarten appweit auf CardSurface/CardOutline umgestellt; helle Themes, fachliche Spielerfarben und bestehende Sonderrollen erhalten.
+
 ## 0.17.0.9
 
 - Arche-Nova-Einstellungen mit gemeinsamen flachen Einstellungsstyles gruppiert; Info- und Speicherverhalten erhalten.

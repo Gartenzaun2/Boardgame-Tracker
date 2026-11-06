@@ -365,7 +365,7 @@
 <data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
 <data name="ThemeDeepForest" xml:space="preserve"><value>Deep Forest</value></data>
 <data name="ThemeRoyalBlue" xml:space="preserve"><value>Königsblau</value></data>
-<data name="ThemeDark" xml:space="preserve"><value>Dunkel</value></data>
+<data name="ThemeDark" xml:space="preserve"><value>Dark (Arche Nova)</value></data>
 <data name="HistoryFilterSelectedFormat" xml:space="preserve"><value>✓ {0} ▾</value></data>
 <data name="HistoryFilterFormat" xml:space="preserve"><value>{0} ▾</value></data>
 <data name="ZooPlanSelected" xml:space="preserve"><value>Ausgewählt</value></data>

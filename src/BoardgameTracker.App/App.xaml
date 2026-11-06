@@ -139,8 +139,8 @@
             </Style>
 
             <Style x:Key="CardBorder" TargetType="Border">
-                <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-                <Setter Property="Stroke" Value="{DynamicResource Outline}" />
+                <Setter Property="BackgroundColor" Value="{DynamicResource CardSurface}" />
+                <Setter Property="Stroke" Value="{DynamicResource CardOutline}" />
                 <Setter Property="StrokeThickness" Value="1" />
                 <Setter Property="StrokeShape" Value="RoundRectangle 16" />
             </Style>
@@ -191,6 +191,7 @@
             </Style>
 
             <Style x:Key="SelectionDialog" TargetType="Border" BasedOn="{StaticResource CardBorder}">
+                <Setter Property="Stroke" Value="{DynamicResource Outline}" />
                 <Setter Property="BackgroundColor" Value="{DynamicResource AppBackground}" />
                 <Setter Property="Padding" Value="16" />
                 <Setter Property="MaximumWidthRequest" Value="520" />
