@@ -201,7 +201,7 @@ Ist irgendeine Session dieser Gruppe Running/Scoring, ist **Archivieren** nicht 
 
 Die Root-Seite bleibt flach und scrollt. Reihenfolge der deutlich hervorgehobenen Gruppen:
 
-1. **Allgemein**: **Sprache** (nur Deutsch) und **Darstellung** (bestehende Themes). Beide öffnen denselben App-Auswahldialog über rechtsbündige, 160 dp breite Lookup-Buttons.
+1. **Allgemein**: **Sprache** (nur Deutsch) und **Darstellung** (bestehende Themes). Beide öffnen denselben App-Auswahldialog über gemeinsame kompakte Lookup-Buttons mit Chevron nach unten.
 2. **Spiele**: genau ein navigierbarer Eintrag **Spiele verwalten** mit Chevron.
 3. **Über & Rechtliches**: nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)**, danach der Eintrag **Open-Source-Lizenzen** mit Chevron direkt zur bestehenden Lizenzübersicht.
 

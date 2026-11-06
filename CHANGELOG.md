@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.0.9
+
+- Arche-Nova-Einstellungen mit gemeinsamen flachen Einstellungsstyles gruppiert; Info- und Speicherverhalten erhalten.
+- Kompakte Auswahlbuttons für App-Sprache, Darstellung und Spielmaterialsprache mit integriertem Abwärts-Chevron vereinheitlicht; Seiteneinstiege mit rechtem Chevron gekennzeichnet.
+
 ## 0.17.0.8
 
 - Navigation mit grafischen Chevrons und getrennten Aktionen konsolidiert; Arche-Nova-Spezialkartenaktion mit weißem Kartenfächer versehen.

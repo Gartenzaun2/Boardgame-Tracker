@@ -49,6 +49,47 @@ public sealed class UxConsolidationTests
     }
 
     [Fact]
+    public void GameSettingsAreFlatAndRetainTheirBindingsInfoAndNavigationActions()
+    {
+        var page = AppPageHeaderTests.ReadPage("ArkNovaSettingsPage");
+        Assert.DoesNotContain(page.Descendants(), element => element.Name.LocalName == "Border");
+        Assert.Equal(new[] { "{Binding IsEnabled, Mode=OneWay}", "{Binding CaptureReputation}", "{Binding UseOldScoring}" },
+            page.Descendants().Where(element => element.Name.LocalName == "Switch").Select(element => (string?)element.Attribute("IsToggled")));
+        Assert.Contains(page.Descendants(), element => (string?)element.Attribute("Clicked") == "OnMaterialInfoClicked");
+        var material = Assert.Single(page.Descendants(), element => (string?)element.Attribute("Clicked") == "OnContentLanguageClicked");
+        Assert.Equal("{Binding SelectedContentLanguage.Name}", (string?)material.Attribute("Text"));
+        Assert.Equal("{StaticResource SettingsLookup}", (string?)material.Attribute("Style"));
+        foreach (string action in new[] { "OnSpecialCardsClicked", "OnPhotoDatasetClicked" })
+        {
+            var tap = Assert.Single(page.Descendants(), element => (string?)element.Attribute("Tapped") == action);
+            Assert.Contains(tap.Parent!.Parent!.Elements(), element => (string?)element.Attribute("Source") == "icon_chevron.png");
+        }
+        foreach (string screen in new[] { "AppSettingsPage", "ArkNovaSettingsPage" })
+        {
+            var document = AppPageHeaderTests.ReadPage(screen);
+            Assert.Contains(document.Descendants(), element => (string?)element.Attribute("Style") == "{StaticResource SettingsPageBody}");
+            Assert.Contains(document.Descendants(), element => (string?)element.Attribute("Style") == "{StaticResource SettingsContent}");
+        }
+    }
+
+    [Fact]
+    public void LookupArrowIsPartOfTheSharedButtonRatherThanASeparateTouchTarget()
+    {
+        using StreamReader reader = new(typeof(UxConsolidationTests).Assembly.GetManifestResourceStream("ThemeContract.App.xaml")!);
+        var styles = XDocument.Parse(reader.ReadToEnd());
+        XNamespace x = "http://schemas.microsoft.com/winfx/2009/xaml";
+        var lookup = Assert.Single(styles.Descendants(), element => (string?)element.Attribute(x + "Key") == "SettingsLookup");
+        Assert.Equal("Button", (string?)lookup.Attribute("TargetType"));
+        Assert.Contains(lookup.Elements(), setter => (string?)setter.Attribute("Property") == "ImageSource" && (string?)setter.Attribute("Value") == "icon_lookup_down.png");
+        Assert.Contains(lookup.Elements(), setter => (string?)setter.Attribute("Property") == "ContentLayout" && (string?)setter.Attribute("Value") == "Right,8");
+        foreach (string screen in new[] { "AppSettingsPage", "ArkNovaSettingsPage" })
+        {
+            var page = AppPageHeaderTests.ReadPage(screen);
+            Assert.DoesNotContain(page.Descendants(), element => (string?)element.Attribute("Source") == "icon_lookup_down.png");
+        }
+    }
+
+    [Fact]
     public void HistoryVisibilityDoesNotFilterTheTransferSnapshot()
     {
         string source = Resource("HistoryPage.xaml.cs");

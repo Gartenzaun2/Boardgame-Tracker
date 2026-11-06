@@ -86,7 +86,14 @@ Edit öffnet die bestehende historische Wertung mit **Korrektur speichern** und 
 
 Gemeinsamer Unterseitenheader mit Titel **Einstellungen** und Capsule **Arche Nova**; kein zusätzlicher Spielname im Titel.
 
-Erreichbar über **Einstellungen → Spiele verwalten → Arche Nova**, auch bei verborgenem Spiel. An erster Stelle steht **Spiel anzeigen**, mit sichtbarer Sperrbegründung bei offener Partie/Wertung. Danach bleiben **Ruf erfassen · Neue Wertung/Alte Wertung · Spielmaterial/Sprache + Info · Spezialkarten** sowie bestehende Debug-Einstellungen erhalten. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
+Erreichbar über **Einstellungen → Spiele verwalten → Arche Nova**, auch bei verborgenem Spiel. Die Seite ist flach und scrollt, mit den gemeinsamen Einstellungsstyles und folgenden Gruppen:
+
+1. **Allgemein**: **Spiel anzeigen**, mit sichtbarer Sperrbegründung bei offener Partie/Wertung.
+2. **Wertung**: **Ruf erfassen** und **Neue Wertung/Alte Wertung**, jeweils mit bestehendem Erklärungstext und Switch.
+3. **Spielmaterial**: bestehendes Info-Icon an der Gruppenüberschrift; darunter **Sprache** als gemeinsamer Lookup mit Chevron nach unten und die navigierbare **Spezialkartenverwaltung** mit rechtem Chevron.
+4. **Debug-Einstellungen**: bestehender Einstieg in die **CV-Datensammlung** mit rechtem Chevron.
+
+Es entstehen keine zusätzlichen Navigationsseiten; Werte, Auswahldialoge und Speicherverhalten bleiben erhalten. Der Sprachdialog zeigt aktuell nur **Deutsch**; `Nutzer` ist keine Sprachoption.
 
 Info bei Spielmaterial: „Betrifft nur sprachabhängiges Spielmaterial. Die App-Sprache bleibt unverändert.“
 
