@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.2.0
+
+- Globaler Architekturtest schützt die Spielmodulgrenzen in Core, Application und App einschließlich Modul-Ownership, Spielrouten und Spielidentitätsentscheidungen; öffentliche Modulregistrierung und gemeinsame Partial-Typen bleiben zulässig.
+
 ## 0.17.1.3
 
 - Königsblau durch TFM (hell) mit Polar-Mars-/Balanced-Copper-Palette ersetzt; interne Theme-ID 1, Default und übrige Paletten erhalten.

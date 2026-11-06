@@ -63,17 +63,3 @@ Buildverzeichnisse und native Bibliotheken direkt ein.
 Wenn die spielabhängige Buildkonfiguration weiter wächst, soll sie in eine
 modul-eigene importierte Builddatei unter `Games/ArkNova/` ausgelagert werden,
 damit die allgemeine Projektdatei übersichtlich bleibt.
-
-### Globaler Architekturtest für Spielmodulgrenzen
-
-**Status:** offen
-
-Die vorhandenen Architekturtests schützen bereits einzelne Grenzen, insbesondere
-allgemeine Gruppenverträge und allgemeine Group-UI vor konkreten Spieltypen. Ein
-repositoryweiter Schutz aller allgemeinen App-/Application-Bereiche vor
-`Games.<ConcreteGame>`-Abhängigkeiten fehlt jedoch noch.
-
-**Ziel:** Einen kleinen Architekturtest ergänzen, der die allgemeine
-`Games/<GameName>/`-Ownership projektweit schützt und dabei erlaubte
-Integrationspunkte wie Composition Root, Host-Projektdatei und technisch notwendige
-Partial-Type-Erweiterungen ausdrücklich berücksichtigt.
