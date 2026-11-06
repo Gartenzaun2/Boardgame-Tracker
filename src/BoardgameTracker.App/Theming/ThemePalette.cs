@@ -9,6 +9,7 @@ public static class ThemePalette
     {
         AppTheme.RoyalBlue => RoyalBlue,
         AppTheme.Dark => Dark,
+        AppTheme.DarkTfm => DarkTfm,
         _ => DeepForest
     };
     private static readonly IReadOnlyDictionary<string, string> DeepForest = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
@@ -109,5 +110,38 @@ public static class ThemePalette
         ["BusyIndicator"] = "#FFFFFF",
         ["GameContextText"] = "#678AB8",
         ["GameContextBorder"] = "#678AB8",
+    });
+    private static readonly IReadOnlyDictionary<string, string> DarkTfm = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+    {
+        ["AppBackground"] = "#141214",
+        ["Surface"] = "#231C1D",
+        ["CardSurface"] = "#482A2B",
+        ["CardOutline"] = "#80504A",
+        ["SurfaceSecondary"] = "#2B2223",
+        ["Primary"] = "#B97849",
+        ["PrimaryPressed"] = "#AF7047",
+        ["PrimaryForeground"] = "#1C130F",
+        ["SelectedSurface"] = "#5A3332",
+        ["SelectedBorder"] = "#D09464",
+        ["TextPrimary"] = "#F5EEE8",
+        ["TextSecondary"] = "#D3BEB5",
+        ["Outline"] = "#4C3A36",
+        ["NavigationBackground"] = "#1A1516",
+        ["NavigationText"] = "#B8AAA2",
+        ["NavigationSelectedSurface"] = "#5A3332",
+        ["NavigationSelectedText"] = "#FFF7F1",
+        ["RecognitionHigh"] = "#8CD9A3",
+        ["RecognitionMedium"] = "#F5D45E",
+        ["Danger"] = "#FFB4AB",
+        ["DangerSurface"] = "#5F2423",
+        ["DisabledSurface"] = "#231C1D",
+        ["DisabledText"] = "#D3BEB5",
+        ["ModalOverlay"] = "#66000000",
+        ["BusyOverlay"] = "#99000000",
+        ["IconSurface"] = "#EEF5F1",
+        ["GameGraphicText"] = "#101713",
+        ["BusyIndicator"] = "#FFFFFF",
+        ["GameContextText"] = "#D8AA87",
+        ["GameContextBorder"] = "#D8AA87",
     });
 }

@@ -31,7 +31,7 @@ public partial class AppSettingsPage : ContentPage
         RefreshSelections();
     }
 
-    private string[] ThemeNames => [AppResources.ThemeDeepForest, AppResources.ThemeRoyalBlue, AppResources.ThemeDark];
+    private string[] ThemeNames => [AppResources.ThemeDeepForest, AppResources.ThemeRoyalBlue, AppResources.ThemeDark, AppResources.ThemeDarkTfm];
 
     private void RefreshSelections()
     {

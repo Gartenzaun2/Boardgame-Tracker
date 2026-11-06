@@ -10,6 +10,7 @@ public sealed class ThemeTests
     [InlineData(0, AppTheme.DeepForest)]
     [InlineData(1, AppTheme.RoyalBlue)]
     [InlineData(2, AppTheme.Dark)]
+    [InlineData(3, AppTheme.DarkTfm)]
     [InlineData(99, AppTheme.Dark)]
     public void StoredSelection_UsesDefaultForUnknownValues(int? stored, AppTheme expected)
         => Assert.Equal(expected, AppThemeSelection.FromStoredValue(stored));
@@ -27,6 +28,7 @@ public sealed class ThemeTests
     [InlineData(AppTheme.DeepForest)]
     [InlineData(AppTheme.RoyalBlue)]
     [InlineData(AppTheme.Dark)]
+    [InlineData(AppTheme.DarkTfm)]
     public void Palettes_HaveSameRolesAndReadableText(AppTheme theme)
     {
         var palette = ThemePalette.Get(theme);
@@ -60,7 +62,10 @@ public sealed class ThemeTests
         else
         {
             Assert.Equal(palette["Surface"], palette["DisabledSurface"]);
-            Assert.Equal(palette["Surface"], palette["NavigationBackground"]);
+            if (theme == AppTheme.DarkTfm)
+                Assert.NotEqual(palette["Surface"], palette["NavigationBackground"]);
+            else
+                Assert.Equal(palette["Surface"], palette["NavigationBackground"]);
         }
         Assert.True(Contrast(palette["GameGraphicText"], "#FFFFFF") >= 4.5);
     }
@@ -68,6 +73,7 @@ public sealed class ThemeTests
     [InlineData(AppTheme.DeepForest)]
     [InlineData(AppTheme.RoyalBlue)]
     [InlineData(AppTheme.Dark)]
+    [InlineData(AppTheme.DarkTfm)]
     public void SegmentStatesUseReadablePairedColorsWithoutDisabledFading(AppTheme theme)
     {
         var document = ReadStyles();
@@ -141,6 +147,7 @@ public sealed class ThemeTests
     [InlineData(AppTheme.DeepForest)]
     [InlineData(AppTheme.RoyalBlue)]
     [InlineData(AppTheme.Dark)]
+    [InlineData(AppTheme.DarkTfm)]
     public void ActiveSessionImagesUseReadableThemeTintAndKeepTheirOwnSymbol(AppTheme theme)
     {
         foreach (string page in new[] { "GamesPage", "GroupListPage" })
@@ -234,7 +241,8 @@ public sealed class ThemeTests
     [Fact]
     public void ThemeIdentityAndCentralCardResourcesRemainSemantic()
     {
-        Assert.Equal(3, Enum.GetValues<AppTheme>().Length);
+        Assert.Equal(4, Enum.GetValues<AppTheme>().Length);
+        Assert.Equal(3, (int)AppTheme.DarkTfm);
         Assert.Equal(2, (int)AppTheme.Dark);
         Assert.Equal(AppTheme.Dark, AppNavigationSettings.Default.Theme);
         Assert.Equal("Dark (Arche Nova)", BoardgameTracker.App.Resources.Localization.AppResources.ThemeDark);
@@ -246,6 +254,39 @@ public sealed class ThemeTests
         Assert.Contains(dialog.Elements(), element => (string?)element.Attribute("Property") == "BackgroundColor" && (string?)element.Attribute("Value") == "{DynamicResource AppBackground}");
         Assert.Contains(dialog.Elements(), element => (string?)element.Attribute("Property") == "Stroke" && (string?)element.Attribute("Value") == "{DynamicResource Outline}");
     }
+
+    [Theory]
+    [InlineData("AppBackground", "#141214")]
+    [InlineData("Surface", "#231C1D")]
+    [InlineData("CardSurface", "#482A2B")]
+    [InlineData("CardOutline", "#80504A")]
+    [InlineData("SurfaceSecondary", "#2B2223")]
+    [InlineData("Primary", "#B97849")]
+    [InlineData("PrimaryPressed", "#AF7047")]
+    [InlineData("PrimaryForeground", "#1C130F")]
+    [InlineData("SelectedSurface", "#5A3332")]
+    [InlineData("SelectedBorder", "#D09464")]
+    [InlineData("TextPrimary", "#F5EEE8")]
+    [InlineData("TextSecondary", "#D3BEB5")]
+    [InlineData("Outline", "#4C3A36")]
+    [InlineData("NavigationBackground", "#1A1516")]
+    [InlineData("NavigationText", "#B8AAA2")]
+    [InlineData("NavigationSelectedSurface", "#5A3332")]
+    [InlineData("NavigationSelectedText", "#FFF7F1")]
+    [InlineData("RecognitionHigh", "#8CD9A3")]
+    [InlineData("RecognitionMedium", "#F5D45E")]
+    [InlineData("Danger", "#FFB4AB")]
+    [InlineData("DangerSurface", "#5F2423")]
+    [InlineData("DisabledSurface", "#231C1D")]
+    [InlineData("DisabledText", "#D3BEB5")]
+    [InlineData("ModalOverlay", "#66000000")]
+    [InlineData("BusyOverlay", "#99000000")]
+    [InlineData("IconSurface", "#EEF5F1")]
+    [InlineData("GameGraphicText", "#101713")]
+    [InlineData("BusyIndicator", "#FFFFFF")]
+    [InlineData("GameContextText", "#D8AA87")]
+    [InlineData("GameContextBorder", "#D8AA87")]
+    public void TfmUsesApprovedPalette(string role, string color) => Assert.Equal(color, ThemePalette.Get(AppTheme.DarkTfm)[role]);
 
     private static System.Xml.Linq.XDocument ReadStyles()
     {

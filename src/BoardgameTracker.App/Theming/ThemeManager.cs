@@ -8,7 +8,7 @@ public sealed class ThemeManager(IAppNavigationSettingsStore settings)
     {
         theme = AppThemeSelection.FromStoredValue((int)theme);
         var app = Microsoft.Maui.Controls.Application.Current!;
-        app.UserAppTheme = theme == Theme.Dark ? Microsoft.Maui.ApplicationModel.AppTheme.Dark : Microsoft.Maui.ApplicationModel.AppTheme.Light;
+        app.UserAppTheme = theme is Theme.Dark or Theme.DarkTfm ? Microsoft.Maui.ApplicationModel.AppTheme.Dark : Microsoft.Maui.ApplicationModel.AppTheme.Light;
         foreach (var token in ThemePalette.Get(theme)) app.Resources[token.Key] = Color.FromArgb(token.Value);
         if (persist) settings.Save(settings.Get() with { Theme = theme });
     }

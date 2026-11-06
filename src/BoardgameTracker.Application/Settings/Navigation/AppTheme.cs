@@ -4,7 +4,8 @@ public enum AppTheme
 {
     DeepForest = 0,
     RoyalBlue = 1,
-    Dark = 2
+    Dark = 2,
+    DarkTfm = 3
 }
 
 public static class AppThemeSelection

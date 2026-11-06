@@ -422,6 +422,7 @@ public static string ScoringSecondaryValuesFormat => GetString(nameof(ScoringSec
     public static string AppearanceTheme => GetString(nameof(AppearanceTheme));
     public static string ThemeDeepForest => GetString(nameof(ThemeDeepForest));
     public static string ThemeRoyalBlue => GetString(nameof(ThemeRoyalBlue));
+    public static string ThemeDarkTfm => GetString(nameof(ThemeDarkTfm));
     public static string ThemeDark => GetString(nameof(ThemeDark));
     public static string HistoryFilterSelectedFormat => GetString(nameof(HistoryFilterSelectedFormat));
     public static string HistoryFilterFormat => GetString(nameof(HistoryFilterFormat));

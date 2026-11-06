@@ -24,6 +24,7 @@ Themes:
 Deep Forest
 Königsblau
 Dark (Arche Nova)
+Dark (TFM)
 ```
 
 **Dark (Arche Nova) ist der Default**, wenn keine gültige Auswahl gespeichert ist. Eine
@@ -66,43 +67,45 @@ ausschließlich tatsächlichen blockierenden Busy-/Ladezuständen vorbehalten.
 
 ## 3. Paletten
 
-| Rolle | Deep Forest | Königsblau | Dark (Arche Nova) |
-|---|---|---|---|
-| AppBackground | `#D9E6DF` | `#DCE5F4` | `#101A1B` |
-| Surface | `#FFFFFF` | `#FFFFFF` | `#1B2B30` |
-| CardSurface | `#FFFFFF` | `#FFFFFF` | `#263D49` |
-| CardOutline | `#B8CAC0` | `#BCCAE1` | `#426070` |
-| SurfaceSecondary | `#EEF5F1` | `#EEF3FB` | `#213B37` |
-| Primary | `#466655` | `#315B9B` | `#70A98E` |
-| PrimaryPressed | `#385346` | `#274A80` | `#61977E` |
-| PrimaryForeground | `#FFFFFF` | `#FFFFFF` | `#10251C` |
-| SelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` |
-| SelectedBorder | `#789A85` | `#708EBE` | `#729B87` |
-| TextPrimary | `#263D31` | `#18386A` | `#F0F5F6` |
-| TextSecondary | `#68776F` | `#66758E` | `#C0D0D7` |
-| Outline | `#B8CAC0` | `#BCCAE1` | `#354A49` |
-| NavigationBackground | `#FFFFFF` | `#FFFFFF` | `#172326` |
-| NavigationText | `#68776F` | `#65748D` | `#AEBBB4` |
-| NavigationSelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` |
-| NavigationSelectedText | `#263D31` | `#18386A` | `#F0F5F6` |
-| Danger | `#B3261E` | `#B3261E` | `#FFB4AB` |
-| DangerSurface | `#F9DEDC` | `#F9DEDC` | `#5F2423` |
-| DisabledSurface | `#FFFFFF` | `#FFFFFF` | `#222A26` |
-| DisabledText | `#263D31` | `#18386A` | `#F0F4F1` |
-| BusyOverlay | `#99000000` | `#99000000` | `#99000000` |
-| ModalOverlay | `#66000000` | `#66000000` | `#66000000` |
-| IconSurface | `#EEF5F1` | `#EEF3FB` | `#EEF5F1` |
-| GameGraphicText | `#101713` | `#101713` | `#101713` |
-| BusyIndicator | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` |
-| RecognitionHigh | `#256A37` | `#256A37` | `#8CD9A3` |
-| RecognitionMedium | `#806000` | `#806000` | `#F5D45E` |
-| GameContextText | `#176B80` | `#704089` | `#678AB8` |
-| GameContextBorder | `#176B80` | `#704089` | `#678AB8` |
+| Rolle | Deep Forest | Königsblau | Dark (Arche Nova) | Dark (TFM) |
+|---|---|---|---|---|
+| AppBackground | `#D9E6DF` | `#DCE5F4` | `#101A1B` | `#141214` |
+| Surface | `#FFFFFF` | `#FFFFFF` | `#1B2B30` | `#231C1D` |
+| CardSurface | `#FFFFFF` | `#FFFFFF` | `#263D49` | `#482A2B` |
+| CardOutline | `#B8CAC0` | `#BCCAE1` | `#426070` | `#80504A` |
+| SurfaceSecondary | `#EEF5F1` | `#EEF3FB` | `#213B37` | `#2B2223` |
+| Primary | `#466655` | `#315B9B` | `#70A98E` | `#B97849` |
+| PrimaryPressed | `#385346` | `#274A80` | `#61977E` | `#AF7047` |
+| PrimaryForeground | `#FFFFFF` | `#FFFFFF` | `#10251C` | `#1C130F` |
+| SelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` | `#5A3332` |
+| SelectedBorder | `#789A85` | `#708EBE` | `#729B87` | `#D09464` |
+| TextPrimary | `#263D31` | `#18386A` | `#F0F5F6` | `#F5EEE8` |
+| TextSecondary | `#68776F` | `#66758E` | `#C0D0D7` | `#D3BEB5` |
+| Outline | `#B8CAC0` | `#BCCAE1` | `#354A49` | `#4C3A36` |
+| NavigationBackground | `#FFFFFF` | `#FFFFFF` | `#172326` | `#1A1516` |
+| NavigationText | `#68776F` | `#65748D` | `#AEBBB4` | `#B8AAA2` |
+| NavigationSelectedSurface | `#C7DCCF` | `#C8D8F1` | `#34594E` | `#5A3332` |
+| NavigationSelectedText | `#263D31` | `#18386A` | `#F0F5F6` | `#FFF7F1` |
+| Danger | `#B3261E` | `#B3261E` | `#FFB4AB` | `#FFB4AB` |
+| DangerSurface | `#F9DEDC` | `#F9DEDC` | `#5F2423` | `#5F2423` |
+| DisabledSurface | `#FFFFFF` | `#FFFFFF` | `#222A26` | `#231C1D` |
+| DisabledText | `#263D31` | `#18386A` | `#F0F4F1` | `#D3BEB5` |
+| BusyOverlay | `#99000000` | `#99000000` | `#99000000` | `#99000000` |
+| ModalOverlay | `#66000000` | `#66000000` | `#66000000` | `#66000000` |
+| IconSurface | `#EEF5F1` | `#EEF3FB` | `#EEF5F1` | `#EEF5F1` |
+| GameGraphicText | `#101713` | `#101713` | `#101713` | `#101713` |
+| BusyIndicator | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` | `#FFFFFF` |
+| RecognitionHigh | `#256A37` | `#256A37` | `#8CD9A3` | `#8CD9A3` |
+| RecognitionMedium | `#806000` | `#806000` | `#F5D45E` | `#F5D45E` |
+| GameContextText | `#176B80` | `#704089` | `#678AB8` | `#D8AA87` |
+| GameContextBorder | `#176B80` | `#704089` | `#678AB8` | `#D8AA87` |
 
 Die Spielkontext-Capsule verwendet in jedem Theme eine bewusst eigenständige Akzentfarbe, die nicht einfach die allgemeine `Primary`- oder `SelectedBorder`-Farbe übernimmt: Petrolblau (`#176B80`) in Deep Forest, Aubergine (`#704089`) in Königsblau und dezentes Blau (`#678AB8`) in Dark (Arche Nova). `GameContextText` und `GameContextBorder` verwenden innerhalb eines Themes denselben Farbwert. Diese semantischen Rollen dienen der nicht-interaktiven Spielkennzeichnung und dürfen nicht als Auswahlzustand interpretiert werden.
 
 Deep Forest bleibt ruhig/natürlich ohne beige Zusatzflächen; Königsblau ist das
-kühlere helle Theme. Dark (Arche Nova) verwendet die Farbwelt **Ark Nova Midnight**: dunkelgrünliche Grundfläche, blaugraue Inhaltskarten und gedämpftes Salbeigrün für Hauptaktionen. Seine gespeicherte Identität bleibt `AppTheme.Dark = 2`; es entstehen keine zusätzliche Theme-Auswahl und keine Migration. Nicht neu festgelegte Sonderrollen behalten ihre bisherigen Werte.
+kühlere helle Theme. Dark (Arche Nova) verwendet die Farbwelt **Ark Nova Midnight**: dunkelgrünliche Grundfläche, blaugraue Inhaltskarten und gedämpftes Salbeigrün für Hauptaktionen. Seine gespeicherte Identität bleibt `AppTheme.Dark = 2`; diese Identität bleibt auch mit dem zusätzlichen Theme unverändert; eine Migration ist nicht erforderlich. Nicht neu festgelegte Sonderrollen behalten ihre bisherigen Werte.
+
+Dark (TFM) verwendet Terraforming Mars Dark – Marsrot V2 und die gespeicherte ID `DarkTfm = 3`. Basalt-Hintergrund, marsrote Karten und kupferne Aktionen bleiben über eigene semantische Rollen von Navigation und Auswahl getrennt. Beide Dark-Themes verwenden den nativen Dark-Modus. Die Theme-Auswahl gilt appweit und unabhängig vom ausgewählten Spiel.
 
 ## 4. Flächen und Formulare
 
