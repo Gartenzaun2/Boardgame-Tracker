@@ -40,18 +40,6 @@ gespeicherte Nutzerauswahlen erhalten.
 
 ## Architektur
 
-### Spielmodulgrenze in allgemeinen App-Features
-
-**Status:** offen
-
-`src/BoardgameTracker.App/Features/Games/ListGames/GamesPage.xaml.cs` kennt aktuell
-`ArkNovaGame` direkt und besitzt einen konkreten `OnArkNovaTapped`-Pfad.
-
-**Ziel:** Das allgemeine Games-Feature darf keine konkrete Spielabhängigkeit
-besitzen. Spielkatalog/Navigation sollen über eine allgemeine Registrierung oder
-ein kleines allgemeines Read Model erfolgen; die konkrete Ark-Nova-Implementierung
-bleibt im Spielmodul.
-
 ### Ark-Nova-Buildverdrahtung in der allgemeinen App-Projektdatei
 
 **Status:** beobachten / bei weiterem Wachstum auslagern
