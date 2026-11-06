@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.1.2
+
+- Deep Forest durch Arche Nova (hell) mit Lagoon-Blue-/Natural-Leaf-Palette ersetzt; Dark-Themes in Arche Nova (Dunkel) und TFM (Dunkel) umbenannt. Gespeicherte IDs und Default erhalten.
+
 ## 0.17.1.1
 
 - Dark (TFM) als viertes Theme mit Marsrot-V2-Palette und nativer Dark-Integration ergänzt; bestehende Theme-IDs und Default erhalten.

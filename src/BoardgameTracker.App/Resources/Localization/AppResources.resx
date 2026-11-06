@@ -547,13 +547,13 @@
     <value>Darstellung</value>
   </data>
   <data name="ThemeDeepForest" xml:space="preserve">
-    <value>Deep Forest</value>
+    <value>Arche Nova (hell)</value>
   </data>
   <data name="ThemeRoyalBlue" xml:space="preserve">
     <value>Königsblau</value>
   </data>
   <data name="ThemeDark" xml:space="preserve">
-    <value>Dark (Arche Nova)</value>
+    <value>Arche Nova (Dunkel)</value>
   </data>
   <data name="HistoryFilterSelectedFormat" xml:space="preserve">
     <value>✓ {0} ▾</value>
@@ -910,5 +910,5 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ShowGame" xml:space="preserve"><value>Spiel anzeigen</value></data>
   <data name="GameSettingsUnavailable" xml:space="preserve"><value>Für dieses Spiel sind keine Einstellungen registriert.</value></data>
   <data name="ExportHiddenGamesHint" xml:space="preserve"><value>Der Export enthält auch ausgeblendete Spiele.</value></data>
-  <data name="ThemeDarkTfm" xml:space="preserve"><value>Dark (TFM)</value></data>
+  <data name="ThemeDarkTfm" xml:space="preserve"><value>TFM (Dunkel)</value></data>
 </root>

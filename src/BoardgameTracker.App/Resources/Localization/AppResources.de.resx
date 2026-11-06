@@ -363,9 +363,9 @@
 <data name="ResolveTiesHint" xml:space="preserve"><value>Bei Gleichstand kannst du die beteiligten Spieler zwischen den verfügbaren Platzgruppen verschieben. Mehrere Spieler dürfen weiterhin denselben Platz belegen. Die Auswahl ändert nur diesen Spieler; andere Gleichstände bleiben unverändert.</value></data>
 <data name="SaveScoring" xml:space="preserve"><value>Wertung speichern</value></data>
 <data name="AppearanceTheme" xml:space="preserve"><value>Darstellung</value></data>
-<data name="ThemeDeepForest" xml:space="preserve"><value>Deep Forest</value></data>
+<data name="ThemeDeepForest" xml:space="preserve"><value>Arche Nova (hell)</value></data>
 <data name="ThemeRoyalBlue" xml:space="preserve"><value>Königsblau</value></data>
-<data name="ThemeDark" xml:space="preserve"><value>Dark (Arche Nova)</value></data>
+<data name="ThemeDark" xml:space="preserve"><value>Arche Nova (Dunkel)</value></data>
 <data name="HistoryFilterSelectedFormat" xml:space="preserve"><value>✓ {0} ▾</value></data>
 <data name="HistoryFilterFormat" xml:space="preserve"><value>{0} ▾</value></data>
 <data name="ZooPlanSelected" xml:space="preserve"><value>Ausgewählt</value></data>
@@ -534,5 +534,5 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameDisableBlocked" xml:space="preserve"><value>Dieses Spiel bleibt aktiviert, solange eine Partie oder Wertung offen ist.</value></data>
   <data name="MyGamesLoadFailed" xml:space="preserve"><value>Die Spieleinstellungen konnten nicht geladen werden.</value></data>
   <data name="GameActivationSaveFailed" xml:space="preserve"><value>Die Aktivierung konnte nicht gespeichert werden. Bitte erneut versuchen.</value></data>
-  <data name="ThemeDarkTfm" xml:space="preserve"><value>Dark (TFM)</value></data>
+  <data name="ThemeDarkTfm" xml:space="preserve"><value>TFM (Dunkel)</value></data>
 </root>
