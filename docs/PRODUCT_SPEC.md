@@ -22,6 +22,8 @@ Bei appweit **null Spielern** startet die App ohne Onboarding-Wizard in **Mitspi
 
 Eine Gruppe ist eine appweit wiederverwendbare Identität mit festem Mitgliedersatz, globaler Default-Reihenfolge, Namen und Archivstatus. Sie kann mit **null bis beliebig vielen** Spielen verknüpft sein. Ein temporärer Gruppenstatus entfällt.
 
+Eine Gruppe darf einem Spiel nur zugeordnet werden, wenn ihre tatsächliche Mitgliederzahl dessen maximale Spieleranzahl nicht überschreitet. Diese Regel wird zentral beim Speichern jeder neuen Zuordnung durchgesetzt, einschließlich Übernahme, Reaktivierung und Import; ein Verstoß lässt keine teilweise Speicherung zu. Größere Gruppen dürfen ohne diese Zuordnung existieren. Integrierte Spiele definieren ein festes, nicht konfigurierbares Limit im Modul. Künftige manuell angelegte Spiele sollen das Limit bei Erstellung festlegen und zunächst unveränderlich halten.
+
 Eine andere Spielerzusammensetzung benötigt eine neue Gruppe. Spielmodule dürfen optional spielabhängige Gruppendefaults ergänzen, ohne allgemeine Gruppendaten zu duplizieren.
 
 **Eine Gruppe mit mindestens einer offenen Partie oder Wertung (Running/Scoring) in irgendeinem Spiel darf nicht archiviert werden.** Abgeschlossene Partien verhindern eine Archivierung nicht. Spielzuordnungen dürfen entfernt werden, solange für die konkrete Gruppe-Spiel-Kombination keine offene Partie/Wertung besteht; die Historie bleibt erhalten.
@@ -66,7 +68,7 @@ Die Spieleübersicht sortiert zunächst Spiele mit offener Session/Wertung, dann
 
 Die Gruppenübersicht eines Spiels zeigt nur **aktive und diesem Spiel zugeordnete** Gruppen. Sie sortiert zuerst Gruppen mit offener Session/Wertung dieser Spiel-Gruppe-Kombination, dann nach der zuletzt gestarteten Partie in diesem Spiel; Gruppen ohne entsprechende Partie folgen zuletzt. Tap auf eine Gruppe setzt die offene Partie/Wertung fort oder öffnet die Vorbereitung.
 
-Unten stehen **Neue Gruppe** (links, Secondary) und **Vorhandene auswählen** (rechts, Primary). Die zweite Aktion öffnet eine Auswahl aktiver, dem Spiel noch nicht zugeordneter Gruppen. Tap fügt die Spielzuordnung hinzu und öffnet **ohne weitere Bestätigung direkt die Vorbereitung**. Ein Abbruch der Vorbereitung entfernt die bereits gespeicherte Zuordnung nicht. Sind keine geeigneten Gruppen vorhanden, ist diese Aktion deaktiviert.
+Unten stehen **Neue Gruppe** (links, Secondary) und **Vorhandene auswählen** (rechts, Primary). Die zweite Aktion öffnet eine Auswahl aktiver, dem Spiel noch nicht zugeordneter Gruppen innerhalb seines Spielerlimits. Tap fügt die Spielzuordnung hinzu und öffnet **ohne weitere Bestätigung direkt die Vorbereitung**. Ein Abbruch der Vorbereitung entfernt die bereits gespeicherte Zuordnung nicht. Sind keine geeigneten Gruppen vorhanden, ist diese Aktion deaktiviert.
 
 Echte globale Leerzustände dürfen einen kurzen sichtbaren Einstiegshinweis haben:
 - bei null Spielern verweist er auf die Spieleranlage; Gruppenaktionen bleiben deaktiviert;
@@ -78,7 +80,7 @@ Existieren bereits Gruppen, aber keine für dieses Spiel zugeordnete, erscheint 
 
 Unter **Mitspieler** werden die beiden Segmente **Spieler** und **Gruppen** verwaltet; es gibt dort keine Spielstartaktionen. Gruppen werden nur über die separate Bearbeiten-Aktion editiert. In der Gruppenverwaltung werden archivierte Gruppen optional angezeigt.
 
-Das Gruppenformular enthält in dieser Reihenfolge: **Name → feste Mitglieder mit Reihenfolge → vorhandene/neue Spieler hinzufügen → Spielezuordnungen**. Neue Spieler können im selben Entwurf mit Name und Gaststatus ergänzt werden. Bereits enthaltene Spieler werden nicht erneut angeboten.
+Das Gruppenformular enthält in dieser Reihenfolge: **Name → feste Mitglieder mit Reihenfolge → vorhandene/neue Spieler hinzufügen → Spielezuordnungen**. Neue Spieler können im selben Entwurf mit Name und Gaststatus ergänzt werden. Bereits enthaltene Spieler werden nicht erneut angeboten. Spielauswahlen bieten nur Spiele für die aktuelle Mitgliederzahl an. Wird ein bereits gewähltes Spiel durch zusätzliche Mitglieder ungeeignet, bleibt die Auswahl sichtbar und der ungültige Entwurf wird mit lokalisierter Fehlermeldung vom Speichern ausgeschlossen.
 
 Aus **Spielen → Spiel → Neue Gruppe** ist das aktuelle Spiel vorausgewählt. Nach Speichern oder Übernehmen einer vorhandenen Gruppe öffnet direkt die Vorbereitung dieses Spiels. Aus **Mitspieler → Gruppen** ist keine Spielzuordnung vorausgewählt und eine Gruppe ohne Zuordnung zulässig; nach Speichern/Übernehmen erfolgt die Rückkehr zur Gruppenverwaltung.
 

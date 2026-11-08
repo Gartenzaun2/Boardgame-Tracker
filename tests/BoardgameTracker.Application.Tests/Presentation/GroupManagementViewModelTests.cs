@@ -38,6 +38,39 @@ public sealed class GroupManagementViewModelTests
     }
 
     [Fact]
+    public async Task GrowingDraft_FiltersGamesAndBlocksSelectedGameUntilMembershipFits()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        CreateGroupViewModel vm = Draft(db, management: false);
+        await vm.LoadAsync(Token);
+        vm.GroupName = "Large draft";
+        for (int index = 1; index <= 5; index++)
+        {
+            vm.NewPlayerName = "Draft" + index;
+            vm.AddNewPlayerCommand.Execute(null);
+        }
+        Assert.Empty(vm.AvailableGames);
+        Assert.Single(vm.SelectedGames);
+        Assert.True(vm.HasError);
+        await vm.SaveCommand.ExecuteAsync(null);
+        Assert.Equal(BoardgameTracker.App.Resources.Localization.AppResources.GroupPlayerLimitExceeded, vm.ErrorMessage);
+        await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
+        {
+            Assert.Equal(2, await verify.Players.CountAsync(Token));
+            Assert.Single(await verify.Groups.ToArrayAsync(Token));
+        }
+        vm.RemoveGameCommand.Execute(vm.SelectedGames.Single());
+        Assert.Empty(vm.AvailableGames);
+        vm.RemovePlayerCommand.Execute(vm.Players.Last());
+        Assert.Single(vm.AvailableGames);
+        vm.AddGameCommand.Execute(vm.AvailableGames.Single());
+        await vm.SaveCommand.ExecuteAsync(null);
+        Assert.False(vm.HasError);
+        await using BoardgameTrackerDbContext saved = db.CreateDbContext();
+        Assert.Single(await saved.GroupGames.ToArrayAsync(Token));
+    }
+
+    [Fact]
     public async Task HiddenGameIsAbsentFromSelectionsButItsAssignmentSurvivesEditingAndReactivation()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();

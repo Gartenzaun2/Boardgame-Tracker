@@ -74,6 +74,7 @@ Invarianten:
 - Mitgliedermenge einer bestehenden Group bleibt fest;
 - je Gruppe null bis beliebig viele explizite Spielzuordnungen;
 - jede Gruppe-Spiel-Kombination höchstens einmal;
+- neue Zuordnungen nur bei Mitgliederzahl innerhalb des maximalen Spielerlimits; Prüfung vor dem Speichern anhand persistierter und im selben Vorgang neu angelegter Mitgliedschaften;
 - Archivierung von `Group` nur, wenn in **keinem** Spiel eine `GameSession` dieser Gruppe `Running` oder `Scoring` ist;
 - Entfernen von `GroupGame` nur, wenn für genau dieses Paar keine offene `GameSession` existiert.
 
@@ -95,6 +96,7 @@ Game
 
 `Key` ist sprachneutral, eindeutig und maximal 100 Zeichen. Anzeigenamen und explizite kompakte Badge-Texte sind keine
 Identität und werden als registrierte Spielmetadaten statt in `Game` gespeichert.
+Das unveränderliche maximale Spielerlimit integrierter Spiele ist Modulmetadatum im allgemeinen Vertrag `GamePlayerLimit`; es wird nicht zusätzlich in der Datenbank gespeichert.
 Aktive/deaktivierte Spiele sind Host-Preferences und keine Game-Domainfelder.
 
 ## 6. GameSession

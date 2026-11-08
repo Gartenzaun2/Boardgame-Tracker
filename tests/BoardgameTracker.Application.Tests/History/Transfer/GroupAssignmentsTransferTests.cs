@@ -167,6 +167,36 @@ public sealed class GroupAssignmentsTransferTests
         await Assert.ThrowsAsync<JsonException>(() => database.Format.ReadAsync(stream, Token));
     }
 
+    [Fact]
+    public async Task Import_RejectsOversizedNewGroupWithoutPersistingAnyRows()
+    {
+        await using Database database = await Database.CreateAsync();
+        BgtFile file = CreateFile();
+        BgtPlayer[] players = Enumerable.Range(1, 9)
+            .Select(index => new BgtPlayer(Guid.NewGuid(), "Import" + index, false, false, DateTimeOffset.UtcNow)).ToArray();
+        BgtGroup group = file.Groups.Single() with
+        {
+            GroupPlayers = players.Select((player, index) => new BgtGroupPlayer(player.Id, index + 1)).ToArray()
+        };
+        file = file with
+        {
+            Players = players,
+            Groups = [group],
+            GameSessions = file.GameSessions.Select(session => session with
+            {
+                Players = players.Take(2).Select((player, index) => new BgtGameSessionPlayer(player.Id, index + 1, 1)).ToArray()
+            }).ToArray()
+        };
+        ImportPlan plan = ImportPlanner.Analyze(file, await database.Store.ReadSnapshotAsync(Token));
+        await Assert.ThrowsAsync<BoardgameTracker.Application.Groups.GroupPlayerLimitExceededException>(() =>
+            database.Store.CommitAsync(plan, Token));
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.Empty(await verify.Players.ToArrayAsync(Token));
+        Assert.Empty(await verify.Groups.ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
+        Assert.Empty(await verify.GameSessions.ToArrayAsync(Token));
+    }
+
     private static BgtFile CreateFile(bool legacyTemporary = false)
     {
         BgtPlayer[] players = [new(Guid.NewGuid(), "First", false, false, DateTimeOffset.UtcNow),
@@ -188,7 +218,7 @@ public sealed class GroupAssignmentsTransferTests
         public HistoryTransferPersistence Store => new(this, Modules);
         public BgtFormat Format => new(Modules);
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
         public static async Task<Database> CreateAsync(bool failImport = false)
         {
             Database database = new(failImport);

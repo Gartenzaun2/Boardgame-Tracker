@@ -9,6 +9,7 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string GroupPlayerLimitExceeded => GetString(nameof(GroupPlayerLimitExceeded));
     public static string SettingsGeneral => GetString(nameof(SettingsGeneral));
     public static string AppLanguage => GetString(nameof(AppLanguage));
     public static string ShowGame => GetString(nameof(ShowGame));

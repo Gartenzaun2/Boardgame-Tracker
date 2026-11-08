@@ -1,3 +1,6 @@
+using BoardgameTracker.Application.Groups;
+using BoardgameTracker.App.Resources.Localization;
+
 namespace BoardgameTracker.App.Diagnostics;
 
 /// <summary>
@@ -7,6 +10,8 @@ public static class UserErrorMessage
 {
     public static string Create(string friendlyMessage, Exception exception)
     {
+        if (exception is GroupPlayerLimitExceededException)
+            return AppResources.GroupPlayerLimitExceeded;
 #if DEBUG
         return $"{friendlyMessage}{Environment.NewLine}{Environment.NewLine}{exception.Message}";
 #else

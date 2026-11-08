@@ -21,7 +21,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     private CreateGroupCommand? _pendingCommand;
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
     public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
-    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && Players.Count <= game.MaximumPlayers).ToArray();
     public bool HasAvailableGames => AvailableGames.Count > 0;
     [ObservableProperty] public partial bool IsChoosingGame { get; set; }
 
@@ -35,7 +35,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void AddGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game)) return;
+        if (IsBusy || game is null || !Games.Contains(game) || Players.Count > game.MaximumPlayers) return;
         game.IsSelected = true;
         IsChoosingGame = false;
     }
@@ -126,7 +126,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             HashSet<string> visibleGames = (await activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
             foreach (SelectableGroupGame game in availableGames.Where(game => visibleGames.Contains(game.Key)))
-                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey));
+                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers));
             foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();
             IReadOnlyList<SelectablePlayer> players =
@@ -271,6 +271,11 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         {
             IsBusy = true;
             ErrorMessage = null;
+            if (Games.Any(game => game.IsSelected && Players.Count > game.MaximumPlayers))
+            {
+                ErrorMessage = AppResources.GroupPlayerLimitExceeded;
+                return;
+            }
 
             if (_savedOutcome is not null)
             {
@@ -374,6 +379,9 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     private void PlayersChanged()
     {
         GroupMemberDraft.UpdatePositions(Players);
+        GamesChanged();
+        ErrorMessage = Games.Any(game => game.IsSelected && Players.Count > game.MaximumPlayers)
+            ? AppResources.GroupPlayerLimitExceeded : null;
         SaveCommand.NotifyCanExecuteChanged();
         UpdateCollectionStates();
     }

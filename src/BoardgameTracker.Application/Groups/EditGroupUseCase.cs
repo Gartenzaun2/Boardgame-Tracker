@@ -73,7 +73,8 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         EditGroupGame[] games = await db.Games.AsNoTracking().OrderBy(game => game.Key)
             .Select(game => new EditGroupGame(game.Id, game.Key, assignedIds.Contains(game.Id), !openGameIds.Contains(game.Id)))
             .ToArrayAsync(cancellationToken);
-        return new(group.Id, group.Name, group.IsArchived, players, games, openGameIds.Length == 0);
+        return new(group.Id, group.Name, group.IsArchived, players,
+            games.Where(game => players.Length <= db.GetMaximumPlayers(game.Key)).ToArray(), openGameIds.Length == 0);
     }
 
     private static async Task SaveGroupChangesAsync(

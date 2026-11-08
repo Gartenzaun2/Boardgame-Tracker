@@ -23,9 +23,10 @@ public sealed partial class GroupMemberDraft(Guid? playerId, string name, bool i
     }
 }
 
-public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true, bool isVisible = true) : ObservableObject
+public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true, bool isVisible = true, int maximumPlayers = int.MaxValue) : ObservableObject
 {
     private bool _isSelected = isSelected;
+    public int MaximumPlayers { get; } = maximumPlayers;
     public Guid Id { get; } = id;
     public string Name { get; } = name;
     public bool IsVisible { get; } = isVisible;

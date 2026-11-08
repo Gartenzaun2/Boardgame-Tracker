@@ -230,7 +230,7 @@ public sealed class NumberWheelTests
             }
         }
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>()
-            .UseTestSqlite(_connection).AddInterceptors(_probe).Options);
+            .UseTestSqlite(_connection).AddInterceptors(_probe).Options, TestGameLimits.Catalog);
 
         public static async Task<ScoringDatabase> CreateAsync(int? attractiveness, int? conservation, int? reputation,
             bool blockFirstSave = false, bool failNextSave = false)
@@ -239,7 +239,7 @@ public sealed class NumberWheelTests
             CancellationToken token = TestContext.Current.CancellationToken;
             await database._connection.OpenAsync(token);
             await using BoardgameTrackerDbContext db = new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>()
-                .UseTestSqlite(database._connection).Options);
+                .UseTestSqlite(database._connection).Options, TestGameLimits.Catalog);
             await db.Database.EnsureCreatedAsync(token);
             BoardgameTracker.Core.Players.Player player = new("Anna");
             BoardgameTracker.Core.Groups.Group group = new("Group", [player.Id]);
@@ -262,7 +262,7 @@ public sealed class NumberWheelTests
     // These input-only tests never load or save, so no database is opened.
     private sealed class UnopenedContextFactory : IDbContextFactory<BoardgameTrackerDbContext>
     {
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().Options);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().Options, TestGameLimits.Catalog);
     }
     private static ArkNovaPlayerScoringViewModel CreateViewModel()
     {

@@ -45,6 +45,7 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<IGameSettingsNavigation, ArkNovaSettingsNavigation>();
         services.AddSingleton<IDatabaseInitializationStep, ArkNovaReferenceDataSeeder>();
         services.AddSingleton(ArkNovaPlayerColors.Rules);
+        services.AddSingleton(ArkNovaGame.PlayerLimit);
         services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();
         services.AddSingleton(new GameColorPresentation(ArkNovaGame.Key, () => AppResources.ArkNova));
         services.AddTransient<ArkNovaPreparationQuery>();

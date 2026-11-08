@@ -78,11 +78,11 @@ Fest unten:
    Secondary                  Primary
 ```
 
-`Vorhandene auswählen` ist deaktiviert, wenn keine aktive, noch nicht zugeordnete Gruppe verfügbar ist.
+`Vorhandene auswählen` ist deaktiviert, wenn keine aktive, noch nicht zugeordnete Gruppe innerhalb des Spielerlimits verfügbar ist.
 
 Bei global null Spielern sind beide Aktionen deaktiviert und ein kurzer sichtbarer Hilfetext verweist auf die Spieleranlage. Bei mindestens einem Spieler, aber global null Gruppen, ist **Neue Gruppe** verfügbar und die zweite Aktion deaktiviert; ein kurzer sichtbarer Hilfetext erklärt den ersten Schritt. Existieren Gruppen, aber keine für das Spiel, erscheint nur **Keine Gruppen für dieses Spiel** ohne Onboarding-Text.
 
-**Vorhandene auswählen** öffnet einen `SelectionDialog` mit allen aktiven, dem Spiel noch nicht zugeordneten Gruppen. Tap auf einen Eintrag stellt die Zuordnung her, schließt den Dialog und öffnet direkt die Partievorbereitung ohne zusätzliche Bestätigung. Zurück aus der Vorbereitung führt zur Gruppenübersicht; die gespeicherte Zuordnung bleibt erhalten.
+**Vorhandene auswählen** öffnet einen `SelectionDialog` mit allen aktiven, dem Spiel noch nicht zugeordneten Gruppen innerhalb des Spielerlimits. Tap auf einen Eintrag stellt die Zuordnung her, schließt den Dialog und öffnet direkt die Partievorbereitung ohne zusätzliche Bestätigung. Zurück aus der Vorbereitung führt zur Gruppenübersicht; die gespeicherte Zuordnung bleibt erhalten.
 
 ## 4. Historie
 
@@ -137,6 +137,8 @@ Unten **Spieler anlegen** (neue eigenständige Entität, keine Zuordnung zu eine
 **Spieler bearbeiten:** Header **Spieler bearbeiten**; Name, Archiv-Switch und **Speichern**, kein Gast-Control.
 
 ### Gruppenübersicht (Verwaltung)
+
+Die Spielauswahl in Gruppenanlage und Gruppenbearbeitung bietet nur zur Mitgliederzahl passende Spiele an. Bereits gewählte, durch weitere Mitglieder unpassende Spiele bleiben im Entwurf sichtbar; eine lokalisierte Fehlermeldung verhindert das Speichern.
 
 Segment **Gruppen**. Filter **Archivierte anzeigen**; Karten mit Gruppenname, Mitgliedern und Bearbeiten-Stift. Kein Spielstart und kein **Zuletzt gespielt**. Unten **Gruppe anlegen**.
 

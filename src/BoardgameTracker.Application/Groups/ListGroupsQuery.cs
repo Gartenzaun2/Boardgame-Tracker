@@ -130,7 +130,8 @@ public sealed class ListGroupsQuery(
         Guid gameId = await db.Games.Where(game => game.Key == gameKey).Select(game => game.Id).SingleAsync(cancellationToken);
         Guid[] assigned = await db.GroupGames.Where(assignment => assignment.GameId == gameId).Select(assignment => assignment.GroupId).ToArrayAsync(cancellationToken);
         IReadOnlyList<ManagedGroup> groups = await new ListManagedGroupsQuery(contextFactory).ListAsync(cancellationToken: cancellationToken);
-        return groups.Where(group => !assigned.Contains(group.Id)).ToArray();
+        int maximumPlayers = db.GetMaximumPlayers(gameKey);
+        return groups.Where(group => !assigned.Contains(group.Id) && group.PlayerNames.Count <= maximumPlayers).ToArray();
     }
 
     public async Task<GroupPresence> GetPresenceAsync(CancellationToken cancellationToken = default)

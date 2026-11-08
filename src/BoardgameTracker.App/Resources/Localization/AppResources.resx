@@ -911,4 +911,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameSettingsUnavailable" xml:space="preserve"><value>Für dieses Spiel sind keine Einstellungen registriert.</value></data>
   <data name="ExportHiddenGamesHint" xml:space="preserve"><value>Der Export enthält auch ausgeblendete Spiele.</value></data>
   <data name="ThemeDarkTfm" xml:space="preserve"><value>TFM (Dunkel)</value></data>
+  <data name="GroupPlayerLimitExceeded" xml:space="preserve">
+    <value>Die Gruppe hat zu viele Mitglieder für mindestens eines der ausgewählten Spiele. Bitte entferne die betreffende Spielzuordnung oder reduziere die Mitgliederzahl im Entwurf.</value>
+  </data>
 </root>

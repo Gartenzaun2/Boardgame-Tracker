@@ -118,6 +118,8 @@ GroupPlayer       1 -> 0..1 <GameName>GroupPlayer
 Der gemeinsame Schlüssel darf als PK/FK wiederholt werden. Allgemeiner fachlicher
 Zustand wie Reihenfolge oder Placement wird nicht kopiert.
 
+Der allgemeine Vertrag `GamePlayerLimit` wird vom jeweiligen Spielmodul registriert und durch `GamePlayerLimitCatalog` anhand des Spielschlüssels aufgelöst. Unbekannte Limits erlauben keine Zuordnung. Der gemeinsame DbContext prüft neue Gruppe-Spiel-Zuordnungen vor synchronem und asynchronem SaveChanges anhand des tatsächlichen Mitgliedersatzes; alle schreibenden Zuordnungswege einschließlich Transfer verwenden diese Grenze und ihre bestehenden atomaren Transaktionen. Keine konkreten Spielschlüsselentscheidungen gehören in diese Prüfung.
+
 `GroupGame` ist die allgemeine aktuelle Gruppe↔Spiel-Verknüpfung. Sie ist nicht Teil der historischen `GameSession`; die Spielmodule definieren keine parallele Zuordnung.
 
 Persistierte Vererbung wird nur für eine echte stabile is-a-Beziehung mit

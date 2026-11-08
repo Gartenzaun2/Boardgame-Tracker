@@ -165,7 +165,7 @@ public sealed class GroupColorPersistenceTests
         public Group Group { get; private set; } = null!;
         public EditGroupUseCase UseCase => new(this);
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
         public static async Task<Fixture> CreateAsync()
         {
             Fixture fixture = new();

@@ -388,7 +388,7 @@ public sealed class TransferTests
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         public HistoryTransferPersistence Store => new(this, [new ArkNovaTransferPersistence()]);
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
         public static async Task<Database> CreateAsync()
         {
             Database database = new();

@@ -13,6 +13,8 @@ Weitere kanonische Quellen:
 
 ## 2. Spielumfang und Einstellungen
 
+Arche Nova definiert im Spielmodul unveränderlich maximal **4 Spieler**. Dieser Wert wird über den allgemeinen Spielerlimit-Vertrag bereitgestellt.
+
 Arche Nova unterstützt Vorbereitung, laufende Partie, persistente Wertung, Ergebnis/Korrektur, Spezialkartenverwaltung, assistierte Fotoerkennung sowie Import/Export.
 
 Der vollständige Anzeigename und der kompakte Spielkontext-Badge-Text lauten beide **Arche Nova**. Der Badge-Text wird wie bei jedem Spiel ausdrücklich im Modul bereitgestellt.

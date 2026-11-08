@@ -23,13 +23,13 @@ public sealed class SqliteProviderTests
         await anchor.OpenAsync(token);
         DbContextOptionsBuilder<BoardgameTrackerDbContext> options = new();
         SqliteServiceCollectionExtensions.Configure(options, connectionString);
-        await using (BoardgameTrackerDbContext db = new(options.Options))
+        await using (BoardgameTrackerDbContext db = new(options.Options, TestGameLimits.Catalog))
         {
             db.Database.EnsureCreated();
             db.Players.Add(new("Änna"));
             await db.SaveChangesAsync(token);
         }
-        await using (BoardgameTrackerDbContext db = new(options.Options))
+        await using (BoardgameTrackerDbContext db = new(options.Options, TestGameLimits.Catalog))
         {
             await db.Database.OpenConnectionAsync(token);
             Assert.Equal("Änna", (await db.Players.SingleAsync(player => player.Name == " änNA ", token)).Name);
