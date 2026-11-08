@@ -321,7 +321,7 @@ public sealed class TieResolutionTests
         public ArkNovaGameSessionResultQuery Scoring => new(this, TestGameContent.Create());
         public ArkNovaHistoryCorrectionUseCase Correction => new(this, new(this, TestGameContent.Create()));
         public ArkNovaTieResolutionViewModel CreateViewModel() => new(new(this, Scoring), Correction);
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).AddInterceptors(SaveInterceptor).Options, TestGameLimits.Catalog);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).AddInterceptors(SaveInterceptor).Options);
 
         public static async Task<TieDatabase> CreateAsync(int[]? scores = null, bool running = false)
         {

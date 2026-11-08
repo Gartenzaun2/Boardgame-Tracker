@@ -73,6 +73,6 @@ public sealed class DatabaseInitializerTests
     private sealed class ContextFactory(SqliteConnection connection) : IDbContextFactory<BoardgameTrackerDbContext>
     {
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options, TestGameLimits.Catalog);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options);
     }
 }

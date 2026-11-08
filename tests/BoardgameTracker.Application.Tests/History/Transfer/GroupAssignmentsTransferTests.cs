@@ -79,7 +79,10 @@ public sealed class GroupAssignmentsTransferTests
             seed.Groups.Add(group);
             firstGame = await seed.Games.Where(game => game.Key == "test-first").Select(game => game.Id).SingleAsync(Token);
             if (hasAssignment)
-                seed.GroupGames.Add(new(localGroupId, firstGame));
+            {
+                var game = await seed.Games.SingleAsync(game => game.Id == firstGame, Token);
+                seed.GroupGames.Add(GroupGame.Create(group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+            }
             await seed.SaveChangesAsync(Token);
         }
         ImportPlan plan = ImportPlanner.Analyze(file, await database.Store.ReadSnapshotAsync(Token));
@@ -188,7 +191,7 @@ public sealed class GroupAssignmentsTransferTests
             }).ToArray()
         };
         ImportPlan plan = ImportPlanner.Analyze(file, await database.Store.ReadSnapshotAsync(Token));
-        await Assert.ThrowsAsync<BoardgameTracker.Application.Groups.GroupPlayerLimitExceededException>(() =>
+        await Assert.ThrowsAsync<BoardgameTracker.Core.Groups.GroupPlayerLimitExceededException>(() =>
             database.Store.CommitAsync(plan, Token));
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
         Assert.Empty(await verify.Players.ToArrayAsync(Token));
@@ -215,10 +218,10 @@ public sealed class GroupAssignmentsTransferTests
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         private TestGameModule[] Modules => [new("test-first", failImport), new("test-second", failImport)];
-        public HistoryTransferPersistence Store => new(this, Modules);
+        public HistoryTransferPersistence Store => new(this, Modules, TestGameLimits.Catalog);
         public BgtFormat Format => new(Modules);
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
         public static async Task<Database> CreateAsync(bool failImport = false)
         {
             Database database = new(failImport);

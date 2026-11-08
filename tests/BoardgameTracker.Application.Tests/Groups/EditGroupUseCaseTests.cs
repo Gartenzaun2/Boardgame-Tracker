@@ -23,7 +23,7 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database);
+        EditGroupUseCase useCase = new(database, TestGameLimits.Catalog);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, "Neu", true, [second, first], []), TestContext.Current.CancellationToken);
@@ -49,7 +49,7 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database);
+        EditGroupUseCase useCase = new(database, TestGameLimits.Catalog);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, "Renamed", false, [group.Players.Single().PlayerId], []), TestContext.Current.CancellationToken);
@@ -72,7 +72,7 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database);
+        EditGroupUseCase useCase = new(database, TestGameLimits.Catalog);
 
         await useCase.UpdateGroupAsync(new EditGroupCommand(
             group.Id, group.Name, false, [group.Players.Single().PlayerId], []), TestContext.Current.CancellationToken);
@@ -95,7 +95,7 @@ public sealed class EditGroupUseCaseTests
             seed.Groups.Add(group);
             await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
-        EditGroupUseCase useCase = new(database);
+        EditGroupUseCase useCase = new(database, TestGameLimits.Catalog);
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             useCase.UpdateGroupAsync(new EditGroupCommand(

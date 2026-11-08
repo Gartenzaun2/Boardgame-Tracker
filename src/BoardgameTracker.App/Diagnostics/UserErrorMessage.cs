@@ -1,4 +1,4 @@
-using BoardgameTracker.Application.Groups;
+using BoardgameTracker.Core.Groups;
 using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App.Diagnostics;

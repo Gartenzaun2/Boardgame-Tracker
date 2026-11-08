@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Application.Groups;
 
 /// <summary>Explicitly creates a new group, including when another group has the same players.</summary>
-public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
 {
     public async Task<Guid> CreateGroupAsync(CreateGroupCommand command, CancellationToken cancellationToken = default)
     {
@@ -30,7 +31,8 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         if (await db.Players.CountAsync(player => existingPlayerIds.Contains(player.Id) && !player.IsArchived, cancellationToken) != existingPlayerIds.Length)
             throw new InvalidOperationException("At least one selected player does not exist or is inactive.");
-        if (await db.Games.CountAsync(game => gameIds.Contains(game.Id), cancellationToken) != gameIds.Length)
+        Game[] games = await db.Games.Where(game => gameIds.Contains(game.Id)).ToArrayAsync(cancellationToken);
+        if (games.Length != gameIds.Length)
             throw new InvalidOperationException("At least one selected game does not exist.");
 
         List<Guid> playerIds = [];
@@ -47,7 +49,7 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
         }
         Group group = new(command.Name, playerIds);
         db.Groups.Add(group);
-        db.GroupGames.AddRange(gameIds.Select(gameId => new GroupGame(group.Id, gameId)));
+        db.GroupGames.AddRange(games.Select(game => GroupGame.Create(group, game, playerLimits.GetLimit(game.Key))));
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return group.Id;
@@ -65,7 +67,7 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
         await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
         var games = await db.Games.AsNoTracking().OrderBy(game => game.Key)
             .Select(game => new { game.Id, game.Key }).ToArrayAsync(cancellationToken);
-        return games.Select(game => new SelectableGroupGame(game.Id, game.Key, db.GetMaximumPlayers(game.Key))).ToArray();
+        return games.Select(game => new SelectableGroupGame(game.Id, game.Key, playerLimits.GetMaximumPlayers(game.Key))).ToArray();
     }
 }
 

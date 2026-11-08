@@ -326,7 +326,7 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
         options.UseTestSqlite(_connection);
         if (SaveInterceptor is not null)
             options.AddInterceptors(SaveInterceptor);
-        return new(options.Options, TestGameLimits.Catalog);
+        return new(options.Options);
     }
     public static async Task<SpecialCardDatabase> CreateAsync()
     {

@@ -10,7 +10,7 @@ namespace BoardgameTracker.Application.Groups;
 /// Groups remain game-independent; gameSession metadata is filtered to the selected game.
 /// </summary>
 public sealed class ListGroupsQuery(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
 {
     public async Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
@@ -130,7 +130,7 @@ public sealed class ListGroupsQuery(
         Guid gameId = await db.Games.Where(game => game.Key == gameKey).Select(game => game.Id).SingleAsync(cancellationToken);
         Guid[] assigned = await db.GroupGames.Where(assignment => assignment.GameId == gameId).Select(assignment => assignment.GroupId).ToArrayAsync(cancellationToken);
         IReadOnlyList<ManagedGroup> groups = await new ListManagedGroupsQuery(contextFactory).ListAsync(cancellationToken: cancellationToken);
-        int maximumPlayers = db.GetMaximumPlayers(gameKey);
+        int maximumPlayers = playerLimits.GetMaximumPlayers(gameKey);
         return groups.Where(group => !assigned.Contains(group.Id) && group.PlayerNames.Count <= maximumPlayers).ToArray();
     }
 

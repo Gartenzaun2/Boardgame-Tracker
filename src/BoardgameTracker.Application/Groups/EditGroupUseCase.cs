@@ -1,12 +1,13 @@
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Groups;
 
 /// <summary>Changes group metadata, fixed-member order and current game assignments atomically.</summary>
-public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
 {
     public async Task UpdateGroupAsync(EditGroupCommand command, CancellationToken cancellationToken = default)
     {
@@ -33,7 +34,8 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         if (command.IsArchived && await dbContext.GameSessions.AnyAsync(session => session.GroupId == group.Id
             && (session.Status == GameSessionStatus.Running || session.Status == GameSessionStatus.Scoring), cancellationToken))
             throw new InvalidOperationException("A group with an open game session cannot be archived.");
-        if (await dbContext.Games.CountAsync(game => gameIds.Contains(game.Id), cancellationToken) != gameIds.Length)
+        Game[] games = await dbContext.Games.Where(game => gameIds.Contains(game.Id)).ToArrayAsync(cancellationToken);
+        if (games.Length != gameIds.Length)
             throw new InvalidOperationException("At least one selected game does not exist.");
         Guid[] assignedIds = await dbContext.GroupGames.Where(assignment => assignment.GroupId == group.Id)
             .Select(assignment => assignment.GameId).ToArrayAsync(cancellationToken);
@@ -45,7 +47,8 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         await SaveGroupChangesAsync(dbContext, group, cancellationToken);
         await dbContext.GroupGames.Where(assignment => assignment.GroupId == group.Id && removedIds.Contains(assignment.GameId))
             .ExecuteDeleteAsync(cancellationToken);
-        dbContext.GroupGames.AddRange(gameIds.Except(assignedIds).Select(gameId => new GroupGame(group.Id, gameId)));
+        dbContext.GroupGames.AddRange(games.Where(game => !assignedIds.Contains(game.Id))
+            .Select(game => GroupGame.Create(group, game, playerLimits.GetLimit(game.Key))));
         await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }
@@ -74,7 +77,7 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
             .Select(game => new EditGroupGame(game.Id, game.Key, assignedIds.Contains(game.Id), !openGameIds.Contains(game.Id)))
             .ToArrayAsync(cancellationToken);
         return new(group.Id, group.Name, group.IsArchived, players,
-            games.Where(game => players.Length <= db.GetMaximumPlayers(game.Key)).ToArray(), openGameIds.Length == 0);
+            games.Where(game => players.Length <= playerLimits.GetMaximumPlayers(game.Key)).ToArray(), openGameIds.Length == 0);
     }
 
     private static async Task SaveGroupChangesAsync(

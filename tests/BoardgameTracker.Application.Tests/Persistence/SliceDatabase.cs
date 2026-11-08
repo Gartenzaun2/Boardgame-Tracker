@@ -34,7 +34,7 @@ internal sealed class SliceDatabase : IDbContextFactory<BoardgameTrackerDbContex
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     public BoardgameTrackerDbContext CreateDbContext() =>
-        new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
+        new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
 
     public static async Task<SliceDatabase> CreateAsync(bool archived = false)
     {

@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.Groups;
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Application.Persistence;
 using System.Text.Json;
 using BoardgameTracker.Core.GameSessions;
@@ -8,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Application.History.Transfer;
 
 public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTrackerDbContext> factory,
-    IEnumerable<IGameTransferPersistence> modules)
+    IEnumerable<IGameTransferPersistence> modules, GamePlayerLimitCatalog playerLimits)
 {
     public async Task<TransferSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken = default)
     {
@@ -106,22 +108,25 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
             player.SetArchived(input.IsArchived);
             db.Players.Add(player);
         }
+        Dictionary<Guid, Group> newGroups = [];
         foreach (PlannedGroup planned in plan.Groups.Where(group => group.IsNew))
         {
             Group group = new(planned.Name,
                 planned.Imported.GroupPlayers.OrderBy(player => player.DefaultOrder).Select(player => playerMap[player.PlayerId]).ToArray(), planned.LocalId);
             group.SetArchived(planned.Imported.IsArchived);
             db.Groups.Add(group);
+            newGroups.Add(group.Id, group);
         }
         HashSet<Guid> newGroupIds = plan.Groups.Where(group => group.IsNew).Select(group => group.Imported.Id).ToHashSet();
         Guid[] neededGames = plan.GameSessions.Select(gameSession => gameSession.GameId).Distinct().ToArray();
         foreach (BgtGame game in plan.Source.Games.Where(game => neededGames.Contains(game.Id)))
         {
-            Guid localId = await db.Games.Where(candidate => candidate.Key == game.Key).Select(candidate => candidate.Id).SingleAsync(cancellationToken);
+            Game localGame = await db.Games.SingleAsync(candidate => candidate.Key == game.Key, cancellationToken);
+            Guid localId = localGame.Id;
             // Only newly created groups acquire assignments, from sessions surviving pruning.
             foreach (Guid groupId in plan.GameSessions.Where(session => session.GameId == game.Id && newGroupIds.Contains(session.GroupId))
                 .Select(session => groupMap[session.GroupId]).Distinct())
-                db.GroupGames.Add(new GroupGame(groupId, localId));
+                db.GroupGames.Add(GroupGame.Create(newGroups[groupId], localGame, playerLimits.GetLimit(localGame.Key)));
 
             foreach (BgtGameSession input in plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id))
             {

@@ -29,7 +29,7 @@ public sealed class StartArkNovaOpenSessionTests
         await connection.OpenAsync(TestContext.Current.CancellationToken);
         var options = new DbContextOptionsBuilder<BoardgameTrackerDbContext>()
             .UseTestSqlite(connection).Options;
-        await using var context = new BoardgameTrackerDbContext(options, TestGameLimits.Catalog);
+        await using var context = new BoardgameTrackerDbContext(options);
         await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
         Player player = new("Anna");
         Group group = new("Target", [player.Id]);
@@ -61,6 +61,6 @@ public sealed class StartArkNovaOpenSessionTests
     private sealed class ContextFactory(DbContextOptions<BoardgameTrackerDbContext> options)
         : IDbContextFactory<BoardgameTrackerDbContext>
     {
-        public BoardgameTrackerDbContext CreateDbContext() => new(options, TestGameLimits.Catalog);
+        public BoardgameTrackerDbContext CreateDbContext() => new(options);
     }
 }

@@ -23,7 +23,7 @@ public sealed class ExportDestinationTests
         await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target save = new("Save", cancel);
         Target share = new("Share", cancel);
-        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [save, share]);
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog), new BgtFormat([new ArkNovaTransferSchema()])), [save, share]);
         Guid[] ids = store.Ids;
         int dialogCalls = 0;
         await flow.RunAsync(ids, "test", options =>
@@ -49,7 +49,7 @@ public sealed class ExportDestinationTests
     {
         await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target save = new("Save");
-        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [save]);
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog), new BgtFormat([new ArkNovaTransferSchema()])), [save]);
         await flow.RunAsync([store.Ids[0]], "test", _ => Task.FromResult(-1));
         Assert.Equal(1, store.Calls);
         Assert.Empty(save.Received);
@@ -59,7 +59,7 @@ public sealed class ExportDestinationTests
     public async Task EmptyHistoryDisablesExportAndDoesNotGenerateOrChoose()
     {
         await using ExportDatabase store = await ExportDatabase.CreateAsync();
-        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), []);
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog), new BgtFormat([new ArkNovaTransferSchema()])), []);
         Assert.False(HistoryExportFlow.CanExport([]));
         Assert.True(HistoryExportFlow.CanExport([Guid.NewGuid()]));
         await flow.RunAsync([], "test", _ => throw new InvalidOperationException("Dialog must not open."));
@@ -71,7 +71,7 @@ public sealed class ExportDestinationTests
     {
         await using ExportDatabase store = await ExportDatabase.CreateAsync();
         Target target = new("Save");
-        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [target]);
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog), new BgtFormat([new ArkNovaTransferSchema()])), [target]);
         Guid first = store.Ids[0];
         Guid second = store.Ids[1];
         List<Guid> visible = [first];
@@ -94,7 +94,7 @@ public sealed class ExportDestinationTests
         Target first = new("Save");
         Target second = new("Share");
         Target third = new("Future transport");
-        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()]), new BgtFormat([new ArkNovaTransferSchema()])), [first, second, third]);
+        HistoryExportFlow flow = new(new(new HistoryTransferPersistence(store, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog), new BgtFormat([new ArkNovaTransferSchema()])), [first, second, third]);
         await flow.RunAsync([store.Ids[0]], "test", choices =>
         {
             Assert.Equal("Future transport", choices[2].DisplayName);

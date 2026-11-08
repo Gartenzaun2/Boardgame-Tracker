@@ -171,7 +171,7 @@ public sealed class PlayerManagementTests
         public GameSession Latest { get; private set; } = null!;
         public ListPlayersQuery Query => new(this);
         public EditPlayerUseCase Edit => new(this);
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
 
         public static async Task<Database> CreateAsync(GameSessionStatus latestStatus = GameSessionStatus.Scoring)
         {

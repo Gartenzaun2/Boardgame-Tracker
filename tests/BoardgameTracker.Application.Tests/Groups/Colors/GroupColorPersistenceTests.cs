@@ -96,7 +96,7 @@ public sealed class GroupColorPersistenceTests
     public async Task CreateAsync_SavesExistingAndNewPlayersWithoutWritingDefaults()
     {
         await using Fixture fixture = await Fixture.CreateAsync();
-        Guid id = await new CreateGroupUseCase(fixture).CreateGroupAsync(new("Neu",
+        Guid id = await new CreateGroupUseCase(fixture, TestGameLimits.Catalog).CreateGroupAsync(new("Neu",
             [new(null, "Chris", false), new(fixture.First.Id, fixture.First.Name, false)], []), Token);
         EditGroupDetails result = (await fixture.UseCase.GetAsync(id, Token))!;
         Assert.Equal("Chris", result.Players[0].Name);
@@ -112,7 +112,7 @@ public sealed class GroupColorPersistenceTests
         await using Fixture fixture = await Fixture.CreateAsync();
         await using (BoardgameTrackerDbContext db = fixture.CreateDbContext())
             await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectMembership BEFORE INSERT ON GroupPlayers BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
-        await Assert.ThrowsAsync<DbUpdateException>(() => new CreateGroupUseCase(fixture).CreateGroupAsync(
+        await Assert.ThrowsAsync<DbUpdateException>(() => new CreateGroupUseCase(fixture, TestGameLimits.Catalog).CreateGroupAsync(
             new("Neu", [new(null, "Chris", false)], []), Token));
         await using BoardgameTrackerDbContext verify = fixture.CreateDbContext();
         Assert.Equal(1, await verify.Groups.CountAsync(Token));
@@ -152,7 +152,7 @@ public sealed class GroupColorPersistenceTests
             (await db.Groups.SingleAsync(Token)).SetArchived(archived);
             await db.SaveChangesAsync(Token);
         }
-        await new ReuseGroupUseCase(fixture).ReuseGroupAsync(new(fixture.Group.Id,
+        await new ReuseGroupUseCase(fixture, TestGameLimits.Catalog).ReuseGroupAsync(new(fixture.Group.Id,
             [fixture.Second.Id, fixture.First.Id], [], archived ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting), Token);
         await fixture.AssertOriginalAsync();
     }
@@ -163,9 +163,9 @@ public sealed class GroupColorPersistenceTests
         public Player First { get; } = new("Anna");
         public Player Second { get; } = new("Ben");
         public Group Group { get; private set; } = null!;
-        public EditGroupUseCase UseCase => new(this);
+        public EditGroupUseCase UseCase => new(this, TestGameLimits.Catalog);
         public BoardgameTrackerDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options, TestGameLimits.Catalog);
+            new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
         public static async Task<Fixture> CreateAsync()
         {
             Fixture fixture = new();

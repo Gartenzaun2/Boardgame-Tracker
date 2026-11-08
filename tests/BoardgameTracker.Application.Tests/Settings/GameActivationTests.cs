@@ -1,3 +1,4 @@
+using BoardgameTracker.Core.Groups;
 using BoardgameTracker.App;
 using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Features.Settings;
@@ -179,7 +180,8 @@ public sealed class GameActivationTests
         GameSession session = await AddSessionAsync(db, GameSessionStatus.Completed);
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
         {
-            seed.GroupGames.Add(new(db.Group.Id, db.GameId));
+            var game = await seed.Games.SingleAsync(game => game.Id == db.GameId, Token);
+            seed.GroupGames.Add(GroupGame.Create(db.Group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
             seed.ArkNovaGroupPlayers.Add(new(db.Group.Id, db.First.Id, PlayerColor.Blue));
             await seed.SaveChangesAsync(Token);
         }
@@ -208,7 +210,7 @@ public sealed class GameActivationTests
         }
         await useCase.SetEnabledAsync("ark-nova", true, Token);
         Assert.Equal(db.GameId, Assert.Single(await new PlayOverviewQuery(db, store).ListAsync(Token)).Id);
-        Assert.Equal(db.Group.Id, Assert.Single(await new BoardgameTracker.Application.Groups.ListGroupsQuery(db).ListGroupsAsync("ark-nova", Token)).Id);
+        Assert.Equal(db.Group.Id, Assert.Single(await new BoardgameTracker.Application.Groups.ListGroupsQuery(db, TestGameLimits.Catalog).ListGroupsAsync("ark-nova", Token)).Id);
     }
 
     [Fact]

@@ -1,10 +1,11 @@
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Groups;
 
-public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
 {
     public async Task AddGroupGameAsync(Guid groupId, Guid gameId, CancellationToken cancellationToken = default)
     {
@@ -13,13 +14,14 @@ public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbCont
         await using BoardgameTrackerDbContext dbContext = await contextFactory.CreateDbContextAsync(cancellationToken);
         // Existence checks and idempotent insertion share the write transaction.
         await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
-        if (!await dbContext.Groups.AnyAsync(group => group.Id == groupId, cancellationToken))
-            throw new InvalidOperationException("The group does not exist.");
-        if (!await dbContext.Games.AnyAsync(game => game.Id == gameId, cancellationToken))
-            throw new InvalidOperationException("The game does not exist.");
+        Group group = await dbContext.Groups.Include(group => group.Players)
+            .SingleOrDefaultAsync(group => group.Id == groupId, cancellationToken)
+            ?? throw new InvalidOperationException("The group does not exist.");
+        Game game = await dbContext.Games.SingleOrDefaultAsync(game => game.Id == gameId, cancellationToken)
+            ?? throw new InvalidOperationException("The game does not exist.");
         if (!await dbContext.GroupGames.AnyAsync(assignment => assignment.GroupId == groupId && assignment.GameId == gameId, cancellationToken))
         {
-            dbContext.GroupGames.Add(new GroupGame(groupId, gameId));
+            dbContext.GroupGames.Add(GroupGame.Create(group, game, playerLimits.GetLimit(game.Key)));
             await dbContext.SaveChangesAsync(cancellationToken);
         }
         await transaction.CommitAsync(cancellationToken);

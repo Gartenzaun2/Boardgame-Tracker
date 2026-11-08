@@ -1,10 +1,11 @@
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Groups;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Groups;
 
-public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
 {
     public async Task<Guid> ReuseGroupAsync(ReuseGroupCommand command, CancellationToken cancellationToken = default)
     {
@@ -29,14 +30,16 @@ public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContex
             throw new InvalidOperationException("The selected group does not have the expected players.");
         if (group.IsArchived && command.Action != GroupReuseAction.Reactivate)
             throw new InvalidOperationException("An archived group requires explicit reactivation.");
-        if (await db.Games.CountAsync(game => gameIds.Contains(game.Id), cancellationToken) != gameIds.Length)
+        Game[] games = await db.Games.Where(game => gameIds.Contains(game.Id)).ToArrayAsync(cancellationToken);
+        if (games.Length != gameIds.Length)
             throw new InvalidOperationException("At least one selected game does not exist.");
 
         if (command.Action == GroupReuseAction.Reactivate)
             group.SetArchived(false);
         Guid[] assignedIds = await db.GroupGames.Where(assignment => assignment.GroupId == group.Id)
             .Select(assignment => assignment.GameId).ToArrayAsync(cancellationToken);
-        db.GroupGames.AddRange(gameIds.Except(assignedIds).Select(gameId => new GroupGame(group.Id, gameId)));
+        db.GroupGames.AddRange(games.Where(game => !assignedIds.Contains(game.Id))
+            .Select(game => GroupGame.Create(group, game, playerLimits.GetLimit(game.Key))));
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return group.Id;

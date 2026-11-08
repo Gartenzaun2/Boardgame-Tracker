@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.3.1 – 2026-11-08
+
+- Neue Gruppe-Spiel-Zuordnungen schützen ihr Spielerlimit über eine Core-Factory; die Application stellt vollständige Mitgliedschaften und registrierte Limits bereit. Die globale DbContext-Validierung entfällt, bestehende Transaktionsgrenzen und UI-Fehlermeldungen bleiben erhalten.
+
 ## 0.17.3.0
 
 - Gruppe-Spiel-Zuordnungen beachten verbindlich die maximale Spielerzahl des Spielmoduls, auch bei Übernahme, Reaktivierung und Import. Gruppenauswahl und Spieleauswahl berücksichtigen das Limit; Arche Nova unterstützt maximal vier Mitglieder.

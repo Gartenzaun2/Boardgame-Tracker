@@ -105,7 +105,7 @@ public sealed class HistoryTests
         public Group Group { get; private set; } = null!;
         private Game game = new(ArkNovaGame.Key);
         public GameSession Completed { get; private set; } = null!;
-        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options, TestGameLimits.Catalog);
+        public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options);
         public static async Task<Fixture> CreateAsync(CancellationToken cancellationToken)
         {
             Fixture f = new();
