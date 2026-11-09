@@ -1,3 +1,4 @@
+using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using BoardgameTracker.Core.Players;
 
@@ -15,7 +16,7 @@ public static class ArkNovaPreparationDraw
         ArgumentNullException.ThrowIfNull(playerIds);
         ArgumentNullException.ThrowIfNull(random);
 
-        if (playerIds.Count is < ArkNovaGameSessionSetup.MinimumPlayerCount or > ArkNovaGameSessionSetup.MaximumPlayerCount)
+        if (playerIds.Count < ArkNovaGameSessionSetup.MinimumPlayerCount || playerIds.Count > ArkNovaGame.PlayerLimit.MaximumPlayers)
         {
             throw new ArgumentException(
                 "Ark Nova preparation requires between one and four players.",

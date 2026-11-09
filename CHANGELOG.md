@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.17.4.0 – 2026-11-09
+
+- Die Arche-Nova-Vorbereitung verwendet für das maximale Spielerlimit durchgängig das bestehende Modulmetadatum `ArkNovaGame.PlayerLimit`; die redundante Setup-Konstante entfällt.
+
 ## 0.17.3.1 – 2026-11-08
 
 - Neue Gruppe-Spiel-Zuordnungen schützen ihr Spielerlimit über eine Core-Factory; die Application stellt vollständige Mitgliedschaften und registrierte Limits bereit. Die globale DbContext-Validierung entfällt, bestehende Transaktionsgrenzen und UI-Fehlermeldungen bleiben erhalten.

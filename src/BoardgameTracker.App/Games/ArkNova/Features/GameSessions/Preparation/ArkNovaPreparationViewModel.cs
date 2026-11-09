@@ -51,7 +51,8 @@ public partial class ArkNovaPreparationViewModel(
 
     public bool CanStart =>
         !IsBusy
-        && Players.Count is >= ArkNovaGameSessionSetup.MinimumPlayerCount and <= ArkNovaGameSessionSetup.MaximumPlayerCount
+        && Players.Count >= ArkNovaGameSessionSetup.MinimumPlayerCount
+        && Players.Count <= ArkNovaGame.PlayerLimit.MaximumPlayers
         && Players.All(player => player.SelectedZooPlanNumber is not null
             && ArkNovaPlayerColors.Rules.Allows(player.Color))
         && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
@@ -92,7 +93,7 @@ public partial class ArkNovaPreparationViewModel(
                 return;
             }
 
-            if (data.Players.Count is < ArkNovaGameSessionSetup.MinimumPlayerCount or > ArkNovaGameSessionSetup.MaximumPlayerCount)
+            if (data.Players.Count < ArkNovaGameSessionSetup.MinimumPlayerCount || data.Players.Count > ArkNovaGame.PlayerLimit.MaximumPlayers)
             {
                 ErrorMessage = AppResources.ArkNovaPlayerCountError;
                 return;

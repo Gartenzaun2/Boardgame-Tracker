@@ -6,6 +6,33 @@ namespace BoardgameTracker.Core.Tests.Games.ArkNova.GameSessions.Setup;
 
 public sealed class ArkNovaGameSessionSetupTests
 {
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    public void Validate_WithValidPlayerCount_DoesNotThrow(int playerCount)
+    {
+        PlayerColor[] colors = [PlayerColor.Blue, PlayerColor.Red, PlayerColor.Yellow, PlayerColor.Black];
+        ArkNovaGameSessionSetupPlayer[] players = [.. Enumerable.Range(0, playerCount)
+            .Select(index => new ArkNovaGameSessionSetupPlayer(
+                Guid.NewGuid(), colors[index], index * 2 + 1, index * 2 + 2, index * 2 + 1))];
+
+        ArkNovaGameSessionSetup.Validate(players);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(5)]
+    public void Validate_WithInvalidPlayerCount_Throws(int playerCount)
+    {
+        ArkNovaGameSessionSetupPlayer[] players = [.. Enumerable.Range(0, playerCount)
+            .Select(index => new ArkNovaGameSessionSetupPlayer(
+                Guid.NewGuid(), PlayerColor.Blue, index * 2 + 1, index * 2 + 2, index * 2 + 1))];
+
+        ArgumentException exception = Assert.Throws<ArgumentException>(() => ArkNovaGameSessionSetup.Validate(players));
+
+        Assert.Equal("players", exception.ParamName);
+    }
+
     [Fact]
     public void Validate_WithValidSetup_DoesNotThrow()
     {
