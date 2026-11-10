@@ -17,8 +17,6 @@ ArkNovaGameSessionPlayer
 - GameSessionId
 - PlayerId
 - Color
-- ZooPlanOption1Number
-- ZooPlanOption2Number
 - SelectedZooPlanNumber
 - Attractiveness?
 - Conservation?
@@ -41,12 +39,14 @@ Blue=1 Yellow=2 Red=3 Black=4
 
 ### Partieteilnehmer
 
-`Color` ist pro GameSession eindeutig. Zooplanoptionen müssen verschieden sein;
-`SelectedZooPlanNumber` muss eine angebotene Option sein.
+`Color` ist pro GameSession eindeutig. Jeder persistierte Teilnehmer besitzt genau
+`SelectedZooPlanNumber` mit einer gültigen Katalogidentität. Dieselbe Zooplanidentität
+darf innerhalb einer GameSession mehreren Teilnehmern zugeordnet sein.
 
-Jeder persistierte Teilnehmer besitzt einen ausgewählten Plan. Über die gesamte
-GameSession darf ein Zooplan nur einmal angeboten werden; diese übergreifende Regel
-wird in der Startlogik geschützt.
+Einzelzuweisungen und die beiden Optionen je Spieler existieren nur im
+unpersistierten Vorbereitungsentwurf. Nur für die Auslosung gelten die zwei
+verschiedenen Optionen pro Spieler und global eindeutige angebotene Pläne aus
+`1..14`; diese Optionen sind keine Session- oder Historienfelder.
 
 ## 3. Zoopläne
 
@@ -55,11 +55,21 @@ ArkNovaZooPlan
 - Number
 ```
 
-`Number` ist Primärschlüssel und stabile natürliche Identität. Der feste Katalog
-umfasst `1..14`; es gibt keine künstliche ZooPlan-GUID.
+`Number` ist Primärschlüssel und stabile numerische Identität; es gibt keine
+künstliche ZooPlan-GUID. Der feste Katalog verwendet:
 
-Lokalisierte Namen sind Content, keine Datenbankfelder, und werden über die Nummer
-adressiert.
+| Persistierte `Number` | Sichtbare Kennzeichnung | Nutzung |
+|---|---|---|
+| `1..14` | `1..14` | Auslosung und manuelle Auswahl |
+| `15` | `Turnier` | nur manuelle Auswahl |
+| `16` | `0` | nur manuelle Auswahl |
+| `17` | `A` | nur manuelle Auswahl |
+
+Die numerische interne Identität wird nicht aus der sichtbaren Kennzeichnung
+abgeleitet. Die manuelle Anzeige-Reihenfolge ist `1..14`, `Turnier`, `0`, `A`.
+Lokalisierte Plannamen und Kennzeichnungen sind Content, keine Datenbankfelder,
+und werden über die stabile Identität adressiert. Die drei Zusatzpläne erhalten
+fest zugeordnete, unveränderliche Zooplangrafiken.
 
 ## 4. Spezialkarten
 
@@ -133,7 +143,7 @@ PK: (ResourceType, ObjectId)
 `ResourceType` ist `special-card` oder `zoo-plan`.
 
 - Spezialkarte: kanonische nichtleere GUID im `D`-Format.
-- Zooplan: kanonische Nummer `1..14`.
+- Zooplan: kanonische Katalogidentität `1..17` als Zahl.
 - `Name`: Trim, `1..120` Zeichen.
 
 Nutzercontent verändert nur den Namen. Symbole/Archivstatus bleiben im Domainobjekt.
@@ -188,7 +198,7 @@ Korrekturfähige persistierte Daten:
 - Spezialkarten-Assignments;
 - neu validierte Placements.
 
-Farbe und Zooplan-Setup bleiben unverändert. Die GameSession bleibt `Completed`.
+Farbe und tatsächlich gespielter Zooplan bleiben unverändert. Die GameSession bleibt `Completed`.
 
 ## 10. Persistenzschutz
 
@@ -198,7 +208,7 @@ Zusätzlich gelten:
 - Unique `(GroupId, DefaultColor)`;
 - PK/FK `(GameSessionId, PlayerId)` für `ArkNovaGameSessionPlayer`;
 - Unique `(GameSessionId, Color)`;
-- Checks für verschiedene/ausgewählte Zoopläne;
+- Gültigkeitsprüfung für die gewählte Zooplanidentität `1..17`, ohne Session-weite Eindeutigkeitsbedingung;
 - Wertebereichschecks für Wertungsfelder;
 - Assignment-PK `(GameSessionId, PlayerId, SpecialCardId)`;
 - Restrict auf globale Spezialkarten.

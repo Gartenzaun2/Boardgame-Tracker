@@ -14,9 +14,15 @@ Danach in dieser Reihenfolge:
 3. Spielerkacheln in aktueller Partiereihenfolge;
 4. unten **Starten** als Primary.
 
-Spielerkachel: Positionsnummer, Name, Palette/Farbstatus, zwei Zooplankacheln nebeneinander sowie Hoch/Runter. Hoch/Runter verschiebt eine Position; die unmögliche Richtung am Listenende ist deaktiviert.
+Spielerkachel: Positionsnummer, Name, Palette/Farbstatus, ein variabler Zooplanbereich sowie Hoch/Runter. Hoch/Runter verschiebt eine Position; die unmögliche Richtung am Listenende ist deaktiviert.
 
-Zooplankacheln sind quadratisch, verwenden die Skizze mit `Fill`, zeigen die Nummer und keinen zusätzlichen Namen. Initial ist keine ausgewählt; Tap markiert die ganze Kachel.
+Initial ist kein Zooplan vergeben. Vor der ersten Auslosung zeigt jede Spielerkachel ohne Plan im Zooplanbereich **Zooplan auswählen** als Secondary-Aktion. Tap öffnet den bestehenden `SelectionDialog` mit Zurück-Pfeil oben links. Der Dialog enthält nur Textzeilen **Kennzeichnung – lokalisierter Name** in der Reihenfolge `1..14`, `Turnier`, `0`, `A`; keine Grafiken und keine zusätzliche Gruppentrennung. Bereits anderen Spielern zugewiesene Pläne sind erkennbar markiert, aber anwählbar. Ein Tap übernimmt den Plan und schließt den Dialog; Zurück schließt ihn ohne Änderung.
+
+Nach manueller Zuordnung steht anstelle des Buttons die eine quadratische Zooplangrafik. Ein Tap auf die Grafik öffnet erneut den manuellen Textdialog zum Ersetzen. Eine Aktion zum Leeren der Auswahl existiert nicht.
+
+**Zoopläne auslosen** ersetzt alle bisherigen manuellen Pläne bzw. zuvor ausgelosten Optionen. Danach zeigt jede Spielerkachel ausschließlich zwei ausgeloste quadratische Zooplankacheln nebeneinander. Ein Tap markiert die ganze gewählte Kachel; anstelle der manuellen Auswahl ist nur die Wahl zwischen diesen Optionen möglich. Der Button **Zooplan auswählen** und der manuelle Textdialog sind für den Rest dieser Vorbereitung nicht mehr erreichbar, auch wenn noch keine der ausgelosten Optionen gewählt wurde. Erneutes **Zoopläne auslosen** ersetzt die komplette Auslosung. Verlassen und erneutes Öffnen der Vorbereitung setzt ihren unpersistierten Zooplanzustand zurück.
+
+Zooplankacheln verwenden die Skizze mit `Fill`, zeigen die Nummer bzw. Kennzeichnung und keinen zusätzlichen Namen. Die Auswahlmarkierung sowie die Button- und Dialogfarben folgen `UI_DESIGN_GUIDE.md`.
 
 Die Partiefarbauswahl öffnet sich über Palette; die aktuell gesetzte Farbe wird
 darin nicht erneut angeboten. Die aktuelle globale Gruppenreihenfolge ist der Ausgangspunkt; aus der vorherigen Partie wird kein neuer Startspieler automatisch bestimmt. Vorbereitungsänderungen verändern die Gruppen-/Farbdefaults erst beim erfolgreichen Start. Ob **Starten** verfügbar ist, folgt den

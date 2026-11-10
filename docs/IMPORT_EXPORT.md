@@ -88,8 +88,14 @@ Nicht unterstützte Formatversionen, nicht registrierte Spiel-Keys oder nicht
 unterstützte Spielschema-Versionen werden als **gesamte Datei** abgelehnt. Es gibt
 kein Best Effort.
 
-Unterstützte ältere Versionen würden vor Matching schrittweise in aktuelle DTOs
-migriert; die Quelldatei bleibt unverändert. Der strukturelle Format-v1-Vertrag bleibt für diese Produktänderung bestehen; eine neue allgemeine Formatversion ist nicht erforderlich. Der Legacy-Wert `isTemporary` wird beim Transfer in das aktuelle Gruppenmodell ignoriert. Dies erweitert **nicht** automatisch die Unterstützung für alte spielspezifische Schemas; für Arche Nova ist nur das derzeit unterstützte Spielschema gültig. Die Spezifikation unter [Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md) nennt ausdrücklich die abgelehnte ältere Version.
+Unterstützte ältere Versionen werden vor Matching in aktuelle DTOs
+migriert; die Quelldatei bleibt unverändert. Der strukturelle Format-v1-Vertrag
+bleibt bestehen; eine neue allgemeine Formatversion ist nicht erforderlich.
+Der Legacy-Wert `isTemporary` wird beim Transfer in das aktuelle Gruppenmodell
+ignoriert. Die Unterstützung früherer spielspezifischer Schemas wird ausschließlich
+im jeweiligen Spielschema festgelegt; für Arche Nova gelten die explizit
+unterstützten und abgelehnten Versionen in
+[Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md).
 
 Custom Games werden derzeit abgelehnt, solange kein passendes registriertes
 Transferschema existiert.

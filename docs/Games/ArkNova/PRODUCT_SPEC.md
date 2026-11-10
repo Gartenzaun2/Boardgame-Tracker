@@ -33,13 +33,13 @@ Diese Einstellungen sind keine historischen Partiedaten.
 
 Aus einer Gruppe wird ein unpersistierter Arche-Nova-Entwurf erzeugt:
 1. globale Gruppen-Default-Reihenfolge und Arche-Nova-Farbdefaults übernehmen;
-2. fehlende eindeutige Farben ergänzen;
-3. zwei Zooplanoptionen je Spieler bestimmen;
-4. je Spieler einen Plan wählen;
+2. fehlende eindeutige Farben ergänzen; Zoopläne sind zunächst nicht zugewiesen;
+3. je Spieler vor der ersten Auslosung einen Zooplan manuell auswählen **oder** über die gemeinsame Auslosung zwei Optionen je Spieler erzeugen;
+4. je Spieler genau einen Zooplan festlegen;
 5. Farbe und Reihenfolge bei Bedarf im unpersistierten Entwurf ändern;
 6. Partie starten.
 
-Bis zum Start bleibt der Entwurf unpersistiert. Der erfolgreiche Start speichert die tatsächlich gewählten Sessionfarben sowie neue Arche-Nova-Gruppendefaultfarben zusammen mit der Session; ein Abbruch verändert keine Defaults. Die allgemeine Reihenfolgeübernahme beim Start folgt `docs/PRODUCT_SPEC.md`.
+Bis zum Start bleibt der gesamte Entwurf einschließlich manueller Zuordnungen, Auslosungsoptionen und Auswahl unpersistiert. Beim Verlassen der Vorbereitung wird er verworfen; erneutes Öffnen beginnt mit nicht zugewiesenen Zooplänen. Der erfolgreiche Start speichert die tatsächlich gewählten Sessionfarben, den tatsächlich gespielten Zooplan je Spieler und neue Arche-Nova-Gruppendefaultfarben zusammen mit der Session; ein Abbruch verändert keine Defaults. Die allgemeine Reihenfolgeübernahme beim Start folgt `docs/PRODUCT_SPEC.md`.
 
 ### Farben
 
@@ -56,7 +56,13 @@ sie bestehen, kann die Partie nicht gestartet werden.
 
 ### Zoopläne
 
-Jeder Spieler erhält zwei verschiedene Optionen und wählt genau eine. Innerhalb derselben Vorbereitung wird kein Plan zweimal angeboten. Optionen und Auswahl werden erst beim Start historisch gespeichert.
+Jeder Partieteilnehmer muss vor dem Start genau einen Zooplan gewählt haben; doppelt manuell zugewiesene Pläne sind zulässig. Die tatsächliche Zooplanwahl wird beim Partiestart als Sessiondatum gespeichert, nicht aber der Auswahlweg oder ungewählte Optionen.
+
+**Manuelle Auswahl vor der ersten Auslosung:** Jeder Spieler ohne Zooplan kann einen Plan aus dem vollständigen manuellen Katalog wählen; ein erneutes Antippen seines gewählten Plans öffnet dieselbe Auswahl zum Ersetzen. Ein Plan darf mehreren Spielern zugewiesen sein. Die manuellen Optionen sind in dieser Reihenfolge sortiert: `1..14`, `Turnier`, `0`, `A`. Bereits bei anderen Spielern verwendete Pläne bleiben verfügbar und werden als solche kenntlich gemacht.
+
+**Auslosung:** Die Aktion **Zoopläne auslosen** ersetzt sämtliche bisherigen manuellen Zuordnungen bzw. vorherige Auslosungen und erzeugt für jeden Spieler zwei verschiedene Optionen aus den Plänen `1..14`. Über alle Spieler hinweg wird dabei jeder angebotene Plan nur einmal verwendet. Je Spieler wird anschließend genau eine der beiden Optionen gewählt. Die Pläne `Turnier`, `0` und `A` nehmen niemals an einer Auslosung teil.
+
+Nach der ersten Auslosung derselben Vorbereitung ist keine manuelle Einzelwahl mehr möglich. Eine erneute Auslosung bleibt möglich und ersetzt die bisherigen Optionen und Wahlen vollständig. Der Wechsel zurück zur manuellen Auswahl erfolgt nur durch Verlassen und erneutes Öffnen der Vorbereitung; die noch nicht gestartete Partie wird dabei nicht gespeichert.
 
 ### Startreihenfolge
 
@@ -66,7 +72,7 @@ Die Vorbereitung erlaubt zyklisches Rotieren, Verschieben einzelner Spieler und 
 
 ## 4. Laufende Partie
 
-Beim Start werden zusätzlich zu den allgemeinen GameSession-Daten Spielerfarben, beide angebotenen Zoopläne und die Auswahl gespeichert.
+Beim Start werden zusätzlich zu den allgemeinen GameSession-Daten nur die Spielerfarben und der tatsächlich gewählte Zooplan je Spieler gespeichert. Die ausgelosten Alternativen werden für das Wiederöffnen einer laufenden Partie, die Wertung und die Historie nicht benötigt und nicht persistiert.
 
 Die laufende Ansicht zeigt die für das Weiterspielen nötigen Spieler-, Farb-, Zooplan- und Reihenfolgedaten sowie die Dauer.
 

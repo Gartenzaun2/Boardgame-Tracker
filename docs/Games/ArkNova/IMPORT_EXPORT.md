@@ -9,15 +9,17 @@ Diese Datei ergänzt
 Allgemeines Envelope, Player-/Group-Matching, Resolve, Preview, Commit,
 Atomarität und native Ausgabeziele werden dort definiert.
 
-Aktueller Vertrag:
+Aktueller Exportvertrag:
 
 ```text
 BGT formatVersion = 1
-Arche Nova schemaVersion = 2
+Arche Nova schemaVersion = 3
 ```
 
-Das frühere Arche-Nova-Schema 1 wird im aktuellen Pre-Alpha-Stand vollständig
-abgelehnt; es gibt keinen dauerhaften Migrationspfad.
+Arche Nova importiert Schema 3 direkt und unterstützt bestehende Exporte mit
+Schema 2 durch eine explizite, verlustfreie Übernahme des tatsächlich gespielten
+Zooplans in das aktuelle Modell (siehe Abschnitt 4). Das frühere Arche-Nova-Schema
+1 bleibt abgelehnt. Die allgemeine BGT-Formatversion bleibt unverändert.
 
 ## 2. `Game.data`
 
@@ -51,8 +53,6 @@ Die lokale Materialsprach-Preference wird nicht übertragen.
 players: [{
   playerId,
   color,
-  zooPlanOption1Number,
-  zooPlanOption2Number,
   selectedZooPlanNumber,
   attractiveness,
   conservation,
@@ -84,10 +84,20 @@ Zusätzlich zur allgemeinen `.bgt`-Validierung gilt:
 - `GameSession.data.players` enthält exakt dieselbe Player-Menge wie die allgemeine
   Session;
 - Farben sind für Arche Nova gültig und innerhalb der Session eindeutig;
-- beide Zooplanangebote je Spieler sind gültig und verschieden;
-- Zooplannummern liegen in `1..14`;
-- über die gesamte Session wird kein angebotener Zooplan doppelt verwendet;
-- `selectedZooPlanNumber` ist eine der beiden angebotenen Optionen.
+- `selectedZooPlanNumber` liegt im gültigen Katalog `1..17`;
+- mehrere Spieler dürfen denselben `selectedZooPlanNumber` verwenden;
+- das Schema 3 enthält keine ausgelosten, nicht gewählten Zooplanoptionen.
+
+### Übernahme aus Schema 2
+
+Schema-2-Dateien verwenden weiterhin die damals vorgeschriebenen Felder
+`zooPlanOption1Number`, `zooPlanOption2Number` und `selectedZooPlanNumber`.
+Für diese Eingabe gilt die bisherige strenge Validierung: gültige verschiedene
+Optionen aus `1..14`, keine doppelt angebotenen Optionen in der Session und
+Auswahl ausschließlich aus den beiden Optionen. Nach erfolgreicher Validierung
+wird nur `selectedZooPlanNumber` in das aktuelle Sessionmodell übernommen; die
+zwei historischen Angebote werden verworfen. Der Import schreibt anschließend
+keine Legacy-Optionsfelder in die Datenbank. Export erfolgt immer mit Schema 3.
 
 ### Wertung und Placement
 
@@ -196,6 +206,7 @@ Nicht Bestandteil des aktuellen Transfers:
 - Materialsprache;
 - Built-in-Contentnamen/-übersetzungen;
 - Gruppendefaultfarben;
+- ausgeloste, nicht gewählte Zooplanoptionen;
 - berechnete Punkte;
 - Foto-/CV-Daten oder Confidence;
 - Bilder;
