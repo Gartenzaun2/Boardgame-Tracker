@@ -18,8 +18,8 @@ public sealed class StartArkNovaDefaultsTests
 
     private static StartArkNovaGameSessionCommand Command(SliceDatabase database) =>
         new(database.Group.Id, DateTimeOffset.UtcNow,
-            [new(database.Second.Id, PlayerColor.Blue, 1, 2, 2),
-             new(database.First.Id, PlayerColor.Red, 3, 4, 3)]);
+            [new(database.Second.Id, PlayerColor.Blue, 2),
+             new(database.First.Id, PlayerColor.Red, 3)]);
 
     private static async Task SeedColorsAsync(SliceDatabase database)
     {
@@ -53,7 +53,7 @@ public sealed class StartArkNovaDefaultsTests
             await db.SaveChangesAsync(Token);
         }
 
-        var preparation = await new ArkNovaPreparationQuery(database).GetPreparationAsync(database.Group.Id, Token);
+        var preparation = await new ArkNovaPreparationQuery(database, TestGameContent.Create()).GetPreparationAsync(database.Group.Id, Token);
         Assert.NotNull(preparation!.LastGameSession);
         Assert.Equal(first.Players.Select(player => player.PlayerId), preparation.Players.Select(player => player.PlayerId));
         Assert.Equal(first.Players.Select(player => (PlayerColor?)player.Color), preparation.Players.Select(player => player.DefaultColor));
@@ -74,8 +74,6 @@ public sealed class StartArkNovaDefaultsTests
                 var actual = Assert.Single(details, player => player.PlayerId == expected.PlayerId);
                 Assert.Equal(expected.Color, actual.Color);
                 Assert.Equal(expected.SelectedZooPlanNumber, actual.SelectedZooPlanNumber);
-                Assert.Equal(expected.ZooPlanOption1Number, actual.ZooPlanOption1Number);
-                Assert.Equal(expected.ZooPlanOption2Number, actual.ZooPlanOption2Number);
             }
         }
     }
@@ -157,7 +155,7 @@ public sealed class StartArkNovaDefaultsTests
     private static async Task AssertUnchangedAsync(SliceDatabase database)
     {
         var initial = new StartArkNovaGameSessionCommand(database.Group.Id, DateTimeOffset.UtcNow,
-            [new(database.First.Id, PlayerColor.Blue, 1, 2, 1), new(database.Second.Id, PlayerColor.Red, 3, 4, 3)]);
+            [new(database.First.Id, PlayerColor.Blue, 1), new(database.Second.Id, PlayerColor.Red, 3)]);
         await AssertDefaultsAsync(database, initial);
         await using var db = database.CreateDbContext();
         Assert.Empty(await db.GameSessions.ToArrayAsync(Token));

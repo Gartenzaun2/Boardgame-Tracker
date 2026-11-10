@@ -35,7 +35,7 @@ public sealed class ArkNovaContent(GameContentLanguagePreference preference, Ark
         BoardgameTrackerDbContext db, CancellationToken cancellationToken)
     {
         Dictionary<string, string> names = await ReadUserNamesAsync(db, ArkNovaUserContent.ZooPlan, cancellationToken);
-        return Enumerable.Range(1, 14).ToDictionary(number => number, number =>
+        return Enumerable.Range(1, 17).ToDictionary(number => number, number =>
             ResolveName(ArkNovaUserContent.ZooPlan, number.ToString(CultureInfo.InvariantCulture),
                 names.GetValueOrDefault(number.ToString(CultureInfo.InvariantCulture))));
     }

@@ -13,14 +13,14 @@ public sealed class ArkNovaPreparationTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private static ArkNovaPreparationViewModel Create(SliceDatabase db) =>
-        new(new ArkNovaPreparationQuery(db), new StartArkNovaGameSessionUseCase(db), NullLogger<ArkNovaPreparationViewModel>.Instance);
+        new(new ArkNovaPreparationQuery(db, TestGameContent.Create()), new StartArkNovaGameSessionUseCase(db), NullLogger<ArkNovaPreparationViewModel>.Instance);
 
     [Fact]
     public async Task Load_UsesGlobalOrderAndDefaultsDespitePreviousLastPlaceAndSessionColors()
     {
         await using var database = await SliceDatabase.CreateAsync();
         var command = new StartArkNovaGameSessionCommand(database.Group.Id, DateTimeOffset.UtcNow.AddHours(-2),
-            [new(database.First.Id, PlayerColor.Red, 1, 2, 1), new(database.Second.Id, PlayerColor.Black, 3, 4, 3)]);
+            [new(database.First.Id, PlayerColor.Red, 1), new(database.Second.Id, PlayerColor.Black, 3)]);
         await new StartArkNovaGameSessionUseCase(database).StartAsync(command, Token);
         await using (var db = database.CreateDbContext())
         {
@@ -150,4 +150,144 @@ public sealed class ArkNovaPreparationTests
         Assert.Equal(vm.Players.Select(player => player.Color), next.Players.Select(player => player.Color));
         Assert.False(next.PlansDrawn);
     }
+    private static void Choose(ArkNovaPreparationViewModel vm, int playerIndex, int number)
+    {
+        vm.OpenZooPlanPicker(vm.Players[playerIndex]);
+        vm.SelectManualZooPlan(vm.ZooPlanOptions.Single(option => option.Number == number));
+    }
+
+    [Theory]
+    [InlineData(1, "zoo_plan_01.png", "1")]
+    [InlineData(15, "ark_zoo_plan_turnier.png", "Turnier")]
+    [InlineData(16, "ark_zoo_plan_0.png", "0")]
+    [InlineData(17, "ark_zoo_plan_a.png", "A")]
+    public async Task ManualChoice_ReplacesOnlyTargetAndMarksBothAssignments(int number, string icon, string label)
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        ArkNovaPreparationViewModel vm = Create(database);
+        await vm.LoadAsync(database.Group.Id, Token);
+        Assert.All(vm.Players, player =>
+        {
+            Assert.Null(player.SelectedZooPlanNumber);
+            Assert.True(player.CanChooseManualZooPlan);
+        });
+        vm.OpenZooPlanPicker(vm.Players[0]);
+        Assert.Equal(Enumerable.Range(1, 17), vm.ZooPlanOptions.Select(option => option.Number));
+        Assert.False(vm.CanInteract);
+        vm.CloseZooPlanPicker();
+        Assert.Null(vm.Players[0].SelectedZooPlanNumber);
+        Choose(vm, 0, number);
+        Assert.False(vm.IsZooPlanPickerVisible);
+        Assert.False(vm.CanStart);
+        Assert.Equal(icon, vm.Players[0].ManualZooPlanIconSource);
+        Assert.Equal(label, vm.Players[0].ManualZooPlanLabel);
+        Assert.True(vm.Players[0].HasManualZooPlan);
+        Assert.False(vm.Players[0].CanChooseManualZooPlan);
+        vm.OpenZooPlanPicker(vm.Players[1]);
+        ArkNovaManualZooPlanOptionViewModel option = vm.ZooPlanOptions.Single(option => option.Number == number);
+        Assert.True(option.IsAssignedToOtherPlayer);
+        Assert.False(option.IsSelected);
+        vm.SelectManualZooPlan(option);
+        Assert.True(vm.CanStart);
+        vm.OpenZooPlanPicker(vm.Players[0]);
+        option = vm.ZooPlanOptions.Single(option => option.Number == number);
+        Assert.True(option.IsAssignedToOtherPlayer);
+        Assert.True(option.IsSelected);
+        Assert.Contains(BoardgameTracker.App.Resources.Localization.AppResources.ZooPlanAssignedToOtherPlayer, option.Description);
+        vm.SelectManualZooPlan(vm.ZooPlanOptions.Single(option => option.Number == 2));
+        Assert.Equal(2, vm.Players[0].SelectedZooPlanNumber);
+        Assert.Equal(number, vm.Players[1].SelectedZooPlanNumber);
+        Assert.True(vm.CanStart);
+        await using var db = database.CreateDbContext();
+        Assert.Empty(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    public async Task ManualDuplicatePlans_StartAndReopenRunningSessionWithSelectedPlanOnly(int number)
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        ArkNovaPreparationViewModel vm = Create(database);
+        await vm.LoadAsync(database.Group.Id, Token);
+        Choose(vm, 0, number);
+        Choose(vm, 1, number);
+        Guid? id = await vm.StartAsync(Token);
+        Assert.NotNull(id);
+        Assert.False(vm.HasError);
+        var running = await new ArkNovaRunningGameSessionQuery(database, TestGameContent.Create())
+            .GetRunningGameSessionAsync(id.Value, Token);
+        Assert.All(running!.Players, player => Assert.Equal(number, player.ZooPlanNumber));
+        Assert.All(running.Players, player => Assert.DoesNotContain("[missing:", player.ZooPlanName));
+        await using var db = database.CreateDbContext();
+        Assert.All(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token), player => Assert.Equal(number, player.SelectedZooPlanNumber));
+        await using var command = db.Database.GetDbConnection().CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM pragma_table_info('ArkNovaGameSessionPlayers') WHERE name IN ('ZooPlanOption1Number', 'ZooPlanOption2Number')";
+        Assert.Equal(0L, await command.ExecuteScalarAsync(Token));
+    }
+
+    [Fact]
+    public async Task Draw_ReplacesManualChoicesAndLocksManualSelectionUntilNewDraft()
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        ArkNovaPreparationViewModel vm = Create(database);
+        await vm.LoadAsync(database.Group.Id, Token);
+        Choose(vm, 0, 17);
+        Choose(vm, 1, 17);
+        vm.OpenZooPlanPicker(vm.Players[0]);
+        ArkNovaManualZooPlanOptionViewModel stale = vm.ZooPlanOptions[0];
+        vm.DrawZooPlans();
+        Assert.True(vm.PlansDrawn);
+        Assert.False(vm.IsZooPlanPickerVisible);
+        Assert.False(vm.CanStart);
+        Assert.All(vm.Players, player =>
+        {
+            Assert.Null(player.SelectedZooPlanNumber);
+            Assert.True(player.HasZooPlans);
+            Assert.False(player.CanChooseManualZooPlan);
+            Assert.False(player.HasManualZooPlan);
+            Assert.InRange(player.ZooPlanOption1!.Number, 1, 14);
+            Assert.InRange(player.ZooPlanOption2!.Number, 1, 14);
+        });
+        Assert.Equal(4, vm.Players.SelectMany(player => new[] { player.ZooPlanOption1!.Number, player.ZooPlanOption2!.Number }).Distinct().Count());
+        vm.OpenZooPlanPicker(vm.Players[0]);
+        Assert.False(vm.IsZooPlanPickerVisible);
+        vm.SelectManualZooPlan(stale);
+        Assert.Null(vm.Players[0].SelectedZooPlanNumber);
+        vm.SelectZooPlan(vm.Players[0], 3);
+        Assert.Null(vm.Players[0].SelectedZooPlanNumber);
+        foreach (ArkNovaPreparationPlayerViewModel player in vm.Players)
+            vm.SelectZooPlan(player, 1);
+        Assert.True(vm.CanStart);
+        vm.DrawZooPlans();
+        Assert.All(vm.Players, player => Assert.Null(player.SelectedZooPlanNumber));
+        Assert.False(vm.CanStart);
+        await vm.LoadAsync(database.Group.Id, Token);
+        Assert.False(vm.PlansDrawn);
+        Assert.All(vm.Players, player => Assert.True(player.CanChooseManualZooPlan));
+        Choose(vm, 0, 15);
+        Assert.Equal(15, vm.Players[0].SelectedZooPlanNumber);
+    }
+
+    [Fact]
+    public async Task InitialDraw_NotifiesBindingsToHideManualButtons()
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        ArkNovaPreparationViewModel vm = Create(database);
+        await vm.LoadAsync(database.Group.Id, Token);
+        Dictionary<Guid, bool> visibleButtons = vm.Players.ToDictionary(player => player.PlayerId, player => player.CanChooseManualZooPlan);
+        foreach (ArkNovaPreparationPlayerViewModel player in vm.Players)
+        {
+            player.PropertyChanged += (_, change) =>
+            {
+                if (change.PropertyName == nameof(player.CanChooseManualZooPlan))
+                    visibleButtons[player.PlayerId] = player.CanChooseManualZooPlan;
+            };
+        }
+        vm.DrawZooPlans();
+        Assert.All(visibleButtons.Values, visible => Assert.False(visible));
+    }
+
 }

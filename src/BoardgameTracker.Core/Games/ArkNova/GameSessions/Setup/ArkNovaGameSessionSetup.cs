@@ -47,46 +47,11 @@ public static class ArkNovaGameSessionSetup
 
         foreach (ArkNovaGameSessionSetupPlayer player in players)
         {
-            if (player.ZooPlanOption1Number <= 0 || player.ZooPlanOption2Number <= 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(players),
-                    "Zoo plan identifiers must be positive.");
-            }
-
-            if (player.ZooPlanOption1Number == player.ZooPlanOption2Number)
-            {
-                throw new InvalidOperationException(
-                    "The two offered zoo plans for a player must be different.");
-            }
-
             if (player.SelectedZooPlanNumber is null)
-            {
                 throw new InvalidOperationException(
-                    "Every Ark Nova player must select one of the offered zoo plans before the GameSession starts.");
-            }
+                    "Every Ark Nova player must select a zoo plan before the GameSession starts.");
 
-            if (player.SelectedZooPlanNumber != player.ZooPlanOption1Number
-                && player.SelectedZooPlanNumber != player.ZooPlanOption2Number)
-            {
-                throw new InvalidOperationException(
-                    "The selected zoo plan must be one of the two offered plans.");
-            }
-        }
-
-        IReadOnlyList<int> offeredZooPlans =
-        [
-            .. players.SelectMany(player => new[]
-            {
-                player.ZooPlanOption1Number,
-                player.ZooPlanOption2Number
-            })
-        ];
-
-        if (offeredZooPlans.Distinct().Count() != offeredZooPlans.Count)
-        {
-            throw new InvalidOperationException(
-                "A zoo plan may only be offered once within an Ark Nova gameSession.");
+            ArkNovaZooPlan.ValidateNumber(player.SelectedZooPlanNumber.Value);
         }
     }
 }
@@ -100,6 +65,4 @@ public static class ArkNovaGameSessionSetup
 public sealed record ArkNovaGameSessionSetupPlayer(
     Guid PlayerId,
     PlayerColor Color,
-    int ZooPlanOption1Number,
-    int ZooPlanOption2Number,
     int? SelectedZooPlanNumber);

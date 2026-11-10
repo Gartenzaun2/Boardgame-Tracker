@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
@@ -12,7 +13,8 @@ namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 /// EF Core projection for Ark Nova preparation data, including group defaults and the last completed gameSession.
 /// </summary>
 public sealed class ArkNovaPreparationQuery(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory,
+    ArkNovaContent content)
 {
     public async Task<ArkNovaPreparationData?> GetPreparationAsync(
         Guid groupId,
@@ -112,7 +114,8 @@ public sealed class ArkNovaPreparationQuery(
             group.Name,
             group.IsArchived,
             lastGameSessionData,
-            players);
+            players,
+            await content.ReadZooPlanNamesAsync(dbContext, cancellationToken));
     }
 }
 
@@ -125,7 +128,8 @@ public sealed record ArkNovaPreparationData(
     string GroupName,
     bool IsArchived,
     ArkNovaLastGameSession? LastGameSession,
-    IReadOnlyList<ArkNovaPreparationPlayer> Players);
+    IReadOnlyList<ArkNovaPreparationPlayer> Players,
+    IReadOnlyDictionary<int, string> ZooPlanNames);
 
 /// <summary>
 /// Snapshot of the last completed Ark Nova GameSession needed by preparation.

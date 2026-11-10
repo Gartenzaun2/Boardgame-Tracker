@@ -25,7 +25,7 @@ public sealed class TransferTests
     private static BgtFormat Format => new([new ArkNovaTransferSchema()]);
     private static JsonElement Empty => JsonSerializer.SerializeToElement(new { });
     private static BgtFile File(BgtPlayer[] players, BgtGroup[] groups, BgtGameSession[] gameSessions) => new(1, "test", DateTimeOffset.UtcNow,
-        [new(GameId, "ark-nova", 2, JsonSerializer.SerializeToElement(new ArkNovaTransferReferences([]), BgtFormat.JsonOptions))], players, groups, gameSessions);
+        [new(GameId, "ark-nova", 3, JsonSerializer.SerializeToElement(new ArkNovaTransferReferences([]), BgtFormat.JsonOptions))], players, groups, gameSessions);
     private static readonly Guid GameId = Guid.NewGuid();
     private static BgtPlayer Player(string name) => new(Guid.NewGuid(), name, false, false, DateTimeOffset.UtcNow);
     private static BgtGroup Group(string name, params BgtPlayer[] players) => new(Guid.NewGuid(), name, false, false,
@@ -266,7 +266,7 @@ public sealed class TransferTests
         BgtGroup group = Group("Group", player);
         BgtFile file = File([player], [group], []);
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { Key = "unknown" }] }));
-        Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { SchemaVersion = 3 }] }));
+        Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Games = [file.Games[0] with { SchemaVersion = 4 }] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Players = [player, Player(" anna ")] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Groups = [group, group with { Id = Guid.NewGuid() }] }));
         Assert.Throws<InvalidDataException>(() => Format.Validate(file with { Players = [] }));
@@ -332,7 +332,7 @@ public sealed class TransferTests
         Format.Validate(exported);
         BgtGame game = Assert.Single(exported.Games);
         Assert.Equal(1, exported.FormatVersion);
-        Assert.Equal(2, game.SchemaVersion);
+        Assert.Equal(3, game.SchemaVersion);
         ArkNovaTransferCard[] references = ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(game.Data).SpecialCards;
         Assert.Equal(2, references.Length);
         Assert.Equal("My eagle", references.Single(card => card.Id == eagle).UserName);
@@ -384,6 +384,144 @@ public sealed class TransferTests
         Assert.Equal(0, await target.CountAsync());
     }
 
+    private static BgtFile AsLegacySchema2(BgtFile file) => file with
+    {
+        Games = [file.Games[0] with { SchemaVersion = 2 }],
+        GameSessions = file.GameSessions.Select(session => session with
+        {
+            Data = JsonSerializer.SerializeToElement(new
+            {
+                Players = ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(session.Data).Players.Select((player, index) => new
+                {
+                    player.PlayerId,
+                    player.Color,
+                    ZooPlanOption1Number = index * 2 + 1,
+                    ZooPlanOption2Number = index * 2 + 2,
+                    SelectedZooPlanNumber = index * 2 + 2,
+                    player.Attractiveness,
+                    player.Conservation,
+                    player.Reputation,
+                    player.SpecialCardIds
+                }).ToArray()
+            }, BgtFormat.JsonOptions)
+        }).ToArray()
+    };
+
+    [Fact]
+    public async Task Schema2_ValidatesBeforeMatchingAndRestoresActualChoicesWithoutOptions()
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        BgtFile legacy = AsLegacySchema2(await source.Store.ExportAsync([id], "test", Token));
+        Format.Validate(legacy);
+        await using Database target = await Database.CreateAsync();
+        HistoryTransferUseCase useCase = new(target.Store, Format);
+        using MemoryStream stream = new(JsonSerializer.SerializeToUtf8Bytes(legacy, BgtFormat.JsonOptions));
+        ImportPlan plan = await useCase.AnalyzeAsync(stream, Token);
+        Assert.Equal(3, plan.Source.Games[0].SchemaVersion);
+        Assert.DoesNotContain("zooPlanOption", plan.Source.GameSessions[0].Data.GetRawText());
+        Assert.Contains("zooPlanOption1Number", legacy.GameSessions[0].Data.GetRawText());
+        await useCase.CommitAsync(plan, Token);
+        BgtFile exported = await useCase.ExportAsync([id], "test", Token);
+        Assert.Equal(1, exported.FormatVersion);
+        Assert.Equal(3, exported.Games[0].SchemaVersion);
+        Assert.DoesNotContain("zooPlanOption", exported.GameSessions[0].Data.GetRawText());
+        Assert.Equal(new[] { 2, 4 }, ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(exported.GameSessions[0].Data)
+            .Players.Select(player => player.SelectedZooPlanNumber).Order());
+        await using BoardgameTrackerDbContext db = target.CreateDbContext();
+        Assert.Equal(new[] { 2, 4 }, await db.ArkNovaGameSessionPlayers.OrderBy(player => player.SelectedZooPlanNumber)
+            .Select(player => player.SelectedZooPlanNumber).ToArrayAsync(Token));
+        Assert.All(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token), player =>
+        {
+            Assert.Equal(70, player.Attractiveness);
+            Assert.Equal(20, player.Conservation);
+        });
+    }
+
+    [Theory]
+    [InlineData("sameOptions")]
+    [InlineData("duplicateAcrossPlayers")]
+    [InlineData("specialPlan")]
+    [InlineData("unofferedSelection")]
+    [InlineData("missingOption")]
+    public async Task Schema2_RejectsInvalidLegacyOffersBeforeImport(string reason)
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        BgtFile file = AsLegacySchema2(await source.Store.ExportAsync([id], "test", Token));
+        var data = System.Text.Json.Nodes.JsonNode.Parse(file.GameSessions[0].Data.GetRawText())!;
+        var players = data["players"]!.AsArray();
+        switch (reason)
+        {
+            case "sameOptions": players[0]!["zooPlanOption1Number"] = 2; break;
+            case "duplicateAcrossPlayers": players[1]!["zooPlanOption1Number"] = 2; break;
+            case "specialPlan": players[0]!["zooPlanOption1Number"] = 15; break;
+            case "unofferedSelection": players[0]!["selectedZooPlanNumber"] = 3; break;
+            case "missingOption": players[0]!.AsObject().Remove("zooPlanOption1Number"); break;
+        }
+        file = file with { GameSessions = [file.GameSessions[0] with { Data = JsonSerializer.SerializeToElement(data) }] };
+        using MemoryStream stream = new(JsonSerializer.SerializeToUtf8Bytes(file, BgtFormat.JsonOptions));
+        await Assert.ThrowsAnyAsync<Exception>(() => Format.ReadAsync(stream, Token));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    public async Task Schema3_RoundtripAllowsRepeatedRegularAndSpecialPlans(int number)
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        await using (BoardgameTrackerDbContext db = source.CreateDbContext())
+        {
+            await db.ArkNovaGameSessionPlayers.ExecuteUpdateAsync(setters => setters
+                .SetProperty(player => player.SelectedZooPlanNumber, number), Token);
+        }
+        BgtFile file = await source.Store.ExportAsync([id], "test", Token);
+        Format.Validate(file);
+        Assert.Equal(3, file.Games[0].SchemaVersion);
+        Assert.DoesNotContain("zooPlanOption", file.GameSessions[0].Data.GetRawText());
+        await using Database target = await Database.CreateAsync();
+        HistoryTransferUseCase useCase = new(target.Store, Format);
+        using MemoryStream stream = new(JsonSerializer.SerializeToUtf8Bytes(file, BgtFormat.JsonOptions));
+        await useCase.CommitAsync(await useCase.AnalyzeAsync(stream, Token), Token);
+        BgtFile exported = await useCase.ExportAsync([id], "test", Token);
+        Assert.All(ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(exported.GameSessions[0].Data).Players,
+            player => Assert.Equal(number, player.SelectedZooPlanNumber));
+        await using BoardgameTrackerDbContext verify = target.CreateDbContext();
+        Assert.All(await verify.ArkNovaGameSessionPlayers.ToArrayAsync(Token), player => Assert.Equal(number, player.SelectedZooPlanNumber));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(18)]
+    public async Task Schema3_RejectsUnknownPlanNumbersInTransferAndDatabase(int number)
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        BgtFile file = await source.Store.ExportAsync([id], "test", Token);
+        ArkNovaTransferGameSession session = ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(file.GameSessions[0].Data);
+        file = file with { GameSessions = [file.GameSessions[0] with
+        {
+            Data = JsonSerializer.SerializeToElement(session with
+            { Players = [session.Players[0] with { SelectedZooPlanNumber = number }, session.Players[1]] }, BgtFormat.JsonOptions)
+        }] };
+        Assert.Throws<ArgumentOutOfRangeException>(() => Format.Validate(file));
+        await using BoardgameTrackerDbContext db = source.CreateDbContext();
+        await Assert.ThrowsAsync<SqliteException>(() => db.ArkNovaGameSessionPlayers.ExecuteUpdateAsync(
+            setters => setters.SetProperty(player => player.SelectedZooPlanNumber, number), Token));
+    }
+
+    [Fact]
+    public async Task Schema3_RejectsLegacyOptionsInsteadOfSilentlyIgnoringThem()
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        BgtFile legacy = AsLegacySchema2(await source.Store.ExportAsync([id], "test", Token));
+        Assert.Throws<JsonException>(() => Format.Validate(legacy with { Games = [legacy.Games[0] with { SchemaVersion = 3 }] }));
+    }
+
     private sealed class Database : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
@@ -396,7 +534,7 @@ public sealed class TransferTests
             await using BoardgameTrackerDbContext context = database.CreateDbContext();
             await context.Database.EnsureCreatedAsync(Token);
             context.Games.Add(new("ark-nova"));
-            foreach (int number in Enumerable.Range(1, 14))
+            foreach (int number in Enumerable.Range(1, 17))
                 context.ArkNovaZooPlans.Add(new(number));
             await context.SaveChangesAsync(Token);
             return database;
@@ -421,7 +559,7 @@ public sealed class TransferTests
             {
                 int option = index++ * 2 + 1;
                 BoardgameTracker.Core.Games.ArkNova.GameSessions.ArkNovaGameSessionPlayer detail = new(gameSession.Id, player.PlayerId,
-                    index == 1 ? PlayerColor.Blue : PlayerColor.Red, option, option + 1, option);
+                    index == 1 ? PlayerColor.Blue : PlayerColor.Red, option);
                 detail.SetScoreValues(70, 20, null);
                 db.ArkNovaGameSessionPlayers.Add(detail);
             }

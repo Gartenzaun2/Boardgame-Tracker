@@ -339,7 +339,7 @@ public sealed class TieResolutionTests
             scores ??= [100, 90, 90, 80];
             for (int index = 0; index < database.Players.Length; index++)
             {
-                ArkNovaGameSessionPlayer player = new(database.Session.Id, database.Players[index].Id, (PlayerColor)(index + 1), index * 2 + 1, index * 2 + 2, index * 2 + 1);
+                ArkNovaGameSessionPlayer player = new(database.Session.Id, database.Players[index].Id, (PlayerColor)(index + 1), index * 2 + 1);
                 player.SetScoreValues(scores[index], 7, null);
                 context.Add(player);
             }

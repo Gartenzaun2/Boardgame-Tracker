@@ -12,13 +12,50 @@ namespace BoardgameTracker.Application.Games.ArkNova.History.Transfer;
 public sealed record ArkNovaTransferReferences(ArkNovaTransferCard[] SpecialCards);
 public sealed record ArkNovaTransferCard(Guid Id, string? UserName, ArkNovaCardSymbol? Symbol1, ArkNovaCardSymbol? Symbol2, ArkNovaCardSymbol? Symbol3, bool IsArchived);
 public sealed record ArkNovaTransferGameSession(ArkNovaTransferPlayer[] Players);
-public sealed record ArkNovaTransferPlayer(Guid PlayerId, PlayerColor Color, int ZooPlanOption1Number, int ZooPlanOption2Number,
+public sealed record ArkNovaTransferPlayer(Guid PlayerId, PlayerColor Color,
     int SelectedZooPlanNumber, int Attractiveness, int Conservation, int? Reputation, Guid[] SpecialCardIds);
 
 public sealed class ArkNovaTransferSchema : IGameTransferSchema
 {
     public string GameKey => ArkNovaGame.Key;
-    public int SchemaVersion => 2;
+    public int SchemaVersion => 3;
+    public bool SupportsVersion(int version) => version is 2 or 3;
+
+    public JsonElement NormalizeGameSessionData(int version, JsonElement data) =>
+        JsonSerializer.SerializeToElement(ReadGameSession(version, data), BgtFormat.JsonOptions);
+
+    public static ArkNovaTransferGameSession ReadGameSession(int version, JsonElement data)
+    {
+        if (version == 3)
+            return Read<ArkNovaTransferGameSession>(data);
+        if (version != 2)
+            throw new InvalidDataException("UpdateRequired");
+
+        LegacyGameSession legacy = Read<LegacyGameSession>(data);
+        List<int> offered = [];
+        foreach (LegacyPlayer player in legacy.Players)
+        {
+            if (player.ZooPlanOption1Number is < 1 or > 14
+                || player.ZooPlanOption2Number is < 1 or > 14
+                || player.ZooPlanOption1Number == player.ZooPlanOption2Number
+                || (player.SelectedZooPlanNumber != player.ZooPlanOption1Number
+                    && player.SelectedZooPlanNumber != player.ZooPlanOption2Number))
+                throw new InvalidDataException("InvalidZooPlans");
+            offered.Add(player.ZooPlanOption1Number);
+            offered.Add(player.ZooPlanOption2Number);
+        }
+        if (offered.Distinct().Count() != offered.Count)
+            throw new InvalidDataException("InvalidZooPlans");
+
+        return new(legacy.Players.Select(player => new ArkNovaTransferPlayer(
+            player.PlayerId, player.Color, player.SelectedZooPlanNumber, player.Attractiveness,
+            player.Conservation, player.Reputation, player.SpecialCardIds)).ToArray());
+    }
+
+    private sealed record LegacyGameSession(LegacyPlayer[] Players);
+    private sealed record LegacyPlayer(Guid PlayerId, PlayerColor Color,
+        int ZooPlanOption1Number, int ZooPlanOption2Number, int SelectedZooPlanNumber,
+        int Attractiveness, int Conservation, int? Reputation, Guid[] SpecialCardIds);
     public static T Read<T>(JsonElement data) => data.Deserialize<T>(BgtFormat.JsonOptions) ?? throw new InvalidDataException("InvalidGameData");
     public void Validate(BgtGame game, IReadOnlyList<BgtGameSession> gameSessions)
     {
@@ -36,25 +73,20 @@ public sealed class ArkNovaTransferSchema : IGameTransferSchema
         HashSet<Guid> cards = references.SpecialCards.Select(card => card.Id).ToHashSet();
         foreach (BgtGameSession gameSession in gameSessions)
         {
-            ArkNovaTransferGameSession data = Read<ArkNovaTransferGameSession>(gameSession.Data);
+            ArkNovaTransferGameSession data = ReadGameSession(game.SchemaVersion, gameSession.Data);
             BgtFormat.CheckIds(data.Players.Select(player => player.PlayerId));
             if (data.Players.Length > 4 || !data.Players.Select(player => player.PlayerId).ToHashSet().SetEquals(gameSession.Players.Select(player => player.PlayerId))
                 || data.Players.Select(player => player.Color).Distinct().Count() != data.Players.Length)
                 throw new InvalidDataException("InvalidArkNovaPlayers");
-            List<int> zooPlans = [];
             foreach (ArkNovaTransferPlayer player in data.Players)
             {
                 ArkNovaGameSessionPlayer domain = new(gameSession.Id, player.PlayerId, player.Color,
-                    player.ZooPlanOption1Number, player.ZooPlanOption2Number, player.SelectedZooPlanNumber);
+                    player.SelectedZooPlanNumber);
                 domain.SetScoreValues(player.Attractiveness, player.Conservation, player.Reputation);
-                zooPlans.Add(player.ZooPlanOption1Number);
-                zooPlans.Add(player.ZooPlanOption2Number);
                 BgtFormat.CheckIds(player.SpecialCardIds);
                 if (player.SpecialCardIds.Any(id => !cards.Contains(id)))
                     throw new InvalidDataException("MissingSpecialCard");
             }
-            if (zooPlans.Any(number => number < 1 || number > 14) || zooPlans.Distinct().Count() != zooPlans.Count)
-                throw new InvalidDataException("InvalidZooPlans");
             ArkNovaPlacementRules.ValidateResolution(data.Players.ToDictionary(player => player.PlayerId,
                 player => ArkNovaScoringRules.CalculateNewScore(player.Attractiveness, player.Conservation)),
                 gameSession.Players.ToDictionary(player => player.PlayerId, player => player.Placement));

@@ -55,10 +55,10 @@ public sealed class ArkNovaContentTests
         using System.Text.Json.JsonDocument json = System.Text.Json.JsonDocument.Parse(stream);
         Assert.Equal(ArkNovaSpecialCardDefaults.Create().Select(card => card.Id).Order(),
             json.RootElement.GetProperty("specialCards").EnumerateObject().Select(card => Guid.Parse(card.Name)).Order());
-        Assert.Equal(Enumerable.Range(1, 14), json.RootElement.GetProperty("zooPlans").EnumerateObject().Select(plan => int.Parse(plan.Name)).Order());
+        Assert.Equal(Enumerable.Range(1, 17), json.RootElement.GetProperty("zooPlans").EnumerateObject().Select(plan => int.Parse(plan.Name)).Order());
         foreach (ArkNovaSpecialCard card in ArkNovaSpecialCardDefaults.Create())
             Assert.DoesNotContain("[missing:", catalog.ResolveName("special-card", card.Id.ToString(), null, "de", "de"));
-        foreach (int number in Enumerable.Range(1, 14))
+        foreach (int number in Enumerable.Range(1, 17))
             Assert.DoesNotContain("[missing:", catalog.ResolveName("zoo-plan", number.ToString(), null, "de", "de"));
         Assert.Equal("Steinadler", catalog.ResolveName("special-card", CardId, null, "de", "de"));
         Assert.Equal("Aussichtsplattform", catalog.ResolveName("zoo-plan", "1", null, "de", "de"));

@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.18.0.0 – 2026-11-10
+
+- Arche-Nova-Partien erlauben vor der ersten Auslosung die manuelle Zooplanwahl einschließlich Mehrfachvergabe und der Sonderpläne Turnier, 0 und A. Eine Auslosung ersetzt alle bisherigen Zuordnungen und sperrt die manuelle Wahl für diesen Entwurf.
+- Sessions speichern ausschließlich den tatsächlich gewählten Zooplan. Das inkompatible Entwicklungsschema erfordert gemäß Pre-Alpha-Strategie einen bewusst manuell vorgenommenen Datenbank-Neuaufbau; es gibt keine Migration und keinen automatischen Reset. Abgeschlossene Partien lassen sich vorher als .bgt sichern und anschließend importieren.
+- Neue Arche-Nova-Exporte verwenden Schema 3. Schema-2-Importe validieren die historischen Angebote und übernehmen anschließend ausschließlich den tatsächlich gewählten Plan; das allgemeine BGT-Format bleibt Version 1.
+
 ## 0.17.4.0 – 2026-11-09
 
 - Die Arche-Nova-Vorbereitung verwendet für das maximale Spielerlimit durchgängig das bestehende Modulmetadatum `ArkNovaGame.PlayerLimit`; die redundante Setup-Konstante entfällt.

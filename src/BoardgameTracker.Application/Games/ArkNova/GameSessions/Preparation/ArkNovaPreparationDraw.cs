@@ -31,7 +31,7 @@ public static class ArkNovaPreparationDraw
                 nameof(playerIds));
         }
 
-        List<ArkNovaZooPlanOption> available = [.. ArkNovaZooPlanCatalog.All];
+        List<ArkNovaZooPlanOption> available = [.. ArkNovaZooPlanCatalog.DrawPool];
 
         for (int index = available.Count - 1; index > 0; index--)
         {

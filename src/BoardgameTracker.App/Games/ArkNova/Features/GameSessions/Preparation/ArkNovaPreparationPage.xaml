@@ -13,15 +13,8 @@
 
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
-        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="False">
-<Grid.Triggers>
-                <MultiTrigger TargetType="Grid">
-                    <MultiTrigger.Conditions>
-                        <BindingCondition Binding="{Binding IsBusy}" Value="False" />
-                    </MultiTrigger.Conditions>
-                    <Setter Property="IsEnabled" Value="True" />
-                </MultiTrigger>
-            </Grid.Triggers>
+        <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding CanInteract}">
+
 <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.PrepareGame}"
@@ -157,13 +150,37 @@
                                                 WidthRequest="44" />
                                         </HorizontalStackLayout>
 
+                                        <Button Text="{x:Static res:AppResources.ChooseZooPlan}"
+                                                Style="{StaticResource SecondaryActionButton}"
+                                                Clicked="OnChooseZooPlanClicked" IsVisible="{Binding CanChooseManualZooPlan}" />
+                                        <Grid ColumnDefinitions="*,2*,*" ColumnSpacing="4" IsVisible="{Binding HasManualZooPlan}">
+                                        <Border Grid.Column="1" Padding="4" BackgroundColor="#BFFFFFFF"
+                                                Stroke="{DynamicResource SelectedBorder}" StrokeThickness="3" StrokeShape="RoundRectangle 10"
+                                                SemanticProperties.Description="{Binding ManualZooPlanDescription}"
+                                                SemanticProperties.Hint="{x:Static res:AppResources.ChooseZooPlan}">
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnManualZooPlanTapped" CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Grid HeightRequest="88">
+                                                <Image Source="{Binding ManualZooPlanIconSource}" Aspect="Fill" HeightRequest="81" />
+                                                <Border Margin="0,3,0,0" Padding="7,2" BackgroundColor="#DFFFFFFF"
+                                                        HorizontalOptions="Center" VerticalOptions="Start" StrokeThickness="0" StrokeShape="RoundRectangle 10">
+                                                    <Label Text="{Binding ManualZooPlanLabel}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource GameGraphicText}" />
+                                                </Border>
+                                                <Label Text="{x:Static res:AppResources.ZooPlanSelected}" FontSize="10" FontAttributes="Bold"
+                                                       HorizontalOptions="Center" VerticalOptions="End" BackgroundColor="{DynamicResource IconSurface}" TextColor="{DynamicResource GameGraphicText}" />
+                                            </Grid>
+                                        </Border>
+                                        </Grid>
+
                                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasZooPlans}">
                                             <Border
                                                 Padding="4"
                                                 BackgroundColor="#BFFFFFFF"
                                                 Stroke="{DynamicResource SelectedBorder}"
                                                 StrokeShape="RoundRectangle 10"
-                                                StrokeThickness="{Binding Option1StrokeThickness}">
+                                                StrokeThickness="{Binding Option1StrokeThickness}"
+                                                SemanticProperties.Description="{Binding ZooPlanOption1Description}">
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer
                                                         CommandParameter="{Binding .}"
@@ -197,7 +214,8 @@
                                                 BackgroundColor="#BFFFFFFF"
                                                 Stroke="{DynamicResource SelectedBorder}"
                                                 StrokeShape="RoundRectangle 10"
-                                                StrokeThickness="{Binding Option2StrokeThickness}">
+                                                StrokeThickness="{Binding Option2StrokeThickness}"
+                                                SemanticProperties.Description="{Binding ZooPlanOption2Description}">
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer
                                                         CommandParameter="{Binding .}"
@@ -241,6 +259,51 @@
                 Text="{x:Static res:AppResources.StartGame}" />
 </Grid>
 </Grid>
+
+        <Grid IsVisible="{Binding IsZooPlanPickerVisible}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
+            <Border Style="{StaticResource SelectionDialog}">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="440">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ImageButton Source="icon_back.png" Clicked="OnZooPlanPickerBackClicked" Style="{StaticResource IconButton}"
+                                     SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" Text="{x:Static res:AppResources.ChooseZooPlan}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" />
+                    </Grid>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding ZooPlanOptions}" SelectionMode="None">
+                        <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="7" /></CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="local:ArkNovaManualZooPlanOptionViewModel">
+                                <Border Padding="3" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10"
+                                        BackgroundColor="{DynamicResource Surface}" SemanticProperties.Description="{Binding Description}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnManualZooPlanOptionTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Border Padding="9,6" StrokeThickness="0" StrokeShape="RoundRectangle 7" MinimumHeightRequest="44">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsAssignedToOtherPlayer}" Value="True">
+                                                <Setter Property="Stroke" Value="{DynamicResource Danger}" />
+                                                <Setter Property="StrokeThickness" Value="2" />
+                                                <Setter Property="StrokeDashArray" Value="4,3" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Label Text="{Binding Title}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="✓" IsVisible="{Binding IsSelected}" VerticalOptions="Center" FontAttributes="Bold" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
 
         <Grid
             BackgroundColor="{DynamicResource BusyOverlay}"

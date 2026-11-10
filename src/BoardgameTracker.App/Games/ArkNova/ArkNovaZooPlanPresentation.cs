@@ -8,11 +8,25 @@ public static class ArkNovaZooPlanPresentation
 {
     public static string GetIconSource(int number)
     {
-        if (number is < 1 or > 14)
+        BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan.ValidateNumber(number);
+        return number switch
         {
-            throw new ArgumentOutOfRangeException(nameof(number), number, "Unknown Ark Nova zoo plan.");
-        }
+            15 => "ark_zoo_plan_turnier.png",
+            16 => "ark_zoo_plan_0.png",
+            17 => "ark_zoo_plan_a.png",
+            _ => $"zoo_plan_{number:00}.png"
+        };
+    }
 
-        return $"zoo_plan_{number:00}.png";
+    public static string GetLabel(int number)
+    {
+        BoardgameTracker.Core.Games.ArkNova.ArkNovaZooPlan.ValidateNumber(number);
+        return number switch
+        {
+            15 => BoardgameTracker.App.Resources.Localization.AppResources.TournamentZooPlanLabel,
+            16 => "0",
+            17 => "A",
+            _ => number.ToString(System.Globalization.CultureInfo.CurrentCulture)
+        };
     }
 }

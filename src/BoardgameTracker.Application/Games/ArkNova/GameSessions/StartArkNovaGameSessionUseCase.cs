@@ -61,11 +61,7 @@ public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTr
         IReadOnlyList<int> requestedZooPlanIds =
         [
             .. command.Players
-                .SelectMany(player => new[]
-                {
-                    player.ZooPlanOption1Number,
-                    player.ZooPlanOption2Number
-                })
+                .Select(player => player.SelectedZooPlanNumber!.Value)
                 .Distinct()
         ];
 
@@ -88,8 +84,6 @@ public sealed class StartArkNovaGameSessionUseCase(IDbContextFactory<BoardgameTr
                 gameSession.Id,
                 player.PlayerId,
                 player.Color,
-                player.ZooPlanOption1Number,
-                player.ZooPlanOption2Number,
                 player.SelectedZooPlanNumber.GetValueOrDefault()))
         ];
 

@@ -20,6 +20,8 @@ public interface IGameTransferSchema
 {
     string GameKey { get; }
     int SchemaVersion { get; }
+    bool SupportsVersion(int version) => version == SchemaVersion;
+    JsonElement NormalizeGameSessionData(int version, JsonElement data) => data;
     void Validate(BgtGame game, IReadOnlyList<BgtGameSession> gameSessions);
 }
 
@@ -55,7 +57,17 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
             throw new InvalidDataException("UpdateRequired");
         BgtFile file = JsonSerializer.Deserialize<BgtFile>(json, JsonOptions) ?? throw new InvalidDataException("InvalidFile");
         Validate(file);
-        return file;
+        Dictionary<Guid, BgtGame> games = file.Games.ToDictionary(game => game.Id);
+        Dictionary<string, IGameTransferSchema> modules = schemas.ToDictionary(schema => schema.GameKey);
+        return file with
+        {
+            GameSessions = file.GameSessions.Select(session => session with
+            {
+                Data = modules[games[session.GameId].Key].NormalizeGameSessionData(
+                    games[session.GameId].SchemaVersion, session.Data)
+            }).ToArray(),
+            Games = file.Games.Select(game => game with { SchemaVersion = modules[game.Key].SchemaVersion }).ToArray()
+        };
     }
 
     private static void CheckProperties(JsonElement element)
@@ -120,7 +132,7 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
         {
             IGameTransferSchema schema = schemas.SingleOrDefault(schema => schema.GameKey == game.Key)
                 ?? throw new InvalidDataException("UpdateRequired");
-            if (game.SchemaVersion != schema.SchemaVersion)
+            if (!schema.SupportsVersion(game.SchemaVersion))
                 throw new InvalidDataException("UpdateRequired");
             schema.Validate(game, file.GameSessions.Where(gameSession => gameSession.GameId == game.Id).ToArray());
         }

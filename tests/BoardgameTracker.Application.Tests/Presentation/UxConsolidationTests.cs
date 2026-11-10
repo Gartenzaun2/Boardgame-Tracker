@@ -104,7 +104,7 @@ public sealed class UxConsolidationTests
         Assert.Equal("{DynamicResource TextPrimary}", Value("SettingsItemLabel", "TextColor"));
         Assert.Equal("13", Value("SettingsHintLabel", "FontSize"));
         Assert.Equal("15", Value("SettingsLookup", "FontSize"));
-        Assert.Equal("132", Value("SettingsLookupHost", "WidthRequest"));
+        Assert.Equal("175", Value("SettingsLookupHost", "WidthRequest"));
         Assert.Equal("44", Value("SettingsLookupHost", "MinimumHeightRequest"));
         Assert.Equal("Center", Value("SettingsLookupHost", "VerticalOptions"));
         Assert.Equal("44", Value("SettingsLookup", "MinimumHeightRequest"));

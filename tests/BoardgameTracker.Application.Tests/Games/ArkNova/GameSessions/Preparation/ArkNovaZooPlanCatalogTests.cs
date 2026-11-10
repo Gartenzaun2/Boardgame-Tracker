@@ -5,15 +5,21 @@ namespace BoardgameTracker.Application.Tests.Games.ArkNova.GameSessions.Preparat
 public sealed class ArkNovaZooPlanCatalogTests
 {
     [Fact]
-    public void Catalog_ContainsFourteenUniquePlans()
+    public void Catalog_ContainsSeventeenUniquePlans()
     {
-        Assert.Equal(14, ArkNovaZooPlanCatalog.All.Count);
-        Assert.Equal(14, ArkNovaZooPlanCatalog.All.Select(plan => plan.Number).Distinct().Count());
+        Assert.Equal(17, ArkNovaZooPlanCatalog.All.Count);
+        Assert.Equal(17, ArkNovaZooPlanCatalog.All.Select(plan => plan.Number).Distinct().Count());
     }
 
     [Fact]
     public void Catalog_UsesExpectedPlanNumbers()
     {
-        Assert.Equal(Enumerable.Range(1, 14), ArkNovaZooPlanCatalog.All.Select(plan => plan.Number));
+        Assert.Equal(Enumerable.Range(1, 17), ArkNovaZooPlanCatalog.All.Select(plan => plan.Number));
     }
+    [Fact]
+    public void DrawPool_ContainsOnlyRegularPlans()
+    {
+        Assert.Equal(Enumerable.Range(1, 14), ArkNovaZooPlanCatalog.DrawPool.Select(plan => plan.Number));
+    }
+
 }

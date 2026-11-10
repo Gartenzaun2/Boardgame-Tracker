@@ -14,7 +14,7 @@ public sealed class ArkNovaGameSessionSetupTests
         PlayerColor[] colors = [PlayerColor.Blue, PlayerColor.Red, PlayerColor.Yellow, PlayerColor.Black];
         ArkNovaGameSessionSetupPlayer[] players = [.. Enumerable.Range(0, playerCount)
             .Select(index => new ArkNovaGameSessionSetupPlayer(
-                Guid.NewGuid(), colors[index], index * 2 + 1, index * 2 + 2, index * 2 + 1))];
+                Guid.NewGuid(), colors[index], index * 2 + 1))];
 
         ArkNovaGameSessionSetup.Validate(players);
     }
@@ -26,7 +26,7 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         ArkNovaGameSessionSetupPlayer[] players = [.. Enumerable.Range(0, playerCount)
             .Select(index => new ArkNovaGameSessionSetupPlayer(
-                Guid.NewGuid(), PlayerColor.Blue, index * 2 + 1, index * 2 + 2, index * 2 + 1))];
+                Guid.NewGuid(), PlayerColor.Blue, index * 2 + 1))];
 
         ArgumentException exception = Assert.Throws<ArgumentException>(() => ArkNovaGameSessionSetup.Validate(players));
 
@@ -38,8 +38,8 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), PlayerColor.Red, 3, 4, 4)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1),
+            new(Guid.NewGuid(), PlayerColor.Red, 4)
         ]);
     }
 
@@ -48,19 +48,36 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), PlayerColor.Blue, 3, 4, 3)
+            new(Guid.NewGuid(), PlayerColor.Blue, 1),
+            new(Guid.NewGuid(), PlayerColor.Blue, 3)
         ]));
     }
 
-    [Fact]
-    public void Validate_WithZooPlanOfferedTwice_Throws()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    public void Validate_WithRepeatedSelectedPlan_DoesNotThrow(int number)
     {
-        Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
+        ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1),
-            new(Guid.NewGuid(), PlayerColor.Red, 2, 3, 3)
-        ]));
+            new(Guid.NewGuid(), PlayerColor.Blue, number),
+            new(Guid.NewGuid(), PlayerColor.Red, number)
+        ]);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(0)]
+    [InlineData(18)]
+    public void Validate_WithUnknownSelectedPlan_Throws(int number)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
+            [new(Guid.NewGuid(), PlayerColor.Blue, number)]));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaZooPlan(number));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new BoardgameTracker.Core.Games.ArkNova.GameSessions.ArkNovaGameSessionPlayer(
+            Guid.NewGuid(), Guid.NewGuid(), PlayerColor.Blue, number));
     }
 
     [Fact]
@@ -68,7 +85,7 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<InvalidOperationException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, null)
+            new(Guid.NewGuid(), PlayerColor.Blue, null)
         ]));
     }
 
@@ -77,7 +94,7 @@ public sealed class ArkNovaGameSessionSetupTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
         [
-            new(Guid.NewGuid(), (PlayerColor)999, 1, 2, 1)
+            new(Guid.NewGuid(), (PlayerColor)999, 1)
         ]));
     }
 
@@ -88,6 +105,6 @@ public sealed class ArkNovaGameSessionSetupTests
     public void Validate_WithGeneralColorOutsideArkNovaPalette_Throws(PlayerColor color)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
-            [new(Guid.NewGuid(), color, 1, 2, 1)]));
+            [new(Guid.NewGuid(), color, 1)]));
     }
 }

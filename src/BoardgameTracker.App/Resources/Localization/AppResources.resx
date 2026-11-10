@@ -914,4 +914,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GroupPlayerLimitExceeded" xml:space="preserve">
     <value>Die Gruppe hat zu viele Mitglieder für mindestens eines der ausgewählten Spiele. Bitte entferne die betreffende Spielzuordnung oder reduziere die Mitgliederzahl im Entwurf.</value>
   </data>
+  <data name="ChooseZooPlan" xml:space="preserve"><value>Zooplan auswählen</value></data>
+  <data name="TournamentZooPlanLabel" xml:space="preserve"><value>Turnier</value></data>
+  <data name="ZooPlanAssignedToOtherPlayer" xml:space="preserve"><value>Bereits einem anderen Spieler zugeordnet</value></data>
 </root>

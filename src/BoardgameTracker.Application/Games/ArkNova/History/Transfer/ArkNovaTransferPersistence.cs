@@ -12,7 +12,7 @@ namespace BoardgameTracker.Application.Games.ArkNova.History.Transfer;
 public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
 {
     public string GameKey => ArkNovaGame.Key;
-    public int SchemaVersion => 2;
+    public int SchemaVersion => 3;
     public async Task<JsonElement> ReadSnapshotAsync(BoardgameTrackerDbContext db, CancellationToken cancellationToken)
     {
         var cards = await db.ArkNovaSpecialCards.AsNoTracking().OrderBy(card => card.Id)
@@ -42,8 +42,6 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
                 player.GameSessionId,
                 player.PlayerId,
                 player.Color,
-                player.ZooPlanOption1Number,
-                player.ZooPlanOption2Number,
                 player.SelectedZooPlanNumber,
                 player.Attractiveness,
                 player.Conservation,
@@ -52,13 +50,13 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
         var assignments = await db.ArkNovaGameSessionSpecialCardAssignments.AsNoTracking().Where(assignment => gameSessionIds.Contains(assignment.GameSessionId))
             .Select(assignment => new { assignment.GameSessionId, assignment.PlayerId, assignment.SpecialCardId }).ToArrayAsync(cancellationToken);
         return gameSessionIds.ToDictionary(gameSessionId => gameSessionId, gameSessionId => JsonSerializer.SerializeToElement(new ArkNovaTransferGameSession(players.Where(player => player.GameSessionId == gameSessionId).Select(player => new ArkNovaTransferPlayer(player.PlayerId,
-            player.Color, player.ZooPlanOption1Number, player.ZooPlanOption2Number, player.SelectedZooPlanNumber,
+            player.Color, player.SelectedZooPlanNumber,
             player.Attractiveness!.Value, player.Conservation!.Value, player.Reputation,
             assignments.Where(assignment => assignment.GameSessionId == gameSessionId && assignment.PlayerId == player.PlayerId).Select(assignment => assignment.SpecialCardId).ToArray())).ToArray()), BgtFormat.JsonOptions));
     }
     public async Task<(int Existing, int New)> PreviewAsync(BoardgameTrackerDbContext db, BgtGame game, IReadOnlyList<BgtGameSession> gameSessions, CancellationToken cancellationToken)
     {
-        HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(gameSession.Data).Players).SelectMany(player => player.SpecialCardIds).ToHashSet();
+        HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.ReadGameSession(game.SchemaVersion, gameSession.Data).Players).SelectMany(player => player.SpecialCardIds).ToHashSet();
         Guid[] local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => card.Id).ToArrayAsync(cancellationToken);
         int existing = 0;
         int added = 0;
@@ -75,7 +73,7 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
         IReadOnlyDictionary<Guid, Guid> players, CancellationToken cancellationToken)
     {
         ArkNovaTransferReferences references = ArkNovaTransferSchema.Read<ArkNovaTransferReferences>(game.Data);
-        HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(gameSession.Data).Players)
+        HashSet<Guid> needed = gameSessions.SelectMany(gameSession => ArkNovaTransferSchema.ReadGameSession(game.SchemaVersion, gameSession.Data).Players)
             .SelectMany(player => player.SpecialCardIds).ToHashSet();
         Guid[] local = await db.ArkNovaSpecialCards.AsNoTracking().Select(card => card.Id).ToArrayAsync(cancellationToken);
         HashSet<string> localNames = (await db.ArkNovaUserContent.AsNoTracking()
@@ -95,11 +93,10 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
         }
         foreach (BgtGameSession gameSession in gameSessions)
         {
-            foreach (ArkNovaTransferPlayer input in ArkNovaTransferSchema.Read<ArkNovaTransferGameSession>(gameSession.Data).Players)
+            foreach (ArkNovaTransferPlayer input in ArkNovaTransferSchema.ReadGameSession(game.SchemaVersion, gameSession.Data).Players)
             {
                 Guid playerId = players[input.PlayerId];
-                ArkNovaGameSessionPlayer player = new(gameSession.Id, playerId, input.Color, input.ZooPlanOption1Number,
-                    input.ZooPlanOption2Number, input.SelectedZooPlanNumber);
+                ArkNovaGameSessionPlayer player = new(gameSession.Id, playerId, input.Color, input.SelectedZooPlanNumber);
                 player.SetScoreValues(input.Attractiveness, input.Conservation, input.Reputation);
                 db.ArkNovaGameSessionPlayers.Add(player);
                 foreach (Guid card in input.SpecialCardIds)

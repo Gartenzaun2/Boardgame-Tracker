@@ -22,7 +22,7 @@ und [DATA_MODEL.md](DATA_MODEL.md).
 
 ## 3. Zoopläne
 
-Zooplan-Grafiken bleiben untinted. Eine Auswahl markiert die gesamte quadratische
+Zooplan-Grafiken bleiben untinted. Eine Auswahl markiert die gesamte
 Zooplankachel mit `SelectedBorder` und sichtbarer Auswahlmarkierung. Skizze und
 Kennzeichnung (bei Spezialplänen `Turnier`, `0`, `A`) bleiben sichtbar. Helle
 Grafikbadges verwenden `GameGraphicText`, auch auf dunklen Spielerflächen.
@@ -31,8 +31,10 @@ Im unbesetzten Zooplanbereich der Spielerkachel steht **Zooplan auswählen** als
 `SecondaryActionButton` mit thematischem `SurfaceSecondary` und `TextPrimary`;
 keine Primary-Aktionsfläche und kein zusätzlicher eigener Farbtoken. Die
 Spielerfläche behält ihre PlayerColor-Farbe, eingebettete Controls bleiben neutral.
-Nach einer manuellen Wahl ersetzt genau eine quadratische Zooplangrafik den Button;
-bei Auslosung erscheinen die zwei bekannten quadratischen Optionen nebeneinander.
+Nach einer manuellen Wahl ersetzt genau eine mittig ausgerichtete Zooplankachel den Button;
+sie besitzt dieselbe flexible Breite und Höhe wie eine der ausgelosten Optionen.
+Bei Auslosung erscheinen die zwei Optionen nebeneinander und füllen jeweils die
+Hälfte des verfügbaren Zooplanbereichs bei unveränderter Höhe; ihre Breite ist nicht fest vorgegeben.
 
 Die manuelle Auswahl benutzt den bestehenden `SelectionDialog` mit reinen
 Texteinträgen aus sichtbarer Kennzeichnung und lokalisiertem Plannamen; **keine

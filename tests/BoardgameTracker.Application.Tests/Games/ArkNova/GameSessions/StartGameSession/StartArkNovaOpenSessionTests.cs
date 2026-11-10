@@ -51,7 +51,7 @@ public sealed class StartArkNovaOpenSessionTests
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
         StartArkNovaGameSessionUseCase useCase = new(new ContextFactory(options));
         StartArkNovaGameSessionCommand command = new(group.Id, DateTimeOffset.UtcNow,
-            [new(player.Id, PlayerColor.Blue, 1, 2, 1)]);
+            [new(player.Id, PlayerColor.Blue, 1)]);
         if (expected)
             await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.StartAsync(command, TestContext.Current.CancellationToken));
         else

@@ -78,8 +78,8 @@ public sealed class PhotoDatasetTests : IDisposable
         var session = await db.AddSessionAsync(scoring: true);
         await using (var context = db.CreateDbContext())
         {
-            context.AddRange(new ArkNovaGameSessionPlayer(session.Id, db.First.Id, PlayerColor.Red, 1, 2, 1),
-                new ArkNovaGameSessionPlayer(session.Id, db.Second.Id, PlayerColor.Blue, 2, 3, 2));
+            context.AddRange(new ArkNovaGameSessionPlayer(session.Id, db.First.Id, PlayerColor.Red, 1),
+                new ArkNovaGameSessionPlayer(session.Id, db.Second.Id, PlayerColor.Blue, 2));
             await context.SaveChangesAsync(Token);
         }
         ArkNovaPhotoDataset dataset = Create();
@@ -161,8 +161,8 @@ public sealed class PhotoDatasetTests : IDisposable
         var session = await db.AddSessionAsync(scoring: true);
         await using (var context = db.CreateDbContext())
         {
-            ArkNovaGameSessionPlayer first = new(session.Id, db.First.Id, PlayerColor.Red, 1, 2, 1);
-            ArkNovaGameSessionPlayer second = new(session.Id, db.Second.Id, PlayerColor.Blue, 2, 3, 2);
+            ArkNovaGameSessionPlayer first = new(session.Id, db.First.Id, PlayerColor.Red, 1);
+            ArkNovaGameSessionPlayer second = new(session.Id, db.Second.Id, PlayerColor.Blue, 2);
             first.SetScoreValues(70, 20, null);
             second.SetScoreValues(60, 19, null);
             context.AddRange(first, second);

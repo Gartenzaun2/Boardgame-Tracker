@@ -26,25 +26,6 @@ Engine-Lauf ohne plattformspezifischen technischen Fehler funktioniert. Dies ist
 kein neues CV-Forschungs- oder Produktfreigabegate und darf keine Optimierung oder
 Parameteränderung auslösen.
 
-## Arche Nova – Zooplanwahl in der Partievorbereitung
-
-### Manuelle Zooplanwahl und Session-/Transferschema auf den Sollzustand bringen
-
-**Status:** offen – vereinbarter Sollzustand ist in den Arche-Nova-Spezifikationen dokumentiert, Umsetzung steht aus.
-
-**Ist:** Der bestehende Startpfad speichert je Teilnehmer zwei angebotene Zoopläne
-und einen gewählten Plan; manuelle Einzelzuweisung, doppelte Pläne und die drei
-Sonderpläne sind im aktuellen Persistenzvertrag nicht vorgesehen.
-
-**Ziel:** Manuelle Planwahl vor der ersten Auslosung, danach ausschließlich die
-bestehende Zwei-Optionen-Auslosung. Turnier/0/A ausschließlich im manuellen
-Katalog mit den freigegebenen, unveränderten Grafiken. Die Session persistiert nur
-den gewählten Plan; Datenbankmigration erhält vorhandene historische Wahlen,
-Import/Export verwendet Schema 3 und übernimmt bisherige Schema-2-Exporte
-kompatibel. Betroffene Startvalidierung, Content-Katalog, UI, Transfer und Tests
-werden gezielt angepasst. Details liegen in den kanonischen
-`docs/Games/ArkNova/{PRODUCT_SPEC,DATA_MODEL,UI_DESIGN_GUIDE,UI_WIREFRAME,IMPORT_EXPORT}.md`.
-
 ## Arche Nova – CV-Datensammlung
 
 ### Default vor dem ersten 1.0-Build bewusst umstellen

@@ -1,8 +1,7 @@
 namespace BoardgameTracker.Core.Games.ArkNova;
 
 /// <summary>
-/// Represents one of the fourteen fixed Ark Nova zoo plans. The printed plan number
-/// is its stable domain identity and therefore also its persistence key.
+/// Represents a fixed Ark Nova zoo plan by its stable catalog identity.
 /// </summary>
 public sealed class ArkNovaZooPlan
 {
@@ -12,9 +11,17 @@ public sealed class ArkNovaZooPlan
 
     public ArkNovaZooPlan(int number)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(number);
+        ValidateNumber(number);
         Number = number;
     }
 
     public int Number { get; private set; }
+
+    public static bool IsValidNumber(int number) => number is >= 1 and <= 17;
+
+    public static void ValidateNumber(int number)
+    {
+        if (!IsValidNumber(number))
+            throw new ArgumentOutOfRangeException(nameof(number), number, "Unknown Ark Nova zoo plan.");
+    }
 }

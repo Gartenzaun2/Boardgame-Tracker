@@ -159,7 +159,7 @@ public sealed class ExportDestinationTests
                     player.SetPlacement(1);
                     int plan = player.PlayerId == database.First.Id ? 1 : 3;
                     ArkNovaGameSessionPlayer values = new(session.Id, player.PlayerId,
-                        plan == 1 ? PlayerColor.Blue : PlayerColor.Red, plan, plan + 1, plan);
+                        plan == 1 ? PlayerColor.Blue : PlayerColor.Red, plan);
                     values.SetScoreValues(70, 20, null);
                     db.ArkNovaGameSessionPlayers.Add(values);
                 }

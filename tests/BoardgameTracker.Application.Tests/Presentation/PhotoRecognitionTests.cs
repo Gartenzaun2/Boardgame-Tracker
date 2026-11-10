@@ -55,7 +55,7 @@ public sealed class PhotoRecognitionTests
         var session = await database.AddSessionAsync(scoring: true);
         await using (var context = database.CreateDbContext())
         {
-            ArkNovaGameSessionPlayer player = new(session.Id, database.First.Id, PlayerColor.Red, 1, 2, 1);
+            ArkNovaGameSessionPlayer player = new(session.Id, database.First.Id, PlayerColor.Red, 1);
             player.SetScoreValues(70, 20, 8);
             context.Add(player); await context.SaveChangesAsync(Token);
         }
@@ -80,8 +80,8 @@ public sealed class PhotoRecognitionTests
         var session = await database.AddSessionAsync(scoring: true);
         await using (var context = database.CreateDbContext())
         {
-            ArkNovaGameSessionPlayer first = new(session.Id, database.First.Id, PlayerColor.Red, 1, 2, 1);
-            ArkNovaGameSessionPlayer second = new(session.Id, database.Second.Id, PlayerColor.Blue, 2, 3, 2);
+            ArkNovaGameSessionPlayer first = new(session.Id, database.First.Id, PlayerColor.Red, 1);
+            ArkNovaGameSessionPlayer second = new(session.Id, database.Second.Id, PlayerColor.Blue, 2);
             first.SetScoreValues(70, 20, 8); second.SetScoreValues(60, 19, 7);
             context.AddRange(first, second); await context.SaveChangesAsync(Token);
         }

@@ -16,7 +16,7 @@ public sealed class ArkNovaUserContent
         }
         else if (resourceType == ZooPlan)
         {
-            if (!int.TryParse(objectId, out int number) || number is < 1 or > 14 || number.ToString() != objectId)
+            if (!int.TryParse(objectId, out int number) || number is < 1 or > 17 || number.ToString() != objectId)
                 throw new ArgumentException("Invalid zoo-plan number.", nameof(objectId));
         }
         else

@@ -100,6 +100,21 @@
       "name": {
         "de": "Lagune"
       }
+    },
+    "15": {
+      "name": {
+        "de": "Turnierplan"
+      }
+    },
+    "16": {
+      "name": {
+        "de": "Plan 0"
+      }
+    },
+    "17": {
+      "name": {
+        "de": "Plan A"
+      }
     }
   }
 }

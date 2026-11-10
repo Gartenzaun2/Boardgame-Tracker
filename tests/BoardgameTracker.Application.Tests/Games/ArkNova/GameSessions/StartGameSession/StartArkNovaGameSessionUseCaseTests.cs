@@ -11,7 +11,7 @@ public sealed class StartArkNovaGameSessionUseCaseTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private static StartArkNovaGameSessionCommand Command(SliceDatabase database) => new(database.Group.Id, DateTimeOffset.UtcNow,
-        [new(database.First.Id, PlayerColor.Blue, 1, 2, 1), new(database.Second.Id, PlayerColor.Red, 3, 4, 4)]);
+        [new(database.First.Id, PlayerColor.Blue, 1), new(database.Second.Id, PlayerColor.Red, 4)]);
 
     [Fact]
     public async Task StartAsync_PersistsGameSessionAndArkNovaSnapshots()
@@ -39,9 +39,13 @@ public sealed class StartArkNovaGameSessionUseCaseTests
         await using SliceDatabase database = await SliceDatabase.CreateAsync(archived: reason == "archived");
         StartArkNovaGameSessionCommand command = Command(database);
         if (reason == "membership")
-            command = command with { Players = [new(Guid.NewGuid(), PlayerColor.Blue, 1, 2, 1), command.Players[1]] };
+            command = command with { Players = [new(Guid.NewGuid(), PlayerColor.Blue, 1), command.Players[1]] };
         if (reason == "plan")
-            command = command with { Players = [new(database.First.Id, PlayerColor.Blue, 1, 99, 1), command.Players[1]] };
+        {
+            await using BoardgameTrackerDbContext missingPlan = database.CreateDbContext();
+            await missingPlan.ArkNovaZooPlans.Where(plan => plan.Number == 2).ExecuteDeleteAsync(Token);
+            command = command with { Players = [new(database.First.Id, PlayerColor.Blue, 2), command.Players[1]] };
+        }
         if (reason == "open")
             await database.AddSessionAsync();
         await Assert.ThrowsAsync<InvalidOperationException>(() => new StartArkNovaGameSessionUseCase(database).StartAsync(command, Token));

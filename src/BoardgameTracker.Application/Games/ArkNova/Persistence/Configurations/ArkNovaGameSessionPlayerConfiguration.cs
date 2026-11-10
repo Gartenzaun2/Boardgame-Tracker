@@ -19,11 +19,8 @@ internal sealed class ArkNovaGameSessionPlayerConfiguration : IEntityTypeConfigu
             table =>
             {
                 table.HasCheckConstraint(
-                    "CK_ArkNovaGameSessionPlayers_DifferentZooPlanOptions",
-                    "ZooPlanOption1Number <> ZooPlanOption2Number");
-                table.HasCheckConstraint(
-                    "CK_ArkNovaGameSessionPlayers_SelectedZooPlanWasOffered",
-                    "SelectedZooPlanNumber = ZooPlanOption1Number OR SelectedZooPlanNumber = ZooPlanOption2Number");
+                    "CK_ArkNovaGameSessionPlayers_SelectedZooPlan_Range",
+                    "SelectedZooPlanNumber >= 1 AND SelectedZooPlanNumber <= 17");
                 table.HasCheckConstraint(
                     "CK_ArkNovaGameSessionPlayers_Attractiveness_Range",
                     "Attractiveness IS NULL OR (Attractiveness >= 0 AND Attractiveness <= 113)");
@@ -44,18 +41,6 @@ internal sealed class ArkNovaGameSessionPlayerConfiguration : IEntityTypeConfigu
             .HasForeignKey<ArkNovaGameSessionPlayer>(x => new { x.GameSessionId, x.PlayerId })
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasOne<ArkNovaZooPlan>()
-            .WithMany()
-            .HasForeignKey(x => x.ZooPlanOption1Number)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne<ArkNovaZooPlan>()
-            .WithMany()
-            .HasForeignKey(x => x.ZooPlanOption2Number)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<ArkNovaZooPlan>()
             .WithMany()

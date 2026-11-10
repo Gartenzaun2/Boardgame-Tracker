@@ -121,6 +121,38 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
         }
     }
 
+    private void OnChooseZooPlanClicked(object? sender, EventArgs e)
+    {
+        if (sender is Button { BindingContext: ArkNovaPreparationPlayerViewModel player })
+            _viewModel.OpenZooPlanPicker(player);
+    }
+
+    private void OnManualZooPlanTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ArkNovaPreparationPlayerViewModel player)
+            _viewModel.OpenZooPlanPicker(player);
+    }
+
+    private void OnManualZooPlanOptionTapped(object? sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ArkNovaManualZooPlanOptionViewModel option)
+            _viewModel.SelectManualZooPlan(option);
+    }
+
+    private void OnZooPlanPickerBackClicked(object? sender, EventArgs e) => _viewModel.CloseZooPlanPicker();
+
+    protected override bool OnBackButtonPressed()
+    {
+        if (_viewModel.IsBusy)
+            return true;
+        if (_viewModel.IsZooPlanPickerVisible)
+        {
+            _viewModel.CloseZooPlanPicker();
+            return true;
+        }
+        return base.OnBackButtonPressed();
+    }
+
     private void OnZooPlanOption1Tapped(object? sender, TappedEventArgs e)
     {
         if (e.Parameter is ArkNovaPreparationPlayerViewModel player)

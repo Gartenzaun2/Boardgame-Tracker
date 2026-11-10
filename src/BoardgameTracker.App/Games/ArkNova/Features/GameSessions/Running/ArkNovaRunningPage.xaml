@@ -85,7 +85,7 @@
                                                 <Label TextColor="{DynamicResource GameGraphicText}"
                                                     FontAttributes="Bold"
                                                     FontSize="12"
-                                                    Text="{Binding ZooPlanNumber}" />
+                                                    Text="{Binding ZooPlanLabel}" />
                                             </Border>
                                         </Grid>
                                     </Border>

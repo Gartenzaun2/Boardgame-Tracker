@@ -17,12 +17,12 @@ public sealed class ArkNovaPreparationDrawTests
         IReadOnlyList<PlayerColor> colors = ArkNovaPlayerColors.Rules.AllowedColors;
         ArkNovaGameSessionSetupPlayer[] setupPlayers = [.. draws.Select((draw, index) =>
             new ArkNovaGameSessionSetupPlayer(
-                draw.PlayerId, colors[index], draw.Option1.Number, draw.Option2.Number, draw.Option1.Number))];
+                draw.PlayerId, colors[index], draw.Option1.Number))];
 
         ArkNovaGameSessionSetup.Validate(setupPlayers);
 
         Assert.Throws<ArgumentException>(() => ArkNovaGameSessionSetup.Validate(
-            [.. setupPlayers, new(Guid.NewGuid(), PlayerColor.Blue, 9, 10, 9)]));
+            [.. setupPlayers, new(Guid.NewGuid(), PlayerColor.Blue, 9)]));
         Assert.Throws<ArgumentException>(() => ArkNovaPreparationDraw.Draw(
             [.. players, Guid.NewGuid()], new Random(12345)));
     }
@@ -45,5 +45,6 @@ public sealed class ArkNovaPreparationDrawTests
         ];
 
         Assert.Equal(8, offeredPlans.Distinct().Count());
+        Assert.All(offeredPlans, number => Assert.InRange(number, 1, 14));
     }
 }

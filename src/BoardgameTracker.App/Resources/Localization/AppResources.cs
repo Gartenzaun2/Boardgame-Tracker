@@ -9,6 +9,9 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string ChooseZooPlan => GetString(nameof(ChooseZooPlan));
+    public static string TournamentZooPlanLabel => GetString(nameof(TournamentZooPlanLabel));
+    public static string ZooPlanAssignedToOtherPlayer => GetString(nameof(ZooPlanAssignedToOtherPlayer));
     public static string GroupPlayerLimitExceeded => GetString(nameof(GroupPlayerLimitExceeded));
     public static string SettingsGeneral => GetString(nameof(SettingsGeneral));
     public static string AppLanguage => GetString(nameof(AppLanguage));

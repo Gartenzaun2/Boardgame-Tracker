@@ -75,7 +75,7 @@ public sealed class ArkNovaResultPlayerViewModel
         ColorText = PlayerColorPresentation.GetName(player.Color);
         Tint = PlayerColorPresentation.GetBackground(player.Color);
         PlayerTextColor = PlayerColorPresentation.GetText(player.Color);
-        ZooPlanText = string.Format(AppResources.ZooPlanFormat, player.ZooPlanNumber);
+        ZooPlanText = string.Format(AppResources.ZooPlanFormat, ArkNovaZooPlanPresentation.GetLabel(player.ZooPlanNumber));
         RawValuesText = string.Format(AppResources.RawScoreFormat, player.Attractiveness, player.Conservation)
             + " · " + (player.Reputation is int reputation
                 ? string.Format(AppResources.ResultReputationFormat, reputation)

@@ -336,7 +336,8 @@ Allgemeiner Transfer kennt konkrete Spiele nur über registrierte Verträge.
 `IGameTransferSchema` besitzt:
 
 - `GameKey`;
-- `SchemaVersion`;
+- `SchemaVersion` sowie explizit unterstützte Eingabeversionen;
+- Normalisierung älterer `GameSession.data` vor dem Matching;
 - Validierung von `Game.data` und `GameSession.data`.
 
 `IGameTransferPersistence` besitzt für dasselbe Spiel:

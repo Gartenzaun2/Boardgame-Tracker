@@ -201,6 +201,7 @@ public sealed class ArkNovaRunningPlayerViewModel
     public string Name { get; }
     public int Position { get; }
     public int ZooPlanNumber { get; }
+    public string ZooPlanLabel => ArkNovaZooPlanPresentation.GetLabel(ZooPlanNumber);
     public string ZooPlanText { get; }
     public string ZooPlanIconSource { get; }
 

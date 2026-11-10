@@ -23,6 +23,17 @@ public partial class ArkNovaPreparationViewModel(
     StartArkNovaGameSessionUseCase startGameSessionUseCase,
     ILogger<ArkNovaPreparationViewModel> logger) : ObservableObject
 {
+    private IReadOnlyDictionary<int, string> _zooPlanNames = new Dictionary<int, string>();
+    private ArkNovaPreparationPlayerViewModel? _zooPlanTarget;
+
+    public ObservableCollection<ArkNovaManualZooPlanOptionViewModel> ZooPlanOptions { get; } = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
+    public partial bool IsZooPlanPickerVisible { get; private set; }
+
+    public bool CanInteract => !IsBusy && !IsZooPlanPickerVisible;
+
     private static readonly PlayerColor[] AllColors = [.. ArkNovaPlayerColors.Rules.AllowedColors];
 
     public ObservableCollection<ArkNovaPreparationPlayerViewModel> Players { get; } = [];
@@ -38,6 +49,7 @@ public partial class ArkNovaPreparationViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanStart))]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
@@ -53,7 +65,7 @@ public partial class ArkNovaPreparationViewModel(
         !IsBusy
         && Players.Count >= ArkNovaGameSessionSetup.MinimumPlayerCount
         && Players.Count <= ArkNovaGame.PlayerLimit.MaximumPlayers
-        && Players.All(player => player.SelectedZooPlanNumber is not null
+        && Players.All(player => player.SelectedZooPlanNumber is int number && ArkNovaZooPlan.IsValidNumber(number)
             && ArkNovaPlayerColors.Rules.Allows(player.Color))
         && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
 
@@ -86,6 +98,8 @@ public partial class ArkNovaPreparationViewModel(
             LastGameSessionText = FormatLastGameSession(data.LastGameSession);
             Players.Clear();
             PlansDrawn = false;
+            CloseZooPlanPicker();
+            _zooPlanNames = data.ZooPlanNames;
 
             if (data.IsArchived)
             {
@@ -129,7 +143,7 @@ public partial class ArkNovaPreparationViewModel(
 
     public void DrawZooPlans()
     {
-        if (Players.Count == 0)
+        if (IsBusy || Players.Count == 0)
         {
             return;
         }
@@ -145,6 +159,7 @@ public partial class ArkNovaPreparationViewModel(
             player.SetZooPlans(draw.Option1, draw.Option2);
         }
 
+        CloseZooPlanPicker();
         PlansDrawn = true;
         OnPropertyChanged(nameof(CanStart));
     }
@@ -152,8 +167,43 @@ public partial class ArkNovaPreparationViewModel(
     public void SelectZooPlan(ArkNovaPreparationPlayerViewModel player, int optionNumber)
     {
         ArgumentNullException.ThrowIfNull(player);
+        if (IsBusy || !PlansDrawn || !Players.Contains(player))
+            return;
         player.SelectZooPlan(optionNumber);
         OnPropertyChanged(nameof(CanStart));
+    }
+
+    public void OpenZooPlanPicker(ArkNovaPreparationPlayerViewModel player)
+    {
+        if (IsBusy || PlansDrawn || !Players.Contains(player))
+            return;
+        _zooPlanTarget = player;
+        ZooPlanOptions.Clear();
+        foreach (ArkNovaZooPlanOption plan in ArkNovaZooPlanCatalog.All)
+        {
+            ZooPlanOptions.Add(new(plan.Number,
+                $"{ArkNovaZooPlanPresentation.GetLabel(plan.Number)} – {_zooPlanNames[plan.Number]}",
+                player.SelectedZooPlanNumber == plan.Number,
+                Players.Any(other => other.PlayerId != player.PlayerId && other.SelectedZooPlanNumber == plan.Number)));
+        }
+        IsZooPlanPickerVisible = true;
+    }
+
+    public void SelectManualZooPlan(ArkNovaManualZooPlanOptionViewModel option)
+    {
+        if (IsBusy || PlansDrawn || !IsZooPlanPickerVisible || _zooPlanTarget is null
+            || !ZooPlanOptions.Contains(option))
+            return;
+        _zooPlanTarget.SetManualZooPlan(option.Number, option.Title);
+        CloseZooPlanPicker();
+        OnPropertyChanged(nameof(CanStart));
+    }
+
+    public void CloseZooPlanPicker()
+    {
+        IsZooPlanPickerVisible = false;
+        _zooPlanTarget = null;
+        ZooPlanOptions.Clear();
     }
 
     public void RotateToRandomStartingPlayer()
@@ -223,8 +273,6 @@ public partial class ArkNovaPreparationViewModel(
                 .. Players.Select(player => new ArkNovaGameSessionSetupPlayer(
                     player.PlayerId,
                     player.Color,
-                    player.ZooPlanOption1!.Number,
-                    player.ZooPlanOption2!.Number,
                     player.SelectedZooPlanNumber))
             ];
 
@@ -365,19 +413,31 @@ public partial class ArkNovaPreparationPlayerViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasZooPlans))]
+    [NotifyPropertyChangedFor(nameof(CanChooseManualZooPlan))]
+    [NotifyPropertyChangedFor(nameof(HasManualZooPlan))]
     [NotifyPropertyChangedFor(nameof(ZooPlanOption1IconSource))]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption1Description))]
     public partial ArkNovaZooPlanOption? ZooPlanOption1 { get; private set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasZooPlans))]
+    [NotifyPropertyChangedFor(nameof(CanChooseManualZooPlan))]
+    [NotifyPropertyChangedFor(nameof(HasManualZooPlan))]
     [NotifyPropertyChangedFor(nameof(ZooPlanOption2IconSource))]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption2Description))]
     public partial ArkNovaZooPlanOption? ZooPlanOption2 { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption1Description))]
+    [NotifyPropertyChangedFor(nameof(ZooPlanOption2Description))]
     [NotifyPropertyChangedFor(nameof(Option1Selected))]
     [NotifyPropertyChangedFor(nameof(Option2Selected))]
     [NotifyPropertyChangedFor(nameof(Option1StrokeThickness))]
     [NotifyPropertyChangedFor(nameof(Option2StrokeThickness))]
+    [NotifyPropertyChangedFor(nameof(CanChooseManualZooPlan))]
+    [NotifyPropertyChangedFor(nameof(HasManualZooPlan))]
+    [NotifyPropertyChangedFor(nameof(ManualZooPlanIconSource))]
+    [NotifyPropertyChangedFor(nameof(ManualZooPlanLabel))]
     public partial int? SelectedZooPlanNumber { get; private set; }
 
     public Microsoft.Maui.Graphics.Color PlayerTextColor => PlayerColorPresentation.GetText(Color);
@@ -392,11 +452,35 @@ public partial class ArkNovaPreparationPlayerViewModel(
     public bool CanChooseRed => Color != PlayerColor.Red;
     public bool CanChooseBlack => Color != PlayerColor.Black;
 
+    public bool CanChooseManualZooPlan => !HasZooPlans && SelectedZooPlanNumber is null;
+    public bool HasManualZooPlan => !HasZooPlans && SelectedZooPlanNumber is not null;
+    public string? ManualZooPlanIconSource => SelectedZooPlanNumber is int number
+        ? ArkNovaZooPlanPresentation.GetIconSource(number) : null;
+    public string? ManualZooPlanLabel => SelectedZooPlanNumber is int number
+        ? ArkNovaZooPlanPresentation.GetLabel(number) : null;
+
+    [ObservableProperty]
+    public partial string ManualZooPlanDescription { get; private set; } = string.Empty;
+
+    public void SetManualZooPlan(int number, string description)
+    {
+        if (HasZooPlans)
+            return;
+        ArkNovaZooPlan.ValidateNumber(number);
+        ManualZooPlanDescription = $"{description} · {AppResources.ZooPlanSelected}";
+        SelectedZooPlanNumber = number;
+    }
+
     public bool HasZooPlans => ZooPlanOption1 is not null && ZooPlanOption2 is not null;
     public string? ZooPlanOption1IconSource =>
         ZooPlanOption1 is null ? null : ArkNovaZooPlanPresentation.GetIconSource(ZooPlanOption1.Number);
     public string? ZooPlanOption2IconSource =>
         ZooPlanOption2 is null ? null : ArkNovaZooPlanPresentation.GetIconSource(ZooPlanOption2.Number);
+    public string ZooPlanOption1Description => DescribeOption(ZooPlanOption1, Option1Selected);
+    public string ZooPlanOption2Description => DescribeOption(ZooPlanOption2, Option2Selected);
+    private static string DescribeOption(ArkNovaZooPlanOption? plan, bool selected) => plan is null ? string.Empty
+        : string.Format(AppResources.ZooPlanFormat, ArkNovaZooPlanPresentation.GetLabel(plan.Number))
+            + (selected ? $" · {AppResources.ZooPlanSelected}" : string.Empty);
     public bool Option1Selected =>
         SelectedZooPlanNumber.HasValue
         && ZooPlanOption1 is not null
@@ -432,4 +516,14 @@ public partial class ArkNovaPreparationPlayerViewModel(
 
         SelectedZooPlanNumber = selected.Number;
     }
+}
+
+public sealed record ArkNovaManualZooPlanOptionViewModel(int Number, string Title, bool IsSelected, bool IsAssignedToOtherPlayer)
+{
+    public string Description => string.Join(" · ", new[]
+    {
+        Title,
+        IsSelected ? AppResources.ZooPlanSelected : null,
+        IsAssignedToOtherPlayer ? AppResources.ZooPlanAssignedToOtherPlayer : null
+    }.Where(value => value is not null));
 }

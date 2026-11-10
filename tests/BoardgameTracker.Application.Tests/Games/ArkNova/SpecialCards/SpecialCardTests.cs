@@ -351,8 +351,8 @@ internal sealed class SpecialCardDatabase : IDbContextFactory<BoardgameTrackerDb
             session.Players.Single(p => p.PlayerId == B.Id).SetPlacement(2);
             session.Complete(start.AddHours(2));
         }
-        ArkNovaGameSessionPlayer a = new(session.Id, A.Id, PlayerColor.Blue, 1, 2, 1);
-        ArkNovaGameSessionPlayer b = new(session.Id, B.Id, PlayerColor.Red, 3, 4, 3);
+        ArkNovaGameSessionPlayer a = new(session.Id, A.Id, PlayerColor.Blue, 1);
+        ArkNovaGameSessionPlayer b = new(session.Id, B.Id, PlayerColor.Red, 3);
         a.SetScoreValues(90, 7, 10);
         b.SetScoreValues(70, 7, 9);
         await using BoardgameTrackerDbContext db = CreateDbContext();

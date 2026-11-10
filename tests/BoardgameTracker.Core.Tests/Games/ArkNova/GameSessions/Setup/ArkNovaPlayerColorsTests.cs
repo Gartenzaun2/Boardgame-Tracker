@@ -21,9 +21,9 @@ public sealed class ArkNovaPlayerColorsTests
     {
         var playerId = Guid.NewGuid();
         Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGroupPlayer(Guid.NewGuid(), playerId, color));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGameSessionPlayer(Guid.NewGuid(), playerId, color, 1, 2, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGameSessionPlayer(Guid.NewGuid(), playerId, color, 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
-            [new ArkNovaGameSessionSetupPlayer(playerId, color, 1, 2, 1)]));
+            [new ArkNovaGameSessionSetupPlayer(playerId, color, 1)]));
     }
 
     [Theory]
