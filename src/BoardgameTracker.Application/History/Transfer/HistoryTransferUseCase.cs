@@ -21,8 +21,11 @@ public sealed class HistoryTransferUseCase(HistoryTransferPersistence persistenc
     public async Task<ImportPlan> AnalyzeAsync(Stream stream, CancellationToken cancellationToken = default)
     {
         BgtFile file = await format.ReadAsync(stream, cancellationToken);
-        return ImportPlanner.Analyze(file, await persistence.ReadSnapshotAsync(cancellationToken));
+        return persistence.Analyze(file, await persistence.ReadSnapshotAsync(cancellationToken));
     }
+    public ImportPlan Resolve(ImportPlan plan, IReadOnlyList<GroupResolution>? resolutions = null, IReadOnlyList<GameResolution>? games = null) =>
+        persistence.Analyze(plan.Source, plan.Snapshot, resolutions ?? plan.Resolutions, games ?? plan.GameResolutions);
+
     public Task<TransferPreview> PreviewAsync(ImportPlan plan, CancellationToken cancellationToken = default) => persistence.PreviewAsync(plan, cancellationToken);
     public Task CommitAsync(ImportPlan plan, CancellationToken cancellationToken = default)
     {

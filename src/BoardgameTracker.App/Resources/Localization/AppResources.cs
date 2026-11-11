@@ -97,6 +97,10 @@ public static class AppResources
     public static string TransferMerge => GetString(nameof(TransferMerge));
     public static string TransferSplit => GetString(nameof(TransferSplit));
     public static string TransferMapPlayer => GetString(nameof(TransferMapPlayer));
+    public static string TransferNewGame => GetString(nameof(TransferNewGame));
+    public static string TransferResolveGame => GetString(nameof(TransferResolveGame));
+    public static string TransferGameCreated => GetString(nameof(TransferGameCreated));
+    public static string TransferGameMatched => GetString(nameof(TransferGameMatched));
     public static string TransferPreview => GetString(nameof(TransferPreview));
     public static string TransferCommit => GetString(nameof(TransferCommit));
     public static string TransferSuccess => GetString(nameof(TransferSuccess));

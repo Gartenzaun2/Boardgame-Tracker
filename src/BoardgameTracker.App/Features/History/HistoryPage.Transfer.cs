@@ -88,7 +88,18 @@ public partial class HistoryPage
                     }
                 }
                 resolutions.Add(new(conflict.Imported.Id, choice == 1, mappings));
-                plan = ImportPlanner.Analyze(plan.Source, plan.Snapshot, resolutions);
+                plan = _transfer.Resolve(plan, resolutions);
+            }
+            List<GameResolution> gameResolutions = [];
+            while (plan.GameConflicts.Length != 0)
+            {
+                GameConflict conflict = plan.GameConflicts[0];
+                string[] options = conflict.Candidates.Select(candidate => candidate.Name).Append(AppResources.TransferNewGame).ToArray();
+                int picked = await AppDialogPage.ChooseAsync(this, string.Format(AppResources.TransferResolveGame, conflict.Name), options, -1);
+                if (picked < 0)
+                    return;
+                gameResolutions.Add(new(conflict.SourceId, picked < conflict.Candidates.Length ? conflict.Candidates[picked].Id : null));
+                plan = _transfer.Resolve(plan, games: gameResolutions);
             }
             TransferPreview preview = await _transfer.PreviewAsync(plan);
             string summary = string.Format(AppResources.TransferPreviewFormat,
@@ -96,6 +107,9 @@ public partial class HistoryPage
                 plan.Players.Count(player => !player.IsNew && !player.IsManual), plan.Players.Count(player => player.IsManual), plan.Players.Count(player => player.IsNew),
                 plan.Groups.Count(group => !group.IsNew), plan.Groups.Count(group => group.IsNew), preview.ReferencesExisting, preview.ReferencesNew);
             summary += Environment.NewLine + string.Join(Environment.NewLine, plan.Groups.Where(group => group.IsNew).Select(group => group.Name));
+            summary += Environment.NewLine + string.Join(Environment.NewLine, plan.Games.Select(game =>
+                string.Format(game.IsNew ? AppResources.TransferGameCreated : AppResources.TransferGameMatched,
+                    game.SourceName, game.Name)));
             if (plan.GameSessions.Length == 0)
             {
                 await AppDialogPage.ShowAsync(this, AppResources.TransferPreview, summary, AppResources.Ok);

@@ -12,5 +12,16 @@ public sealed record PlannedGroup(BgtGroup Imported, Guid LocalId, string Name, 
 public sealed record ImportPlan(BgtFile Source, TransferSnapshot Snapshot, GroupResolution[] Resolutions,
     PlannedPlayer[] Players, PlannedGroup[] Groups, BgtGameSession[] GameSessions, int Skipped, GroupConflict[] Conflicts)
 {
-    public bool CanCommit => Conflicts.Length == 0;
+    public GameResolution[] GameResolutions { get; init; } = [];
+    public PlannedGame[] Games { get; init; } = [];
+    public GameConflict[] GameConflicts { get; init; } = [];
+    public bool CanCommit => Conflicts.Length == 0 && GameConflicts.Length == 0;
+}
+
+public sealed record GameResolution(Guid SourceId, Guid? LocalId);
+public sealed record GameCandidate(Guid Id, string Name);
+public sealed record GameConflict(Guid SourceId, string Name, GameCandidate[] Candidates);
+public sealed record PlannedGame(Guid SourceId, Guid? LocalId, string Name, string SourceName)
+{
+    public bool IsNew => LocalId is null;
 }

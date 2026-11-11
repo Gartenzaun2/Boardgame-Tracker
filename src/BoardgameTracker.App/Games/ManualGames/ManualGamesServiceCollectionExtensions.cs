@@ -1,3 +1,5 @@
+using BoardgameTracker.Application.History.Transfer;
+using BoardgameTracker.Application.Games.ManualGames.History.Transfer;
 using BoardgameTracker.App.Games.ManualGames.Features.Settings;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Scoring;
@@ -14,6 +16,8 @@ public static class ManualGamesServiceCollectionExtensions
 {
     public static IServiceCollection AddManualGames(this IServiceCollection services)
     {
+        services.AddSingleton<IGameTransferSchema, ManualTransferSchema>();
+        services.AddSingleton<IGameTransferPersistence, ManualTransferPersistence>();
         services.AddTransient<ManualGameUseCase>();
         services.AddTransient<ManualPreparationQuery>();
         services.AddTransient<StartManualGameSessionUseCase>();

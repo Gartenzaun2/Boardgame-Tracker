@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.0.0 – 2026-11-11
+
+- ManualGames unterstützt den bestehenden .bgt-Import/Export mit Format- und Schemaversion 1. Das Pflichtfeld placementKind erhält keine, reine Sieger- oder vollständige Platzierungswertungen einschließlich gemeinsamem Platz 1; minimale importierte Snapshots entstehen ausschließlich aus historischen Werten.
+- Dynamische Transferauflösung und nullable allgemeine Plätze ergänzen die bestehenden Verträge bei unveränderter Arche-Nova-Validierung. Manuelle Spiele werden ausdrücklich nach Namen zugeordnet oder mit eigener lokaler Identität und deterministischem Kollisionsnamen neu angelegt; lokale Einstellungen bleiben bei bestätigtem Match erhalten.
+- Vorschau, Dependency-Pruning, Spiel-/Gruppen-/Spielerzuordnung und atomarer Commit verwenden den bestehenden History-Transfer. Neue Gruppenzuordnungen beachten lokale Spielergrenzen; Sessionfarben werden ohne Farbdefaults importiert. Keine Schemaänderung oder Datenbanklöschung.
+
 ## 0.21.0.1 – 2026-11-11
 
 - Abgeschlossene ManualGames-Partien lassen sich über das gemeinsame Bearbeiten-Icon in der Ergebnisansicht korrigieren. Die bestehende Punkte-/Sieger-/Platzierungsoberfläche hält Änderungen bis „Korrektur speichern“ ausschließlich im Entwurf.

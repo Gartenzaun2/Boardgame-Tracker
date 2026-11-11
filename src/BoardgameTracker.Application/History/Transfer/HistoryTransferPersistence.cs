@@ -12,6 +12,27 @@ namespace BoardgameTracker.Application.History.Transfer;
 public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTrackerDbContext> factory,
     IEnumerable<IGameTransferPersistence> modules)
 {
+    public ImportPlan Analyze(BgtFile file, TransferSnapshot snapshot, IReadOnlyList<GroupResolution>? resolutions = null,
+        IReadOnlyList<GameResolution>? gameResolutions = null)
+    {
+        ImportPlan plan = ImportPlanner.Analyze(file, snapshot, resolutions);
+        GameResolution[] decisions = gameResolutions?.ToArray() ?? [];
+        BgtGame[] needed = file.Games.Where(game => plan.GameSessions.Any(session => session.GameId == game.Id)).ToArray();
+        if (decisions.Select(decision => decision.SourceId).Distinct().Count() != decisions.Length
+            || decisions.Any(decision => !needed.Any(game => game.Id == decision.SourceId)))
+            throw new InvalidDataException("InvalidGameResolution");
+        List<PlannedGame> games = [];
+        List<GameConflict> conflicts = [];
+        foreach (IGameTransferPersistence module in modules)
+        {
+            BgtGame[] inputs = needed.Where(game => module.CanHandle(game.Key)).ToArray();
+            var result = module.PlanGames(inputs, snapshot, decisions.Where(decision => inputs.Any(game => game.Id == decision.SourceId)).ToArray());
+            games.AddRange(result.Games);
+            conflicts.AddRange(result.Conflicts);
+        }
+        return plan with { Games = games.ToArray(), GameConflicts = conflicts.ToArray(), GameResolutions = decisions };
+    }
+
     public async Task<TransferSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
@@ -57,13 +78,13 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         List<BgtGameSession> output = [];
         foreach (var game in gameData)
         {
-            IGameTransferPersistence module = modules.Single(module => module.GameKey == game.Key);
+            IGameTransferPersistence module = modules.Single(module => module.CanHandle(game.Key));
             Guid[] selected = gameSessions.Where(gameSession => gameSession.GameId == game.Id).Select(gameSession => gameSession.Id).ToArray();
             games.Add(new(game.Id, game.Key, module.SchemaVersion, await module.ExportReferencesAsync(db, selected, cancellationToken)));
             IReadOnlyDictionary<Guid, System.Text.Json.JsonElement> details = await module.ExportGameSessionsAsync(db, selected, cancellationToken);
             foreach (var gameSession in gameSessions.Where(gameSession => gameSession.GameId == game.Id))
                 output.Add(new(gameSession.Id, gameSession.GameId, gameSession.GroupId, gameSession.StartedAt, gameSession.EndedAt!.Value, gameSession.ModifiedAt,
-                    gameSessionPlayers.Where(player => player.GameSessionId == gameSession.Id).Select(player => new BgtGameSessionPlayer(player.PlayerId, player.Order, player.Placement!.Value)).ToArray(),
+                    gameSessionPlayers.Where(player => player.GameSessionId == gameSession.Id).Select(player => new BgtGameSessionPlayer(player.PlayerId, player.Order, player.Placement)).ToArray(),
                     details[gameSession.Id]));
         }
         await transaction.CommitAsync(cancellationToken);
@@ -79,11 +100,13 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         int added = 0;
         foreach (BgtGame game in plan.Source.Games.Where(game => plan.GameSessions.Any(gameSession => gameSession.GameId == game.Id)))
         {
-            if (!await db.Games.AnyAsync(candidate => candidate.Key == game.Key, cancellationToken))
+            if (!plan.Games.Any(candidate => candidate.SourceId == game.Id)
+                && !await db.Games.AnyAsync(candidate => candidate.Key == game.Key, cancellationToken))
                 throw new InvalidDataException("UpdateRequired");
-            (int found, int created) = await modules.Single(module => module.GameKey == game.Key).PreviewAsync(db, game,
+            (int found, int created) = await modules.Single(module => module.CanHandle(game.Key)).PreviewAsync(db, game,
                 plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id).ToArray(), cancellationToken);
-            games++;
+            if (!plan.Games.Any(planned => planned.SourceId == game.Id && planned.IsNew))
+                games++;
             existing += found;
             added += created;
         }
@@ -96,7 +119,7 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         TransferSnapshot current = await ReadSnapshotAsync(db, cancellationToken);
         if (JsonSerializer.Serialize(current) != JsonSerializer.Serialize(plan.Snapshot))
             throw new InvalidOperationException("ImportStateChanged");
-        plan = ImportPlanner.Analyze(plan.Source, current, plan.Resolutions);
+        plan = Analyze(plan.Source, current, plan.Resolutions, plan.GameResolutions);
         if (!plan.CanCommit)
             throw new InvalidOperationException("UnresolvedImport");
         Dictionary<Guid, Guid> playerMap = plan.Players.ToDictionary(player => player.Imported.Id, player => player.LocalId);
@@ -121,7 +144,8 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
         Guid[] neededGames = plan.GameSessions.Select(gameSession => gameSession.GameId).Distinct().ToArray();
         foreach (BgtGame game in plan.Source.Games.Where(game => neededGames.Contains(game.Id)))
         {
-            Game localGame = await db.Games.SingleAsync(candidate => candidate.Key == game.Key, cancellationToken);
+            IGameTransferPersistence module = modules.Single(module => module.CanHandle(game.Key));
+            Game localGame = await module.ResolveGameAsync(db, game, plan.Games.SingleOrDefault(candidate => candidate.SourceId == game.Id), cancellationToken);
             Guid localId = localGame.Id;
             // Only newly created groups acquire assignments, from sessions surviving pruning.
             foreach (Guid groupId in plan.GameSessions.Where(session => session.GameId == game.Id && newGroupIds.Contains(session.GroupId))
@@ -143,7 +167,7 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
                 gameSession.Complete(input.ModifiedAt);
                 db.GameSessions.Add(gameSession);
             }
-            await modules.Single(module => module.GameKey == game.Key).ImportAsync(db, game,
+            await modules.Single(module => module.CanHandle(game.Key)).ImportAsync(db, game,
                 plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id).ToArray(), playerMap, cancellationToken);
         }
         await db.SaveChangesAsync(cancellationToken);

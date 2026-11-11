@@ -91,7 +91,7 @@ public sealed class ArkNovaTransferSchema : IGameTransferSchema
             }
             ArkNovaPlacementRules.ValidateResolution(data.Players.ToDictionary(player => player.PlayerId,
                 player => ArkNovaScoringRules.CalculateNewScore(player.Attractiveness, player.Conservation)),
-                gameSession.Players.ToDictionary(player => player.PlayerId, player => player.Placement));
+                gameSession.Players.ToDictionary(player => player.PlayerId, player => player.Placement ?? throw new InvalidDataException("MissingArkNovaPlacement")));
         }
     }
 }

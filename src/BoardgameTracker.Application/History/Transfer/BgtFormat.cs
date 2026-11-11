@@ -15,11 +15,12 @@ public sealed record BgtGroup(Guid Id, string Name, bool IsTemporary, bool IsArc
 public sealed record BgtGroupPlayer(Guid PlayerId, int DefaultOrder);
 public sealed record BgtGameSession(Guid Id, Guid GameId, Guid GroupId, DateTimeOffset StartedAt,
     DateTimeOffset EndedAt, DateTimeOffset ModifiedAt, BgtGameSessionPlayer[] Players, JsonElement Data);
-public sealed record BgtGameSessionPlayer(Guid PlayerId, int? Order, int Placement);
+public sealed record BgtGameSessionPlayer(Guid PlayerId, int? Order, int? Placement);
 
 public interface IGameTransferSchema
 {
     string GameKey { get; }
+    bool CanHandle(string gameKey) => gameKey == GameKey;
     int SchemaVersion { get; }
     bool SupportsVersion(int version) => version == SchemaVersion;
     JsonElement NormalizeGameSessionData(int version, JsonElement data) => data;
@@ -59,15 +60,15 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
         BgtFile file = JsonSerializer.Deserialize<BgtFile>(json, JsonOptions) ?? throw new InvalidDataException("InvalidFile");
         Validate(file);
         Dictionary<Guid, BgtGame> games = file.Games.ToDictionary(game => game.Id);
-        Dictionary<string, IGameTransferSchema> modules = schemas.ToDictionary(schema => schema.GameKey);
+        IGameTransferSchema Resolve(string key) => schemas.Single(schema => schema.CanHandle(key));
         return file with
         {
             GameSessions = file.GameSessions.Select(session => session with
             {
-                Data = modules[games[session.GameId].Key].NormalizeGameSessionData(
+                Data = Resolve(games[session.GameId].Key).NormalizeGameSessionData(
                     games[session.GameId].SchemaVersion, session.Data)
             }).ToArray(),
-            Games = file.Games.Select(game => game with { SchemaVersion = modules[game.Key].SchemaVersion }).ToArray()
+            Games = file.Games.Select(game => game with { SchemaVersion = Resolve(game.Key).SchemaVersion }).ToArray()
         };
     }
 
@@ -138,7 +139,7 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
         }
         foreach (BgtGame game in file.Games)
         {
-            IGameTransferSchema schema = schemas.SingleOrDefault(schema => schema.GameKey == game.Key)
+            IGameTransferSchema schema = schemas.SingleOrDefault(schema => schema.CanHandle(game.Key))
                 ?? throw new InvalidDataException("UpdateRequired");
             if (!schema.SupportsVersion(game.SchemaVersion))
                 throw new InvalidDataException("UpdateRequired");

@@ -580,4 +580,8 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ManualDraftSaveFailed" xml:space="preserve"><value>Der Wertungszwischenstand konnte nicht gespeichert werden.</value></data>
   <data name="ManualCompleteFailed" xml:space="preserve"><value>Die Wertung konnte nicht abgeschlossen werden.</value></data>
   <data name="ManualIntegerRequired" xml:space="preserve"><value>Bitte gib gültige ganze Zahlen ein; negative Punkte nur bei erlaubter Einstellung.</value></data>
+  <data name="TransferNewGame" xml:space="preserve"><value>Als neues Spiel importieren</value></data>
+  <data name="TransferResolveGame" xml:space="preserve"><value>Manuelles Spiel „{0}“ zuordnen</value></data>
+  <data name="TransferGameCreated" xml:space="preserve"><value>Neues Spiel: {0} → {1}</value></data>
+  <data name="TransferGameMatched" xml:space="preserve"><value>Spiel zugeordnet: {0} → {1}</value></data>
 </root>

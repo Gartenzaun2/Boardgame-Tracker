@@ -166,7 +166,7 @@ Zentrale Grenzen:
 - alle allgemeinen Referenzen müssen auflösbar sein;
 - `GroupPlayer.DefaultOrder` lückenlos `1..n`; `GameSessionPlayer.Order` entweder für alle Teilnehmer `null` oder vollständig lückenlos `1..n`;
 - Session-Spielermenge muss exakt der Spieler-Menge ihrer Gruppe entsprechen;
-- `Placement` liegt in `1..n`;
+- `placement` ist ein erforderliches Feld mit nullable Wert; vorhandene Plätze liegen in `1..n`. Spielmodule prüfen die jeweils erforderliche Ergebnisform;
 - `EndedAt >= StartedAt`;
 - `ModifiedAt >= EndedAt`.
 

@@ -16,6 +16,14 @@ public sealed class ManualGameSession
         ScoringRulesSnapshot = new(game.CapturePoints, game.AllowNegativePoints, game.CaptureWinner,
             game.CapturePlacements, game.AllowTies, game.ResultFromPoints, game.PointsDirection);
     }
+    // A transfer reconstructs only recorded result kinds, never the current game's capture options.
+    public static ManualGameSession FromImportedResult(Guid gameSessionId, ScoringRulesSnapshot snapshot)
+    {
+        ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
+        ArgumentNullException.ThrowIfNull(snapshot);
+        return new() { GameSessionId = gameSessionId, ScoringRulesSnapshot = snapshot };
+    }
+
     public Guid GameSessionId { get; private set; }
     public ScoringRulesSnapshot ScoringRulesSnapshot { get; private set; } = null!;
 }
