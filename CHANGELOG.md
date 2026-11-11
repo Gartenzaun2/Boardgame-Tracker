@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.20.0.0 – 2026-11-11
+
+- Manuelle Spiele öffnen über einen dynamischen Session-/Resume-Handler die gemeinsame Gruppenübersicht und ihre eigene Partievorbereitung mit optionaler Startreihenfolge, zwölf Spielerfarben und kompakter letzter Partie.
+- Ein erfolgreicher Start speichert Session, unveränderlichen Wertungsregel-Snapshot, historische Reihenfolge/Farben und die jeweils erfassten Gruppendefaults atomar. Historische Punktwerte haben eine minimale nullable Teilnehmer-Erweiterung zum Lesen der letzten Partie; noch kein Wertungsablauf.
+- Laufende manuelle Partien lassen sich verlassen, fortsetzen, beenden und nach Sicherheitsabfrage verwerfen. Beenden wechselt zu Scoring und bleibt vorübergehend mit „Wertung folgt“ auf derselben Partieseite; keine automatische Fertigstellung.
+- Das neue Entwicklungsschema erfordert einen bewussten lokalen Neuaufbau nach vorheriger .bgt-Sicherung. Keine automatische Migration oder Datenlöschung.
+
 ## 0.19.0.0 – 2026-11-11
 
 - Spiele werden zuerst vollständig in SQLite gelöscht und erfolgreich committet; erst danach wird die Sichtbarkeits-Preference entfernt. Ein Bereinigungsfehler wird protokolliert und als Hinweis nach erfolgreicher Löschung angezeigt.

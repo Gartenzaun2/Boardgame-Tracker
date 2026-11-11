@@ -4,7 +4,7 @@ namespace BoardgameTracker.App.Navigation;
 
 public interface IGameSessionNavigationHandler
 {
-    string GameKey { get; }
+    bool CanHandle(string gameKey);
     Task OpenGameSessionAsync(Guid gameSessionId);
-    Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus);
+    Task OpenGroupAsync(string gameKey, Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus);
 }

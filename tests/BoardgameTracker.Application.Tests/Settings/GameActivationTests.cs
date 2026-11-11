@@ -25,10 +25,11 @@ public sealed class GameActivationTests
     private sealed class Handler(string key, string name) : IGameSessionNavigationHandler
     {
         public string GameKey => key;
+        public bool CanHandle(string gameKey) => gameKey == key;
         public string DisplayName => name;
         public string BadgeText => name;
         public Task OpenGameSessionAsync(Guid gameSessionId) => Task.CompletedTask;
-        public Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => Task.CompletedTask;
+        public Task OpenGroupAsync(string gameKey, Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => Task.CompletedTask;
     }
 
     [Fact]

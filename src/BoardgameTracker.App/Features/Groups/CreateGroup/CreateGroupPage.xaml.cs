@@ -40,8 +40,8 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
             await Shell.Current.GoToAsync(outcome.FromDuplicates ? "../.." : "..", false);
             return;
         }
-        IGameSessionNavigationHandler handler = _handlers.Single(handler => handler.GameKey == outcome.GameKey);
-        await handler.OpenGroupAsync(outcome.GroupId, null, null);
+        IGameSessionNavigationHandler handler = _handlers.Single(handler => handler.CanHandle(outcome.GameKey));
+        await handler.OpenGroupAsync(outcome.GameKey, outcome.GroupId, null, null);
         // Only remove completed form pages after the handler successfully opened preparation.
         var navigation = Shell.Current.CurrentItem.CurrentItem.Navigation;
         foreach (Page page in navigation.NavigationStack.Where(page => ReferenceEquals(page, this)

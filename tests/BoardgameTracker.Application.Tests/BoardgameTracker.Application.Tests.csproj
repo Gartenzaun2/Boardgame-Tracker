@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/Settings/ManualGameEditorViewModel.cs" Link="Presentation/ManualGameEditorViewModel.cs" />
+    <Compile Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/GameSessions/**/*ViewModel.cs;../../src/BoardgameTracker.App/Games/ManualGames/ManualGameSessionNavigationHandler.cs" Link="ManualGames/%(Filename)%(Extension)" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

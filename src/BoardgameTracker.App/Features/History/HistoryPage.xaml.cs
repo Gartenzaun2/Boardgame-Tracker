@@ -172,7 +172,7 @@ public partial class HistoryPage : ContentPage
 
         try
         {
-            IGameSessionNavigationHandler handler = _navigationHandlers.FirstOrDefault(handler => handler.GameKey == card.Data.GameKey)
+            IGameSessionNavigationHandler handler = _navigationHandlers.FirstOrDefault(handler => handler.CanHandle(card.Data.GameKey))
                 ?? throw new InvalidOperationException("No history handler is registered for this game.");
             await handler.OpenGameSessionAsync(card.Data.GameSessionId);
         }

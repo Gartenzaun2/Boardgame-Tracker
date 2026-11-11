@@ -32,7 +32,7 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
         }
         await NavigateToGameSessionAsync(Shell.Current, gameSessionId, data.Status);
     }
-    public async Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus)
+    public async Task OpenGroupAsync(string gameKey, Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus)
     {
         if (openGameSessionId is Guid gameSessionId)
         {

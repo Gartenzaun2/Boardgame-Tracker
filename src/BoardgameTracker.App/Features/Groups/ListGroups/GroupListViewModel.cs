@@ -96,7 +96,7 @@ public partial class GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCa
         try
         {
             GroupListItem group = (await query.ListGroupsAsync(SelectedGameKey)).Single(group => group.Id == groupId);
-            await handlers.Single(handler => handler.GameKey == SelectedGameKey).OpenGroupAsync(group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
+            await handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
         }
         catch (Exception exception)
         {
@@ -118,7 +118,7 @@ public partial class GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCa
             Guid gameId = (await games.ListAsync()).Single(game => game.Key == SelectedGameKey).Id;
             await addAssignment.AddGroupGameAsync(group.Id, gameId);
             IsChoosingExisting = false;
-            await handlers.Single(handler => handler.GameKey == SelectedGameKey).OpenGroupAsync(group.Id, null, null);
+            await handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, null, null);
         }
         catch (Exception exception)
         {

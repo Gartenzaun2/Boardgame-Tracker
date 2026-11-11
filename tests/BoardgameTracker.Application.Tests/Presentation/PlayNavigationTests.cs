@@ -21,11 +21,12 @@ public sealed class PlayNavigationTests
     private sealed class Handler(string key) : IGameSessionNavigationHandler
     {
         public string GameKey => key;
+        public bool CanHandle(string gameKey) => gameKey == key;
         public string DisplayName => "Localized " + key;
         public string BadgeText => "Badge";
         public List<(Guid Id, Guid? Session)> Opened { get; } = [];
         public Task OpenGameSessionAsync(Guid gameSessionId) => Task.CompletedTask;
-        public Task OpenGroupAsync(Guid groupId, Guid? session, GameSessionStatus? status)
+        public Task OpenGroupAsync(string gameKey, Guid groupId, Guid? session, GameSessionStatus? status)
         {
             Opened.Add((groupId, session));
             return Task.CompletedTask;

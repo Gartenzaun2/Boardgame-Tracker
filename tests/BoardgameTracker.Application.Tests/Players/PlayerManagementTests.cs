@@ -153,9 +153,10 @@ public sealed class PlayerManagementTests
     private sealed class HistoryHandler(string key) : IGameSessionNavigationHandler
     {
         public string GameKey => key;
+        public bool CanHandle(string gameKey) => gameKey == key;
         public string DisplayName => key;
         public string BadgeText => DisplayName;
-        public Task OpenGroupAsync(Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => throw new NotSupportedException();
+        public Task OpenGroupAsync(string gameKey, Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => throw new NotSupportedException();
         public List<Guid> Opened { get; } = [];
         public Task OpenGameSessionAsync(Guid gameSessionId)
         {

@@ -27,8 +27,7 @@ public partial class GamesViewModel(PlayOverviewQuery query, IEnumerable<IGameSe
             Games.Clear();
             foreach (PlayGame game in games)
             {
-                IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.GameKey == game.Key);
-                // Games without a session handler remain visible while their play flow is unavailable.
+                IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.CanHandle(game.Key));
                 Games.Add(new(game.Key, game.Name, game.HasOpenSession, handler is not null));
             }
         }

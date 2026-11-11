@@ -72,7 +72,7 @@ public sealed class TieResolutionTests
     public async Task UnknownSessionStatusIsRejectedInsteadOfOpeningScoring()
     {
         var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(null!);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.OpenGroupAsync(Guid.NewGuid(), Guid.NewGuid(), (GameSessionStatus)999));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.OpenGroupAsync("ark-nova", Guid.NewGuid(), Guid.NewGuid(), (GameSessionStatus)999));
     }
 
     [Fact]
