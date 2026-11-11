@@ -14,6 +14,7 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     private readonly ILogger<ManualScoringPage> _logger;
     private Guid _id;
     private bool _points;
+    private bool _correction;
     private bool _navigating;
     public ManualScoringPage(ManualScoringViewModel viewModel, ManualGameSessionNavigationHandler navigation,
         ILogger<ManualScoringPage> logger)
@@ -28,13 +29,19 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     {
         if (query.TryGetValue(NavigationParameters.GameSessionId, out object? id) && id is Guid value)
             _id = value;
+        _correction = query.TryGetValue(ManualGameSessionNavigationHandler.CorrectionParameter, out object? mode) && mode is true;
         _points = query.TryGetValue(ManualGameSessionNavigationHandler.PointsStepParameter, out object? step) && step is true;
     }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this))
-            await _viewModel.LoadAsync(_id, _points);
+        {
+            if (_correction)
+                await _viewModel.LoadCorrectionAsync(_id);
+            else
+                await _viewModel.LoadAsync(_id, _points);
+        }
     }
     private async void OnPointsTextChanged(object? sender, TextChangedEventArgs e)
     {
@@ -58,12 +65,16 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     {
         if (_navigating || !_viewModel.CanSubmit)
             return;
-        if (await _viewModel.SubmitAsync() is null)
+        ManualSubmitResult? result = await _viewModel.SubmitAsync();
+        if (result is null || _correction && result == ManualSubmitResult.Decision)
             return;
         _navigating = true;
         try
         {
-            await _navigation.ContinueAsync(_id);
+            if (_correction)
+                await _navigation.ReturnFromCorrectionAsync();
+            else
+                await _navigation.ContinueAsync(_id);
         }
         catch (Exception exception)
         {
@@ -77,12 +88,14 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     }
     private async Task BackAsync()
     {
-        if (_navigating || !_viewModel.CanInteract || !await _viewModel.SaveDraftAsync())
+        if (_navigating || !_viewModel.CanInteract || !_correction && !await _viewModel.SaveDraftAsync())
             return;
         _navigating = true;
         try
         {
-            if (!_points && _viewModel.HasPointsStep)
+            if (_correction)
+                await _navigation.ReturnFromCorrectionAsync();
+            else if (!_points && _viewModel.HasPointsStep)
             {
                 var stack = Navigation.NavigationStack;
                 if (stack.Count > 1 && stack[^2] is ManualScoringPage previous && previous._points)
@@ -112,6 +125,11 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     {
         if (_navigating || !_viewModel.CanInteract)
             return;
+        if (_correction)
+        {
+            await BackAsync();
+            return;
+        }
         bool confirmed;
         _viewModel.IsConfirming = true;
         try

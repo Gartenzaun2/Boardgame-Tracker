@@ -19,6 +19,8 @@ public static class ManualGamesServiceCollectionExtensions
         services.AddTransient<StartManualGameSessionUseCase>();
         services.AddTransient<ManualScoringQuery>();
         services.AddTransient<ManualScoringUseCase>();
+        services.AddTransient<ManualHistoryCorrectionUseCase>();
+        Routing.RegisterRoute(ManualGameSessionNavigationHandler.CorrectionRoute, typeof(ManualScoringPage));
         services.AddTransient<CompleteManualGameSessionUseCase>();
         services.AddTransient<ManualScoringViewModel>();
         services.AddTransient<ManualScoringPage>();

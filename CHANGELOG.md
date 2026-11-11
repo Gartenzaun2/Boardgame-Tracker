@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.21.0.1 – 2026-11-11
+
+- Abgeschlossene ManualGames-Partien lassen sich über das gemeinsame Bearbeiten-Icon in der Ergebnisansicht korrigieren. Die bestehende Punkte-/Sieger-/Platzierungsoberfläche hält Änderungen bis „Korrektur speichern“ ausschließlich im Entwurf.
+- Die gespeicherte Ergebnisform bleibt erhalten, unabhängig von heutigen Optionen und ursprünglicher automatischer Ableitung. Nur beim mehrdeutigen gemeinsamen Platz 1 unterscheidet der ursprüngliche Snapshot zwischen Siegerwertung und vollständigen Plätzen.
+- Korrekturen speichern Punkte, Plätze und Änderungszeit atomar bei unverändertem Completed-Status, Teilnehmern, Farben, Reihenfolge und Start-/Endzeit. Abbruch kehrt unverändert zum Ergebnis zurück; Speichern lädt es neu, das ursprüngliche Rückziel bleibt erhalten. Keine Schemaänderung oder Datenbanklöschung.
+
 ## 0.21.0.0 – 2026-11-11
 
 - ManualGames bietet den vollständigen snapshotgesteuerten Wertungsablauf: optionale Ganzzahlpunkte, manuelle Sieger/Plätze, automatische höchste/niedrigste Wertung sowie eine bedingte Gleichstandsauflösung mit Wettbewerbsrängen.

@@ -32,7 +32,7 @@ public sealed class ManualScoringTests
         public ManualScoringUseCase Draft => new(Database);
         public CompleteManualGameSessionUseCase Complete => new(Database);
         public ManualGameSessionNavigationHandler Handler => new(new(Database), Query, Complete);
-        public ManualScoringViewModel ViewModel() => new(Query, Draft, Complete, new(Database), NullLogger<ManualScoringViewModel>.Instance);
+        public ManualScoringViewModel ViewModel() => new(Query, Draft, Complete, new(Database), NullLogger<ManualScoringViewModel>.Instance, new(Database));
         public ManualScoreInput[] Values(int?[] points, int?[]? ranks = null) => Players.Select((id, index) => new ManualScoreInput(id, points[index], ranks?[index])).ToArray();
         public static async Task<Fixture> CreateAsync(ManualGameOptions options, int count = 2)
         {

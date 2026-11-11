@@ -12,6 +12,8 @@ namespace BoardgameTracker.App.Games.ManualGames;
 public sealed class ManualGameSessionNavigationHandler(ManualRunningGameSessionQuery query, ManualScoringQuery scoring,
     CompleteManualGameSessionUseCase complete) : IGameSessionNavigationHandler, IGameSessionResumeHandler
 {
+    public const string CorrectionParameter = "ManualCorrection";
+    public const string CorrectionRoute = "ManualCorrectionPage";
     public const string PointsRoute = "ManualPointsPage";
     public const string DecisionRoute = "ManualDecisionPage";
     public const string PointsStepParameter = "ManualPointsStep";
@@ -51,6 +53,22 @@ public sealed class ManualGameSessionNavigationHandler(ManualRunningGameSessionQ
         }
         await Shell.Current.GoToAsync(route, false, Parameters(gameSessionId, route));
     }
+    public async Task OpenCorrectionAsync(Guid gameSessionId)
+    {
+        ManualScoringData data = await scoring.GetAsync(gameSessionId) ?? throw new InvalidOperationException("Manual session not found.");
+        if (data.Session.Status != GameSessionStatus.Completed
+            || !ManualHistoricalResult.FromValues(data.Values, data.Session.ScoringRules).CanCorrect)
+            throw new InvalidOperationException("Only completed sessions with recorded results can be corrected.");
+        await Shell.Current.GoToAsync(CorrectionRoute, false, new ShellNavigationQueryParameters
+        {
+            [NavigationParameters.GameSessionId] = gameSessionId,
+            [CorrectionParameter] = true
+        });
+    }
+
+    // Both cancel and save pop the single correction page; the retained result reloads on appearing.
+    public Task ReturnFromCorrectionAsync() => Shell.Current.GoToAsync("..", false);
+
     // Internal flow transitions retain the caller captured at entry, including a history caller.
     public async Task ContinueAsync(Guid id)
     {

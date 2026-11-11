@@ -2,7 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" xmlns:local="clr-namespace:BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result" x:Class="BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result.ManualResultPage" x:DataType="local:ManualResultViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">
-            <controls:AppPageHeader Title="{x:Static res:AppResources.Result}" BadgeText="{Binding BadgeText}" GameName="{Binding GameName}" Subtitle="{Binding GroupName}" Metadata="{Binding Metadata}" Variant="Subpage" BackClicked="OnDoneClicked" />
+            <controls:AppPageHeader Title="{x:Static res:AppResources.Result}" BadgeText="{Binding BadgeText}" GameName="{Binding GameName}" Subtitle="{Binding GroupName}" Metadata="{Binding Metadata}" Variant="Subpage" BackClicked="OnDoneClicked">
+                <controls:AppPageHeader.Actions>
+                    <ImageButton IsVisible="{Binding CanCorrect}" IsEnabled="{Binding CanCorrect}" Source="icon_edit.png" Style="{StaticResource HeaderIconButton}" Clicked="OnEditClicked" SemanticProperties.Description="{x:Static res:AppResources.EditResult}" />
+                </controls:AppPageHeader.Actions>
+            </controls:AppPageHeader>
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Padding="20,0" Spacing="12">
                     <Label Text="{Binding StartingOrderText}" IsVisible="{Binding HasStartingOrder}" LineBreakMode="WordWrap" />

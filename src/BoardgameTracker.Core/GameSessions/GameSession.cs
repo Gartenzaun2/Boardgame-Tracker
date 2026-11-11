@@ -98,6 +98,15 @@ public sealed class GameSession
         ModifiedAt = modifiedAt;
     }
 
+    public void RecordHistoricalCorrection(DateTimeOffset modifiedAt)
+    {
+        if (Status != GameSessionStatus.Completed)
+            throw new InvalidOperationException("Only completed sessions can record a historical correction.");
+        if (modifiedAt < StartedAt || EndedAt is DateTimeOffset endedAt && modifiedAt < endedAt)
+            throw new ArgumentOutOfRangeException(nameof(modifiedAt));
+        ModifiedAt = modifiedAt;
+    }
+
     public void Complete(DateTimeOffset modifiedAt)
     {
         if (Status != GameSessionStatus.Scoring)

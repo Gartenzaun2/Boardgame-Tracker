@@ -47,6 +47,7 @@ ManualGameSessionPlayer
 - **Keine Platzierung:** alle `Placement = null`.
 - **Nur Sieger:** alle `Placement` sind `null` oder `1`; mindestens ein `1` bei einer tatsächlich erfassten Siegerwertung. Mehrere `1` sind zulässig.
 - **Vollständige Platzierung:** alle `Placement` in `1..n` und mindestens ein `1`; geteilte Plätze und Lücken sind zulässig.
+- Haben alle Teilnehmer Platz 1, unterscheidet ausschließlich der ursprüngliche `ScoringRulesSnapshot.CapturePlacements` zwischen vollständiger Platzierung (`true`) und reiner Siegerwertung (`false`). Die einmal aus den historischen Werten bestimmte Form bleibt bei Korrekturen erhalten; die übrigen Snapshot-Optionen schränken historisch gültige Korrekturen nicht ein.
 - Die drei Ergebnisformen dürfen jeweils mit **vollständigen Punkten oder ohne Punkte** vorkommen. Eine Partie ohne Ergebniswerte ist ebenfalls gültig.
 - Eine erfasste Startreihenfolge ist vollständig `1..n`; eine nicht erfasste besteht ausschließlich aus `Order = null`. Es gibt keine Mischformen.
 - Farben sind optionale allgemeine Session-Daten; bei einer farblich erfassten manuellen Partie besitzt jeder Spieler eine eindeutige Farbe. Ohne Farberfassung existieren keine Farbzuordnungen.

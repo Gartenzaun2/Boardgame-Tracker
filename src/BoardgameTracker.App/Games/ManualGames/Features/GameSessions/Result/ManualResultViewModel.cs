@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using BoardgameTracker.Application.Games.ManualGames.GameSessions;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Core.GameSessions;
+using BoardgameTracker.Core.Games.ManualGames;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ public sealed class ManualResultPlayerViewModel(Guid id, string name) : ManualPa
 }
 public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<ManualResultViewModel> logger) : ObservableObject
 {
+    [ObservableProperty] public partial bool CanCorrect { get; private set; }
     public ObservableCollection<ManualResultPlayerViewModel> Players { get; } = [];
     [ObservableProperty] public partial string GameName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
@@ -34,6 +36,7 @@ public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<Man
             return;
         IsBusy = true;
         ErrorMessage = null;
+        CanCorrect = false;
         try
         {
             ManualScoringData data = await query.GetAsync(id, token) ?? throw new InvalidOperationException("Manual result not found.");
@@ -51,6 +54,16 @@ public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<Man
             OnPropertyChanged(nameof(HasStartingOrder));
             bool full = data.Values.All(player => player.Placement.HasValue)
                 && (data.Session.ScoringRules.CapturePlacements || data.Values.Any(player => player.Placement > 1));
+            try
+            {
+                ManualHistoricalResult form = ManualHistoricalResult.FromValues(data.Values, data.Session.ScoringRules);
+                CanCorrect = form.CanCorrect;
+                full = form.Placements == ManualHistoricalPlacements.Full;
+            }
+            catch (ArgumentException exception)
+            {
+                logger.LogWarning(exception, "Historical ManualGames result cannot be corrected because its recorded form is incomplete.");
+            }
             Players.Clear();
             foreach (var value in data.Values.OrderBy(player => player.Placement ?? int.MaxValue)
                 .ThenBy(player => data.Session.Players.Single(participant => participant.PlayerId == player.PlayerId).Order))

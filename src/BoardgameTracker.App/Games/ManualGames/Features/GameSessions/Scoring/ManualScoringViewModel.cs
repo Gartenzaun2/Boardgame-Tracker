@@ -28,19 +28,26 @@ public sealed record ManualRankChoice(int Rank, bool IsSelected, Func<Task> Choo
 public enum ManualSubmitResult { Decision, Completed }
 
 public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScoringUseCase drafts,
-    CompleteManualGameSessionUseCase complete, ManualRunningGameSessionUseCase lifecycle, ILogger<ManualScoringViewModel> logger) : ObservableObject
+    CompleteManualGameSessionUseCase complete, ManualRunningGameSessionUseCase lifecycle, ILogger<ManualScoringViewModel> logger, ManualHistoryCorrectionUseCase correction) : ObservableObject
 {
     private readonly SemaphoreSlim _writes = new(1, 1);
     private ManualScoringData? _data;
+    private ManualHistoricalResult? _historicalForm;
+    private ScoringRulesSnapshot Rules => _historicalForm?.EditingRules ?? _data!.Session.ScoringRules;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SecondaryText))]
+    public partial bool IsCorrection { get; private set; }
+    public string SecondaryText => IsCorrection ? AppResources.Cancel : AppResources.Discard;
     private ManualScoreInput[] _saved = [];
     private long _version;
     private long _savedVersion;
     private int _saveRequests;
     private bool _completed;
+    private bool _loaded;
     private bool _discarded;
     private Dictionary<Guid, int?> _seenPoints = [];
     public Guid SessionId => _data?.Session.SessionId ?? Guid.Empty;
-    public bool HasPointsStep => _data?.Session.ScoringRules.CapturePoints == true;
+    public bool HasPointsStep => _data is not null && Rules.CapturePoints;
     public ObservableCollection<ManualScoringPlayerViewModel> Players { get; } = [];
     public ObservableCollection<ManualScoringPlayerViewModel> DecisionPlayers { get; } = [];
     [ObservableProperty] public partial string GameName { get; private set; } = string.Empty;
@@ -67,25 +74,28 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool CanInteract => !IsBusy && !IsConfirming;
-    public bool CanEdit => CanInteract && !_completed && !_discarded;
+    public bool CanEdit => CanInteract && _loaded && !_completed && !_discarded;
     public bool CanSubmit
     {
         get
         {
-            if (!CanInteract || IsSaving || _data is null || _discarded)
+            if (!CanInteract || IsSaving || _data is null || !_loaded || _discarded)
                 return false;
             if (_completed)
                 return true;
             if (!TryValues(out ManualScoreInput[] values))
                 return false;
-            ScoringRulesSnapshot rules = _data.Session.ScoringRules;
+            ScoringRulesSnapshot rules = Rules;
             if (rules.CapturePoints && values.Any(player => player.Points is null))
                 return false;
             if (IsPointsPage && ManualScoringRules.GetDecision(rules, values).Kind != ManualDecisionKind.None)
                 return true;
             try
             {
-                ManualScoringRules.ResolveFinal(rules, values);
+                if (IsCorrection)
+                    _historicalForm!.ValidateCorrection(values, _data.Session.ScoringRules);
+                else
+                    ManualScoringRules.ResolveFinal(rules, values);
                 return true;
             }
             catch (ArgumentException)
@@ -95,11 +105,19 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
         }
     }
 
-    public async Task LoadAsync(Guid id, bool pointsPage, CancellationToken token = default)
+    public Task LoadAsync(Guid id, bool pointsPage, CancellationToken token = default) => LoadSessionAsync(id, pointsPage, false, token);
+
+    public Task LoadCorrectionAsync(Guid id, CancellationToken token = default) => LoadSessionAsync(id, false, true, token);
+
+    private async Task LoadSessionAsync(Guid id, bool pointsPage, bool isCorrection, CancellationToken token)
     {
+        // Returning from a confirmation or switching tabs must not reload a correction over its unsaved edits.
+        if (isCorrection && IsCorrection && _loaded && SessionId == id && _historicalForm is not null)
+            return;
         if (IsBusy)
             return;
         IsBusy = true;
+        _loaded = false;
         ErrorMessage = null;
         try
         {
@@ -107,11 +125,15 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
             try
             {
                 _data = await query.GetAsync(id, token) ?? throw new InvalidOperationException("Manual scoring not found.");
-                if (_data.Session.Status != GameSessionStatus.Scoring)
-                    throw new InvalidOperationException("The session is not in scoring.");
+                if (_data.Session.Status != (isCorrection ? GameSessionStatus.Completed : GameSessionStatus.Scoring))
+                    throw new InvalidOperationException("The session is not in the required state.");
+                _historicalForm = isCorrection ? ManualHistoricalResult.FromValues(_data.Values, _data.Session.ScoringRules) : null;
+                if (isCorrection && !_historicalForm!.CanCorrect)
+                    throw new InvalidOperationException("The session has no correctable result.");
+                IsCorrection = isCorrection;
                 _completed = false;
                 _discarded = false;
-                IsPointsPage = pointsPage;
+                IsPointsPage = isCorrection ? Rules.CapturePoints : pointsPage;
                 OnPropertyChanged(nameof(IsDecisionPage));
                 GameName = _data.Session.GameName;
                 BadgeText = _data.Session.BadgeText;
@@ -123,9 +145,10 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
                     Players.Add(new(player.PlayerId, player.Name)
                     {
                         Color = player.Color, PointsText = value.Points?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-                        Placement = value.Placement, AllowNegativePoints = _data.Session.ScoringRules.AllowNegativePoints
+                        Placement = value.Placement, AllowNegativePoints = Rules.AllowNegativePoints
                     });
                 }
+                _loaded = true;
                 _saved = _data.Values.ToArray();
                 _seenPoints = _saved.ToDictionary(player => player.PlayerId, player => player.Points);
                 RefreshDecision();
@@ -175,14 +198,15 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
             OnPropertyChanged(nameof(CanSubmit));
             return;
         }
-        ManualDecision decision = ManualScoringRules.GetDecision(_data.Session.ScoringRules, values);
+        ManualDecision decision = ManualScoringRules.GetDecision(Rules, values);
         Title = IsPointsPage ? AppResources.Scoring : decision.Kind switch
         {
             ManualDecisionKind.Winners => AppResources.ManualSelectWinners,
             ManualDecisionKind.Placements => AppResources.ManualAssignPlacements,
             _ => AppResources.ManualResolveTies
         };
-        PrimaryText = IsPointsPage && decision.Kind != ManualDecisionKind.None ? AppResources.ManualContinue : AppResources.CompleteScoring;
+        PrimaryText = IsPointsPage && decision.Kind != ManualDecisionKind.None ? AppResources.ManualContinue
+            : IsCorrection ? AppResources.SaveCorrection : AppResources.CompleteScoring;
         foreach (ManualScoreBlock block in decision.Blocks)
             foreach (Guid id in block.PlayerIds)
             {
@@ -206,7 +230,7 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
             return;
         bool parsed = TryValues(out ManualScoreInput[] current);
         bool changed = !parsed || current.Any(player => player.Points != _seenPoints.GetValueOrDefault(player.PlayerId));
-        if (_data.Session.ScoringRules.ResultFromPoints && changed)
+        if (Rules.ResultFromPoints && changed)
             foreach (ManualScoringPlayerViewModel player in Players)
                 player.Placement = null;
         if (parsed)
@@ -218,7 +242,7 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
     {
         if (!CanEdit || !DecisionPlayers.Contains(player) || player.IsWinner == selected)
             return;
-        if (selected && !_data!.Session.ScoringRules.AllowTies)
+        if (selected && !Rules.AllowTies)
             foreach (ManualScoringPlayerViewModel other in Players.Where(other => other != player))
                 other.Placement = null;
         player.Placement = selected ? 1 : null;
@@ -235,7 +259,7 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
     }
     public async Task<bool> SaveDraftAsync(CancellationToken token = default)
     {
-        if (_data is null || _completed || _discarded)
+        if (IsCorrection || _data is null || _completed || _discarded)
             return true;
         if (!TryValues(out ManualScoreInput[] values))
         {
@@ -277,7 +301,7 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
     }
     public async Task<bool> DiscardAsync(bool confirmed, CancellationToken token = default)
     {
-        if (!confirmed || !CanInteract || _data is null || _completed || _discarded)
+        if (IsCorrection || !confirmed || !CanInteract || _data is null || _completed || _discarded)
             return false;
         IsBusy = true;
         try
@@ -323,12 +347,24 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
             await _writes.WaitAsync(token);
             try
             {
-                bool next = IsPointsPage && ManualScoringRules.GetDecision(_data.Session.ScoringRules, values).Kind != ManualDecisionKind.None;
+                bool next = IsPointsPage && ManualScoringRules.GetDecision(Rules, values).Kind != ManualDecisionKind.None;
                 if (next)
-                    await drafts.SaveDraftAsync(SessionId, values, token);
+                {
+                    if (IsCorrection)
+                    {
+                        IsPointsPage = false;
+                        OnPropertyChanged(nameof(IsDecisionPage));
+                        RefreshDecision();
+                    }
+                    else
+                        await drafts.SaveDraftAsync(SessionId, values, token);
+                }
                 else
                 {
-                    await complete.CompleteAsync(SessionId, values, token);
+                    if (IsCorrection)
+                        await correction.SaveCorrectionAsync(SessionId, values, token);
+                    else
+                        await complete.CompleteAsync(SessionId, values, token);
                     _completed = true;
                 }
                 _saved = values;
@@ -343,7 +379,7 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
         catch (Exception exception)
         {
             logger.LogError(exception, "Could not submit manual scoring.");
-            ErrorMessage = AppResources.ManualCompleteFailed;
+            ErrorMessage = IsCorrection ? AppResources.CorrectionFailed : AppResources.ManualCompleteFailed;
             return null;
         }
         finally
