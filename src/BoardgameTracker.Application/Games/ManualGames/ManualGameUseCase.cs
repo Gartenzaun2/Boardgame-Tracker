@@ -61,31 +61,31 @@ public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContex
     public async Task DeleteAsync(Guid gameId, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
-        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
-        if (!await db.ManualGames.AnyAsync(game => game.GameId == gameId, cancellationToken))
-            throw new ManualGameValidationException(ManualGameError.NotFound);
-        Game game = await db.Games.SingleAsync(game => game.Id == gameId, cancellationToken);
-        if (await db.GameSessions.AnyAsync(session => session.GameId == gameId, cancellationToken))
-            throw new ManualGameValidationException(ManualGameError.HasSessions);
-        await db.GroupGamePlayerColors.Where(color => color.GameId == gameId).ExecuteDeleteAsync(cancellationToken);
-        await db.GroupGames.Where(assignment => assignment.GameId == gameId).ExecuteDeleteAsync(cancellationToken);
-        db.Games.Remove(game);
-        await db.SaveChangesAsync(cancellationToken);
-        bool wasEnabled = visibility.IsEnabled(game.Key);
-        // Host preferences cannot enlist in SQLite. Restore visibility on normal write/commit failures.
+        string gameKey;
+        await using (var transaction = await db.Database.BeginTransactionAsync(cancellationToken))
+        {
+            if (!await db.ManualGames.AnyAsync(game => game.GameId == gameId, cancellationToken))
+                throw new ManualGameValidationException(ManualGameError.NotFound);
+            Game game = await db.Games.SingleAsync(game => game.Id == gameId, cancellationToken);
+            if (await db.GameSessions.AnyAsync(session => session.GameId == gameId, cancellationToken))
+                throw new ManualGameValidationException(ManualGameError.HasSessions);
+            gameKey = game.Key;
+            await db.GroupGamePlayerColors.Where(color => color.GameId == gameId).ExecuteDeleteAsync(cancellationToken);
+            await db.GroupGames.Where(assignment => assignment.GameId == gameId).ExecuteDeleteAsync(cancellationToken);
+            db.Games.Remove(game);
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+
+        // A failed cleanup may leave an unused preference for a key that is never reused.
+        // It must not affect the committed deletion or trigger a visibility rollback.
         try
         {
-            visibility.SetEnabled(game.Key, true);
-            await transaction.CommitAsync(cancellationToken);
+            visibility.SetEnabled(gameKey, true);
         }
         catch (Exception exception)
         {
-            try { visibility.SetEnabled(game.Key, wasEnabled); }
-            catch (Exception restoreFailure)
-            {
-                throw new AggregateException("Deletion failed and visibility could not be restored.", exception, restoreFailure);
-            }
-            throw;
+            throw new ManualGamePreferenceCleanupException(gameId, exception);
         }
     }
 }
@@ -97,4 +97,11 @@ public enum ManualGameError { DuplicateName, MaximumLocked, AssignedGroups, HasS
 public sealed class ManualGameValidationException(ManualGameError error) : InvalidOperationException(error.ToString())
 {
     public ManualGameError Error { get; } = error;
+}
+
+/// <summary>The database deletion succeeded; only the host preference cleanup failed.</summary>
+public sealed class ManualGamePreferenceCleanupException(Guid gameId, Exception innerException)
+    : Exception("The manual game was deleted, but its visibility preference could not be removed.", innerException)
+{
+    public Guid GameId { get; } = gameId;
 }

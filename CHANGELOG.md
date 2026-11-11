@@ -41,6 +41,8 @@ historische Aufzeichnung unverändert erhalten.
 
 ## 0.19.0.0 – 2026-11-11
 
+- Spiele werden zuerst vollständig in SQLite gelöscht und erfolgreich committet; erst danach wird die Sichtbarkeits-Preference entfernt. Ein Bereinigungsfehler wird protokolliert und als Hinweis nach erfolgreicher Löschung angezeigt.
+
 - ManualGames verwaltet beliebig viele manuell angelegte Spiele mit Name, Capsule-Tag, Spielergrenzen und normalisierter Erfassungskonfiguration; ein Modul löst deren lokale Spielschlüssel dynamisch auf.
 - Spielanlage über die Spieleübersicht; Bearbeiten, Anzeigen/Ausblenden und abgesichertes Löschen über Spiele verwalten. Manuelle Namen bleiben auch bei ausgeblendeten Spielen eindeutig, das Spielermaximum bleibt nach Anlage fest.
 - Sichtbare manuelle Spiele erscheinen vorübergehend deaktiviert in der Spieleübersicht. Der Partieablauf ist noch nicht implementiert; keine Platzhalterseiten, Dialoge oder Sessions.

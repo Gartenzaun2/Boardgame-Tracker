@@ -64,6 +64,7 @@ public partial class ManualGameEditorViewModel(ManualGameUseCase useCase, GameAc
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+    public string? DeletionWarning { get; private set; }
 
     public async Task LoadAsync(string? gameKey, CancellationToken cancellationToken = default)
     {
@@ -203,9 +204,16 @@ public partial class ManualGameEditorViewModel(ManualGameUseCase useCase, GameAc
             return false;
         IsBusy = true;
         ErrorMessage = null;
+        DeletionWarning = null;
         try
         {
             await useCase.DeleteAsync(id, cancellationToken);
+            return true;
+        }
+        catch (ManualGamePreferenceCleanupException exception)
+        {
+            logger.LogWarning(exception, "Manual game {GameId} was deleted, but visibility cleanup failed.", exception.GameId);
+            DeletionWarning = AppResources.ManualPreferenceCleanupFailed;
             return true;
         }
         catch (ManualGameValidationException exception)

@@ -9,6 +9,7 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string ManualPreferenceCleanupFailed => GetString(nameof(ManualPreferenceCleanupFailed));
     public static string CreateManualGame => GetString(nameof(CreateManualGame));
     public static string ManualGameLabel => GetString(nameof(ManualGameLabel));
     public static string ManualGameName => GetString(nameof(ManualGameName));

@@ -234,7 +234,6 @@ public sealed class ManualGameUseCaseTests
 
     [Theory]
     [InlineData("database")]
-    [InlineData("preference")]
     [InlineData("commit")]
     public async Task DeleteFailure_RollsBackConfigurationAssignmentsAndDefaults(string failure)
     {
@@ -251,36 +250,116 @@ public sealed class ManualGameUseCaseTests
             await seed.SaveChangesAsync(Token);
             if (failure == "database")
                 await seed.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectDelete BEFORE DELETE ON Games BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
+            else
+            {
+                // A deferred foreign key fails at the outer transaction commit, after SaveChanges succeeds.
+                await seed.Database.ExecuteSqlRawAsync("CREATE TABLE CommitGuard (GameId TEXT NOT NULL REFERENCES Games(Id) DEFERRABLE INITIALLY DEFERRED);", Token);
+                await seed.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectCommit AFTER DELETE ON Games BEGIN INSERT INTO CommitGuard(GameId) VALUES (OLD.Id); END;", Token);
+            }
         }
         store.SetEnabled(key, false);
-        store.FailNextRemoval = failure == "preference";
-        using CancellationTokenSource commitCancellation = CancellationTokenSource.CreateLinkedTokenSource(Token);
-        if (failure == "commit")
-            store.AfterRemoval = commitCancellation.Cancel;
-        await Assert.ThrowsAnyAsync<Exception>(() => useCase.DeleteAsync(id, commitCancellation.Token));
+        await Assert.ThrowsAnyAsync<Exception>(() => useCase.DeleteAsync(id, Token));
         Assert.False(store.IsEnabled(key));
+        Assert.Equal(0, store.RemovalAttempts);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Single(await verify.ManualGames.ToArrayAsync(Token));
         Assert.Single(await verify.GroupGames.Where(assignment => assignment.GameId == id).ToArrayAsync(Token));
         Assert.Single(await verify.GroupGamePlayerColors.Where(color => color.GameId == id).ToArrayAsync(Token));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PreferenceCleanup_RunsAfterCommitAndCannotUndoDeletion(bool cleanupFails)
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        FailingVisibility store = new();
+        ManualGameUseCase useCase = new(db, store);
+        Guid id = await useCase.SaveAsync(Command(), Token);
+        await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
+        string key;
+        await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
+        {
+            key = (await seed.Games.SingleAsync(game => game.Id == id, Token)).Key;
+            seed.GroupGamePlayerColors.Add(new(db.Group.Id, id, db.First.Id, PlayerColor.Blue));
+            await seed.SaveChangesAsync(Token);
+        }
+        store.SetEnabled(key, false);
+        store.BeforeRemoval = () =>
+        {
+            using BoardgameTrackerDbContext committed = db.CreateDbContext();
+            // Starting another transaction on the shared connection proves the delete transaction ended.
+            using var probeTransaction = committed.Database.BeginTransaction();
+            Assert.False(committed.Games.Any(game => game.Id == id));
+            Assert.Empty(committed.ManualGames);
+            Assert.Empty(committed.GroupGames.Where(assignment => assignment.GameId == id));
+            Assert.Empty(committed.GroupGamePlayerColors.Where(color => color.GameId == id));
+        };
+        store.FailNextRemoval = cleanupFails;
+        if (cleanupFails)
+        {
+            ManualGamePreferenceCleanupException failure = await Assert.ThrowsAsync<ManualGamePreferenceCleanupException>(() => useCase.DeleteAsync(id, Token));
+            Assert.Equal(id, failure.GameId);
+            Assert.IsType<IOException>(failure.InnerException);
+        }
+        else
+        {
+            await useCase.DeleteAsync(id, Token);
+        }
+        Assert.Equal(1, store.RemovalAttempts);
+        Assert.Equal(!cleanupFails, store.IsEnabled(key));
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.False(await verify.Games.AnyAsync(game => game.Id == id, Token));
+        Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGames.Where(assignment => assignment.GameId == id).ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGamePlayerColors.Where(color => color.GameId == id).ToArrayAsync(Token));
+        Assert.Single(await verify.Groups.ToArrayAsync(Token));
+        Assert.Equal(2, await verify.Players.CountAsync(Token));
+    }
+
+    [Fact]
+    public async Task Editor_PreferenceFailureReportsWarningAndTreatsDeletionAsSuccessful()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        FailingVisibility store = new();
+        ManualGameUseCase useCase = new(db, store);
+        Guid id = await useCase.SaveAsync(Command(), Token);
+        string key;
+        await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
+            key = (await seed.Games.SingleAsync(game => game.Id == id, Token)).Key;
+        store.SetEnabled(key, false);
+        ManualGameEditorViewModel editor = new(useCase, new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        await editor.LoadAsync(key, Token);
+        store.FailNextRemoval = true;
+        Assert.True(await editor.DeleteAsync(Token));
+        Assert.False(editor.HasError);
+        Assert.False(editor.IsBusy);
+        Assert.Equal(BoardgameTracker.App.Resources.Localization.AppResources.ManualPreferenceCleanupFailed, editor.DeletionWarning);
+        Assert.False(store.IsEnabled(key));
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.False(await verify.Games.AnyAsync(game => game.Id == id, Token));
+    }
+
     private sealed class FailingVisibility : IGameActivationStore
     {
         private readonly TestGameActivationStore _store = new();
         public bool FailNextRemoval { get; set; }
-        public Action? AfterRemoval { get; set; }
+        public int RemovalAttempts { get; private set; }
+        public Action? BeforeRemoval { get; set; }
         public bool IsEnabled(string key) => _store.IsEnabled(key);
         public void SetEnabled(string key, bool enabled)
         {
+            if (enabled)
+            {
+                RemovalAttempts++;
+                BeforeRemoval?.Invoke();
+            }
             if (enabled && FailNextRemoval)
             {
                 FailNextRemoval = false;
                 throw new IOException("Test preference failure.");
             }
             _store.SetEnabled(key, enabled);
-            if (enabled)
-                AfterRemoval?.Invoke();
         }
     }
 }

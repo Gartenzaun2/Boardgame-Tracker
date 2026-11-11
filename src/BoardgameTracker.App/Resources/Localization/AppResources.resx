@@ -944,4 +944,5 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ManualSaveFailed" xml:space="preserve"><value>Das Spiel konnte nicht gespeichert werden.</value></data>
   <data name="ManualLoadFailed" xml:space="preserve"><value>Die Spieleinstellungen konnten nicht geladen werden.</value></data>
   <data name="ManualDeleteFailed" xml:space="preserve"><value>Das Spiel konnte nicht gelöscht werden.</value></data>
+  <data name="ManualPreferenceCleanupFailed" xml:space="preserve"><value>Das Spiel wurde gelöscht. Seine Anzeigeeinstellung konnte nicht entfernt werden.</value></data>
 </root>
