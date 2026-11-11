@@ -19,13 +19,13 @@ public sealed class ListGroupsQueryTests
         {
             seed.Groups.Add(archived);
             var game = await seed.Games.SingleAsync(game => game.Id == database.GameId, token);
-            seed.GroupGames.AddRange(GroupGame.Create(archived, game, TestGameLimits.Catalog.GetLimit(game.Key)), GroupGame.Create(database.Group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+            seed.GroupGames.AddRange(GroupGame.Create(archived, game), GroupGame.Create(database.Group, game));
             await seed.SaveChangesAsync(token);
         }
         string gameKey;
         await using (BoardgameTrackerDbContext read = database.CreateDbContext())
             gameKey = await read.Games.Where(game => game.Id == database.GameId).Select(game => game.Key).SingleAsync(token);
-        ListGroupsQuery query = new(database, TestGameLimits.Catalog);
+        ListGroupsQuery query = new(database);
         GroupListItem active = Assert.Single(await query.ListGroupsAsync(gameKey, cancellationToken: token));
         Assert.Equal(database.Group.Id, active.Id);
         Assert.False(active.IsArchived);

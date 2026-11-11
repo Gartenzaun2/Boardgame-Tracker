@@ -10,8 +10,7 @@ public sealed class ArkNovaPreparationDrawTests
     [Fact]
     public void Preparation_UsesRegisteredPlayerLimit()
     {
-        int maximumPlayers = TestGameLimits.Catalog.GetMaximumPlayers(ArkNovaGame.Key);
-        Assert.Same(ArkNovaGame.PlayerLimit, TestGameLimits.Catalog.GetLimit(ArkNovaGame.Key));
+        int maximumPlayers = ArkNovaGame.MaxPlayers;
         Guid[] players = [.. Enumerable.Range(0, maximumPlayers).Select(_ => Guid.NewGuid())];
         IReadOnlyList<ArkNovaZooPlanDraw> draws = ArkNovaPreparationDraw.Draw(players, new Random(12345));
         IReadOnlyList<PlayerColor> colors = ArkNovaPlayerColors.Rules.AllowedColors;

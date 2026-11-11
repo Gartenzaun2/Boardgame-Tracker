@@ -17,7 +17,7 @@ public sealed class CreateGroupUseCaseTests
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
         Guid existingPlayerId = database.First.Id;
 
-        CreateGroupUseCase useCase = new(database, TestGameLimits.Catalog);
+        CreateGroupUseCase useCase = new(database);
 
         Guid groupId = await useCase.CreateGroupAsync(new CreateGroupCommand(
             "Freitagabend",
@@ -43,7 +43,7 @@ public sealed class CreateGroupUseCaseTests
     {
         Guid playerId = Guid.NewGuid();
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        CreateGroupUseCase useCase = new(database, TestGameLimits.Catalog);
+        CreateGroupUseCase useCase = new(database);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             useCase.CreateGroupAsync(new CreateGroupCommand(

@@ -41,7 +41,7 @@ public sealed class StartArkNovaDefaultsTests
         await AssertDefaultsAsync(database, first);
 
         // The general group query is shared by other games and sees the new global order.
-        var group = await new EditGroupUseCase(database, TestGameLimits.Catalog).GetAsync(database.Group.Id, Token);
+        var group = await new EditGroupUseCase(database).GetAsync(database.Group.Id, Token);
         Assert.Equal(first.Players.Select(player => player.PlayerId), group!.Players.Select(player => player.PlayerId));
         await using (var db = database.CreateDbContext())
         {

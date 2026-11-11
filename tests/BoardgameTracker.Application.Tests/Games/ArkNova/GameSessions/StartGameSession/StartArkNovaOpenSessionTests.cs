@@ -34,8 +34,8 @@ public sealed class StartArkNovaOpenSessionTests
         Player player = new("Anna");
         Group group = new("Target", [player.Id]);
         Group otherGroup = new("Other", [player.Id]);
-        Game game = new(ArkNovaGame.Key);
-        Game otherGame = new("other-game");
+        Game game = new(ArkNovaGame.Key, ArkNovaGame.Name, ArkNovaGame.BadgeText, ArkNovaGame.MinPlayers, ArkNovaGame.MaxPlayers);
+        Game otherGame = new("other-game", "other-game", "other-game", 1, 8);
         context.AddRange(player, group, otherGroup, game, otherGame);
         var startedAt = DateTimeOffset.UtcNow;
         GameSession session = new(sameGame ? game.Id : otherGame.Id,

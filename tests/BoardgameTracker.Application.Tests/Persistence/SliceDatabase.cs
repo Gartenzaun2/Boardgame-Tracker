@@ -1,3 +1,4 @@
+global using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
 using BoardgameTracker.Application.Persistence;

@@ -17,8 +17,6 @@ public sealed class ArkNovaGameSessionNavigationHandler(ArkNovaScoringUseCase sc
     public string GameKey => ArkNovaGame.Key;
     public static string GameDisplayName => AppResources.ArkNova;
     public static string GameBadgeText => AppResources.ArkNova;
-    public string DisplayName => GameDisplayName;
-    public string BadgeText => GameBadgeText;
 
     public async Task OpenGameSessionAsync(Guid gameSessionId)
     {

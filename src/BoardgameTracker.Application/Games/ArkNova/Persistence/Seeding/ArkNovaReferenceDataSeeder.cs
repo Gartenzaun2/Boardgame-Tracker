@@ -10,7 +10,7 @@ namespace BoardgameTracker.Application.Games.ArkNova.Persistence.Seeding;
 /// Ensures the stable Ark Nova game and zoo-plan reference rows required by
 /// persisted gameSessions exist in the local development database.
 /// </summary>
-public sealed class ArkNovaReferenceDataSeeder : IDatabaseInitializationStep
+public sealed class ArkNovaReferenceDataSeeder(string name = ArkNovaGame.Name, string badgeText = ArkNovaGame.BadgeText) : IDatabaseInitializationStep
 {
     public async Task ExecuteAsync(
         BoardgameTrackerDbContext dbContext,
@@ -18,13 +18,13 @@ public sealed class ArkNovaReferenceDataSeeder : IDatabaseInitializationStep
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 
-        bool hasArkNova = await dbContext.Games
-            .AnyAsync(game => game.Key == ArkNovaGame.Key, cancellationToken);
+        Game? game = await dbContext.Games
+            .SingleOrDefaultAsync(game => game.Key == ArkNovaGame.Key, cancellationToken);
 
-        if (!hasArkNova)
-        {
-            dbContext.Games.Add(new Game(ArkNovaGame.Key));
-        }
+        if (game is null)
+            dbContext.Games.Add(new Game(ArkNovaGame.Key, name, badgeText, ArkNovaGame.MinPlayers, ArkNovaGame.MaxPlayers));
+        else
+            game.SetMetadata(name, badgeText, ArkNovaGame.MinPlayers, ArkNovaGame.MaxPlayers);
 
         int[] existingZooPlanNumbers = await dbContext.ArkNovaZooPlans
             .AsNoTracking()

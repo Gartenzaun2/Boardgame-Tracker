@@ -181,7 +181,7 @@ public sealed class PlayerManagementTests
             await db.Database.EnsureCreatedAsync(Token);
             database.Players[3].SetArchived(true);
             database.Players[4].SetArchived(true);
-            Game game = new("test-game");
+            Game game = new("test-game", "test-game", "test-game", 1, 8);
             Group group = new("Group", database.Players.Select(player => player.Id).ToArray());
             db.AddRange(database.Players);
             db.AddRange(game, group);

@@ -13,12 +13,13 @@ public sealed class GameActivationUseCase(IDbContextFactory<BoardgameTrackerDbCo
             .Select(game => new
             {
                 game.Key,
+                game.Name,
                 HasOpenSessions = db.GameSessions.Any(session => session.GameId == game.Id
                     && (session.Status == GameSessionStatus.Running || session.Status == GameSessionStatus.Scoring))
             }).ToArrayAsync(cancellationToken);
         // An open session stays reachable even if an opt-out predates its start.
         return games.Select(game => new GameActivationState(game.Key,
-            game.HasOpenSessions || store.IsEnabled(game.Key), game.HasOpenSessions)).ToArray();
+            game.HasOpenSessions || store.IsEnabled(game.Key), game.HasOpenSessions, game.Name)).ToArray();
     }
 
     public async Task<GameActivationState> SetEnabledAsync(string gameKey, bool enabled, CancellationToken cancellationToken = default)
@@ -28,17 +29,17 @@ public sealed class GameActivationUseCase(IDbContextFactory<BoardgameTrackerDbCo
         // Keep the current session check protected through the preference write.
         // This transaction only reads SQLite; disposing it makes no database changes.
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
-        Guid? gameId = await db.Games.Where(game => game.Key == gameKey).Select(game => (Guid?)game.Id).SingleOrDefaultAsync(cancellationToken);
-        if (gameId is null)
+        var game = await db.Games.Where(game => game.Key == gameKey).Select(game => new { game.Id, game.Name }).SingleOrDefaultAsync(cancellationToken);
+        if (game is null)
             throw new InvalidOperationException("The game does not exist.");
-        bool hasOpenSessions = await db.GameSessions.AnyAsync(session => session.GameId == gameId.Value
+        bool hasOpenSessions = await db.GameSessions.AnyAsync(session => session.GameId == game.Id
             && (session.Status == GameSessionStatus.Running || session.Status == GameSessionStatus.Scoring), cancellationToken);
         if (!enabled && hasOpenSessions)
             throw new GameActivationBlockedException();
         store.SetEnabled(gameKey, enabled);
-        return new(gameKey, enabled || hasOpenSessions, hasOpenSessions);
+        return new(gameKey, enabled || hasOpenSessions, hasOpenSessions, game.Name);
     }
 }
 
-public sealed record GameActivationState(string GameKey, bool IsEnabled, bool HasOpenSessions);
+public sealed record GameActivationState(string GameKey, bool IsEnabled, bool HasOpenSessions, string Name);
 public sealed class GameActivationBlockedException() : InvalidOperationException("A game with an open session cannot be disabled.");

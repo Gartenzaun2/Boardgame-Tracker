@@ -20,7 +20,7 @@ public sealed class GroupPlayerLimitTests
     public async Task Create_EnforcesLimitWithoutPartialPlayersOrGroup(int count)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        CreateGroupUseCase create = new(database, TestGameLimits.Catalog);
+        CreateGroupUseCase create = new(database);
         if (count == 4)
             await create.CreateGroupAsync(Command("New", count, database.GameId), Token);
         else
@@ -40,7 +40,7 @@ public sealed class GroupPlayerLimitTests
     public async Task LargeIndependentGroup_CannotAcquireAssignmentThroughAnyUseCase(string route)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Guid id = await new CreateGroupUseCase(database, TestGameLimits.Catalog).CreateGroupAsync(Command("Large", 5), Token);
+        Guid id = await new CreateGroupUseCase(database).CreateGroupAsync(Command("Large", 5), Token);
         Guid[] players;
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
@@ -51,9 +51,9 @@ public sealed class GroupPlayerLimitTests
         }
         Task Save() => route switch
         {
-            "add" => new AddGroupGameUseCase(database, TestGameLimits.Catalog).AddGroupGameAsync(id, database.GameId, Token),
-            "edit" => new EditGroupUseCase(database, TestGameLimits.Catalog).UpdateGroupAsync(new(id, "Changed", true, players.Reverse().ToArray(), [database.GameId]), Token),
-            _ => new ReuseGroupUseCase(database, TestGameLimits.Catalog).ReuseGroupAsync(new(id, players, [database.GameId],
+            "add" => new AddGroupGameUseCase(database).AddGroupGameAsync(id, database.GameId, Token),
+            "edit" => new EditGroupUseCase(database).UpdateGroupAsync(new(id, "Changed", true, players.Reverse().ToArray(), [database.GameId]), Token),
+            _ => new ReuseGroupUseCase(database).ReuseGroupAsync(new(id, players, [database.GameId],
                 route == "reactivate" ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting), Token)
         };
         await Assert.ThrowsAsync<GroupPlayerLimitExceededException>(Save);
@@ -63,8 +63,8 @@ public sealed class GroupPlayerLimitTests
         Assert.Equal(route == "reactivate", saved.IsArchived);
         Assert.Equal(players, saved.Players.OrderBy(player => player.DefaultOrder).Select(player => player.PlayerId));
         Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
-        Assert.DoesNotContain(await new ListGroupsQuery(database, TestGameLimits.Catalog).GetAvailableGroupsAsync("ark-nova", Token), group => group.Id == id);
-        Assert.Empty((await new EditGroupUseCase(database, TestGameLimits.Catalog).GetAsync(id, Token))!.Games);
+        Assert.DoesNotContain(await new ListGroupsQuery(database).GetAvailableGroupsAsync("ark-nova", Token), group => group.Id == id);
+        Assert.Empty((await new EditGroupUseCase(database).GetAsync(id, Token))!.Games);
     }
 
     [Theory]
@@ -75,7 +75,7 @@ public sealed class GroupPlayerLimitTests
     public async Task FourStoredMembers_CanAcquireAssignmentThroughAnyUseCase(string route)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Guid id = await new CreateGroupUseCase(database, TestGameLimits.Catalog).CreateGroupAsync(Command("Four", 4), Token);
+        Guid id = await new CreateGroupUseCase(database).CreateGroupAsync(Command("Four", 4), Token);
         Guid[] players;
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
@@ -87,13 +87,13 @@ public sealed class GroupPlayerLimitTests
         switch (route)
         {
             case "add":
-                await new AddGroupGameUseCase(database, TestGameLimits.Catalog).AddGroupGameAsync(id, database.GameId, Token);
+                await new AddGroupGameUseCase(database).AddGroupGameAsync(id, database.GameId, Token);
                 break;
             case "edit":
-                await new EditGroupUseCase(database, TestGameLimits.Catalog).UpdateGroupAsync(new(id, "Edited", false, players, [database.GameId]), Token);
+                await new EditGroupUseCase(database).UpdateGroupAsync(new(id, "Edited", false, players, [database.GameId]), Token);
                 break;
             default:
-                await new ReuseGroupUseCase(database, TestGameLimits.Catalog).ReuseGroupAsync(new(id, players, [database.GameId],
+                await new ReuseGroupUseCase(database).ReuseGroupAsync(new(id, players, [database.GameId],
                     route == "reactivate" ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting), Token);
                 break;
         }
@@ -102,6 +102,59 @@ public sealed class GroupPlayerLimitTests
         Assert.Equal(id, assignment.GroupId);
         Assert.Equal(database.GameId, assignment.GameId);
         Assert.False((await verify.Groups.SingleAsync(group => group.Id == id, Token)).IsArchived);
+    }
+
+    [Theory]
+    [InlineData("create", 2)]
+    [InlineData("add", 2)]
+    [InlineData("edit", 2)]
+    [InlineData("reuse", 2)]
+    [InlineData("reactivate", 2)]
+    [InlineData("create", 3)]
+    [InlineData("add", 3)]
+    [InlineData("edit", 3)]
+    [InlineData("reuse", 3)]
+    [InlineData("reactivate", 3)]
+    public async Task Minimum_IsEnforcedAcrossAllWritePaths(string route, int count)
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            Game game = await db.Games.SingleAsync(Token);
+            game.SetMetadata(game.Name, game.BadgeText, 3, 4);
+            await db.SaveChangesAsync(Token);
+        }
+        Guid id = await new CreateGroupUseCase(database).CreateGroupAsync(Command("Minimum", count), Token);
+        Guid[] players;
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            Group group = await db.Groups.Include(group => group.Players).SingleAsync(group => group.Id == id, Token);
+            group.SetArchived(route == "reactivate");
+            players = group.Players.OrderBy(player => player.DefaultOrder).Select(player => player.PlayerId).ToArray();
+            await db.SaveChangesAsync(Token);
+        }
+        Task Save() => route switch
+        {
+            "create" => new CreateGroupUseCase(database).CreateGroupAsync(Command("Created", count, database.GameId), Token),
+            "add" => new AddGroupGameUseCase(database).AddGroupGameAsync(id, database.GameId, Token),
+            "edit" => new EditGroupUseCase(database).UpdateGroupAsync(new(id, "Changed", false, players, [database.GameId]), Token),
+            _ => new ReuseGroupUseCase(database).ReuseGroupAsync(new(id, players, [database.GameId],
+                route == "reactivate" ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting), Token)
+        };
+        if (count < 3)
+            await Assert.ThrowsAsync<GroupPlayerMinimumNotMetException>(Save);
+        else
+            await Save();
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.Equal(count < 3 ? 0 : 1, await verify.GroupGames.CountAsync(Token));
+        Assert.Equal(count < 3 || route != "create" ? 2 : 3, await verify.Groups.CountAsync(Token));
+        Assert.Equal(2 + count + (count >= 3 && route == "create" ? count : 0), await verify.Players.CountAsync(Token));
+        Group stored = await verify.Groups.SingleAsync(group => group.Id == id, Token);
+        Assert.Equal(count < 3 && route == "reactivate", stored.IsArchived);
+        if (count < 3)
+            Assert.Equal("Minimum", stored.Name);
+        Assert.Equal(count >= 3, (await new ListGroupsQuery(database).GetAvailableGroupsAsync("ark-nova", Token))
+            .Any(group => group.Id == id) || await verify.GroupGames.AnyAsync(assignment => assignment.GroupId == id, Token));
     }
 
     [Fact]
@@ -116,7 +169,7 @@ public sealed class GroupPlayerLimitTests
             db.Groups.Add(group);
             Game game = await db.Games.SingleAsync(game => game.Id == database.GameId, Token);
             Assert.Throws<GroupPlayerLimitExceededException>(() =>
-                db.GroupGames.Add(GroupGame.Create(group, game, TestGameLimits.Catalog.GetLimit(game.Key))));
+                db.GroupGames.Add(GroupGame.Create(group, game)));
         }
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
         Assert.Equal(2, await verify.Players.CountAsync(Token));
@@ -129,23 +182,28 @@ public sealed class GroupPlayerLimitTests
     [InlineData("edit")]
     [InlineData("reuse")]
     [InlineData("reactivate")]
-    public async Task ExistingAssignment_DoesNotResolveLimitAgain(string route)
+    public async Task ExistingAssignment_IsPreservedWhenLimitsChange(string route)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync(archived: route == "reactivate");
-        await new AddGroupGameUseCase(database, TestGameLimits.Catalog).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
-        GamePlayerLimitCatalog noLimits = new([]);
+        await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            Game game = await db.Games.SingleAsync(Token);
+            game.SetMetadata(game.Name, game.BadgeText, 3, 4);
+            await db.SaveChangesAsync(Token);
+        }
         Guid[] players = [database.First.Id, database.Second.Id];
         switch (route)
         {
             case "add":
-                await new AddGroupGameUseCase(database, noLimits).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
+                await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
                 break;
             case "edit":
-                await new EditGroupUseCase(database, noLimits).UpdateGroupAsync(new(database.Group.Id, "Edited", false,
+                await new EditGroupUseCase(database).UpdateGroupAsync(new(database.Group.Id, "Edited", false,
                     players.Reverse().ToArray(), [database.GameId]), Token);
                 break;
             default:
-                await new ReuseGroupUseCase(database, noLimits).ReuseGroupAsync(new(database.Group.Id, players, [database.GameId],
+                await new ReuseGroupUseCase(database).ReuseGroupAsync(new(database.Group.Id, players, [database.GameId],
                     route == "reactivate" ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting), Token);
                 break;
         }
@@ -165,7 +223,7 @@ public sealed class GroupPlayerLimitTests
         await using (BoardgameTrackerDbContext db = database.CreateDbContext())
         {
             Game game = await db.Games.SingleAsync(game => game.Id == database.GameId, Token);
-            db.GroupGames.Add(GroupGame.Create(database.Group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+            db.GroupGames.Add(GroupGame.Create(database.Group, game));
             if (synchronous)
                 db.SaveChanges();
             else
@@ -178,27 +236,26 @@ public sealed class GroupPlayerLimitTests
     }
 
     [Fact]
-    public async Task Add_RejectsUnknownLimitWithoutPersistingAssignment()
+    public async Task Add_UsesStoredLimitsWithoutModuleRegistration()
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Game game = new("unregistered");
+        Game game = new("unregistered", "unregistered", "unregistered", 1, 8);
         await using (BoardgameTrackerDbContext db = database.CreateDbContext())
         {
             db.Games.Add(game);
             await db.SaveChangesAsync(Token);
         }
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new AddGroupGameUseCase(database, TestGameLimits.Catalog)
-            .AddGroupGameAsync(database.Group.Id, game.Id, Token));
+        await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, game.Id, Token);
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
-        Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
+        Assert.Equal(game.Id, Assert.Single(await verify.GroupGames.ToArrayAsync(Token)).GameId);
     }
 
     [Fact]
     public async Task Reuse_UsesStoredMembershipAndRejectsMismatchedDraft()
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Guid id = await new CreateGroupUseCase(database, TestGameLimits.Catalog).CreateGroupAsync(Command("Large", 5), Token);
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new ReuseGroupUseCase(database, TestGameLimits.Catalog)
+        Guid id = await new CreateGroupUseCase(database).CreateGroupAsync(Command("Large", 5), Token);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new ReuseGroupUseCase(database)
             .ReuseGroupAsync(new(id, [database.First.Id], [database.GameId], GroupReuseAction.UseExisting), Token));
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
         Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));

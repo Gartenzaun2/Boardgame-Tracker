@@ -11,13 +11,13 @@ namespace BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 /// </summary>
 public static class ArkNovaGameSessionSetup
 {
-    public const int MinimumPlayerCount = 1;
+    public const int MinimumPlayerCount = ArkNovaGame.MinPlayers;
 
     public static void Validate(IReadOnlyCollection<ArkNovaGameSessionSetupPlayer> players)
     {
         ArgumentNullException.ThrowIfNull(players);
 
-        if (players.Count < MinimumPlayerCount || players.Count > ArkNovaGame.PlayerLimit.MaximumPlayers)
+        if (players.Count < MinimumPlayerCount || players.Count > ArkNovaGame.MaxPlayers)
         {
             throw new ArgumentException(
                 "Ark Nova gameSessions must contain between one and four players.",

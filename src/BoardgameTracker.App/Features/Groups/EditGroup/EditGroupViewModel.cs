@@ -1,5 +1,4 @@
 using BoardgameTracker.Application.Settings;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -13,7 +12,7 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// <summary>
 /// Adapts the existing editor to game-neutral group metadata and order changes.
 /// </summary>
-public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<IGameSessionNavigationHandler> games, GameActivationUseCase activation, ILogger<EditGroupViewModel> logger) : ObservableObject
+public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivationUseCase activation, ILogger<EditGroupViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
     public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected && game.IsVisible).ToArray();
@@ -95,7 +94,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, IEnumerable<
             HashSet<string> visibleGames = (await activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
             foreach (EditGroupGame game in details.Games)
-                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.IsAssigned, game.CanRemove, visibleGames.Contains(game.Key)));
+                Games.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, visibleGames.Contains(game.Key)));
             foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();
             CanArchive = details.CanArchive;

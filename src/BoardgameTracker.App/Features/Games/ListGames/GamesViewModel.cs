@@ -25,7 +25,7 @@ public partial class GamesViewModel(PlayOverviewQuery query, IEnumerable<IGameSe
             foreach (PlayGame game in games)
             {
                 IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.GameKey == game.Key);
-                if (handler is not null) Games.Add(new(game.Key, handler.DisplayName, game.HasOpenSession));
+                if (handler is not null) Games.Add(new(game.Key, game.Name, game.HasOpenSession));
             }
         }
         catch (Exception exception)

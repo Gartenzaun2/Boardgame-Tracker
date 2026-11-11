@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.18.0.1 – 2026-11-11
+
+- Gemeinsames Game-Modell persistiert Name, Badge-Text und Spielergrenzen; integrierte Stammdaten werden idempotent synchronisiert. Allgemeine Ansichten und neue Gruppenzuordnungen verwenden diese Werte.
+- Historische Importe bleiben bei abweichenden heutigen Spielergrenzen erhalten; unzulässige neue Gruppenzuordnungen entfallen. Bestehende Arche-Nova-Transferformate und Schemaversionen bleiben unverändert.
+- Neues Entwicklungsschema benötigt einen bewussten lokalen Datenbank-Neuaufbau nach Sicherung abgeschlossener Partien per .bgt-Export. EnsureCreated bleibt bestehen; vorhandene Datenbanken werden weder migriert noch automatisch gelöscht.
+
 ## 0.18.0.0 – 2026-11-10
 
 - Arche-Nova-Partien erlauben vor der ersten Auslosung die manuelle Zooplanwahl einschließlich Mehrfachvergabe und der Sonderpläne Turnier, 0 und A. Eine Auslosung ersetzt alle bisherigen Zuordnungen und sperrt die manuelle Wahl für diesen Entwurf.

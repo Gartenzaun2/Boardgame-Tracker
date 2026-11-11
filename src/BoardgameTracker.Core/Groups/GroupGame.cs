@@ -16,17 +16,16 @@ public sealed class GroupGame
     }
 
     /// <summary>Requires the group's complete membership, supplied by the caller.</summary>
-    public static GroupGame Create(Group group, Game game, GamePlayerLimit gamePlayerLimit)
+    public static GroupGame Create(Group group, Game game)
     {
         ArgumentNullException.ThrowIfNull(group);
         ArgumentNullException.ThrowIfNull(game);
-        ArgumentNullException.ThrowIfNull(gamePlayerLimit);
-        if (!string.Equals(game.Key, gamePlayerLimit.GameKey, StringComparison.Ordinal))
-            throw new ArgumentException("The player limit must belong to the selected game.", nameof(gamePlayerLimit));
         if (group.Players.Count == 0)
             throw new ArgumentException("The group must contain its complete, nonempty membership.", nameof(group));
-        if (group.Players.Count > gamePlayerLimit.MaximumPlayers)
-            throw new GroupPlayerLimitExceededException(game.Key, gamePlayerLimit.MaximumPlayers);
+        if (group.Players.Count < game.MinPlayers)
+            throw new GroupPlayerMinimumNotMetException(game.Key, game.MinPlayers);
+        if (group.Players.Count > game.MaxPlayers)
+            throw new GroupPlayerLimitExceededException(game.Key, game.MaxPlayers);
         return new GroupGame(group.Id, game.Id);
     }
 

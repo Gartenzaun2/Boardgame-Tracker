@@ -96,7 +96,7 @@ public partial class HistoryPage : ContentPage
         }
     }
 
-    private string GameName(string key) => _navigationHandlers.FirstOrDefault(handler => handler.GameKey == key)?.DisplayName ?? key;
+    private string GameName(string key) => _exportSessions.First(session => session.GameKey == key).GameName;
 
     private async void OnGameFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(true);
     private async void OnGroupFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(false);

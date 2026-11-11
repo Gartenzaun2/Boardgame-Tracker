@@ -7,5 +7,8 @@ namespace BoardgameTracker.Core.Games.ArkNova;
 public static class ArkNovaGame
 {
     public const string Key = "ark-nova";
-    public static GamePlayerLimit PlayerLimit { get; } = new(Key, 4);
+    public const string Name = "Arche Nova";
+    public const string BadgeText = "Arche Nova";
+    public const int MinPlayers = 1;
+    public const int MaxPlayers = 4;
 }

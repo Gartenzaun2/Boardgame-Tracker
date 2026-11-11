@@ -103,7 +103,7 @@ public sealed class HistoryTests
         private readonly SqliteConnection connection = new("Data Source=:memory:");
         public Player A { get; } = new("Anna"); public Player B { get; } = new("Ben");
         public Group Group { get; private set; } = null!;
-        private Game game = new(ArkNovaGame.Key);
+        private Game game = new(ArkNovaGame.Key, ArkNovaGame.Name, ArkNovaGame.BadgeText, ArkNovaGame.MinPlayers, ArkNovaGame.MaxPlayers);
         public GameSession Completed { get; private set; } = null!;
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(connection).Options);
         public static async Task<Fixture> CreateAsync(CancellationToken cancellationToken)

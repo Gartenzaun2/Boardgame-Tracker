@@ -58,9 +58,9 @@ public partial class GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCa
         ErrorMessage = null;
         try
         {
-            IGameSessionNavigationHandler handler = handlers.Single(handler => handler.GameKey == SelectedGameKey);
-            SelectedGameName = handler.DisplayName;
-            BadgeText = handler.BadgeText;
+            GameDetails game = await games.GetGameAsync(SelectedGameKey, cancellationToken);
+            SelectedGameName = game.Name;
+            BadgeText = game.BadgeText;
             GroupPresence presence = await query.GetPresenceAsync(cancellationToken);
             CanCreate = presence.HasPlayers;
             EmptyMessage = !presence.HasPlayers ? AppResources.FirstPlayerHint : !presence.HasGroups ? AppResources.FirstGroupHint : AppResources.NoGroupsForGame;

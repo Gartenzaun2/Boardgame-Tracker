@@ -140,8 +140,11 @@ public sealed class TransferTests
         context.Groups.Add(new(" group ", [player.Id]));
         await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync(Token));
     }
-    [Fact]
-    public async Task RoundtripPreservesIdsValuesAndLocalStateAndRepeatedImportDoesNothing()
+    [Theory]
+    [InlineData(1, 4)]
+    [InlineData(3, 4)]
+    [InlineData(1, 1)]
+    public async Task RoundtripPreservesIdsValuesAndLocalStateAndRepeatedImportDoesNothing(int minPlayers, int maxPlayers)
     {
         await using Database source = await Database.CreateAsync();
         Guid id = await source.SeedAsync();
@@ -153,6 +156,12 @@ public sealed class TransferTests
         Assert.All(exported.Groups, group => Assert.False(group.IsTemporary));
         Assert.Equal(1, exported.FormatVersion);
         await using Database target = await Database.CreateAsync();
+        await using (BoardgameTrackerDbContext db = target.CreateDbContext())
+        {
+            Game game = await db.Games.SingleAsync(Token);
+            game.SetMetadata(game.Name, game.BadgeText, minPlayers, maxPlayers);
+            await db.SaveChangesAsync(Token);
+        }
         HistoryTransferUseCase useCase = new(target.Store, Format);
         using MemoryStream stream = new(JsonSerializer.SerializeToUtf8Bytes(exported, BgtFormat.JsonOptions));
         ImportPlan plan = await useCase.AnalyzeAsync(stream, Token);
@@ -167,6 +176,11 @@ public sealed class TransferTests
         Assert.Empty(repeated.Players);
         await useCase.CommitAsync(repeated, Token);
         Assert.Equal(1, await target.CountAsync());
+        Assert.Equal(1, again.FormatVersion);
+        Assert.Equal(exported.Games.Single().SchemaVersion, again.Games.Single().SchemaVersion);
+        await using BoardgameTrackerDbContext verify = target.CreateDbContext();
+        Assert.Equal(minPlayers <= 2 && maxPlayers >= 2 ? 1 : 0, await verify.GroupGames.CountAsync(Token));
+        Assert.Single(await new CompletedGameSessionsQuery(target).ListAsync(cancellationToken: Token));
     }
     [Fact]
     public async Task CommitFailureRollsBackEntireImport()
@@ -525,7 +539,7 @@ public sealed class TransferTests
     private sealed class Database : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
-        public HistoryTransferPersistence Store => new(this, [new ArkNovaTransferPersistence()], TestGameLimits.Catalog);
+        public HistoryTransferPersistence Store => new(this, [new ArkNovaTransferPersistence()]);
         public BoardgameTrackerDbContext CreateDbContext() => new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
         public static async Task<Database> CreateAsync()
         {
@@ -533,7 +547,7 @@ public sealed class TransferTests
             await database._connection.OpenAsync(Token);
             await using BoardgameTrackerDbContext context = database.CreateDbContext();
             await context.Database.EnsureCreatedAsync(Token);
-            context.Games.Add(new("ark-nova"));
+            context.Games.Add(new(ArkNovaGame.Key, ArkNovaGame.Name, ArkNovaGame.BadgeText, ArkNovaGame.MinPlayers, ArkNovaGame.MaxPlayers));
             foreach (int number in Enumerable.Range(1, 17))
                 context.ArkNovaZooPlans.Add(new(number));
             await context.SaveChangesAsync(Token);

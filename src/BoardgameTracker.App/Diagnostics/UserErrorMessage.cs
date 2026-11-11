@@ -10,7 +10,7 @@ public static class UserErrorMessage
 {
     public static string Create(string friendlyMessage, Exception exception)
     {
-        if (exception is GroupPlayerLimitExceededException)
+        if (exception is GroupPlayerLimitExceededException or GroupPlayerMinimumNotMetException)
             return AppResources.GroupPlayerLimitExceeded;
 #if DEBUG
         return $"{friendlyMessage}{Environment.NewLine}{Environment.NewLine}{exception.Message}";

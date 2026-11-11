@@ -536,7 +536,7 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="GameActivationSaveFailed" xml:space="preserve"><value>Die Aktivierung konnte nicht gespeichert werden. Bitte erneut versuchen.</value></data>
   <data name="ThemeDarkTfm" xml:space="preserve"><value>TFM (Dunkel)</value></data>
   <data name="GroupPlayerLimitExceeded" xml:space="preserve">
-    <value>Die Gruppe hat zu viele Mitglieder für mindestens eines der ausgewählten Spiele. Bitte entferne die betreffende Spielzuordnung oder reduziere die Mitgliederzahl im Entwurf.</value>
+    <value>Die Mitgliederzahl der Gruppe liegt außerhalb der Spielergrenzen mindestens eines der ausgewählten Spiele. Bitte passe die Spielzuordnung oder die Mitgliederzahl im Entwurf an.</value>
   </data>
   <data name="ChooseZooPlan" xml:space="preserve"><value>Zooplan auswählen</value></data>
   <data name="TournamentZooPlanLabel" xml:space="preserve"><value>Turnier</value></data>

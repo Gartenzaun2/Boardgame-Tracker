@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Application.Groups;
 
 /// <summary>Changes group metadata, fixed-member order and current game assignments atomically.</summary>
-public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
+public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {
     public async Task UpdateGroupAsync(EditGroupCommand command, CancellationToken cancellationToken = default)
     {
@@ -48,7 +48,7 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
         await dbContext.GroupGames.Where(assignment => assignment.GroupId == group.Id && removedIds.Contains(assignment.GameId))
             .ExecuteDeleteAsync(cancellationToken);
         dbContext.GroupGames.AddRange(games.Where(game => !assignedIds.Contains(game.Id))
-            .Select(game => GroupGame.Create(group, game, playerLimits.GetLimit(game.Key))));
+            .Select(game => GroupGame.Create(group, game)));
         await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }
@@ -74,10 +74,10 @@ public sealed class EditGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext
             && (session.Status == GameSessionStatus.Running || session.Status == GameSessionStatus.Scoring))
             .Select(session => session.GameId).Distinct().ToArrayAsync(cancellationToken);
         EditGroupGame[] games = await db.Games.AsNoTracking().OrderBy(game => game.Key)
-            .Select(game => new EditGroupGame(game.Id, game.Key, assignedIds.Contains(game.Id), !openGameIds.Contains(game.Id)))
+            .Select(game => new EditGroupGame(game.Id, game.Key, game.Name, assignedIds.Contains(game.Id), !openGameIds.Contains(game.Id), game.MinPlayers, game.MaxPlayers))
             .ToArrayAsync(cancellationToken);
         return new(group.Id, group.Name, group.IsArchived, players,
-            games.Where(game => players.Length <= playerLimits.GetMaximumPlayers(game.Key)).ToArray(), openGameIds.Length == 0);
+            games.Where(game => game.IsAssigned || (players.Length >= game.MinimumPlayers && players.Length <= game.MaximumPlayers)).ToArray(), openGameIds.Length == 0);
     }
 
     private static async Task SaveGroupChangesAsync(
@@ -136,4 +136,4 @@ public sealed record EditGroupCommand(Guid GroupId, string Name, bool IsArchived
 public sealed record EditGroupDetails(Guid Id, string Name, bool IsArchived,
     IReadOnlyList<EditGroupPlayer> Players, IReadOnlyList<EditGroupGame> Games, bool CanArchive);
 public sealed record EditGroupPlayer(Guid PlayerId, string Name, bool IsGuest, int DefaultOrder);
-public sealed record EditGroupGame(Guid Id, string Key, bool IsAssigned, bool CanRemove);
+public sealed record EditGroupGame(Guid Id, string Key, string Name, bool IsAssigned, bool CanRemove, int MinimumPlayers, int MaximumPlayers);

@@ -16,13 +16,13 @@ public sealed class GroupGameUseCaseTests
     public async Task Add_IsIdempotentAndSupportsMultipleGames()
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Game other = new("other");
+        Game other = new("other", "other", "other", 1, 8);
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
             seed.Games.Add(other);
             await seed.SaveChangesAsync(Token);
         }
-        AddGroupGameUseCase useCase = new(database, TestGameLimits.Catalog);
+        AddGroupGameUseCase useCase = new(database);
         await useCase.AddGroupGameAsync(database.Group.Id, database.GameId, Token);
         await useCase.AddGroupGameAsync(database.Group.Id, database.GameId, Token);
         await useCase.AddGroupGameAsync(database.Group.Id, other.Id, Token);
@@ -36,7 +36,7 @@ public sealed class GroupGameUseCaseTests
     public async Task Add_RejectsMissingReferencesWithoutChanges(bool missingGroup)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        AddGroupGameUseCase useCase = new(database, TestGameLimits.Catalog);
+        AddGroupGameUseCase useCase = new(database);
         await Assert.ThrowsAsync<InvalidOperationException>(() => useCase.AddGroupGameAsync(
             missingGroup ? Guid.NewGuid() : database.Group.Id,
             missingGroup ? database.GameId : Guid.NewGuid(), Token));
@@ -51,7 +51,7 @@ public sealed class GroupGameUseCaseTests
     public async Task Remove_ProtectsOpenSessionsAndPreservesHistory(GameSessionStatus status)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        await new AddGroupGameUseCase(database, TestGameLimits.Catalog).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
+        await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
         GameSession session = await AddSessionAsync(database, database.GameId, status);
         RemoveGroupGameUseCase useCase = new(database);
         if (status == GameSessionStatus.Completed)
@@ -77,11 +77,11 @@ public sealed class GroupGameUseCaseTests
     public async Task Remove_UsesExactPairAndMissingAssignmentDoesNotChangeOtherData()
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        Game other = new("other");
+        Game other = new("other", "other", "other", 1, 8);
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
             seed.Games.Add(other);
-            seed.GroupGames.Add(GroupGame.Create(database.Group, other, TestGameLimits.Catalog.GetLimit(other.Key)));
+            seed.GroupGames.Add(GroupGame.Create(database.Group, other));
             await seed.SaveChangesAsync(Token);
         }
         await database.AddSessionAsync();
@@ -99,10 +99,10 @@ public sealed class GroupGameUseCaseTests
     public async Task Persistence_RejectsDuplicateCompositeKey()
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        await new AddGroupGameUseCase(database, TestGameLimits.Catalog).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
+        await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, database.GameId, Token);
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         var game = await db.Games.SingleAsync(game => game.Id == database.GameId, Token);
-        db.GroupGames.Add(GroupGame.Create(database.Group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+        db.GroupGames.Add(GroupGame.Create(database.Group, game));
         await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync(Token));
     }
 
@@ -114,8 +114,8 @@ public sealed class GroupGameUseCaseTests
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
         await using BoardgameTrackerDbContext db = database.CreateDbContext();
         Group group = missingGroup ? new("Missing", [database.First.Id]) : database.Group;
-        Game game = missingGroup ? await db.Games.SingleAsync(game => game.Id == database.GameId, Token) : new("other");
-        db.GroupGames.Add(GroupGame.Create(group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+        Game game = missingGroup ? await db.Games.SingleAsync(game => game.Id == database.GameId, Token) : new("other", "Other", "Other", 1, 8);
+        db.GroupGames.Add(GroupGame.Create(group, game));
         await Assert.ThrowsAsync<DbUpdateException>(() => db.SaveChangesAsync(Token));
     }
 
@@ -126,14 +126,14 @@ public sealed class GroupGameUseCaseTests
     public async Task Archive_ChecksOtherGamesAtSaveAndKeepsChangesAtomic(GameSessionStatus status)
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
-        EditGroupUseCase useCase = new(database, TestGameLimits.Catalog);
+        EditGroupUseCase useCase = new(database);
         // Simulate an editor loaded before a session was started in another game.
         EditGroupDetails details = (await useCase.GetAsync(database.Group.Id, cancellationToken: Token))!;
-        Game other = new("other");
+        Game other = new("other", "other", "other", 1, 8);
         await using (BoardgameTrackerDbContext seed = database.CreateDbContext())
         {
             seed.Games.Add(other);
-            seed.GroupGames.Add(GroupGame.Create(database.Group, other, TestGameLimits.Catalog.GetLimit(other.Key)));
+            seed.GroupGames.Add(GroupGame.Create(database.Group, other));
             await seed.SaveChangesAsync(Token);
         }
         await AddSessionAsync(database, other.Id, status);

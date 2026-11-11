@@ -10,7 +10,7 @@ namespace BoardgameTracker.Application.Groups;
 /// Groups remain game-independent; gameSession metadata is filtered to the selected game.
 /// </summary>
 public sealed class ListGroupsQuery(
-    IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
+    IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {
     public async Task<IReadOnlyList<GroupListItem>> ListGroupsAsync(
         string gameKey,
@@ -127,11 +127,12 @@ public sealed class ListGroupsQuery(
     public async Task<IReadOnlyList<ManagedGroup>> GetAvailableGroupsAsync(string gameKey, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
-        Guid gameId = await db.Games.Where(game => game.Key == gameKey).Select(game => game.Id).SingleAsync(cancellationToken);
+        var game = await db.Games.Where(game => game.Key == gameKey)
+            .Select(game => new { game.Id, game.MinPlayers, game.MaxPlayers }).SingleAsync(cancellationToken);
+        Guid gameId = game.Id;
         Guid[] assigned = await db.GroupGames.Where(assignment => assignment.GameId == gameId).Select(assignment => assignment.GroupId).ToArrayAsync(cancellationToken);
         IReadOnlyList<ManagedGroup> groups = await new ListManagedGroupsQuery(contextFactory).ListAsync(cancellationToken: cancellationToken);
-        int maximumPlayers = playerLimits.GetMaximumPlayers(gameKey);
-        return groups.Where(group => !assigned.Contains(group.Id) && group.PlayerNames.Count <= maximumPlayers).ToArray();
+        return groups.Where(group => !assigned.Contains(group.Id) && group.PlayerNames.Count >= game.MinPlayers && group.PlayerNames.Count <= game.MaxPlayers).ToArray();
     }
 
     public async Task<GroupPresence> GetPresenceAsync(CancellationToken cancellationToken = default)

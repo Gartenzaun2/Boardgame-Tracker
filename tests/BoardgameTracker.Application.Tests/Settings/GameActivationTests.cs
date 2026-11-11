@@ -63,7 +63,7 @@ public sealed class GameActivationTests
         GameActivationUseCase useCase = new(db, store);
         Assert.True(Assert.Single(await useCase.GetGamesAsync(Token)).IsEnabled);
         await useCase.SetEnabledAsync("ark-nova", false, Token);
-        Game other = new("new-game");
+        Game other = new("new-game", "new-game", "new-game", 1, 8);
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
         {
             seed.Games.Add(other);
@@ -111,7 +111,7 @@ public sealed class GameActivationTests
         MyGamesViewModel vm = CreateViewModel(db, store);
         await vm.LoadAsync(Token);
         GameActivationRow row = Assert.Single(vm.Games);
-        Assert.Equal("Localized game", row.Name);
+        Assert.Equal(BoardgameTracker.Core.Games.ArkNova.ArkNovaGame.Name, row.Name);
         Assert.True(row.IsEnabled);
         Assert.True(row.CanToggle);
         await db.AddSessionAsync(scoring);
@@ -150,7 +150,7 @@ public sealed class GameActivationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await AddSessionAsync(db, GameSessionStatus.Completed);
-        Game other = new("second-game");
+        Game other = new("second-game", "second-game", "second-game", 1, 8);
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
         {
             seed.Games.Add(other);
@@ -181,7 +181,7 @@ public sealed class GameActivationTests
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
         {
             var game = await seed.Games.SingleAsync(game => game.Id == db.GameId, Token);
-            seed.GroupGames.Add(GroupGame.Create(db.Group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+            seed.GroupGames.Add(GroupGame.Create(db.Group, game));
             seed.ArkNovaGroupPlayers.Add(new(db.Group.Id, db.First.Id, PlayerColor.Blue));
             await seed.SaveChangesAsync(Token);
         }
@@ -210,7 +210,7 @@ public sealed class GameActivationTests
         }
         await useCase.SetEnabledAsync("ark-nova", true, Token);
         Assert.Equal(db.GameId, Assert.Single(await new PlayOverviewQuery(db, store).ListAsync(Token)).Id);
-        Assert.Equal(db.Group.Id, Assert.Single(await new BoardgameTracker.Application.Groups.ListGroupsQuery(db, TestGameLimits.Catalog).ListGroupsAsync("ark-nova", Token)).Id);
+        Assert.Equal(db.Group.Id, Assert.Single(await new BoardgameTracker.Application.Groups.ListGroupsQuery(db).ListGroupsAsync("ark-nova", Token)).Id);
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public sealed class GameActivationTests
     }
 
     private static MyGamesViewModel CreateViewModel(SliceDatabase db, IGameActivationStore store) =>
-        new(new(db, store), [new Handler("ark-nova", "Localized game")], NullLogger<MyGamesViewModel>.Instance);
+        new(new(db, store), NullLogger<MyGamesViewModel>.Instance);
 
     private static async Task<GameSession> AddSessionAsync(SliceDatabase db, GameSessionStatus status)
     {

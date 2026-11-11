@@ -16,7 +16,7 @@ public static class ArkNovaPreparationDraw
         ArgumentNullException.ThrowIfNull(playerIds);
         ArgumentNullException.ThrowIfNull(random);
 
-        if (playerIds.Count < ArkNovaGameSessionSetup.MinimumPlayerCount || playerIds.Count > ArkNovaGame.PlayerLimit.MaximumPlayers)
+        if (playerIds.Count < ArkNovaGameSessionSetup.MinimumPlayerCount || playerIds.Count > ArkNovaGame.MaxPlayers)
         {
             throw new ArgumentException(
                 "Ark Nova preparation requires between one and four players.",

@@ -14,7 +14,7 @@ public sealed class CompletedGameSessionsQuery(IDbContextFactory<BoardgameTracke
                               join grp in db.Groups on s.GroupId equals grp.Id
                               where s.Status == GameSessionStatus.Completed && (gameKey == null || g.Key == gameKey)
                                   && (groupId == null || s.GroupId == groupId)
-                              select new { s.Id, g.Key, s.GroupId, GroupName = grp.Name, s.StartedAt, s.EndedAt }).ToListAsync(cancellationToken);
+                              select new { s.Id, g.Key, GameName = g.Name, s.GroupId, GroupName = grp.Name, s.StartedAt, s.EndedAt }).ToListAsync(cancellationToken);
         var ids = sessions.Select(s => s.Id).ToArray();
         var players = await (from sp in db.GameSessionPlayers.AsNoTracking()
                              join p in db.Players on sp.PlayerId equals p.Id
@@ -23,12 +23,12 @@ public sealed class CompletedGameSessionsQuery(IDbContextFactory<BoardgameTracke
         // SQLite cannot translate DateTimeOffset ordering. Keep the minimal local projection
         // and sort it in memory; changing persisted timestamp types is not warranted here.
         return sessions.OrderByDescending(s => s.StartedAt).ThenBy(s => s.Id).Select(s => new HistoryGameSession(
-            s.Id, s.Key, s.GroupId, s.GroupName, s.StartedAt, s.EndedAt,
+            s.Id, s.Key, s.GameName, s.GroupId, s.GroupName, s.StartedAt, s.EndedAt,
             players.Where(p => p.GameSessionId == s.Id).OrderBy(p => p.Placement).ThenBy(p => p.Order)
                 .Select(p => new HistoryPlayer(p.PlayerId, p.Name, p.Placement ?? 0)).ToArray())).ToArray();
     }
 }
 
 public sealed record HistoryPlayer(Guid PlayerId, string Name, int Placement);
-public sealed record HistoryGameSession(Guid GameSessionId, string GameKey, Guid GroupId, string GroupName,
+public sealed record HistoryGameSession(Guid GameSessionId, string GameKey, string GameName, Guid GroupId, string GroupName,
     DateTimeOffset StartedAt, DateTimeOffset? EndedAt, IReadOnlyList<HistoryPlayer> Players);

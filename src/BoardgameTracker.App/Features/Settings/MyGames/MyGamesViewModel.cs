@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.MyGames;
 
-public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable<IGameSessionNavigationHandler> handlers,
+public partial class MyGamesViewModel(GameActivationUseCase useCase,
     ILogger<MyGamesViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GameActivationRow> Games { get; } = [];
@@ -32,8 +31,7 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable
             Games.Clear();
             foreach (GameActivationState state in states)
             {
-                IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.GameKey == state.GameKey);
-                Games.Add(new(handler?.DisplayName ?? state.GameKey, state));
+                Games.Add(new(state.Name, state));
             }
         }
         catch (Exception exception)
@@ -64,7 +62,7 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable
         }
         catch (GameActivationBlockedException)
         {
-            row.Apply(new(row.GameKey, true, true));
+            row.Apply(new(row.GameKey, true, true, row.Name));
             ErrorMessage = AppResources.GameDisableBlocked;
         }
         catch (Exception exception)

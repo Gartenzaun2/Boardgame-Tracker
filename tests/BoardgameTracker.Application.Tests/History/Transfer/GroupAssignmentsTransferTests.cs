@@ -81,7 +81,7 @@ public sealed class GroupAssignmentsTransferTests
             if (hasAssignment)
             {
                 var game = await seed.Games.SingleAsync(game => game.Id == firstGame, Token);
-                seed.GroupGames.Add(GroupGame.Create(group, game, TestGameLimits.Catalog.GetLimit(game.Key)));
+                seed.GroupGames.Add(GroupGame.Create(group, game));
             }
             await seed.SaveChangesAsync(Token);
         }
@@ -170,12 +170,20 @@ public sealed class GroupAssignmentsTransferTests
         await Assert.ThrowsAsync<JsonException>(() => database.Format.ReadAsync(stream, Token));
     }
 
-    [Fact]
-    public async Task Import_RejectsOversizedNewGroupWithoutPersistingAnyRows()
+    [Theory]
+    [InlineData(1, 8, 9)]
+    [InlineData(3, 8, 2)]
+    public async Task Import_PreservesHistoryOutsideCurrentLimitsWithoutNewAssignments(int minPlayers, int maxPlayers, int count)
     {
         await using Database database = await Database.CreateAsync();
         BgtFile file = CreateFile();
-        BgtPlayer[] players = Enumerable.Range(1, 9)
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            foreach (Game game in await db.Games.ToArrayAsync(Token))
+                game.SetMetadata(game.Name, game.BadgeText, minPlayers, maxPlayers);
+            await db.SaveChangesAsync(Token);
+        }
+        BgtPlayer[] players = Enumerable.Range(1, count)
             .Select(index => new BgtPlayer(Guid.NewGuid(), "Import" + index, false, false, DateTimeOffset.UtcNow)).ToArray();
         BgtGroup group = file.Groups.Single() with
         {
@@ -191,13 +199,13 @@ public sealed class GroupAssignmentsTransferTests
             }).ToArray()
         };
         ImportPlan plan = ImportPlanner.Analyze(file, await database.Store.ReadSnapshotAsync(Token));
-        await Assert.ThrowsAsync<BoardgameTracker.Core.Groups.GroupPlayerLimitExceededException>(() =>
-            database.Store.CommitAsync(plan, Token));
+        await database.Store.CommitAsync(plan, Token);
         await using BoardgameTrackerDbContext verify = database.CreateDbContext();
-        Assert.Empty(await verify.Players.ToArrayAsync(Token));
-        Assert.Empty(await verify.Groups.ToArrayAsync(Token));
+        Assert.Equal(count, await verify.Players.CountAsync(Token));
+        Assert.Single(await verify.Groups.ToArrayAsync(Token));
         Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
-        Assert.Empty(await verify.GameSessions.ToArrayAsync(Token));
+        Assert.Equal(file.GameSessions.Select(session => session.Id).Order(),
+            (await verify.GameSessions.Select(session => session.Id).ToArrayAsync(Token)).Order());
     }
 
     private static BgtFile CreateFile(bool legacyTemporary = false)
@@ -218,7 +226,7 @@ public sealed class GroupAssignmentsTransferTests
     {
         private readonly SqliteConnection _connection = new("Data Source=:memory:");
         private TestGameModule[] Modules => [new("test-first", failImport), new("test-second", failImport)];
-        public HistoryTransferPersistence Store => new(this, Modules, TestGameLimits.Catalog);
+        public HistoryTransferPersistence Store => new(this, Modules);
         public BgtFormat Format => new(Modules);
         public BoardgameTrackerDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
@@ -228,7 +236,7 @@ public sealed class GroupAssignmentsTransferTests
             await database._connection.OpenAsync(Token);
             await using BoardgameTrackerDbContext db = database.CreateDbContext();
             await db.Database.EnsureCreatedAsync(Token);
-            db.Games.AddRange(new Game("test-first"), new Game("test-second"));
+            db.Games.AddRange(new Game("test-first", "test-first", "test-first", 1, 8), new Game("test-second", "test-second", "test-second", 1, 8));
             await db.SaveChangesAsync(Token);
             return database;
         }

@@ -94,7 +94,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<FindGroupDuplicatesQuery>();
         builder.Services.AddTransient<ReuseGroupUseCase>();
         builder.Services.AddSingleton<GamePlayerColorCatalog>();
-        builder.Services.AddSingleton<GamePlayerLimitCatalog>();
         builder.Services.AddTransient<GroupColorSelectionViewModel>();
         builder.Services.AddTransient<EditGroupUseCase>();
         builder.Services.AddTransient<AddGroupGameUseCase>();

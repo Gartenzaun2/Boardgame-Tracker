@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BoardgameTracker.Application.History.Transfer;
 
 public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTrackerDbContext> factory,
-    IEnumerable<IGameTransferPersistence> modules, GamePlayerLimitCatalog playerLimits)
+    IEnumerable<IGameTransferPersistence> modules)
 {
     public async Task<TransferSnapshot> ReadSnapshotAsync(CancellationToken cancellationToken = default)
     {
@@ -126,7 +126,11 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
             // Only newly created groups acquire assignments, from sessions surviving pruning.
             foreach (Guid groupId in plan.GameSessions.Where(session => session.GameId == game.Id && newGroupIds.Contains(session.GroupId))
                 .Select(session => groupMap[session.GroupId]).Distinct())
-                db.GroupGames.Add(GroupGame.Create(newGroups[groupId], localGame, playerLimits.GetLimit(localGame.Key)));
+            {
+                Group group = newGroups[groupId];
+                if (localGame.SupportsPlayerCount(group.Players.Count))
+                    db.GroupGames.Add(GroupGame.Create(group, localGame));
+            }
 
             foreach (BgtGameSession input in plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id))
             {

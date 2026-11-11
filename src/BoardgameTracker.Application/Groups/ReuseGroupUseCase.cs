@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Groups;
 
-public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
+public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {
     public async Task<Guid> ReuseGroupAsync(ReuseGroupCommand command, CancellationToken cancellationToken = default)
     {
@@ -39,7 +39,7 @@ public sealed class ReuseGroupUseCase(IDbContextFactory<BoardgameTrackerDbContex
         Guid[] assignedIds = await db.GroupGames.Where(assignment => assignment.GroupId == group.Id)
             .Select(assignment => assignment.GameId).ToArrayAsync(cancellationToken);
         db.GroupGames.AddRange(games.Where(game => !assignedIds.Contains(game.Id))
-            .Select(game => GroupGame.Create(group, game, playerLimits.GetLimit(game.Key))));
+            .Select(game => GroupGame.Create(group, game)));
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return group.Id;

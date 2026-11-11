@@ -1,5 +1,4 @@
 using BoardgameTracker.Application.Settings;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -13,7 +12,7 @@ namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 /// <summary>
 /// Owns create-group screen state and translates UI input into the create-group Application command.
 /// </summary>
-public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, IEnumerable<IGameSessionNavigationHandler> games, GameActivationUseCase activation, ILogger<CreateGroupViewModel> logger) : ObservableObject
+public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, GameActivationUseCase activation, ILogger<CreateGroupViewModel> logger) : ObservableObject
 {
     private bool _loaded;
     private string? _gameKey;
@@ -21,7 +20,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     private CreateGroupCommand? _pendingCommand;
     public ObservableCollection<GroupGameSelection> Games { get; } = [];
     public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
-    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && Players.Count <= game.MaximumPlayers).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.SupportsPlayerCount(Players.Count)).ToArray();
     public bool HasAvailableGames => AvailableGames.Count > 0;
     [ObservableProperty] public partial bool IsChoosingGame { get; set; }
 
@@ -35,7 +34,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void AddGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game) || Players.Count > game.MaximumPlayers) return;
+        if (IsBusy || game is null || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count)) return;
         game.IsSelected = true;
         IsChoosingGame = false;
     }
@@ -126,7 +125,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
             HashSet<string> visibleGames = (await activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
             foreach (SelectableGroupGame game in availableGames.Where(game => visibleGames.Contains(game.Key)))
-                Games.Add(new(game.Id, games.FirstOrDefault(handler => handler.GameKey == game.Key)?.DisplayName ?? game.Key, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers));
+                Games.Add(new(game.Id, game.Name, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers, minimumPlayers: game.MinimumPlayers));
             foreach (var game in Games) game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();
             IReadOnlyList<SelectablePlayer> players =
@@ -271,7 +270,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         {
             IsBusy = true;
             ErrorMessage = null;
-            if (Games.Any(game => game.IsSelected && Players.Count > game.MaximumPlayers))
+            if (Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count)))
             {
                 ErrorMessage = AppResources.GroupPlayerLimitExceeded;
                 return;
@@ -380,7 +379,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     {
         GroupMemberDraft.UpdatePositions(Players);
         GamesChanged();
-        ErrorMessage = Games.Any(game => game.IsSelected && Players.Count > game.MaximumPlayers)
+        ErrorMessage = Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count))
             ? AppResources.GroupPlayerLimitExceeded : null;
         SaveCommand.NotifyCanExecuteChanged();
         UpdateCollectionStates();

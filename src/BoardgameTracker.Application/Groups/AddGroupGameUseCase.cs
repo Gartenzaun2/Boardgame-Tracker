@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Groups;
 
-public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory, GamePlayerLimitCatalog playerLimits)
+public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> contextFactory)
 {
     public async Task AddGroupGameAsync(Guid groupId, Guid gameId, CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,7 @@ public sealed class AddGroupGameUseCase(IDbContextFactory<BoardgameTrackerDbCont
             ?? throw new InvalidOperationException("The game does not exist.");
         if (!await dbContext.GroupGames.AnyAsync(assignment => assignment.GroupId == groupId && assignment.GameId == gameId, cancellationToken))
         {
-            dbContext.GroupGames.Add(GroupGame.Create(group, game, playerLimits.GetLimit(game.Key)));
+            dbContext.GroupGames.Add(GroupGame.Create(group, game));
             await dbContext.SaveChangesAsync(cancellationToken);
         }
         await transaction.CommitAsync(cancellationToken);
