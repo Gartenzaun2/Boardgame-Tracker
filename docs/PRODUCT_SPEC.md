@@ -22,7 +22,7 @@ Bei appweit **null Spielern** startet die App ohne Onboarding-Wizard in **Mitspi
 
 Eine Gruppe ist eine appweit wiederverwendbare Identität mit festem Mitgliedersatz, globaler Default-Reihenfolge, Namen und Archivstatus. Sie kann mit **null bis beliebig vielen** Spielen verknüpft sein. Ein temporärer Gruppenstatus entfällt.
 
-Eine Gruppe darf einem Spiel nur zugeordnet werden, wenn ihre tatsächliche Mitgliederzahl dessen maximale Spieleranzahl nicht überschreitet. Diese Regel wird zentral beim Speichern jeder neuen Zuordnung durchgesetzt, einschließlich Übernahme, Reaktivierung und Import; ein Verstoß lässt keine teilweise Speicherung zu. Größere Gruppen dürfen ohne diese Zuordnung existieren. Integrierte Spiele definieren ein festes, nicht konfigurierbares Limit im Modul. Künftige manuell angelegte Spiele sollen das Limit bei Erstellung festlegen und zunächst unveränderlich halten.
+Eine Gruppe darf einem Spiel nur zugeordnet werden, wenn ihre Mitgliederzahl zwischen dessen `MinPlayers` und `MaxPlayers` liegt. Die Prüfung gilt zentral für jede neue Zuordnung, einschließlich Übernahme, Reaktivierung und Import. Historische Partien dürfen trotz abweichendem heutigem Limit bestehen; beim Import wird in solchen Fällen keine ungültige aktuelle Zuordnung angelegt. Integrierte Spiele haben feste registrierte Grenzen, manuelle Spiele konfigurierbare Grenzen (Details unter `Games/ManualGames/`).
 
 Eine andere Spielerzusammensetzung benötigt eine neue Gruppe. Spielmodule dürfen optional spielabhängige Gruppendefaults ergänzen, ohne allgemeine Gruppendaten zu duplizieren.
 
@@ -62,7 +62,7 @@ Materialsprache verändert weder App-Kultur noch historische Partiedaten und wir
 
 ## 6. Spielen: Spiele- und Gruppenübersicht
 
-Die Spieleübersicht zeigt aktive registrierte Spiele mit vollständigem Namen. Ein Spielmodul definiert seinen kompakten **Badge-Text** ausdrücklich; dieser wird nicht automatisch aus dem vollständigen Namen abgeleitet. Eine aktive Session/Wertung wird mit demselben nicht-interaktiven Aktiv-Symbol wie in der Gruppenübersicht am Spielnamen gekennzeichnet.
+Die Spieleübersicht zeigt alle sichtbaren unterstützten Spiele mit ihrem gespeicherten vollständigen Namen; der separat festgelegte Capsule-Tag wird im gemeinsamen Spielkontext verwendet. Eine offene Session/Wertung wird mit dem bestehenden nicht-interaktiven Aktiv-Symbol am Spielnamen gekennzeichnet. Unten steht **Spiel anlegen** zum Erstellen eines manuellen Spiels; vorhandene Spiele werden hier nicht bearbeitet.
 
 Die Spieleübersicht sortiert zunächst Spiele mit offener Session/Wertung, dann nach der **zuletzt gestarteten** Partie und schließlich Spiele ohne Partien. Verborgene Spiele erscheinen in keiner regulären spielbezogenen Liste oder Auswahl. Die administrative Gesamtliste unter Einstellungen bleibt zur Reaktivierung erreichbar.
 
@@ -110,7 +110,7 @@ Eine neue Partie beginnt als nicht persistierter spielabhängiger Entwurf. Erst 
 Vorbereitung → Running → Scoring → Completed
 ```
 
-Die Partievorbereitung beginnt mit der globalen Default-Reihenfolge der Gruppe. **Beim erfolgreichen Start** werden die tatsächliche Reihenfolge historisch in `GameSessionPlayer.Order` und zugleich als neue globale `GroupPlayer.DefaultOrder` der Gruppe gespeichert. Ein abgebrochener Entwurf verändert den Default nicht.
+Die Partievorbereitung beginnt mit der globalen Default-Reihenfolge der Gruppe. **Nur bei tatsächlich erfasster Startreihenfolge** werden deren Positionen beim erfolgreichen Partiestart in `GameSessionPlayer.Order` und als neuer globaler `GroupPlayer.DefaultOrder` gespeichert. Sonst bleibt die historische `Order` für alle Teilnehmer `null`, und der Gruppen-Default unverändert. Abgebrochene Entwürfe verändern keine Defaults.
 
 Eine laufende Partie kann fortgesetzt, regulär beendet oder nach Sicherheitsabfrage verworfen werden. Beim Übergang zu `Scoring` wird die Spielendzeit festgehalten.
 
@@ -131,13 +131,13 @@ Partien können nach Sicherheitsabfrage gelöscht werden. Spieler und Gruppe ble
 
 ## 11. Statistik – Zielbild
 
-Statistik ist ein späterer, von der Partienliste unabhängiger Slice. Allgemeine Zielmetriken sind Anzahl Partien, Siege, Gewinnquote und durchschnittliche Platzierung. Allgemeine Filter können Spiel, Gruppe, Spieler und Zeitraum umfassen. Auch Startposition und Startspieler dürfen anhand der historisch vorhandenen `GameSessionPlayer.Order` ausgewertet werden, ohne neue Statistikfelder nur dafür zu speichern. Bei kleinen Teilmengen ist die Stichprobengröße erkennbar. Spielmodule dürfen zusätzliche Dimensionen ergänzen.
+Statistik ist ein späterer, von der Partienliste unabhängiger Slice. Allgemeine Zielmetriken sind Anzahl Partien, Siege, Gewinnquote und durchschnittliche Platzierung. Filter können Spiel, Gruppe, Spieler und Zeitraum umfassen. Die jeweilige Auswertung berücksichtigt nur Partien mit dafür tatsächlich vorhandenen historischen Informationen: Sieger für Siegstatistiken, vollständige Plätze für Platzierungsdurchschnitte, erfasste `Order` für Startposition/Startspieler. Fehlende Werte sind keine Niederlagen oder Nullwerte. Stichprobengrößen bleiben erkennbar; Spielmodule dürfen Dimensionen ergänzen.
 
 ## 12. Einstellungen
 
 Allgemeine Einstellungen enthalten die App-Sprache (derzeit nur Deutsch), die Auswahl bestehender Themes, **Spiele verwalten**, die installierte Version/Build und Open-Source-Lizenzen. Spieler und Gruppen werden unter **Mitspieler** verwaltet. Ein Standardspiel gibt es nicht. Die App-Sprache und die Sprache des Spielmaterials sind getrennte Einstellungen.
 
-Unter **Spiele verwalten** sind alle registrierten unterstützten Spiele unabhängig von ihrer Sichtbarkeit erreichbar und standardmäßig sichtbar. Der Spieleintrag öffnet seine spielspezifischen Einstellungen mit **Spiel anzeigen**. Verbergen ist bei einer offenen Partie/Wertung (Running/Scoring) dieses Spiels gesperrt und wird beim Speichern erneut validiert. Verborgene Spiele verschwinden aus Spielen, den Spiel-Gruppenansichten, regulären Gruppen-Spielauswahlen sowie der Historienliste und ihrem Spiel-Filter. Sessions, Ergebnisse, Zuordnungen und Defaults bleiben unverändert gespeichert; Reaktivierung macht sie wieder sichtbar. Import und Export bleiben unabhängig von dieser UI-Sichtbarkeit vollständig; die administrative Gesamtliste bleibt die Ausnahme der regulären Ausblendung.
+Unter **Spiele verwalten** sind alle unterstützten integrierten und manuellen Spiele unabhängig von ihrer Sichtbarkeit erreichbar und standardmäßig sichtbar. Die Liste kennzeichnet manuelle und ausgeblendete Spiele. Der Eintrag öffnet die Spieleinstellungen mit **Spiel anzeigen** an erster Stelle. Verbergen ist bei einer offenen Partie/Wertung (Running/Scoring) dieses Spiels gesperrt und wird beim Speichern erneut validiert. Verborgene Spiele verschwinden aus Spielen, den Spiel-Gruppenansichten, regulären Gruppen-Spielauswahlen sowie der Historienliste und ihrem Spiel-Filter. Sessions, Ergebnisse, Zuordnungen und Defaults bleiben unverändert gespeichert; Reaktivierung macht sie wieder sichtbar. Import und Export bleiben unabhängig von dieser UI-Sichtbarkeit vollständig; die administrative Gesamtliste bleibt die Ausnahme der regulären Ausblendung.
 
 Verfügbare Themes, Default, visuelle Tokens und Wechselverhalten stehen ausschließlich in [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
 Drittanbieter-Lizenzanforderungen stehen ausschließlich in [THIRD_PARTY_LICENSE_POLICY.md](THIRD_PARTY_LICENSE_POLICY.md).
@@ -150,8 +150,8 @@ Historische Sessions bleiben auch dann erreichbar, wenn ihre Gruppe dem Spiel ak
 
 Format, Matching, Konfliktauflösung und Transportdetails: [IMPORT_EXPORT.md](IMPORT_EXPORT.md).
 
-## 14. Manuell erfasste Spiele – Zielbild
+## 14. Spielarten
 
-Später sollen Benutzer eigene Spiele anlegen und einfache Ergebnisarten wie „gespielt“, Gewinner, Punkte und/oder Platzierung konfigurieren können. Das konkrete Modell wird erst bei Umsetzung spezifiziert; daraus wird vorab keine generische Spiele-Engine abgeleitet. Für solche manuellen Spiele wird der Badge-Text später separat spezifiziert; integrierte Spielmodule erhalten keinen zusätzlichen vereinfachten Erfassungsmodus.
+Integrierte Spiele haben feste Modulregeln; benutzerdefinierte Spiele gehören zum eigenständigen Modul [ManualGames](Games/ManualGames/PRODUCT_SPEC.md). Alle verwenden die gemeinsamen Spiel-, Gruppen-, Session- und Historienverträge. Integrierte Spiele erhalten keinen vereinfachten manuellen Erfassungsmodus.
 
 Dokumentationszuständigkeiten und Generalisierungstest: [README.md](README.md).

@@ -70,9 +70,11 @@ Nullable Werte werden explizit als `null` geschrieben.
 
 Berechnete Punkte werden nicht transportiert.
 
-Arche-Nova-Gruppendefaults wie `ArkNovaGroupPlayer.DefaultColor` sind **nicht**
-Teil von Format v1. Beim Match bleibt der lokale Default erhalten; bei einer neu
-importierten Gruppe entsteht dadurch kein importierter Arche-Nova-Farbdefault.
+Gemeinsame Gruppen-/Spiel-Farbdefaults sind **nicht** Teil von Format v1. Beim
+Match bleibt der lokale Default erhalten; bei einer neu importierten Gruppe
+entsteht dadurch kein importierter Farbdefault. Das vorhandene
+`players[].color` bleibt in Arche Nova `schemaVersion = 3` unverändert und wird
+in die gemeinsame historische Sessionfarb-Persistenz übernommen.
 
 ## 4. Validierung
 

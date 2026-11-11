@@ -55,11 +55,13 @@ Titel, Zurück und rechts verankerte Aktionsicons stehen in jeder jeweiligen Var
 
 Reine Auswahlseiten verwenden den gemeinsamen Zurück-/Exit-IconButton ohne unteren Schließen-Textbutton; Auswahl- und Dialogverhalten folgt dem `UI_DESIGN_GUIDE.md`.
 
+Laufende Spielseiten zeigen die Dauer kompakt im gemeinsamen Spielkontext-Header. Ihre Abschlussaktionen stehen **nebeneinander**: links **Partie verwerfen** als destruktive Nebenaktion, rechts **Partie beenden** als Primary. Verwerfen verlangt eine Sicherheitsabfrage.
+
 ## 3. Spielen: Spiele und Gruppen
 
 ### Spieleübersicht
 
-Header **Spiele**; darunter die scrollende Liste aktiver Spiele mit **vollständigem Namen**.
+Header **Spiele**; darunter die scrollende Liste sichtbarer Spiele mit **vollständigem Namen**. Unten **Spiel anlegen** als Primary-Aktion zur Neuanlage eines manuellen Spiels. Keine Bearbeiten-Stifte an Spieleinträgen.
 
 Spiele mit offenen Partien/Wertungen stehen zuerst und tragen direkt am Namen das gemeinsame Aktiv-Symbol. Danach folgen Spiele nach zuletzt gestartetem Spielbeginn, ungenutzte zuletzt. Das Statussymbol hat keine eigene Touchfläche. Die gesamte Spieleintrag-Fläche mit rechtem Chevron öffnet die Gruppenübersicht.
 
@@ -207,7 +209,7 @@ Die Root-Seite bleibt flach und scrollt. Reihenfolge der deutlich hervorgehobene
 2. **Spiele**: genau ein navigierbarer Eintrag **Spiele verwalten** mit Chevron.
 3. **Über & Rechtliches**: nicht antippbare Runtime-Anzeige **Version &lt;DisplayVersion&gt; (Build &lt;BuildNumber&gt;)**, danach der Eintrag **Open-Source-Lizenzen** mit Chevron direkt zur bestehenden Lizenzübersicht.
 
-**Spiele verwalten** ist eine eigene scrollbare Liste sämtlicher registrierter Spiele, einschließlich verborgener Spiele. Jede Zeile zeigt Name, Sichtbarkeitsstatus und Chevron; die ganze Zeile öffnet die spielspezifischen Einstellungen. Dort steht **Spiel anzeigen** an erster Stelle. Bei offener Partie/Wertung ist Abschalten gesperrt und der Grund sichtbar. Reaktivierung erfolgt über denselben administrativen Weg.
+**Spiele verwalten** ist eine eigene scrollbare Liste aller integrierten und manuellen Spiele einschließlich verborgener Spiele. Jede Zeile zeigt Name, bei manuellen Spielen **Manuelles Spiel**, bei verborgenen Spielen **Deaktiviert** und den Chevron. Die Zeile öffnet die jeweiligen Spieleinstellungen, dort steht **Spiel anzeigen** an erster Stelle. Bei offener Partie/Wertung ist Abschalten gesperrt und der Grund sichtbar. Name/Tag, manuelle Wertungsoptionen und Löschaktion sind nur in den ManualGames-Einstellungen bearbeitbar. Reaktivierung erfolgt über denselben administrativen Weg.
 
 ## 7. Open-Source-Lizenzen
 

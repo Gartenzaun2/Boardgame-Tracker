@@ -51,8 +51,10 @@ Bei einer konkreten Spielaufgabe gilt zuerst die allgemeine Quelle und ergänzen
 die gleichnamige Spielergänzung, sofern sie existiert.
 
 Sie ersetzen die allgemeinen Quellen nicht, sondern enthalten nur die konkrete
-Spielausprägung. Spezialdokumente entstehen nur bei einer eigenen dauerhaften
-Verantwortung, z. B. Forschungs- oder Integrationsstatus.
+Spielausprägung. `Games/ManualGames/` beschreibt als ein Modul die gemeinsamen
+Regeln aller benutzerdefinierten Spiele, nicht ein technisches Modul pro Spiel.
+Spezialdokumente entstehen nur bei einer eigenen dauerhaften Verantwortung,
+z. B. Forschungs- oder Integrationsstatus.
 
 ## Repository-nahe Dokumente
 

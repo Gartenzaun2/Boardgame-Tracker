@@ -74,7 +74,7 @@ Invarianten:
 - Mitgliedermenge einer bestehenden Group bleibt fest;
 - je Gruppe null bis beliebig viele explizite Spielzuordnungen;
 - jede Gruppe-Spiel-Kombination höchstens einmal;
-- neue Zuordnungen nur bei Mitgliederzahl innerhalb des maximalen Spielerlimits; Prüfung vor dem Speichern anhand persistierter und im selben Vorgang neu angelegter Mitgliedschaften;
+- neue Zuordnungen nur bei Mitgliederzahl innerhalb `Game.MinPlayers..Game.MaxPlayers`; Prüfung vor dem Speichern anhand der vollständigen Mitgliedschaft; ein historischer Import darf eine unzulässige aktuelle Zuordnung auslassen;
 - Archivierung von `Group` nur, wenn in **keinem** Spiel eine `GameSession` dieser Gruppe `Running` oder `Scoring` ist;
 - Entfernen von `GroupGame` nur, wenn für genau dieses Paar keine offene `GameSession` existiert.
 
@@ -92,12 +92,13 @@ Löschen der Gruppe entfernt Mitgliedschaften und Zuordnungen, nicht die referen
 Game
 - Id
 - Key
+- Name
+- BadgeText
+- MinPlayers
+- MaxPlayers
 ```
 
-`Key` ist sprachneutral, eindeutig und maximal 100 Zeichen. Anzeigenamen und explizite kompakte Badge-Texte sind keine
-Identität und werden als registrierte Spielmetadaten statt in `Game` gespeichert.
-Das unveränderliche maximale Spielerlimit integrierter Spiele ist Modulmetadatum im allgemeinen Vertrag `GamePlayerLimit`; es wird nicht zusätzlich in der Datenbank gespeichert.
-Aktive/deaktivierte Spiele sind Host-Preferences und keine Game-Domainfelder.
+`Key` ist sprachneutral, eindeutig, unveränderlich und maximal 100 Zeichen. Integrierte Spiele besitzen feste registrierte Keys; benutzerdefinierte Spiele einen lokal erzeugten Key im reservierten Format `manual:<GUID>`. Eine zusätzliche persistierte `ModuleKey`-Spalte existiert nicht. `Name` ist ein nichtleerer, getrimmter Anzeigename (`1..100` Zeichen), `BadgeText` eine separat festgelegte nichtleere kompakte Capsule-Bezeichnung. `1 <= MinPlayers <= MaxPlayers`; konkrete Grenzen und Änderbarkeit bestimmt das Spielmodul. Integrierte Spiele schreiben ihre registrierten festen Metadaten bei der Initialisierung in `Game`; manuelle Spiele die Nutzereingaben. Innerhalb manueller Spiele sind Namen (einschließlich verborgener) `OrdinalIgnoreCase` eindeutig; Namensgleichheit mit integrierten Spielen ist erlaubt. Sichtbarkeit bleibt eine Host-Preference und kein Game-Domainfeld.
 
 ## 6. GameSession
 
@@ -115,14 +116,14 @@ GameSession
 GameSessionPlayer
 - GameSessionId
 - PlayerId
-- Order
+- Order?
 - Placement?
 ```
 
 Invarianten:
 
 - mindestens ein Spieler, jeder höchstens einmal;
-- `Order` positiv, eindeutig und lückenlos; `Order = 1` ist Startspieler;
+- `Order` ist für **alle** Partieteilnehmer `null` (nicht erfasst) oder vollständig positiv, eindeutig und lückenlos `1..n`; nur im zweiten Fall bezeichnet `Order = 1` den Startspieler;
 - `Placement` ist nullable, gesetzt aber positiv;
 - gleiche Placements sind erlaubt;
 - `Placement = 1` bedeutet Gewinner.
@@ -139,7 +140,7 @@ nicht vor `StartedAt` bzw. `EndedAt` liegen.
 Die Vorbereitung ist keine persistierte `GameSession`. Spielabhängige Ergebnisfelder
 dürfen während `Scoring` nullable sein; das Spielmodul definiert Abschlussinvarianten.
 
-Die tatsächliche Startreihenfolge bleibt dauerhaft über `GameSessionPlayer.Order` erhalten. Das Aktualisieren des globalen `GroupPlayer.DefaultOrder` beim Start verändert bereits gespeicherte Sessions nicht.
+Die gegebenenfalls erfasste Startreihenfolge bleibt über `GameSessionPlayer.Order?` historisch erhalten. Bei `Order = null` enthält die Session keine Startreihenfolge; die Anzeige kann alphabetisch erfolgen. Der globale `GroupPlayer.DefaultOrder` ändert sich nur bei tatsächlich erfasster Reihenfolge und verändert niemals ältere Sessions.
 
 `GameSession` referenziert `Game` und `Group` mit Restrict. `GameSessionPlayer`
 referenziert `Player` mit Restrict. Session-Kinder werden beim Löschen kaskadierend
@@ -155,8 +156,9 @@ Spielabhängige Ergänzungen verwenden denselben Schlüssel als PK/FK und dupliz
 keinen allgemeinen Fachzustand:
 
 ```text
-GroupPlayer       1 -> 0..1 <GameName>GroupPlayer
-GameSessionPlayer 1 -> 0..1 <GameName>GameSessionPlayer
+Game               1 -> 0..1 <GameName>Game
+GameSession        1 -> 0..1 <GameName>GameSession
+GameSessionPlayer  1 -> 0..1 <GameName>GameSessionPlayer
 ```
 
 Architekturdetails: [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -174,8 +176,22 @@ Purple=9 Pink=10 Turquoise=11 Gray=12
 Die Integerwerte sind persistierte Identitäten und bleiben stabil.
 `PlayerColor` enthält keine UI-/Kamerawerte und ist kein Feld auf `Player`.
 
-Ein Spiel definiert nur seine erlaubte Teilmenge. Spielabhängige Gruppendefaults
-werden im jeweiligen Spielmodell gespeichert.
+Ein Spiel definiert nur seine erlaubte Teilmenge. Farben sind **optional** und werden nicht als `null`-Platzhalter erzwungen:
+
+```text
+GroupGamePlayerColor
+- GroupId
+- GameId
+- PlayerId
+- DefaultColor
+
+GameSessionPlayerColor
+- GameSessionId
+- PlayerId
+- Color
+```
+
+Beide Zuordnungen sind optionale Datensätze mit gültigem `PlayerColor`-Wert. Ihre Schlüssel sind `(GroupId, GameId, PlayerId)` bzw. `(GameSessionId, PlayerId)`; nur Gruppenmitglieder bzw. Sessionteilnehmer dürfen referenziert werden. Farben sind je Gruppe/Spiel und je Session eindeutig, sofern verwendet. Fehlt die Farbunterstützung, gibt es keine Einträge. Änderungen an Gruppendefaults verändern keine historischen Sessionfarben; Gruppen-/Spieldefaults werden erst beim erfolgreichen Partiestart aktualisiert.
 
 ## 9. Historische Identitäten und abgeleitete Werte
 
@@ -216,11 +232,12 @@ Korrektur erzeugt keine Namenssnapshots.
 
 Allgemeine relationale Schutzregeln:
 
-- eindeutige `Player.Name`, `Group.Name`, `Game.Key`;
+- eindeutige `Player.Name`, `Group.Name`, `Game.Key`; manuelle `Game.Name` sind innerhalb ihres Typs eindeutig;
 - PK `(GroupId, PlayerId)` und Unique `(GroupId, DefaultOrder)`;
 - PK `(GroupId, GameId)` für `GroupGame`;
-- PK `(GameSessionId, PlayerId)` und Unique `(GameSessionId, Order)`;
-- positive Checks für `DefaultOrder`, `Order` und gesetztes `Placement`;
+- PK `(GameSessionId, PlayerId)` und Unique `(GameSessionId, Order)` für gesetzte `Order`-Werte; mehrere `null` sind erlaubt;
+- positive Checks für `DefaultOrder`, gesetztes `Order` und gesetztes `Placement`;
+- optionale Farb-Zuordnungs-PKs und Eindeutigkeit pro Gruppe/Spiel bzw. Session;
 - Restrict auf langlebige Stammdaten;
 - Cascade nur für echte Aggregate-/Composition-Kinder.
 

@@ -8,38 +8,24 @@ Arche-Nova-spezifische Entities, Werte und Invarianten.
 ## 2. Composition
 
 ```text
-ArkNovaGroupPlayer
-- GroupId
-- PlayerId
-- DefaultColor
-
 ArkNovaGameSessionPlayer
 - GameSessionId
 - PlayerId
-- Color
 - SelectedZooPlanNumber
 - Attractiveness?
 - Conservation?
 - Reputation?
 ```
 
-Beide verwenden `(ParentId, PlayerId)` als PK/FK auf den allgemeinen Datensatz und
-duplizieren keinen allgemeinen Zustand.
-
-### Gruppendefaults
-
-`DefaultColor` ist nicht nullable; ohne Default existiert kein
-`ArkNovaGroupPlayer`-Datensatz. Erlaubt sind:
-
-```text
-Blue=1 Yellow=2 Red=3 Black=4
-```
-
-`(GroupId, DefaultColor)` ist eindeutig.
+`ArkNovaGameSessionPlayer` verwendet `(GameSessionId, PlayerId)` als PK/FK auf
+den allgemeinen Sessionteilnehmer. Gruppendefaultfarben und historische Farben
+liegen in den allgemeinen Farbzuordnungen. Arche Nova erlaubt dort genau
+`Blue=1`, `Yellow=2`, `Red=3`, `Black=4`; vor dem Start benötigt jeder
+Teilnehmer eine eindeutige Farbe.
 
 ### Partieteilnehmer
 
-`Color` ist pro GameSession eindeutig. Jeder persistierte Teilnehmer besitzt genau
+Jeder persistierte Teilnehmer besitzt genau
 `SelectedZooPlanNumber` mit einer gültigen Katalogidentität. Dieselbe Zooplanidentität
 darf innerhalb einer GameSession mehreren Teilnehmern zugeordnet sein.
 
@@ -204,10 +190,9 @@ Farbe und tatsächlich gespielter Zooplan bleiben unverändert. Die GameSession 
 
 Zusätzlich gelten:
 
-- PK/FK `(GroupId, PlayerId)` für `ArkNovaGroupPlayer`;
-- Unique `(GroupId, DefaultColor)`;
 - PK/FK `(GameSessionId, PlayerId)` für `ArkNovaGameSessionPlayer`;
-- Unique `(GameSessionId, Color)`;
+- eindeutige verpflichtende Sessionfarben aus `Blue/Yellow/Red/Black` gemäß
+  allgemeiner Farb-Persistenz;
 - Gültigkeitsprüfung für die gewählte Zooplanidentität `1..17`, ohne Session-weite Eindeutigkeitsbedingung;
 - Wertebereichschecks für Wertungsfelder;
 - Assignment-PK `(GameSessionId, PlayerId, SpecialCardId)`;

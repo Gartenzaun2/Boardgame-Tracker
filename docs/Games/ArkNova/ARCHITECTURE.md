@@ -10,13 +10,10 @@ Persistenz-, Content-, UI- und Transferregeln werden nicht wiederholt.
 
 Arche Nova liegt vollständig unter `Games/ArkNova/` in Core, Application und App.
 
-Das allgemeine Composition-Muster wird konkret durch:
-
-- `ArkNovaGroupPlayer`;
-- `ArkNovaGameSessionPlayer`
-
-umgesetzt. Beide wiederholen nur ihren gemeinsamen PK/FK; allgemeiner Zustand bleibt
-im Basismodell.
+Die Arche-Nova-spezifische Composition verwendet
+`ArkNovaGameSessionPlayer` mit dem gemeinsamen Teilnehmer-PK/FK. Historische
+Farben und Gruppen-/Spiel-Farbdefaults liegen in den allgemeinen
+`PlayerColor`-Zuordnungen statt in eigenen Arche-Nova-Tabellen.
 
 `Application/Games/ArkNova/Persistence/BoardgameTrackerDbContext.ArkNova.cs`
 erweitert den gemeinsamen partial DbContext. Wegen des Partial-Typs verwendet die

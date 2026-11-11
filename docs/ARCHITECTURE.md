@@ -111,14 +111,15 @@ werden nicht nur für EF-Bequemlichkeit öffentlich gemacht.
 Spielabhängige Ergänzungen verwenden Composition statt Duplikation:
 
 ```text
+Game              1 -> 0..1 <GameName>Game
+GameSession       1 -> 0..1 <GameName>GameSession
 GameSessionPlayer 1 -> 0..1 <GameName>GameSessionPlayer
-GroupPlayer       1 -> 0..1 <GameName>GroupPlayer
 ```
 
 Der gemeinsame Schlüssel darf als PK/FK wiederholt werden. Allgemeiner fachlicher
 Zustand wie Reihenfolge oder Placement wird nicht kopiert.
 
-Der allgemeine Vertrag `GamePlayerLimit` wird vom jeweiligen Spielmodul registriert und durch `GamePlayerLimitCatalog` anhand des Spielschlüssels aufgelöst. Unbekannte Limits erlauben keine Zuordnung. Alle fachlichen Schreibwege einschließlich Transfer erzeugen neue `GroupGame`-Zuordnungen über `GroupGame.Create(group, game, gamePlayerLimit)` im Core. Die Factory prüft die tatsächliche Mitgliedermenge gegen das zum Spiel gehörende feste Spielerlimit. Application stellt die benötigten Daten bereit: neue Gruppen enthalten ihre vollständigen Mitgliedschaften, bestehende Gruppen werden mit `Include(group => group.Players)` vollständig geladen. Bestehende Zuordnungen werden nicht erneut geprüft, da Mitgliedermenge und Spielerlimit unveränderlich sind. Der DbContext übernimmt keine automatische Spielerlimitprüfung bei `SaveChanges`. Bestehende atomare Transaktionen bleiben erhalten; für diese Regel entstehen keine zusätzlichen technischen Abstraktionen. Keine konkreten Spielschlüsselentscheidungen gehören in diese Prüfung.
+`Game` speichert `Name`, `BadgeText`, `MinPlayers` und `MaxPlayers` als gemeinsame Stammdaten. Integrierte Module liefern die festen Werte beim Seeding; benutzerdefinierte Spiele speichern ihre Konfiguration. `GroupGame` prüft bei **neuen** Zuordnungen die tatsächlich geladene Mitgliedermenge gegen `Game.MinPlayers..Game.MaxPlayers`; ungültige Zuordnungen werden nicht gespeichert. Die Application lädt alle dafür erforderlichen Daten. Historische Sessions benötigen keine aktuelle `GroupGame`-Zuordnung; beim History-Import werden zu große/kleine neue Zuordnungen ausgelassen. Zentraler Code verwendet keine spieltypabhängigen Limit-Abfragen.
 
 `GroupGame` ist die allgemeine aktuelle Gruppe↔Spiel-Verknüpfung. Sie ist nicht Teil der historischen `GameSession`; die Spielmodule definieren keine parallele Zuordnung.
 
@@ -157,16 +158,16 @@ DB-/Build-/Migrationsregeln: [`SETUP.md`](../SETUP.md).
 
 ## 8. Modulregistrierung und Host-Integration
 
-Jedes Spiel besitzt einen öffentlichen Registrierungseinstieg, bevorzugt
-`Add<GameName>()`.
+Jedes **integrierte Spielmodul** besitzt einen öffentlichen Registrierungseinstieg, bevorzugt
+`Add<GameName>()`. `ManualGames` registriert **ein** Modul für beliebig viele lokal angelegte Spiele.
 
 Allgemeiner Code arbeitet mit Spielmodulen nur über kleine fachliche Verträge.
 Der allgemeine Vertrag liegt außerhalb eines konkreten Spielmoduls; die konkrete
 Implementierung bleibt im jeweiligen `Games/<GameName>/`-Baum, z. B.:
 
-- stabile Spielidentität sowie vollständiger lokalisierter Anzeigename und explizit definierter kompakter Spiel-Badge-Text für den gemeinsamen Header;
+- registrierte feste Identität und Seeding gemeinsamer `Game`-Metadaten bei integrierten Spielen; dynamische Auflösung des reservierten `manual:<GUID>`-Schlüsselraums durch `ManualGames`;
 - Session-Navigation/Resume;
-- optionale PlayerColor-Regeln und Gruppendefault-Persistenz;
+- optionale PlayerColor-Regeln über die gemeinsame Farb-/Default-Persistenz;
 - optionale Spiel-Einstellungsnavigation;
 - Initialisierungsschritte;
 - Import-/Export-Schema und -Persistenz.
@@ -189,9 +190,10 @@ austauschbare oder spielabhängige Implementierung benötigt.
 `Core/Players/PlayerColor` ist der gemeinsame semantische Farbtyp für Spiele, die
 Spielerfarben verwenden. Er enthält keine UI- oder Kamerawerte.
 
-Ein Spiel definiert nur seine erlaubte Teilmenge und gegebenenfalls Persistenz/
-Validierung seiner Defaults. Benötigt ein Spiel ein anderes Marker-Konzept, erhält
-dieses einen eigenen Fachbegriff.
+Ein Spiel definiert nur seine erlaubte Teilmenge und Validierungsregeln. Optionale
+Gruppen-/Spieldefaults und historische Sessionfarben liegen in den allgemeinen
+Farbzuordnungen; eigene redundante Farbtabellen in Spielmodulen entfallen. Benötigt
+ein Spiel ein anderes Marker-Konzept, erhält dieses einen eigenen Fachbegriff.
 
 Datenwerte: [DATA_MODEL.md](DATA_MODEL.md). Darstellung:
 [UI_DESIGN_GUIDE.md](UI_DESIGN_GUIDE.md).
@@ -225,11 +227,11 @@ Shell-Parameter verwenden zentrale Konstanten in
 Navigation, Theme, die aktiv geschalteten Spiele und andere nicht-historische Preferences sind Hostzustand, keine
 GameSession-Daten.
 
-Registrierte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig aktiv. Die Auswahl wird anhand der stabilen `Game.Key`-Werte geführt, nicht über konkrete Game-Typ-Switches in allgemeinen App-Features. Die frühere Standardspiel-Preference entfällt.
+Unterstützte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig sichtbar. Die Auswahl wird anhand der lokal stabilen `Game.Key`-Werte geführt, ohne GameKey-Switches in allgemeinen Features. Integrierte Spiele besitzen feste Keys; ManualGames lokal erzeugte Keys `manual:<GUID>`, die nicht zum Geräte-Matching verwendet werden. Die frühere Standardspiel-Preference entfällt.
 
-Der Host ordnet registrierte Spieleinstellungen über `IGameSettingsNavigation.GameKey` zu; konkrete Zielseiten bleiben im Modul. Die vorhandene Spielaktivierung ist die einzige Sichtbarkeitsquelle. Reguläre UI-Listen und Auswahlflächen filtern anhand dieser Quelle; Daten- und Transferqueries bleiben vollständig. Beim Bearbeiten von Gruppen bleiben verborgene Zuordnungen im Entwurf erhalten und werden beim Speichern nicht entfernt.
+Der Host löst Spieleinstellungen über den zuständigen Spieladapter auf; feste Schlüssel identifizieren integrierte Module, der reservierte manuelle Schlüsselraum das eine ManualGames-Modul. Konkrete Zielseiten bleiben im Modul.
 
-Badge-Text ist registrierte Spiel-Präsentationsinformation und wird nicht als Feld auf `Game` oder in `GameSession` gespeichert.
+Der Capsule-Tag ist `Game.BadgeText` und kein historisches Sessionfeld. Integrierte Werte stammen aus registrierter Modulmetadaten-Initialisierung, manuelle aus ihrer gespeicherten Spielkonfiguration.
 
 ### History-Transfer
 

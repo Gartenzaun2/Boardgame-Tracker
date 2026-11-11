@@ -30,7 +30,7 @@ Vorbereitungsregeln aus `PRODUCT_SPEC.md`.
 
 ## 3. Laufende Partie
 
-Gemeinsamer Spielkontext-Header mit Funktion **Partie**, Capsule **Arche Nova**, Gruppenname und bisheriger Dauer. Darunter Spieler in Startreihenfolge mit Name, Farbe und gewähltem Zooplan. Unten **Partie beenden** als Primary und **Verwerfen** als nachgeordnete destruktive Aktion.
+Gemeinsamer Spielkontext-Header mit Funktion **Partie**, Capsule **Arche Nova**, Gruppenname und bisheriger Dauer. Darunter Spieler in Startreihenfolge mit Name, Farbe und gewähltem Zooplan. Unten nebeneinander **Partie verwerfen** (links, destruktive Nebenaktion) und **Partie beenden** (rechts, Primary) gemäß gemeinsamem UI-Vertrag.
 
 ## 4. Wertungsübersicht
 

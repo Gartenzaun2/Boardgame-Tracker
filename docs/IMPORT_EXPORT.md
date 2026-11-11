@@ -84,9 +84,10 @@ allgemeine Formatversion.
 
 Der Export schreibt immer die aktuell unterstützten Versionen.
 
-Nicht unterstützte Formatversionen, nicht registrierte Spiel-Keys oder nicht
-unterstützte Spielschema-Versionen werden als **gesamte Datei** abgelehnt. Es gibt
-kein Best Effort.
+Nicht unterstützte Format- oder Spielschema-Versionen und Spielschlüssel außerhalb
+unterstützter Modul-Namensräume werden als **gesamte Datei** abgelehnt. Feste
+registrierte Keys gehören integrierten Spielen; `manual:<GUID>` wird vom
+ManualGames-Transferschema aufgelöst. Es gibt kein Best Effort.
 
 Unterstützte ältere Versionen werden vor Matching in aktuelle DTOs
 migriert; die Quelldatei bleibt unverändert. Der strukturelle Format-v1-Vertrag
@@ -97,8 +98,9 @@ im jeweiligen Spielschema festgelegt; für Arche Nova gelten die explizit
 unterstützten und abgelehnten Versionen in
 [Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md).
 
-Custom Games werden derzeit abgelehnt, solange kein passendes registriertes
-Transferschema existiert.
+Manuelle Spiele verwenden ein gemeinsames versioniertes ManualGames-Schema;
+konkrete lokale manuelle Keys sind keine eigenständigen registrierten Schemata.
+Details: [Games/ManualGames/IMPORT_EXPORT.md](Games/ManualGames/IMPORT_EXPORT.md).
 
 ## 4. Export-Snapshot
 
@@ -162,7 +164,7 @@ Zentrale Grenzen:
   `OrdinalIgnoreCase` eindeutig;
 - `Game.Key` innerhalb der Datei eindeutig;
 - alle allgemeinen Referenzen müssen auflösbar sein;
-- `GroupPlayer.DefaultOrder` und `GameSessionPlayer.Order` jeweils lückenlos `1..n`;
+- `GroupPlayer.DefaultOrder` lückenlos `1..n`; `GameSessionPlayer.Order` entweder für alle Teilnehmer `null` oder vollständig lückenlos `1..n`;
 - Session-Spielermenge muss exakt der Spieler-Menge ihrer Gruppe entsprechen;
 - `Placement` liegt in `1..n`;
 - `EndedAt >= StartedAt`;
@@ -276,7 +278,7 @@ Bestehende Gruppenmitgliedschaften werden niemals verändert.
 
 ### Gruppen-Spiel-Zuordnungen beim Import
 
-Nur für eine **tatsächlich neu importierte Gruppe** werden `GroupGame`-Zuordnungen aus ihren tatsächlich neu importierten `GameSession`-Datensätzen abgeleitet und innerhalb derselben Transaktion angelegt. Die Zuordnungen werden je `(GroupId, GameId)` dedupliziert.
+Nur für eine **tatsächlich neu importierte Gruppe** werden `GroupGame`-Zuordnungen aus ihren tatsächlich neu importierten `GameSession`-Datensätzen abgeleitet und innerhalb derselben Transaktion angelegt, soweit die lokalen `Game.MinPlayers..Game.MaxPlayers`-Grenzen eingehalten sind. Andernfalls wird die aktuelle Zuordnung ausgelassen, die historisch gültige Session aber importiert. Die zulässigen Zuordnungen werden je `(GroupId, GameId)` dedupliziert.
 
 Wird eine importierte Gruppe dagegen auf eine **lokal bereits vorhandene Gruppe** gemappt (per ID, Name oder manueller Resolve-Entscheidung), bleiben deren aktuelle Spielzuordnungen vollständig **unverändert**. Auch neu importierte historische Sessions eines bisher nicht zugeordneten Spiels erzeugen für diese lokale Gruppe **keine** neue Zuordnung. Damit darf eine bewusst entfernte Verknüpfung nicht durch einen späteren History-Import zurückkehren.
 
@@ -315,10 +317,16 @@ Bei Änderung wird der Import abgebrochen und muss neu analysiert werden.
 Danach wird der Plan mit demselben Resolve-Stand erneut berechnet. Nur für neu anzulegende Gruppen werden dabei die aus den zu importierenden Sessions abgeleiteten Spielzuordnungen berücksichtigt. Offene Konflikte
 verhindern den Commit.
 
-Neu angelegte Player und Groups behalten ihre importierten IDs. Für bekannte Games
-wird die lokale `Game.Id` über den stabilen `Game.Key` verwendet.
+Neu angelegte Player und Groups behalten ihre importierten IDs. Integrierte Spiele
+werden über ihren festen `Game.Key` zugeordnet; manuelle Spiele ausschließlich über
+Namensmatching und die ausdrückliche Importentscheidung **innerhalb** des
+ManualGames-Moduls. Ihre Quell-Keys dienen nur der Dateireferenzierung, nicht dem
+lokalen Matching. Neue manuelle Spiele erhalten eine lokale Identität.
 
-Die nur für neue Gruppen benötigten `GroupGame`-Zuordnungen werden in derselben Transaktion eingefügt; vorhandene Gruppen behalten ihre Zuordnungen unverändert.
+Nur für neue Gruppen werden `GroupGame`-Zuordnungen in derselben Transaktion
+angelegt, sofern die jeweilige lokale `Game.MinPlayers..Game.MaxPlayers`-Grenze
+eingehalten ist; andernfalls bleibt die historische Session ohne aktuelle
+Zuordnung. Vorhandene Gruppen behalten ihre Zuordnungen unverändert.
 
 Alle Inserts und Spielmoduldaten werden gemeinsam gespeichert. Jede Exception rollt
 die Transaktion zurück.
@@ -335,7 +343,8 @@ Allgemeiner Transfer kennt konkrete Spiele nur über registrierte Verträge.
 
 `IGameTransferSchema` besitzt:
 
-- `GameKey`;
+- Zuständigkeit für einen festen registrierten Spiel-Key oder einen definierten
+  dynamischen Key-Namensraum;
 - `SchemaVersion` sowie explizit unterstützte Eingabeversionen;
 - Normalisierung älterer `GameSession.data` vor dem Matching;
 - Validierung von `Game.data` und `GameSession.data`.
@@ -351,8 +360,8 @@ Allgemeiner Transfer kennt konkrete Spiele nur über registrierte Verträge.
 Das Spielmodul arbeitet bei Import auf demselben DbContext und derselben Transaktion
 wie der allgemeine Transfer.
 
-Aktuelles Arche-Nova-Schema:
-[Games/ArkNova/IMPORT_EXPORT.md](Games/ArkNova/IMPORT_EXPORT.md).
+Spielschemata: [Arche Nova](Games/ArkNova/IMPORT_EXPORT.md) und
+[ManualGames](Games/ManualGames/IMPORT_EXPORT.md).
 
 ## 12. Exportziele
 

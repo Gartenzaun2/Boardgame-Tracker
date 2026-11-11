@@ -32,14 +32,14 @@ Diese Einstellungen sind keine historischen Partiedaten.
 ## 3. Partievorbereitung
 
 Aus einer Gruppe wird ein unpersistierter Arche-Nova-Entwurf erzeugt:
-1. globale Gruppen-Default-Reihenfolge und Arche-Nova-Farbdefaults übernehmen;
+1. globale Gruppen-Default-Reihenfolge und gemeinsame Farbdefaults für diese Gruppe und Arche Nova übernehmen;
 2. fehlende eindeutige Farben ergänzen; Zoopläne sind zunächst nicht zugewiesen;
 3. je Spieler vor der ersten Auslosung einen Zooplan manuell auswählen **oder** über die gemeinsame Auslosung zwei Optionen je Spieler erzeugen;
 4. je Spieler genau einen Zooplan festlegen;
 5. Farbe und Reihenfolge bei Bedarf im unpersistierten Entwurf ändern;
 6. Partie starten.
 
-Bis zum Start bleibt der gesamte Entwurf einschließlich manueller Zuordnungen, Auslosungsoptionen und Auswahl unpersistiert. Beim Verlassen der Vorbereitung wird er verworfen; erneutes Öffnen beginnt mit nicht zugewiesenen Zooplänen. Der erfolgreiche Start speichert die tatsächlich gewählten Sessionfarben, den tatsächlich gespielten Zooplan je Spieler und neue Arche-Nova-Gruppendefaultfarben zusammen mit der Session; ein Abbruch verändert keine Defaults. Die allgemeine Reihenfolgeübernahme beim Start folgt `docs/PRODUCT_SPEC.md`.
+Bis zum Start bleibt der gesamte Entwurf einschließlich manueller Zuordnungen, Auslosungsoptionen und Auswahl unpersistiert. Beim Verlassen der Vorbereitung wird er verworfen; erneutes Öffnen beginnt mit nicht zugewiesenen Zooplänen. Der erfolgreiche Start speichert die tatsächlich gewählten gemeinsamen Sessionfarben, den tatsächlich gespielten Zooplan je Spieler und neue gemeinsame Gruppen-/Spiel-Farbdefaults zusammen mit der Session; ein Abbruch verändert keine Defaults. Die allgemeine Reihenfolgeübernahme beim Start folgt `docs/PRODUCT_SPEC.md`.
 
 ### Farben
 
@@ -72,7 +72,7 @@ Die Vorbereitung erlaubt zyklisches Rotieren, Verschieben einzelner Spieler und 
 
 ## 4. Laufende Partie
 
-Beim Start werden zusätzlich zu den allgemeinen GameSession-Daten nur die Spielerfarben und der tatsächlich gewählte Zooplan je Spieler gespeichert. Die ausgelosten Alternativen werden für das Wiederöffnen einer laufenden Partie, die Wertung und die Historie nicht benötigt und nicht persistiert.
+Beim Start werden die gemeinsamen Sessionfarben und als Arche-Nova-spezifisches Sessiondatum der tatsächlich gewählte Zooplan je Spieler gespeichert. Die ausgelosten Alternativen werden für das Wiederöffnen einer laufenden Partie, die Wertung und die Historie nicht benötigt und nicht persistiert.
 
 Die laufende Ansicht zeigt die für das Weiterspielen nötigen Spieler-, Farb-, Zooplan- und Reihenfolgedaten sowie die Dauer.
 
