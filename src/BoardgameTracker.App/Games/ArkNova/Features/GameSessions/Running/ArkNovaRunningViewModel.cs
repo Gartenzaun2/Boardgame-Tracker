@@ -186,7 +186,7 @@ public sealed class ArkNovaRunningPlayerViewModel
 
     public ArkNovaRunningPlayerViewModel(
         string name,
-        int position,
+        int? position,
         PlayerColor color,
         int zooPlanNumber, string zooPlanName)
     {
@@ -199,7 +199,7 @@ public sealed class ArkNovaRunningPlayerViewModel
     }
 
     public string Name { get; }
-    public int Position { get; }
+    public int? Position { get; }
     public int ZooPlanNumber { get; }
     public string ZooPlanLabel => ArkNovaZooPlanPresentation.GetLabel(ZooPlanNumber);
     public string ZooPlanText { get; }

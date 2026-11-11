@@ -248,7 +248,8 @@ public sealed class NumberWheelTests
             session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));
             database.GameSessionId = session.Id;
             database.PlayerId = player.Id;
-            ArkNovaGameSessionPlayer values = new(session.Id, player.Id, PlayerColor.Blue, 1);
+            ArkNovaGameSessionPlayer values = new(session.Id, player.Id, 1);
+            db.GameSessionPlayerColors.Add(new(session.Id, player.Id, PlayerColor.Blue));
             values.SetScoreValues(attractiveness, conservation, reputation);
             db.AddRange(player, group, game, session, values, new ArkNovaZooPlan(1), new ArkNovaZooPlan(2));
             await db.SaveChangesAsync(token);

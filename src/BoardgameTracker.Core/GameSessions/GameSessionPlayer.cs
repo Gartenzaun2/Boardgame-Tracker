@@ -10,11 +10,12 @@ public sealed class GameSessionPlayer
     {
     }
 
-    internal GameSessionPlayer(Guid gameSessionId, Guid playerId, int order)
+    internal GameSessionPlayer(Guid gameSessionId, Guid playerId, int? order)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameSessionId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(playerId, Guid.Empty);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(order);
+        if (order is <= 0)
+            throw new ArgumentOutOfRangeException(nameof(order));
 
         GameSessionId = gameSessionId;
         PlayerId = playerId;
@@ -23,7 +24,7 @@ public sealed class GameSessionPlayer
 
     public Guid GameSessionId { get; private set; }
     public Guid PlayerId { get; private set; }
-    public int Order { get; private set; }
+    public int? Order { get; private set; }
     public int? Placement { get; private set; }
 
     public void SetPlacement(int? placement)

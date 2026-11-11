@@ -8,7 +8,7 @@ using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Application.Games.ArkNova.Persistence.Configurations;
 
 /// <summary>
-/// Maps the Ark Nova per-GameSession player snapshot, zoo-plan relationships and color uniqueness to the relational model.
+/// Maps the Ark Nova per-GameSession zoo-plan and score snapshot to the relational model.
 /// </summary>
 internal sealed class ArkNovaGameSessionPlayerConfiguration : IEntityTypeConfiguration<ArkNovaGameSessionPlayer>
 {
@@ -33,7 +33,6 @@ internal sealed class ArkNovaGameSessionPlayerConfiguration : IEntityTypeConfigu
             });
 
         builder.HasKey(x => new { x.GameSessionId, x.PlayerId });
-        builder.Property(x => x.Color).HasConversion<int>().IsRequired();
         builder.Property(x => x.SelectedZooPlanNumber).IsRequired();
 
         builder.HasOne<GameSessionPlayer>()
@@ -48,6 +47,5 @@ internal sealed class ArkNovaGameSessionPlayerConfiguration : IEntityTypeConfigu
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => new { x.GameSessionId, x.Color }).IsUnique();
     }
 }

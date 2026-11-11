@@ -1,4 +1,5 @@
 using BoardgameTracker.Core.Names;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Players;
 namespace BoardgameTracker.Core.Groups;
 
@@ -60,6 +61,16 @@ public sealed class Group
                 candidate => candidate.PlayerId == orderedPlayerIds[index]);
             player.SetDefaultOrder(index + 1);
         }
+    }
+
+    /// <summary>Only an explicitly recorded session order replaces the group's default.</summary>
+    public void ApplyStartingOrder(GameSession gameSession)
+    {
+        ArgumentNullException.ThrowIfNull(gameSession);
+        if (gameSession.GroupId != Id)
+            throw new ArgumentException("The session must belong to this group.", nameof(gameSession));
+        if (gameSession.HasStartingOrder)
+            SetDefaultOrder(gameSession.Players.OrderBy(player => player.Order).Select(player => player.PlayerId).ToArray());
     }
 
     private void SetInitialPlayers(IReadOnlyList<Guid> playerIds)

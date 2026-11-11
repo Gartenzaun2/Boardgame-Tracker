@@ -50,14 +50,17 @@ public sealed class ArkNovaRunningGameSessionQuery(
             join arkNovaPlayer in dbContext.ArkNovaGameSessionPlayers.AsNoTracking()
                 on new { gameSessionPlayer.GameSessionId, gameSessionPlayer.PlayerId }
                 equals new { arkNovaPlayer.GameSessionId, arkNovaPlayer.PlayerId }
+            join color in dbContext.GameSessionPlayerColors.AsNoTracking()
+                on new { gameSessionPlayer.GameSessionId, gameSessionPlayer.PlayerId }
+                equals new { color.GameSessionId, color.PlayerId }
             where gameSessionPlayer.GameSessionId == gameSessionId
-            orderby gameSessionPlayer.Order
+            orderby gameSessionPlayer.Order, player.Name
             select new
             {
                 PlayerId = player.Id,
                 player.Name,
                 gameSessionPlayer.Order,
-                arkNovaPlayer.Color,
+                color.Color,
                 ZooPlanNumber = arkNovaPlayer.SelectedZooPlanNumber
             })
             .ToArrayAsync(cancellationToken);
@@ -100,7 +103,7 @@ public sealed record ArkNovaRunningGameSessionData(
 public sealed record ArkNovaRunningGameSessionPlayer(
     Guid PlayerId,
     string Name,
-    int Order,
+    int? Order,
     PlayerColor Color,
     int ZooPlanNumber,
     string ZooPlanName);

@@ -45,7 +45,6 @@ public static class ArkNovaServiceCollectionExtensions
         services.AddTransient<IGameSettingsNavigation, ArkNovaSettingsNavigation>();
         services.AddSingleton<IDatabaseInitializationStep>(_ => new ArkNovaReferenceDataSeeder(ArkNovaGameSessionNavigationHandler.GameDisplayName, ArkNovaGameSessionNavigationHandler.GameBadgeText));
         services.AddSingleton(ArkNovaPlayerColors.Rules);
-        services.AddSingleton<IGroupColorPersistence, ArkNovaGroupColorPersistence>();
         services.AddSingleton(new GameColorPresentation(ArkNovaGame.Key, () => AppResources.ArkNova));
         services.AddTransient<ArkNovaPreparationQuery>();
         services.AddTransient<StartArkNovaGameSessionUseCase>();

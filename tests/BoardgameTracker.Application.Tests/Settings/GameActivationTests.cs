@@ -13,7 +13,6 @@ using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -182,7 +181,7 @@ public sealed class GameActivationTests
         {
             var game = await seed.Games.SingleAsync(game => game.Id == db.GameId, Token);
             seed.GroupGames.Add(GroupGame.Create(db.Group, game));
-            seed.ArkNovaGroupPlayers.Add(new(db.Group.Id, db.First.Id, PlayerColor.Blue));
+            seed.GroupGamePlayerColors.Add(new(db.Group.Id, db.GameId, db.First.Id, PlayerColor.Blue));
             await seed.SaveChangesAsync(Token);
         }
         CompletedGameSessionsQuery history = new(db);
@@ -200,7 +199,7 @@ public sealed class GameActivationTests
             Assert.Equal(db.Group.Id, (await verify.Groups.SingleAsync(Token)).Id);
             Assert.Equal(db.GameId, (await verify.Games.SingleAsync(Token)).Id);
             Assert.Equal(db.Group.Id, (await verify.GroupGames.SingleAsync(Token)).GroupId);
-            Assert.Equal(PlayerColor.Blue, (await verify.ArkNovaGroupPlayers.SingleAsync(Token)).DefaultColor);
+            Assert.Equal(PlayerColor.Blue, (await verify.GroupGamePlayerColors.SingleAsync(Token)).DefaultColor);
             Assert.Equal(1, (await verify.GroupPlayers.SingleAsync(player => player.PlayerId == db.First.Id, Token)).DefaultOrder);
             GameSession persisted = await verify.GameSessions.Include(candidate => candidate.Players).SingleAsync(Token);
             Assert.Equal(session.Id, persisted.Id);

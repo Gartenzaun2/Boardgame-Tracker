@@ -15,7 +15,7 @@ public sealed class ArkNovaHistoryCorrectionUseCase(IDbContextFactory<BoardgameT
         ArkNovaGameSessionResultData? gameSessionResult = await resultQuery.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
         if (gameSessionResult?.Status != GameSessionStatus.Completed)
             throw new InvalidOperationException("Only completed sessions can be corrected.");
-        return new(gameSessionResult with { Players = gameSessionResult.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray() });
+        return new(gameSessionResult with { Players = gameSessionResult.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ThenBy(p => p.Name, StringComparer.CurrentCulture).ToArray() });
     }
     public ArkNovaGameSessionCompletionPlan CreateCorrectionCompletionPlan(ArkNovaHistoryCorrectionDraft draft)
     {

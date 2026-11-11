@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BoardgameTracker.Core.Names;
+using BoardgameTracker.Core.GameSessions;
 
 namespace BoardgameTracker.Application.History.Transfer;
 
@@ -14,7 +15,7 @@ public sealed record BgtGroup(Guid Id, string Name, bool IsTemporary, bool IsArc
 public sealed record BgtGroupPlayer(Guid PlayerId, int DefaultOrder);
 public sealed record BgtGameSession(Guid Id, Guid GameId, Guid GroupId, DateTimeOffset StartedAt,
     DateTimeOffset EndedAt, DateTimeOffset ModifiedAt, BgtGameSessionPlayer[] Players, JsonElement Data);
-public sealed record BgtGameSessionPlayer(Guid PlayerId, int Order, int Placement);
+public sealed record BgtGameSessionPlayer(Guid PlayerId, int? Order, int Placement);
 
 public interface IGameTransferSchema
 {
@@ -121,7 +122,14 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
         {
             if (!games.ContainsKey(gameSession.GameId) || !groups.TryGetValue(gameSession.GroupId, out BgtGroup? group))
                 throw new InvalidDataException("MissingDependency");
-            CheckOrder(gameSession.Players.Select(player => player.Order));
+            try
+            {
+                GameSession.ValidateStartingOrder(gameSession.Players.Select(player => player.Order).ToArray());
+            }
+            catch (ArgumentException exception)
+            {
+                throw new InvalidDataException("InvalidOrder", exception);
+            }
             CheckIds(gameSession.Players.Select(player => player.PlayerId));
             if (!gameSession.Players.Select(player => player.PlayerId).ToHashSet().SetEquals(group.GroupPlayers.Select(player => player.PlayerId))
                 || gameSession.Players.Any(player => player.Placement < 1 || player.Placement > gameSession.Players.Length)

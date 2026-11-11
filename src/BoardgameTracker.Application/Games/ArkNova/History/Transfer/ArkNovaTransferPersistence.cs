@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Core.Games.ArkNova;
+using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.Content;
 using BoardgameTracker.Application.Persistence;
@@ -36,7 +37,11 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
     }
     public async Task<IReadOnlyDictionary<Guid, JsonElement>> ExportGameSessionsAsync(BoardgameTrackerDbContext db, Guid[] gameSessionIds, CancellationToken cancellationToken)
     {
-        var players = await db.ArkNovaGameSessionPlayers.AsNoTracking().Where(player => gameSessionIds.Contains(player.GameSessionId))
+        var players = await (from player in db.ArkNovaGameSessionPlayers.AsNoTracking()
+            join color in db.GameSessionPlayerColors.AsNoTracking()
+                on new { player.GameSessionId, player.PlayerId } equals new { color.GameSessionId, color.PlayerId }
+            where gameSessionIds.Contains(player.GameSessionId)
+            select new { player.GameSessionId, player.PlayerId, color.Color, player.SelectedZooPlanNumber, player.Attractiveness, player.Conservation, player.Reputation })
             .Select(player => new
             {
                 player.GameSessionId,
@@ -96,8 +101,11 @@ public sealed class ArkNovaTransferPersistence : IGameTransferPersistence
             foreach (ArkNovaTransferPlayer input in ArkNovaTransferSchema.ReadGameSession(game.SchemaVersion, gameSession.Data).Players)
             {
                 Guid playerId = players[input.PlayerId];
-                ArkNovaGameSessionPlayer player = new(gameSession.Id, playerId, input.Color, input.SelectedZooPlanNumber);
+                ArkNovaGameSessionPlayer player = new(gameSession.Id, playerId, input.SelectedZooPlanNumber);
                 player.SetScoreValues(input.Attractiveness, input.Conservation, input.Reputation);
+                if (!ArkNovaPlayerColors.Rules.Allows(input.Color))
+                    throw new ArgumentOutOfRangeException(nameof(input.Color));
+                db.GameSessionPlayerColors.Add(new(gameSession.Id, playerId, input.Color));
                 db.ArkNovaGameSessionPlayers.Add(player);
                 foreach (Guid card in input.SpecialCardIds)
                     db.ArkNovaGameSessionSpecialCardAssignments.Add(new(gameSession.Id, playerId, card));

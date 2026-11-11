@@ -16,12 +16,12 @@ internal sealed class GameSessionPlayerConfiguration : IEntityTypeConfiguration<
             "GameSessionPlayers",
             table =>
             {
-                table.HasCheckConstraint("CK_GameSessionPlayers_Order_Positive", "\"Order\" > 0");
+                table.HasCheckConstraint("CK_GameSessionPlayers_Order_Positive", "\"Order\" IS NULL OR \"Order\" > 0");
                 table.HasCheckConstraint("CK_GameSessionPlayers_Placement_Positive", "Placement IS NULL OR Placement > 0");
             });
 
         builder.HasKey(x => new { x.GameSessionId, x.PlayerId });
-        builder.Property(x => x.Order).IsRequired();
+        builder.Property(x => x.Order).IsRequired(false);
 
         builder.HasOne<GameSession>()
             .WithMany(x => x.Players)

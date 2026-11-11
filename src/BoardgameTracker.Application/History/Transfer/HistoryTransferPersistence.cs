@@ -135,7 +135,8 @@ public sealed class HistoryTransferPersistence(IDbContextFactory<BoardgameTracke
             foreach (BgtGameSession input in plan.GameSessions.Where(gameSession => gameSession.GameId == game.Id))
             {
                 GameSession gameSession = new(localId, groupMap[input.GroupId], input.StartedAt,
-                    input.Players.OrderBy(player => player.Order).Select(player => playerMap[player.PlayerId]).ToArray(), input.Id);
+                    input.Players.OrderBy(player => player.Order).Select(player => playerMap[player.PlayerId]).ToArray(), input.Id,
+                    recordStartingOrder: input.Players.All(player => player.Order.HasValue));
                 gameSession.BeginScoring(input.EndedAt);
                 foreach (BgtGameSessionPlayer player in input.Players)
                     gameSession.Players.Single(candidate => candidate.PlayerId == playerMap[player.PlayerId]).SetPlacement(player.Placement);

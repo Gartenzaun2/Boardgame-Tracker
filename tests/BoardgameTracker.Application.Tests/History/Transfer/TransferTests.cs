@@ -141,10 +141,11 @@ public sealed class TransferTests
         await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync(Token));
     }
     [Theory]
-    [InlineData(1, 4)]
-    [InlineData(3, 4)]
-    [InlineData(1, 1)]
-    public async Task RoundtripPreservesIdsValuesAndLocalStateAndRepeatedImportDoesNothing(int minPlayers, int maxPlayers)
+    [InlineData(1, 4, true)]
+    [InlineData(3, 4, true)]
+    [InlineData(1, 1, true)]
+    [InlineData(1, 4, false)]
+    public async Task RoundtripPreservesIdsValuesAndLocalStateAndRepeatedImportDoesNothing(int minPlayers, int maxPlayers, bool hasOrder)
     {
         await using Database source = await Database.CreateAsync();
         Guid id = await source.SeedAsync();
@@ -153,6 +154,11 @@ public sealed class TransferTests
         Assert.Single(exported.GameSessions);
         Assert.Equal(2, exported.Players.Length);
         Assert.Single(exported.Groups);
+        if (!hasOrder)
+            exported = exported with { GameSessions = exported.GameSessions.Select(session => session with
+            {
+                Players = session.Players.Select(player => player with { Order = null }).ToArray()
+            }).ToArray() };
         Assert.All(exported.Groups, group => Assert.False(group.IsTemporary));
         Assert.Equal(1, exported.FormatVersion);
         await using Database target = await Database.CreateAsync();
@@ -172,6 +178,8 @@ public sealed class TransferTests
         BgtFile again = await target.Store.ExportAsync([id], "test", Token);
         Assert.Equal(JsonSerializer.Serialize(exported.Players.OrderBy(player => player.Id)), JsonSerializer.Serialize(again.Players.OrderBy(player => player.Id)));
         Assert.Equal(exported.GameSessions[0].Data.GetRawText(), again.GameSessions[0].Data.GetRawText());
+        Assert.Equal(exported.GameSessions[0].Players.OrderBy(player => player.PlayerId).Select(player => player.Order),
+            again.GameSessions[0].Players.OrderBy(player => player.PlayerId).Select(player => player.Order));
         ImportPlan repeated = ImportPlanner.Analyze(exported, await target.Store.ReadSnapshotAsync(Token));
         Assert.Empty(repeated.Players);
         await useCase.CommitAsync(repeated, Token);
@@ -182,6 +190,24 @@ public sealed class TransferTests
         Assert.Equal(minPlayers <= 2 && maxPlayers >= 2 ? 1 : 0, await verify.GroupGames.CountAsync(Token));
         Assert.Single(await new CompletedGameSessionsQuery(target).ListAsync(cancellationToken: Token));
     }
+    [Theory]
+    [InlineData("mixed")]
+    [InlineData("duplicate")]
+    [InlineData("gap")]
+    public async Task Format_RejectsInconsistentNullableStartingOrder(string invalid)
+    {
+        await using Database source = await Database.CreateAsync();
+        Guid id = await source.SeedAsync();
+        BgtFile file = await source.Store.ExportAsync([id], "test", Token);
+        BgtGameSession session = file.GameSessions.Single();
+        int?[] orders = invalid switch { "mixed" => [1, null], "duplicate" => [1, 1], _ => [1, 3] };
+        file = file with { GameSessions = [session with
+        {
+            Players = session.Players.Select((player, index) => player with { Order = orders[index] }).ToArray()
+        }] };
+        Assert.Throws<InvalidDataException>(() => Format.Validate(file));
+    }
+
     [Fact]
     public async Task CommitFailureRollsBackEntireImport()
     {
@@ -572,8 +598,8 @@ public sealed class TransferTests
             foreach (GameSessionPlayer player in gameSession.Players)
             {
                 int option = index++ * 2 + 1;
-                BoardgameTracker.Core.Games.ArkNova.GameSessions.ArkNovaGameSessionPlayer detail = new(gameSession.Id, player.PlayerId,
-                    index == 1 ? PlayerColor.Blue : PlayerColor.Red, option);
+                BoardgameTracker.Core.Games.ArkNova.GameSessions.ArkNovaGameSessionPlayer detail = new(gameSession.Id, player.PlayerId, option);
+                db.GameSessionPlayerColors.Add(new(gameSession.Id, player.PlayerId, index == 1 ? PlayerColor.Blue : PlayerColor.Red));
                 detail.SetScoreValues(70, 20, null);
                 db.ArkNovaGameSessionPlayers.Add(detail);
             }

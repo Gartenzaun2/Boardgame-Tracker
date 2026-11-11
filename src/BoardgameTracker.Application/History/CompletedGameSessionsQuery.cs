@@ -24,7 +24,7 @@ public sealed class CompletedGameSessionsQuery(IDbContextFactory<BoardgameTracke
         // and sort it in memory; changing persisted timestamp types is not warranted here.
         return sessions.OrderByDescending(s => s.StartedAt).ThenBy(s => s.Id).Select(s => new HistoryGameSession(
             s.Id, s.Key, s.GameName, s.GroupId, s.GroupName, s.StartedAt, s.EndedAt,
-            players.Where(p => p.GameSessionId == s.Id).OrderBy(p => p.Placement).ThenBy(p => p.Order)
+            players.Where(p => p.GameSessionId == s.Id).OrderBy(p => p.Placement).ThenBy(p => p.Order).ThenBy(p => p.Name, StringComparer.CurrentCulture)
                 .Select(p => new HistoryPlayer(p.PlayerId, p.Name, p.Placement ?? 0)).ToArray())).ToArray();
     }
 }

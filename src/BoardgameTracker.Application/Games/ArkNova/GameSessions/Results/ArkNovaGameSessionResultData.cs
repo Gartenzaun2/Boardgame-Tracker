@@ -22,7 +22,7 @@ public sealed record ArkNovaGameSessionResultData(
 public sealed record ArkNovaGameSessionResultPlayerData(
     Guid PlayerId,
     string Name,
-    int Order,
+    int? Order,
     PlayerColor Color,
     int ZooPlanNumber,
     int? Attractiveness,

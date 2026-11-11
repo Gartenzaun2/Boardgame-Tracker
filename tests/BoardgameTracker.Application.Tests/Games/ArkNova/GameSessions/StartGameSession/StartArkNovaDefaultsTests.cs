@@ -4,7 +4,7 @@ using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Core.GameSessions;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
+using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +24,9 @@ public sealed class StartArkNovaDefaultsTests
     private static async Task SeedColorsAsync(SliceDatabase database)
     {
         await using var db = database.CreateDbContext();
-        db.ArkNovaGroupPlayers.AddRange(
-            new ArkNovaGroupPlayer(database.Group.Id, database.First.Id, PlayerColor.Blue),
-            new ArkNovaGroupPlayer(database.Group.Id, database.Second.Id, PlayerColor.Red));
+        db.GroupGamePlayerColors.AddRange(
+            new GroupGamePlayerColor(database.Group.Id, database.GameId, database.First.Id, PlayerColor.Blue),
+            new GroupGamePlayerColor(database.Group.Id, database.GameId, database.Second.Id, PlayerColor.Red));
         await db.SaveChangesAsync(Token);
     }
 
@@ -67,12 +67,13 @@ public sealed class StartArkNovaDefaultsTests
             var players = await verify.GameSessionPlayers.AsNoTracking().Where(player => player.GameSessionId == pair.Item1)
                 .OrderBy(player => player.Order).ToArrayAsync(Token);
             Assert.Equal(pair.Item2.Players.Select(player => player.PlayerId), players.Select(player => player.PlayerId));
-            Assert.Equal(new[] { 1, 2 }, players.Select(player => player.Order));
+            Assert.Equal(new int?[] { 1, 2 }, players.Select(player => player.Order));
+            var colors = await verify.GameSessionPlayerColors.Where(color => color.GameSessionId == pair.Item1).ToArrayAsync(Token);
             var details = await verify.ArkNovaGameSessionPlayers.AsNoTracking().Where(player => player.GameSessionId == pair.Item1).ToArrayAsync(Token);
             foreach (var expected in pair.Item2.Players)
             {
                 var actual = Assert.Single(details, player => player.PlayerId == expected.PlayerId);
-                Assert.Equal(expected.Color, actual.Color);
+                Assert.Equal(expected.Color, colors.Single(color => color.PlayerId == expected.PlayerId).Color);
                 Assert.Equal(expected.SelectedZooPlanNumber, actual.SelectedZooPlanNumber);
             }
         }
@@ -87,7 +88,7 @@ public sealed class StartArkNovaDefaultsTests
         if (partialDefaults)
         {
             await using var db = database.CreateDbContext();
-            db.ArkNovaGroupPlayers.Add(new(database.Group.Id, database.First.Id, PlayerColor.Blue));
+            db.GroupGamePlayerColors.Add(new(database.Group.Id, database.GameId, database.First.Id, PlayerColor.Blue));
             await db.SaveChangesAsync(Token);
         }
         var command = Command(database);
@@ -143,9 +144,10 @@ public sealed class StartArkNovaDefaultsTests
             Assert.Empty(await db.GameSessions.ToArrayAsync(Token));
             Assert.Empty(await db.GameSessionPlayers.ToArrayAsync(Token));
             Assert.Empty(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token));
+            Assert.Empty(await db.GameSessionPlayerColors.ToArrayAsync(Token));
             Assert.Equal(new[] { database.First.Id, database.Second.Id }, await db.GroupPlayers.OrderBy(player => player.DefaultOrder).Select(player => player.PlayerId).ToArrayAsync(Token));
             if (!existingDefaults)
-                Assert.Empty(await db.ArkNovaGroupPlayers.ToArrayAsync(Token));
+                Assert.Empty(await db.GroupGamePlayerColors.ToArrayAsync(Token));
             await db.Database.ExecuteSqlRawAsync("DROP TRIGGER fail_start", Token);
         }
         await new StartArkNovaGameSessionUseCase(database).StartAsync(command, Token);
@@ -160,6 +162,7 @@ public sealed class StartArkNovaDefaultsTests
         await using var db = database.CreateDbContext();
         Assert.Empty(await db.GameSessions.ToArrayAsync(Token));
         Assert.Empty(await db.ArkNovaGameSessionPlayers.ToArrayAsync(Token));
+            Assert.Empty(await db.GameSessionPlayerColors.ToArrayAsync(Token));
     }
 
     private static async Task AssertDefaultsAsync(SliceDatabase database, StartArkNovaGameSessionCommand command)
@@ -168,7 +171,7 @@ public sealed class StartArkNovaDefaultsTests
         var members = await db.GroupPlayers.Where(player => player.GroupId == database.Group.Id).OrderBy(player => player.DefaultOrder).ToArrayAsync(Token);
         Assert.Equal(command.Players.Select(player => player.PlayerId), members.Select(player => player.PlayerId));
         Assert.Equal(Enumerable.Range(1, command.Players.Count), members.Select(player => player.DefaultOrder));
-        var colors = await db.ArkNovaGroupPlayers.Where(player => player.GroupId == database.Group.Id).ToArrayAsync(Token);
+        var colors = await db.GroupGamePlayerColors.Where(player => player.GroupId == database.Group.Id).ToArrayAsync(Token);
         Assert.Equal(command.Players.Count, colors.Length);
         foreach (var player in command.Players)
             Assert.Equal(player.Color, Assert.Single(colors, actual => actual.PlayerId == player.PlayerId).DefaultColor);

@@ -33,16 +33,17 @@ public partial class ArkNovaResultViewModel(
         GroupName = gameSession.GroupName;
         DurationText = gameSession.StartedAt.ToLocalTime().ToString("g") + " · "
             + FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
-        StartingOrderText = string.Format(AppResources.StartingOrderFormat,
-            string.Join(" → ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name)));
+        bool hasStartingOrder = gameSession.Players.All(player => player.Order.HasValue);
+        StartingOrderText = hasStartingOrder ? string.Format(AppResources.StartingOrderFormat,
+            string.Join(" → ", gameSession.Players.OrderBy(player => player.Order).Select(player => player.Name))) : string.Empty;
         StartingOrderPlayers.Clear();
-        foreach (var player in gameSession.Players.OrderBy(player => player.Order))
+        foreach (var player in gameSession.Players.Where(player => player.Order.HasValue).OrderBy(player => player.Order))
             StartingOrderPlayers.Add(new(player.Name, StartingOrderPlayers.Count > 0));
         Players.Clear();
 
         foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players
                      .OrderBy(x => x.Placement ?? int.MaxValue)
-                     .ThenBy(x => x.Order))
+                     .ThenBy(x => x.Order).ThenBy(x => x.Name, StringComparer.CurrentCulture))
         {
             ArkNovaSpecialCardData[] cards = gameSession.SpecialCards
                 .Where(x => x.PlayerId == player.PlayerId)

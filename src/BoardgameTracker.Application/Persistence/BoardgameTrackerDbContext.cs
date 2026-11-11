@@ -22,6 +22,8 @@ public sealed partial class BoardgameTrackerDbContext : DbContext
     public DbSet<Game> Games => Set<Game>();
     public DbSet<GameSession> GameSessions => Set<GameSession>();
     public DbSet<GameSessionPlayer> GameSessionPlayers => Set<GameSessionPlayer>();
+    public DbSet<GameSessionPlayerColor> GameSessionPlayerColors => Set<GameSessionPlayerColor>();
+    public DbSet<GroupGamePlayerColor> GroupGamePlayerColors => Set<GroupGamePlayerColor>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -29,7 +29,7 @@ public sealed class GroupManagementTests
         Assert.True((await verify.Players.SingleAsync(player => player.Id == newPlayerId, Token)).IsGuest);
         Assert.Equal(3, await verify.Players.CountAsync(Token));
         Assert.Equal(withGames ? 2 : 0, await verify.GroupGames.CountAsync(assignment => assignment.GroupId == id, Token));
-        Assert.Empty(await verify.ArkNovaGroupPlayers.ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGamePlayerColors.ToArrayAsync(Token));
         Assert.Contains(await useCase.GetSelectableGamesAsync(Token), game => game.Id == other.Id && game.Key == other.Key);
     }
 

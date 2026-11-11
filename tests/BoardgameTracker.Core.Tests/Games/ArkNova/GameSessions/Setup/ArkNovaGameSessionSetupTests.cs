@@ -77,7 +77,7 @@ public sealed class ArkNovaGameSessionSetupTests
             [new(Guid.NewGuid(), PlayerColor.Blue, number)]));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaZooPlan(number));
         Assert.Throws<ArgumentOutOfRangeException>(() => new BoardgameTracker.Core.Games.ArkNova.GameSessions.ArkNovaGameSessionPlayer(
-            Guid.NewGuid(), Guid.NewGuid(), PlayerColor.Blue, number));
+            Guid.NewGuid(), Guid.NewGuid(), number));
     }
 
     [Fact]

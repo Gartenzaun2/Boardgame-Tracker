@@ -4,7 +4,6 @@ using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
 using Microsoft.EntityFrameworkCore;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
@@ -43,7 +42,7 @@ public sealed class ArkNovaPreparationQuery(
             from membership in dbContext.GroupPlayers.AsNoTracking()
             join player in dbContext.Players.AsNoTracking()
                 on membership.PlayerId equals player.Id
-            join arkNovaPlayer in dbContext.ArkNovaGroupPlayers.AsNoTracking()
+            join arkNovaPlayer in dbContext.GroupGamePlayerColors.AsNoTracking().Where(color => dbContext.Games.Any(game => game.Id == color.GameId && game.Key == ArkNovaGame.Key))
                 on new { membership.GroupId, membership.PlayerId }
                 equals new { arkNovaPlayer.GroupId, arkNovaPlayer.PlayerId }
                 into arkNovaPlayers

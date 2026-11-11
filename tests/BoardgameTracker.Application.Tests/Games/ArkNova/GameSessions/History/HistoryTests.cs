@@ -126,8 +126,10 @@ public sealed class HistoryTests
             if (status != GameSessionStatus.Running) session.BeginScoring(start.AddHours(1));
             if (status == GameSessionStatus.Completed) { session.Players.Single(p => p.PlayerId == A.Id).SetPlacement(2); session.Players.Single(p => p.PlayerId == B.Id).SetPlacement(1); session.Complete(start.AddHours(2)); }
             await using var db = CreateDbContext(); db.Add(session);
-            var a = new ArkNovaGameSessionPlayer(session.Id, A.Id, PlayerColor.Blue, 1); a.SetScoreValues(70, 7, null);
-            var b = new ArkNovaGameSessionPlayer(session.Id, B.Id, PlayerColor.Red, 3); b.SetScoreValues(80, 7, null);
+            var a = new ArkNovaGameSessionPlayer(session.Id, A.Id, 1);
+            db.GameSessionPlayerColors.Add(new(session.Id, A.Id, PlayerColor.Blue)); a.SetScoreValues(70, 7, null);
+            var b = new ArkNovaGameSessionPlayer(session.Id, B.Id, 3);
+            db.GameSessionPlayerColors.Add(new(session.Id, B.Id, PlayerColor.Red)); b.SetScoreValues(80, 7, null);
             db.AddRange(a, b, new ArkNovaGameSessionSpecialCardAssignment(session.Id, A.Id, ArkNovaSpecialCardDefaults.AfricanElephant));
             await db.SaveChangesAsync(cancellationToken);
             return session;

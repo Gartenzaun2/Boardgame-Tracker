@@ -17,7 +17,7 @@ public sealed class GameSession
         Guid gameId,
         Guid groupId,
         DateTimeOffset startedAt,
-        IReadOnlyList<Guid> playerIds, Guid? id = null)
+        IReadOnlyList<Guid> playerIds, Guid? id = null, bool recordStartingOrder = true)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(gameId, Guid.Empty);
         ArgumentOutOfRangeException.ThrowIfEqual(groupId, Guid.Empty);
@@ -48,7 +48,7 @@ public sealed class GameSession
 
         for (int index = 0; index < playerIds.Count; index++)
         {
-            _players.Add(new GameSessionPlayer(Id, playerIds[index], index + 1));
+            _players.Add(new GameSessionPlayer(Id, playerIds[index], recordStartingOrder ? index + 1 : null));
         }
     }
 
@@ -60,6 +60,16 @@ public sealed class GameSession
     public DateTimeOffset? EndedAt { get; private set; }
     public DateTimeOffset ModifiedAt { get; private set; }
     public IReadOnlyCollection<GameSessionPlayer> Players => _players;
+
+    public bool HasStartingOrder => _players.Count > 0 && _players.All(player => player.Order.HasValue);
+
+    public static void ValidateStartingOrder(IReadOnlyCollection<int?> orders)
+    {
+        ArgumentNullException.ThrowIfNull(orders);
+        if (orders.Count == 0 || (orders.Any(order => order.HasValue)
+            && !orders.Order().SequenceEqual(Enumerable.Range(1, orders.Count).Select(order => (int?)order))))
+            throw new ArgumentException("Starting order must be absent for every participant or complete and contiguous from one.", nameof(orders));
+    }
 
     public void BeginScoring(DateTimeOffset modifiedAt)
     {

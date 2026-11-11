@@ -42,14 +42,17 @@ public sealed class ArkNovaGameSessionResultQuery(IDbContextFactory<BoardgameTra
             join arkPlayer in dbContext.ArkNovaGameSessionPlayers.AsNoTracking()
                 on new { gamePlayer.GameSessionId, gamePlayer.PlayerId }
                 equals new { arkPlayer.GameSessionId, arkPlayer.PlayerId }
+            join color in dbContext.GameSessionPlayerColors.AsNoTracking()
+                on new { gamePlayer.GameSessionId, gamePlayer.PlayerId }
+                equals new { color.GameSessionId, color.PlayerId }
             join player in dbContext.Players.AsNoTracking() on gamePlayer.PlayerId equals player.Id
             where gamePlayer.GameSessionId == gameSessionId
-            orderby gamePlayer.Order
+            orderby gamePlayer.Order, player.Name
             select new ArkNovaGameSessionResultPlayerData(
                 gamePlayer.PlayerId,
                 player.Name,
                 gamePlayer.Order,
-                arkPlayer.Color,
+                color.Color,
                 arkPlayer.SelectedZooPlanNumber,
                 arkPlayer.Attractiveness,
                 arkPlayer.Conservation,

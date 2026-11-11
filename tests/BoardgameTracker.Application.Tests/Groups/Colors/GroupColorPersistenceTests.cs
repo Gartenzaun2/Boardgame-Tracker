@@ -1,10 +1,8 @@
-using BoardgameTracker.Application.Games.ArkNova.Persistence;
 using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Application.Groups.Colors;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Core.Games.ArkNova;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.Data.Sqlite;
@@ -64,7 +62,7 @@ public sealed class GroupColorPersistenceTests
     {
         await using Fixture fixture = await Fixture.CreateAsync();
         await using (BoardgameTrackerDbContext db = fixture.CreateDbContext())
-            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectColorInsert BEFORE INSERT ON ArkNovaGroupPlayers BEGIN SELECT RAISE(ABORT, 'unexpected color write'); END;", Token);
+            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectColorInsert BEFORE INSERT ON GroupGamePlayerColors BEGIN SELECT RAISE(ABORT, 'unexpected color write'); END;", Token);
         await fixture.UseCase.UpdateGroupAsync(fixture.Command(), Token);
         await fixture.AssertColorsAsync();
         Assert.Equal("Neu", (await fixture.UseCase.GetAsync(fixture.Group.Id, Token))!.Name);
@@ -75,7 +73,7 @@ public sealed class GroupColorPersistenceTests
     {
         await using Fixture fixture = await Fixture.CreateAsync();
         await using (BoardgameTrackerDbContext db = fixture.CreateDbContext())
-            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectColorInsert BEFORE INSERT ON ArkNovaGroupPlayers BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
+            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectColorInsert BEFORE INSERT ON GroupGamePlayerColors BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
         await Assert.ThrowsAsync<DbUpdateException>(() => fixture.ReplaceColorsAsync(fixture.Colors()));
         await fixture.AssertOriginalAsync();
     }
@@ -85,11 +83,11 @@ public sealed class GroupColorPersistenceTests
     {
         await using Fixture fixture = await Fixture.CreateAsync();
         await using (BoardgameTrackerDbContext db = fixture.CreateDbContext())
-            await db.ArkNovaGroupPlayers.ExecuteDeleteAsync(Token);
+            await db.GroupGamePlayerColors.ExecuteDeleteAsync(Token);
         EditGroupDetails result = (await fixture.UseCase.GetAsync(fixture.Group.Id, Token))!;
         Assert.Equal(2, result.Players.Count);
         await using BoardgameTrackerDbContext verify = fixture.CreateDbContext();
-        Assert.Empty(await verify.ArkNovaGroupPlayers.ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGamePlayerColors.ToArrayAsync(Token));
     }
 
     [Fact]
@@ -103,7 +101,7 @@ public sealed class GroupColorPersistenceTests
         Assert.Equal(fixture.First.Id, result.Players[1].PlayerId);
         await fixture.AssertColorsAsync();
         await using BoardgameTrackerDbContext verify = fixture.CreateDbContext();
-        Assert.Empty(await verify.ArkNovaGroupPlayers.Where(player => player.GroupId == id).ToArrayAsync(Token));
+        Assert.Empty(await verify.GroupGamePlayerColors.Where(player => player.GroupId == id).ToArrayAsync(Token));
     }
 
     [Fact]
@@ -163,6 +161,7 @@ public sealed class GroupColorPersistenceTests
         public Player First { get; } = new("Anna");
         public Player Second { get; } = new("Ben");
         public Group Group { get; private set; } = null!;
+        public BoardgameTracker.Core.Games.Game Game { get; } = new(ArkNovaGame.Key, ArkNovaGame.Name, ArkNovaGame.BadgeText, 1, 4);
         public EditGroupUseCase UseCase => new(this);
         public BoardgameTrackerDbContext CreateDbContext() =>
             new(new DbContextOptionsBuilder<BoardgameTrackerDbContext>().UseTestSqlite(_connection).Options);
@@ -173,9 +172,9 @@ public sealed class GroupColorPersistenceTests
             fixture.Group = new("Alt", [fixture.First.Id, fixture.Second.Id]);
             await using BoardgameTrackerDbContext db = fixture.CreateDbContext();
             await db.Database.EnsureCreatedAsync(Token);
-            db.AddRange(fixture.First, fixture.Second, fixture.Group,
-                new ArkNovaGroupPlayer(fixture.Group.Id, fixture.First.Id, PlayerColor.Blue),
-                new ArkNovaGroupPlayer(fixture.Group.Id, fixture.Second.Id, PlayerColor.Red));
+            db.AddRange(fixture.First, fixture.Second, fixture.Group, fixture.Game,
+                new GroupGamePlayerColor(fixture.Group.Id, fixture.Game.Id, fixture.First.Id, PlayerColor.Blue),
+                new GroupGamePlayerColor(fixture.Group.Id, fixture.Game.Id, fixture.Second.Id, PlayerColor.Red));
             await db.SaveChangesAsync(Token);
             return fixture;
         }
@@ -185,14 +184,18 @@ public sealed class GroupColorPersistenceTests
         {
             await using BoardgameTrackerDbContext db = CreateDbContext();
             await using var transaction = await db.Database.BeginTransactionAsync(Token);
-            await new ArkNovaGroupColorPersistence().ReplaceAsync(db, Group.Id, colors, Token);
+            ArkNovaPlayerColors.Rules.Validate(colors.Values);
+            await db.GroupGamePlayerColors.Where(color => color.GroupId == Group.Id && color.GameId == Game.Id).ExecuteDeleteAsync(Token);
+            db.GroupGamePlayerColors.AddRange(colors.Where(pair => pair.Value.HasValue)
+                .Select(pair => new GroupGamePlayerColor(Group.Id, Game.Id, pair.Key, pair.Value!.Value)));
             await db.SaveChangesAsync(Token);
             await transaction.CommitAsync(Token);
         }
         public async Task AssertColorsAsync()
         {
             await using BoardgameTrackerDbContext db = CreateDbContext();
-            var colors = await new ArkNovaGroupColorPersistence().ReadAsync(db, Group.Id, Token);
+            var colors = await db.GroupGamePlayerColors.Where(color => color.GroupId == Group.Id && color.GameId == Game.Id)
+                .ToDictionaryAsync(color => color.PlayerId, color => color.DefaultColor, Token);
             Assert.Equal(2, colors.Count);
             Assert.Equal(PlayerColor.Blue, colors[First.Id]);
             Assert.Equal(PlayerColor.Red, colors[Second.Id]);

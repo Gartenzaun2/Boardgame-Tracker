@@ -78,8 +78,8 @@ public sealed class PhotoDatasetTests : IDisposable
         var session = await db.AddSessionAsync(scoring: true);
         await using (var context = db.CreateDbContext())
         {
-            context.AddRange(new ArkNovaGameSessionPlayer(session.Id, db.First.Id, PlayerColor.Red, 1),
-                new ArkNovaGameSessionPlayer(session.Id, db.Second.Id, PlayerColor.Blue, 2));
+            context.AddRange(new ArkNovaGameSessionPlayer(session.Id, db.First.Id, 1), new BoardgameTracker.Core.GameSessions.GameSessionPlayerColor(session.Id, db.First.Id, PlayerColor.Red),
+                new ArkNovaGameSessionPlayer(session.Id, db.Second.Id, 2), new BoardgameTracker.Core.GameSessions.GameSessionPlayerColor(session.Id, db.Second.Id, PlayerColor.Blue));
             await context.SaveChangesAsync(Token);
         }
         ArkNovaPhotoDataset dataset = Create();
@@ -161,8 +161,10 @@ public sealed class PhotoDatasetTests : IDisposable
         var session = await db.AddSessionAsync(scoring: true);
         await using (var context = db.CreateDbContext())
         {
-            ArkNovaGameSessionPlayer first = new(session.Id, db.First.Id, PlayerColor.Red, 1);
-            ArkNovaGameSessionPlayer second = new(session.Id, db.Second.Id, PlayerColor.Blue, 2);
+            ArkNovaGameSessionPlayer first = new(session.Id, db.First.Id, 1);
+            context.GameSessionPlayerColors.Add(new(session.Id, db.First.Id, PlayerColor.Red));
+            ArkNovaGameSessionPlayer second = new(session.Id, db.Second.Id, 2);
+            context.GameSessionPlayerColors.Add(new(session.Id, db.Second.Id, PlayerColor.Blue));
             first.SetScoreValues(70, 20, null);
             second.SetScoreValues(60, 19, null);
             context.AddRange(first, second);

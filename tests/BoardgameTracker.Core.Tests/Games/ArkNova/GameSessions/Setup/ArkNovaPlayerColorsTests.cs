@@ -1,7 +1,7 @@
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions;
 using BoardgameTracker.Core.Games.ArkNova.GameSessions.Setup;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
+using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.Core.Tests.Games.ArkNova.GameSessions.Setup;
@@ -20,8 +20,7 @@ public sealed class ArkNovaPlayerColorsTests
     public void KnownGlobalColor_NotAllowedByArkNova_IsRejectedAtAllDomainBoundaries(PlayerColor color)
     {
         var playerId = Guid.NewGuid();
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGroupPlayer(Guid.NewGuid(), playerId, color));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ArkNovaGameSessionPlayer(Guid.NewGuid(), playerId, color, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaPlayerColors.Rules.Validate([color]));
         Assert.Throws<ArgumentOutOfRangeException>(() => ArkNovaGameSessionSetup.Validate(
             [new ArkNovaGameSessionSetupPlayer(playerId, color, 1)]));
     }
@@ -35,7 +34,7 @@ public sealed class ArkNovaPlayerColorsTests
     {
         Assert.Equal(stored, (int)color);
         Assert.True(ArkNovaPlayerColors.Rules.Allows(color));
-        var group = new ArkNovaGroupPlayer(Guid.NewGuid(), Guid.NewGuid(), color);
+        GroupGamePlayerColor group = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), color);
         Assert.Equal(color, group.DefaultColor);
     }
 }

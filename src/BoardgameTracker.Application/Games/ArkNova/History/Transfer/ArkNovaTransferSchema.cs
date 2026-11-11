@@ -80,7 +80,9 @@ public sealed class ArkNovaTransferSchema : IGameTransferSchema
                 throw new InvalidDataException("InvalidArkNovaPlayers");
             foreach (ArkNovaTransferPlayer player in data.Players)
             {
-                ArkNovaGameSessionPlayer domain = new(gameSession.Id, player.PlayerId, player.Color,
+                if (!ArkNovaPlayerColors.Rules.Allows(player.Color))
+                    throw new ArgumentOutOfRangeException(nameof(player.Color));
+                ArkNovaGameSessionPlayer domain = new(gameSession.Id, player.PlayerId,
                     player.SelectedZooPlanNumber);
                 domain.SetScoreValues(player.Attractiveness, player.Conservation, player.Reputation);
                 BgtFormat.CheckIds(player.SpecialCardIds);

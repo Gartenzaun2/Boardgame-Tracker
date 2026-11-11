@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.18.0.2 – 2026-11-11
+
+- Historische Startreihenfolgen sind optional und bleiben entweder vollständig erfasst oder vollständig null; Gruppendefaults ändern sich nur bei tatsächlich erfasster Reihenfolge.
+- Gemeinsame Gruppen-/Spiel- und Sessionfarbzuordnungen ersetzen die Arche-Nova-spezifische Farbpersistenz. Arche Nova erfasst weiterhin seine vier Farben und eine vollständige Reihenfolge; Defaults und historische Farben werden beim Start atomar gespeichert.
+- BGT-Format 1 sowie Arche-Nova-Export mit Schema 3 und Import mit Schema 2/3 bleiben kompatibel; Transferfarben werden in den gemeinsamen historischen Farbzuordnungen gespeichert.
+- Das geänderte Entwicklungsschema erfordert bei vorhandenen Datenbanken einen bewussten Neuaufbau nach .bgt-Sicherung. EnsureCreated bleibt unverändert; kein automatisches Upgrade und keine automatische Datenlöschung.
+
 ## 0.18.0.1 – 2026-11-11
 
 - Gemeinsames Game-Modell persistiert Name, Badge-Text und Spielergrenzen; integrierte Stammdaten werden idempotent synchronisiert. Allgemeine Ansichten und neue Gruppenzuordnungen verwenden diese Werte.

@@ -2,7 +2,7 @@ using BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Preparation;
 using BoardgameTracker.Application.Tests.Persistence;
-using BoardgameTracker.Core.Games.ArkNova.Groups;
+using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -29,9 +29,9 @@ public sealed class ArkNovaPreparationTests
             session.Players.Single(player => player.PlayerId == database.Second.Id).SetPlacement(2);
             session.BeginScoring(DateTimeOffset.UtcNow.AddHours(-1));
             session.Complete(DateTimeOffset.UtcNow);
-            var colors = await db.ArkNovaGroupPlayers.ToArrayAsync(Token);
+            var colors = await db.GroupGamePlayerColors.ToArrayAsync(Token);
             colors.Single(player => player.PlayerId == database.First.Id).SetDefaultColor(PlayerColor.Yellow);
-            db.ArkNovaGroupPlayers.Remove(colors.Single(player => player.PlayerId == database.Second.Id));
+            db.GroupGamePlayerColors.Remove(colors.Single(player => player.PlayerId == database.Second.Id));
             await db.SaveChangesAsync(Token);
         }
         var vm = Create(database);
@@ -51,12 +51,12 @@ public sealed class ArkNovaPreparationTests
         await using var database = await SliceDatabase.CreateAsync();
         await using (var db = database.CreateDbContext())
         {
-            db.ArkNovaGroupPlayers.Add(new(database.Group.Id, database.Second.Id, PlayerColor.Blue));
+            db.GroupGamePlayerColors.Add(new(database.Group.Id, database.GameId, database.Second.Id, PlayerColor.Blue));
             if (invalid)
             {
-                db.ArkNovaGroupPlayers.Add(new(database.Group.Id, database.First.Id, PlayerColor.Red));
+                db.GroupGamePlayerColors.Add(new(database.Group.Id, database.GameId, database.First.Id, PlayerColor.Red));
                 await db.SaveChangesAsync(Token);
-                await db.Database.ExecuteSqlRawAsync("UPDATE ArkNovaGroupPlayers SET DefaultColor = 5 WHERE PlayerId = {0}", [database.First.Id], Token);
+                await db.Database.ExecuteSqlRawAsync("UPDATE GroupGamePlayerColors SET DefaultColor = 5 WHERE PlayerId = {0}", [database.First.Id], Token);
             }
             else
                 await db.SaveChangesAsync(Token);
@@ -100,7 +100,7 @@ public sealed class ArkNovaPreparationTests
         Assert.Equal(new[] { PlayerColor.Blue, PlayerColor.Yellow }, reopened.Players.Select(player => player.Color));
         Assert.All(reopened.Players, player => Assert.False(player.HasZooPlans));
         await using var db = database.CreateDbContext();
-        Assert.Empty(await db.ArkNovaGroupPlayers.ToArrayAsync(Token));
+        Assert.Empty(await db.GroupGamePlayerColors.ToArrayAsync(Token));
         Assert.Empty(await db.GameSessions.ToArrayAsync(Token));
         Assert.Equal(new[] { database.First.Id, database.Second.Id }, await db.GroupPlayers.OrderBy(player => player.DefaultOrder).Select(player => player.PlayerId).ToArrayAsync(Token));
     }
