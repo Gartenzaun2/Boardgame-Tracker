@@ -29,9 +29,9 @@ public partial class MyGamesPage : ContentPage
         _opening = true;
         try
         {
-            IGameSettingsNavigation? entry = _settings.SingleOrDefault(entry => entry.GameKey == row.GameKey);
+            IGameSettingsNavigation? entry = _settings.SingleOrDefault(entry => entry.CanHandle(row.GameKey));
             if (entry is not null)
-                await entry.OpenAsync();
+                await entry.OpenAsync(row.GameKey);
             else
                 await AppDialogPage.ShowAsync(this, row.Name, AppResources.GameSettingsUnavailable, AppResources.Ok);
         }

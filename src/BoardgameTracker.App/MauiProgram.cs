@@ -5,6 +5,7 @@ using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Application.History;
 using BoardgameTracker.App.Games.ArkNova;
+using BoardgameTracker.App.Games.ManualGames;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.ListGroups;
 using BoardgameTracker.App.Features.Groups.EditGroup;
@@ -65,6 +66,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IGameContentLanguageStore, MauiGameContentLanguageStore>();
         builder.Services.AddSingleton<GameContentLanguagePreference>();
         builder.Services.AddArkNova();
+        builder.Services.AddManualGames();
         builder.Services.AddSingleton<BgtFormat>();
         builder.Services.AddTransient<HistoryTransferUseCase>();
         builder.Services.AddSingleton<HistoryExportFileSaver>();

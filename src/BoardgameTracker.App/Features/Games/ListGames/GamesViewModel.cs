@@ -10,7 +10,10 @@ namespace BoardgameTracker.App.Features.Games.ListGames;
 public partial class GamesViewModel(PlayOverviewQuery query, IEnumerable<IGameSessionNavigationHandler> handlers, ILogger<GamesViewModel> logger) : ObservableObject
 {
     public ObservableCollection<PlayGameRow> Games { get; } = [];
-    [ObservableProperty] public partial bool IsBusy { get; private set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    public partial bool IsBusy { get; private set; }
+    public bool IsIdle => !IsBusy;
     [ObservableProperty] public partial string? ErrorMessage { get; private set; }
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -25,7 +28,8 @@ public partial class GamesViewModel(PlayOverviewQuery query, IEnumerable<IGameSe
             foreach (PlayGame game in games)
             {
                 IGameSessionNavigationHandler? handler = handlers.SingleOrDefault(handler => handler.GameKey == game.Key);
-                if (handler is not null) Games.Add(new(game.Key, game.Name, game.HasOpenSession));
+                // Games without a session handler remain visible while their play flow is unavailable.
+                Games.Add(new(game.Key, game.Name, game.HasOpenSession, handler is not null));
             }
         }
         catch (Exception exception)
@@ -39,4 +43,4 @@ public partial class GamesViewModel(PlayOverviewQuery query, IEnumerable<IGameSe
         }
     }
 }
-public sealed record PlayGameRow(string Key, string Name, bool HasOpenSession);
+public sealed record PlayGameRow(string Key, string Name, bool HasOpenSession, bool CanOpen);

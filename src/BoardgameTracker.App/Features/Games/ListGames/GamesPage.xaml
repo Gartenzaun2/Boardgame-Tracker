@@ -14,25 +14,27 @@
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="20,0,20,22" RowDefinitions="*,Auto" RowSpacing="14">
+<Grid Grid.Row="1" Padding="20,0,20,22" RowDefinitions="*,Auto,Auto" RowSpacing="14">
 <CollectionView Grid.Row="0" ItemsSource="{Binding Games}" SelectionMode="None">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:PlayGameRow">
-                        <Border Style="{StaticResource CardBorder}" Padding="16">
+                        <Border Style="{StaticResource CardBorder}" Padding="16" IsEnabled="{Binding CanOpen}">
+                            <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding CanOpen}" Value="False"><Setter Property="Opacity" Value="0.6" /></DataTrigger></Border.Triggers>
                             <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding Key}" /></Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" MinimumHeightRequest="44">
                             <HorizontalStackLayout Spacing="8">
                                 <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" />
                                 <Image Source="icon_active_session.png" presentation:IconTint.Color="{DynamicResource TextPrimary}" IsVisible="{Binding HasOpenSession}" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" SemanticProperties.Description="{x:Static res:AppResources.OpenGameSession}" />
                             </HorizontalStackLayout>
-                            <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                            <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" IsVisible="{Binding CanOpen}" />
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-<Label Grid.Row="1" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+<Button Grid.Row="1" Text="{x:Static res:AppResources.CreateManualGame}" Clicked="OnCreateGameClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+<Label Grid.Row="2" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
 </Grid>
 </Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>

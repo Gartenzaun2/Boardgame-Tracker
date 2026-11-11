@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.MyGames;
 
-public partial class MyGamesViewModel(GameActivationUseCase useCase,
+public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable<IGameSettingsNavigation> settings,
     ILogger<MyGamesViewModel> logger) : ObservableObject
 {
     public ObservableCollection<GameActivationRow> Games { get; } = [];
@@ -31,7 +32,7 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase,
             Games.Clear();
             foreach (GameActivationState state in states)
             {
-                Games.Add(new(state.Name, state));
+                Games.Add(new(state.Name, state, settings.SingleOrDefault(entry => entry.CanHandle(state.GameKey))?.KindText));
             }
         }
         catch (Exception exception)
@@ -78,9 +79,11 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase,
     }
 }
 
-public sealed class GameActivationRow(string name, GameActivationState state) : ObservableObject
+public sealed class GameActivationRow(string name, GameActivationState state, string? kindText = null) : ObservableObject
 {
     private GameActivationState _state = state;
+    public string? KindText { get; } = kindText;
+    public bool HasKind => !string.IsNullOrWhiteSpace(KindText);
     public string GameKey => _state.GameKey;
     public string Name { get; } = name;
     public bool IsEnabled => _state.IsEnabled;

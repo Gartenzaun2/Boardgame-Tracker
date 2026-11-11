@@ -160,9 +160,10 @@ public sealed class MainSectionNavigationTests
         var shell = CreateShell(new(), database);
         Shell.Current = shell;
         BoardgameTracker.App.Navigation.IGameSettingsNavigation entry = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaSettingsNavigation();
-        await entry.OpenAsync();
+        await entry.OpenAsync("ark-nova");
         Assert.Equal("ArkNovaSettingsPage", Assert.Single(shell.Calls).Route);
         Assert.False(Assert.Single(shell.Animations));
-        Assert.Equal(BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler.GameDisplayName, entry.DisplayName);
+        Assert.True(entry.CanHandle("ark-nova"));
+        Assert.False(entry.CanHandle("other"));
     }
 }

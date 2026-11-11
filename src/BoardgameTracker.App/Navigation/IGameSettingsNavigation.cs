@@ -1,9 +1,9 @@
 namespace BoardgameTracker.App.Navigation;
 
-/// <summary>A module-owned settings entry displayed by the general settings page.</summary>
+/// <summary>A module resolves settings for its fixed identity or dynamic key namespace.</summary>
 public interface IGameSettingsNavigation
 {
-    string GameKey { get; }
-    string DisplayName { get; }
-    Task OpenAsync();
+    bool CanHandle(string gameKey);
+    string? KindText => null;
+    Task OpenAsync(string gameKey);
 }

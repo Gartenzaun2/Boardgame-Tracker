@@ -14,7 +14,7 @@ internal sealed class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.ToTable("Games", table =>
         {
             table.HasCheckConstraint("CK_Games_Key", "length(trim(\"Key\")) BETWEEN 1 AND 100 AND \"Key\" = trim(\"Key\")");
-            table.HasCheckConstraint("CK_Games_Name", "length(trim(\"Name\")) BETWEEN 1 AND 100 AND \"Name\" = trim(\"Name\")");
+            table.HasCheckConstraint("CK_Games_Name", "length(trim(\"Name\")) BETWEEN 1 AND 100 AND \"Name\" COLLATE BINARY = trim(\"Name\")");
             table.HasCheckConstraint("CK_Games_BadgeText", "length(trim(\"BadgeText\")) > 0 AND \"BadgeText\" = trim(\"BadgeText\")");
             table.HasCheckConstraint("CK_Games_PlayerLimits", "\"MinPlayers\" >= 1 AND \"MaxPlayers\" >= \"MinPlayers\"");
         });

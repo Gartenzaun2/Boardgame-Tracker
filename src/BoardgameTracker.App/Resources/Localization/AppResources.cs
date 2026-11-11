@@ -9,6 +9,33 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string CreateManualGame => GetString(nameof(CreateManualGame));
+    public static string ManualGameLabel => GetString(nameof(ManualGameLabel));
+    public static string ManualGameName => GetString(nameof(ManualGameName));
+    public static string ManualGameBadge => GetString(nameof(ManualGameBadge));
+    public static string ManualMinPlayers => GetString(nameof(ManualMinPlayers));
+    public static string ManualMaxPlayers => GetString(nameof(ManualMaxPlayers));
+    public static string ManualMaximumLocked => GetString(nameof(ManualMaximumLocked));
+    public static string CapturePoints => GetString(nameof(CapturePoints));
+    public static string AllowNegativePoints => GetString(nameof(AllowNegativePoints));
+    public static string CaptureWinner => GetString(nameof(CaptureWinner));
+    public static string CapturePlacements => GetString(nameof(CapturePlacements));
+    public static string AllowTies => GetString(nameof(AllowTies));
+    public static string ResultFromPoints => GetString(nameof(ResultFromPoints));
+    public static string ManualResult => GetString(nameof(ManualResult));
+    public static string HighestPointsWin => GetString(nameof(HighestPointsWin));
+    public static string LowestPointsWin => GetString(nameof(LowestPointsWin));
+    public static string CapturePlayerOrder => GetString(nameof(CapturePlayerOrder));
+    public static string CapturePlayerColors => GetString(nameof(CapturePlayerColors));
+    public static string DeleteManualGame => GetString(nameof(DeleteManualGame));
+    public static string DeleteManualGameQuestion => GetString(nameof(DeleteManualGameQuestion));
+    public static string ManualDeleteBlocked => GetString(nameof(ManualDeleteBlocked));
+    public static string ManualDuplicateName => GetString(nameof(ManualDuplicateName));
+    public static string ManualAssignedGroups => GetString(nameof(ManualAssignedGroups));
+    public static string ManualFieldsInvalid => GetString(nameof(ManualFieldsInvalid));
+    public static string ManualSaveFailed => GetString(nameof(ManualSaveFailed));
+    public static string ManualLoadFailed => GetString(nameof(ManualLoadFailed));
+    public static string ManualDeleteFailed => GetString(nameof(ManualDeleteFailed));
     public static string ChooseZooPlan => GetString(nameof(ChooseZooPlan));
     public static string TournamentZooPlanLabel => GetString(nameof(TournamentZooPlanLabel));
     public static string ZooPlanAssignedToOtherPlayer => GetString(nameof(ZooPlanAssignedToOtherPlayer));

@@ -6,7 +6,6 @@ namespace BoardgameTracker.App.Games.ArkNova.Navigation;
 
 public sealed class ArkNovaSettingsNavigation : IGameSettingsNavigation
 {
-    public string GameKey => ArkNovaGame.Key;
-    public string DisplayName => ArkNovaGameSessionNavigationHandler.GameDisplayName;
-    public Task OpenAsync() => Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage), false);
+    public bool CanHandle(string gameKey) => gameKey == ArkNovaGame.Key;
+    public Task OpenAsync(string gameKey) => Shell.Current.GoToAsync(nameof(ArkNovaSettingsPage), false);
 }

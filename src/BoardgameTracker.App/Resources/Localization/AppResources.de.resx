@@ -541,4 +541,31 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ChooseZooPlan" xml:space="preserve"><value>Zooplan auswählen</value></data>
   <data name="TournamentZooPlanLabel" xml:space="preserve"><value>Turnier</value></data>
   <data name="ZooPlanAssignedToOtherPlayer" xml:space="preserve"><value>Bereits einem anderen Spieler zugeordnet</value></data>
+  <data name="CreateManualGame" xml:space="preserve"><value>Spiel anlegen</value></data>
+  <data name="ManualGameLabel" xml:space="preserve"><value>Manuelles Spiel</value></data>
+  <data name="ManualGameName" xml:space="preserve"><value>Name</value></data>
+  <data name="ManualGameBadge" xml:space="preserve"><value>Capsule-Tag</value></data>
+  <data name="ManualMinPlayers" xml:space="preserve"><value>Minimale Spieleranzahl</value></data>
+  <data name="ManualMaxPlayers" xml:space="preserve"><value>Maximale Spieleranzahl</value></data>
+  <data name="ManualMaximumLocked" xml:space="preserve"><value>Die maximale Spieleranzahl ist nach dem Anlegen unveränderlich.</value></data>
+  <data name="CapturePoints" xml:space="preserve"><value>Punkte erfassen</value></data>
+  <data name="AllowNegativePoints" xml:space="preserve"><value>Negative Punkte erlauben</value></data>
+  <data name="CaptureWinner" xml:space="preserve"><value>Sieger erfassen</value></data>
+  <data name="CapturePlacements" xml:space="preserve"><value>Platzierungen erfassen</value></data>
+  <data name="AllowTies" xml:space="preserve"><value>Gleichstände erlauben</value></data>
+  <data name="ResultFromPoints" xml:space="preserve"><value>Wertung aus Punkten</value></data>
+  <data name="ManualResult" xml:space="preserve"><value>Manuell</value></data>
+  <data name="HighestPointsWin" xml:space="preserve"><value>Höchste Punktzahl gewinnt</value></data>
+  <data name="LowestPointsWin" xml:space="preserve"><value>Niedrigste Punktzahl gewinnt</value></data>
+  <data name="CapturePlayerOrder" xml:space="preserve"><value>Spielerreihenfolge erfassen</value></data>
+  <data name="CapturePlayerColors" xml:space="preserve"><value>Spielerfarben erfassen</value></data>
+  <data name="DeleteManualGame" xml:space="preserve"><value>Spiel löschen</value></data>
+  <data name="DeleteManualGameQuestion" xml:space="preserve"><value>Dieses Spiel einschließlich seiner Gruppenzuordnungen und Farbdefaults endgültig löschen? Spieler und Gruppen bleiben erhalten.</value></data>
+  <data name="ManualDeleteBlocked" xml:space="preserve"><value>Dieses Spiel besitzt Partien und kann nicht gelöscht werden. Du kannst es stattdessen ausblenden.</value></data>
+  <data name="ManualDuplicateName" xml:space="preserve"><value>Ein manuelles Spiel mit diesem Namen existiert bereits.</value></data>
+  <data name="ManualAssignedGroups" xml:space="preserve"><value>Die minimale Spieleranzahl würde eine vorhandene Gruppenzuordnung ungültig machen.</value></data>
+  <data name="ManualFieldsInvalid" xml:space="preserve"><value>Bitte gib einen Namen (1–100 Zeichen), einen Capsule-Tag und gültige Spielergrenzen von 1 bis 12 an.</value></data>
+  <data name="ManualSaveFailed" xml:space="preserve"><value>Das Spiel konnte nicht gespeichert werden.</value></data>
+  <data name="ManualLoadFailed" xml:space="preserve"><value>Die Spieleinstellungen konnten nicht geladen werden.</value></data>
+  <data name="ManualDeleteFailed" xml:space="preserve"><value>Das Spiel konnte nicht gelöscht werden.</value></data>
 </root>

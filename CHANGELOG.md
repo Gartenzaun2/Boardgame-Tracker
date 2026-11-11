@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.19.0.0 – 2026-11-11
+
+- ManualGames verwaltet beliebig viele manuell angelegte Spiele mit Name, Capsule-Tag, Spielergrenzen und normalisierter Erfassungskonfiguration; ein Modul löst deren lokale Spielschlüssel dynamisch auf.
+- Spielanlage über die Spieleübersicht; Bearbeiten, Anzeigen/Ausblenden und abgesichertes Löschen über Spiele verwalten. Manuelle Namen bleiben auch bei ausgeblendeten Spielen eindeutig, das Spielermaximum bleibt nach Anlage fest.
+- Sichtbare manuelle Spiele erscheinen vorübergehend deaktiviert in der Spieleübersicht. Der Partieablauf ist noch nicht implementiert; keine Platzhalterseiten, Dialoge oder Sessions.
+- Neues Entwicklungsschema benötigt bei vorhandenen Datenbanken einen bewussten Neuaufbau nach .bgt-Sicherung. Keine automatische Migration oder Datenlöschung; bestehende Arche-Nova-Transferformate bleiben unverändert.
+
 ## 0.18.0.2 – 2026-11-11
 
 - Historische Startreihenfolgen sind optional und bleiben entweder vollständig erfasst oder vollständig null; Gruppendefaults ändern sich nur bei tatsächlich erfasster Reihenfolge.

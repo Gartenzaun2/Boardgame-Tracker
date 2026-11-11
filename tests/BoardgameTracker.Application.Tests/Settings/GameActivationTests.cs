@@ -256,7 +256,7 @@ public sealed class GameActivationTests
     }
 
     private static MyGamesViewModel CreateViewModel(SliceDatabase db, IGameActivationStore store) =>
-        new(new(db, store), NullLogger<MyGamesViewModel>.Instance);
+        new(new(db, store), [], NullLogger<MyGamesViewModel>.Instance);
 
     private static async Task<GameSession> AddSessionAsync(SliceDatabase db, GameSessionStatus status)
     {
