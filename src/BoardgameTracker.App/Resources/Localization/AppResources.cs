@@ -9,8 +9,16 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string ManualContinue => GetString(nameof(ManualContinue));
+    public static string ManualSelectWinners => GetString(nameof(ManualSelectWinners));
+    public static string ManualAssignPlacements => GetString(nameof(ManualAssignPlacements));
+    public static string ManualResolveTies => GetString(nameof(ManualResolveTies));
+    public static string ManualPointsLabel => GetString(nameof(ManualPointsLabel));
+    public static string ManualScoringInvalid => GetString(nameof(ManualScoringInvalid));
+    public static string ManualDraftSaveFailed => GetString(nameof(ManualDraftSaveFailed));
+    public static string ManualCompleteFailed => GetString(nameof(ManualCompleteFailed));
+    public static string ManualIntegerRequired => GetString(nameof(ManualIntegerRequired));
     public static string ManualPreparationInvalid => GetString(nameof(ManualPreparationInvalid));
-    public static string ManualScoringPending => GetString(nameof(ManualScoringPending));
     public static string ManualSessionLoadFailed => GetString(nameof(ManualSessionLoadFailed));
     public static string ManualPreferenceCleanupFailed => GetString(nameof(ManualPreferenceCleanupFailed));
     public static string CreateManualGame => GetString(nameof(CreateManualGame));

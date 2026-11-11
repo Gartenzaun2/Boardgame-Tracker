@@ -2,19 +2,24 @@ using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Maui.Dispatching;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Running;
 
 public partial class ManualRunningPage : ContentPage, IQueryAttributable
 {
     private readonly ManualRunningViewModel _viewModel;
+    private readonly ManualGameSessionNavigationHandler _navigation;
     private readonly IDispatcherTimer _durationTimer;
+    private readonly ILogger<ManualRunningPage> _logger;
     private Guid _sessionId;
     private bool _returning;
-    public ManualRunningPage(ManualRunningViewModel viewModel)
+    public ManualRunningPage(ManualRunningViewModel viewModel, ManualGameSessionNavigationHandler navigation, ILogger<ManualRunningPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _navigation = navigation;
+        _logger = logger;
         BindingContext = viewModel;
         _durationTimer = Dispatcher.CreateTimer();
         _durationTimer.Interval = TimeSpan.FromSeconds(30);
@@ -54,8 +59,23 @@ public partial class ManualRunningPage : ContentPage, IQueryAttributable
     }
     private async void OnEndClicked(object? sender, EventArgs e)
     {
-        if (!_returning)
-            await _viewModel.BeginScoringAsync();
+        if (_returning || !_viewModel.CanInteract)
+            return;
+        _returning = true;
+        try
+        {
+            if (await _viewModel.BeginScoringAsync())
+                await _navigation.ContinueAsync(_viewModel.SessionId);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not open manual scoring.");
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.ScoringLoadFailed, AppResources.Ok);
+        }
+        finally
+        {
+            _returning = false;
+        }
     }
     private async void OnDiscardClicked(object? sender, EventArgs e)
     {

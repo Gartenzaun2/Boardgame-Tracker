@@ -1,5 +1,7 @@
 using BoardgameTracker.App.Games.ManualGames.Features.Settings;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Scoring;
+using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result;
 using BoardgameTracker.Application.Games.ManualGames.GameSessions;
 using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Preparation;
 using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Running;
@@ -15,6 +17,17 @@ public static class ManualGamesServiceCollectionExtensions
         services.AddTransient<ManualGameUseCase>();
         services.AddTransient<ManualPreparationQuery>();
         services.AddTransient<StartManualGameSessionUseCase>();
+        services.AddTransient<ManualScoringQuery>();
+        services.AddTransient<ManualScoringUseCase>();
+        services.AddTransient<CompleteManualGameSessionUseCase>();
+        services.AddTransient<ManualScoringViewModel>();
+        services.AddTransient<ManualScoringPage>();
+        services.AddTransient<ManualResultViewModel>();
+        services.AddTransient<ManualResultPage>();
+        services.AddTransient<ManualGameSessionNavigationHandler>();
+        Routing.RegisterRoute(ManualGameSessionNavigationHandler.PointsRoute, typeof(ManualScoringPage));
+        Routing.RegisterRoute(ManualGameSessionNavigationHandler.DecisionRoute, typeof(ManualScoringPage));
+        Routing.RegisterRoute(nameof(ManualResultPage), typeof(ManualResultPage));
         services.AddTransient<ManualRunningGameSessionQuery>();
         services.AddTransient<ManualRunningGameSessionUseCase>();
         services.AddTransient<ManualPreparationViewModel>();

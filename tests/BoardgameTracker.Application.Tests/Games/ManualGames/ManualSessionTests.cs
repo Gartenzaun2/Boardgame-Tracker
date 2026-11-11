@@ -365,7 +365,7 @@ public sealed class ManualSessionTests
     public async Task OneHandler_ResolvesDynamicKeysAndSharedGroupsAndResumesRunningAndScoring()
     {
         await using Fixture fixture = await Fixture.CreateAsync();
-        ManualGameSessionNavigationHandler handler = new(fixture.Running);
+        ManualGameSessionNavigationHandler handler = new(fixture.Running, new(fixture.Database), new(fixture.Database));
         Assert.True(handler.CanHandle(fixture.Key));
         Assert.True(handler.CanHandle(ManualGame.CreateKey()));
         Assert.False(handler.CanHandle("ark-nova"));
@@ -387,7 +387,7 @@ public sealed class ManualSessionTests
         await new ManualRunningGameSessionUseCase(fixture.Database).BeginScoringAsync(id, DateTimeOffset.UtcNow, Token);
         OpenGameSession open = (await new OpenGameSessionQuery(fixture.Database).GetAsync(id, Token))!;
         await handler.ResumeAsync(shell, open);
-        Assert.EndsWith("/ManualRunningPage", shell.Calls.Last().Route);
+        Assert.EndsWith("/ManualPointsPage", shell.Calls.Last().Route);
         Assert.Equal(id, settings.Value.LastGameSessionId);
         Assert.Equal(fixture.Key, settings.Value.SelectedGameKey);
         GamesViewModel games = new(new(fixture.Database, new TestGameActivationStore()), [handler], NullLogger<GamesViewModel>.Instance);

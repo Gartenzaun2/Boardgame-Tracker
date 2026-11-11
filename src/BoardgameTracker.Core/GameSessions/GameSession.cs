@@ -89,6 +89,15 @@ public sealed class GameSession
         ModifiedAt = modifiedAt;
     }
 
+    public void RecordScoringUpdate(DateTimeOffset modifiedAt)
+    {
+        if (Status != GameSessionStatus.Scoring)
+            throw new InvalidOperationException("Only scoring sessions can save a scoring draft.");
+        if (modifiedAt < StartedAt || EndedAt is DateTimeOffset endedAt && modifiedAt < endedAt)
+            throw new ArgumentOutOfRangeException(nameof(modifiedAt));
+        ModifiedAt = modifiedAt;
+    }
+
     public void Complete(DateTimeOffset modifiedAt)
     {
         if (Status != GameSessionStatus.Scoring)

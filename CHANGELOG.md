@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.21.0.0 – 2026-11-11
+
+- ManualGames bietet den vollständigen snapshotgesteuerten Wertungsablauf: optionale Ganzzahlpunkte, manuelle Sieger/Plätze, automatische höchste/niedrigste Wertung sowie eine bedingte Gleichstandsauflösung mit Wettbewerbsrängen.
+- Punkte und Entscheidungen werden als Scoring-Zwischenstand gespeichert; Abschluss validiert die gespeicherten Regeln und speichert Ergebnis und Completed-Status atomar. Wiederholter Abschluss verändert keine historischen Ergebnisse.
+- Running, Scoring-Resume und Historie öffnen die jeweils passende Eingabe bzw. Ergebnisansicht. Partien ohne Ergebniswerte schließen ohne künstlichen Zwischenbildschirm ab; die temporäre Anzeige „Wertung folgt“ entfällt.
+- Historische Reihenfolge und Farben bleiben erhalten; keine Ergebniskorrektur und kein ManualGames-Import/Export. Keine Schemaänderung, Migration oder Datenbanklöschung.
+
 ## 0.20.0.0 – 2026-11-11
 
 - Manuelle Spiele öffnen über einen dynamischen Session-/Resume-Handler die gemeinsame Gruppenübersicht und ihre eigene Partievorbereitung mit optionaler Startreihenfolge, zwölf Spielerfarben und kompakter letzter Partie.

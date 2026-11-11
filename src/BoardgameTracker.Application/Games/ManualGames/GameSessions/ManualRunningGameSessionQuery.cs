@@ -22,6 +22,11 @@ public sealed class ManualRunningGameSessionQuery(IDbContextFactory<BoardgameTra
     public async Task<ManualRunningData?> GetAsync(Guid sessionId, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
+        return await ReadAsync(db, sessionId, cancellationToken);
+    }
+
+    internal static async Task<ManualRunningData?> ReadAsync(BoardgameTrackerDbContext db, Guid sessionId, CancellationToken cancellationToken)
+    {
         var data = await (from session in db.GameSessions.AsNoTracking()
                           join manual in db.ManualGameSessions.AsNoTracking() on session.Id equals manual.GameSessionId
                           join game in db.Games.AsNoTracking() on session.GameId equals game.Id

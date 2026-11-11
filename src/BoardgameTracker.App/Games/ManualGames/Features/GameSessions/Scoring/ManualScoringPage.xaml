@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" xmlns:local="clr-namespace:BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Scoring" x:Class="BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Scoring.ManualScoringPage" x:DataType="local:ManualScoringViewModel" Shell.NavBarIsVisible="False">
+    <Grid>
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding CanInteract}">
+            <controls:AppPageHeader Title="{Binding Title}" BadgeText="{Binding BadgeText}" GameName="{Binding GameName}" Subtitle="{Binding GroupName}" Variant="Subpage" BackClicked="OnBackClicked" />
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="20,0" Spacing="8" IsEnabled="{Binding CanEdit}">
+                    <VerticalStackLayout IsVisible="{Binding IsPointsPage}" BindableLayout.ItemsSource="{Binding Players}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:ManualScoringPlayerViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="*,120" ColumnSpacing="12">
+                                        <VerticalStackLayout VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" TextColor="{DynamicResource TextPrimary}" FontSize="17" FontAttributes="Bold" LineBreakMode="WordWrap">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding ColorName}" TextColor="{DynamicResource TextPrimary}" IsVisible="{Binding HasColor}" FontSize="12">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <Entry Grid.Column="1" Text="{Binding PointsText}" Keyboard="Numeric" TextChanged="OnPointsTextChanged" SemanticProperties.Description="{x:Static res:AppResources.ManualPointsLabel}" TextColor="{DynamicResource TextPrimary}" BackgroundColor="{DynamicResource Surface}">
+                                            <Entry.Triggers>
+                                                <DataTrigger TargetType="Entry" Binding="{Binding AllowNegativePoints}" Value="True">
+                                                    <Setter Property="Keyboard" Value="Default" />
+                                                </DataTrigger>
+                                            </Entry.Triggers>
+                                        </Entry>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="{Binding IsDecisionPage}" BindableLayout.ItemsSource="{Binding DecisionPlayers}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="local:ManualScoringPlayerViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                            <Label Text="{Binding Name}" TextColor="{DynamicResource TextPrimary}" FontSize="17" FontAttributes="Bold" LineBreakMode="WordWrap">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding PointsText}" TextColor="{DynamicResource TextPrimary}" Grid.Column="1" IsVisible="{Binding HasPoints}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Grid>
+                                        <CheckBox IsChecked="{Binding IsWinner, Mode=OneWay}" IsVisible="{Binding IsWinnerSelection}" CheckedChanged="OnWinnerChanged" SemanticProperties.Description="{Binding Name}" Color="{DynamicResource TextPrimary}">
+                                            <CheckBox.Triggers>
+                                                <DataTrigger TargetType="CheckBox" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="Color" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </CheckBox.Triggers>
+                                        </CheckBox>
+                                        <FlexLayout Wrap="Wrap" IsVisible="{Binding IsRankSelection}" BindableLayout.ItemsSource="{Binding Ranks}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="local:ManualRankChoice">
+                                                    <Button Text="{Binding Rank}" Clicked="OnRankClicked" Style="{StaticResource SecondaryActionButton}" WidthRequest="32" HeightRequest="32" MinimumWidthRequest="32" MinimumHeightRequest="32" Padding="2" Margin="0,0,6,4">
+                                                        <Button.Triggers>
+                                                            <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                                                <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                                                                <Setter Property="BorderColor" Value="{DynamicResource SelectedBorder}" />
+                                                                <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+                                                            </DataTrigger>
+                                                        </Button.Triggers>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </FlexLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+            <VerticalStackLayout Grid.Row="2" Padding="20,0,20,20" Spacing="8">
+                <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Text="{x:Static res:AppResources.Discard}" Clicked="OnDiscardClicked" Style="{StaticResource DangerButton}" />
+                    <Button Grid.Column="1" Text="{Binding PrimaryText}" IsEnabled="{Binding CanSubmit}" Clicked="OnPrimaryClicked" Style="{StaticResource PrimaryCompactButton}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

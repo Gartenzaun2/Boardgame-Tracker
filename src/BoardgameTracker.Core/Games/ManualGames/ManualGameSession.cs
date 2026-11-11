@@ -20,7 +20,7 @@ public sealed class ManualGameSession
     public ScoringRulesSnapshot ScoringRulesSnapshot { get; private set; } = null!;
 }
 
-/// <summary>Minimal historical points storage for reading the last completed session; no scoring workflow yet.</summary>
+/// <summary>Optional manual points, independent of shared placements and historical participant metadata.</summary>
 public sealed class ManualGameSessionPlayer
 {
     private ManualGameSessionPlayer() { }
@@ -35,4 +35,5 @@ public sealed class ManualGameSessionPlayer
     public Guid GameSessionId { get; private set; }
     public Guid PlayerId { get; private set; }
     public int? Points { get; private set; }
+    public void SetPoints(int? points) => Points = points;
 }

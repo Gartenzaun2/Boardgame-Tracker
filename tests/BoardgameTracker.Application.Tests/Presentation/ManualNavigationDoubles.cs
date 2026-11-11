@@ -1,3 +1,8 @@
+namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result
+{
+    public sealed class ManualResultPage : Microsoft.Maui.Controls.Page;
+}
+
 // Routes are exercised through the production handler without starting native pages.
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Preparation
 {

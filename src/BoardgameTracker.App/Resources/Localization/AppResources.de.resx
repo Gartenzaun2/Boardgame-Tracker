@@ -570,6 +570,14 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ManualDeleteFailed" xml:space="preserve"><value>Das Spiel konnte nicht gelöscht werden.</value></data>
   <data name="ManualPreferenceCleanupFailed" xml:space="preserve"><value>Das Spiel wurde gelöscht. Seine Anzeigeeinstellung konnte nicht entfernt werden.</value></data>
   <data name="ManualPreparationInvalid" xml:space="preserve"><value>Die Vorbereitung ist nicht mehr gültig. Prüfe die Gruppenzuordnung und lade die Vorbereitung erneut.</value></data>
-  <data name="ManualScoringPending" xml:space="preserve"><value>Wertung folgt.</value></data>
   <data name="ManualSessionLoadFailed" xml:space="preserve"><value>Die Partie konnte nicht geladen werden.</value></data>
+  <data name="ManualContinue" xml:space="preserve"><value>Weiter</value></data>
+  <data name="ManualSelectWinners" xml:space="preserve"><value>Sieger auswählen</value></data>
+  <data name="ManualAssignPlacements" xml:space="preserve"><value>Plätze zuordnen</value></data>
+  <data name="ManualResolveTies" xml:space="preserve"><value>Gleichstand auflösen</value></data>
+  <data name="ManualPointsLabel" xml:space="preserve"><value>Punkte</value></data>
+  <data name="ManualScoringInvalid" xml:space="preserve"><value>Bitte vervollständige die gültigen Punkte und Ergebnisentscheidungen. Geteilte Plätze müssen Wettbewerbsränge verwenden.</value></data>
+  <data name="ManualDraftSaveFailed" xml:space="preserve"><value>Der Wertungszwischenstand konnte nicht gespeichert werden.</value></data>
+  <data name="ManualCompleteFailed" xml:space="preserve"><value>Die Wertung konnte nicht abgeschlossen werden.</value></data>
+  <data name="ManualIntegerRequired" xml:space="preserve"><value>Bitte gib gültige ganze Zahlen ein; negative Punkte nur bei erlaubter Einstellung.</value></data>
 </root>

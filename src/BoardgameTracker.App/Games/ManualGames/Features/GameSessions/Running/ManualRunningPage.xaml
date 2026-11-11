@@ -12,7 +12,6 @@
             <controls:AppPageHeader Title="{x:Static res:AppResources.RunningGame}" Variant="Subpage" GameName="{Binding GameName}"
                 BadgeText="{Binding BadgeText}" Subtitle="{Binding GroupName}" Metadata="{Binding DurationText}" BackClicked="OnBackClicked" />
             <ScrollView Grid.Row="1"><VerticalStackLayout Padding="20,0" Spacing="12">
-                <Label Text="{x:Static res:AppResources.ManualScoringPending}" IsVisible="{Binding IsScoring}" />
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"><BindableLayout.ItemTemplate><DataTemplate x:DataType="rows:ManualParticipantViewModel">
     <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
         <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True"><Setter Property="BackgroundColor" Value="{Binding ColorBrush}" /></DataTrigger></Border.Triggers>
