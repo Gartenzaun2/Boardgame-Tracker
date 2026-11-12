@@ -60,6 +60,16 @@ Multi-Agent-Orchestrierung oder Best-of-N-Läufe ohne ausdrücklichen Benutzerau
 Bereits erarbeitete Ergebnisse wiederverwenden. Keine Arbeit zwischen Assistenten
 verschieben, wenn dadurch dieselbe Analyse erneut durchgeführt werden müsste.
 
+Bei .NET-, C#- und MAUI-Aufgaben können passende externe Agent-Skills, insbesondere
+aus https://github.com/dotnet/skills, als ergänzende technische Referenz genutzt
+werden. Skills nur bei konkretem Aufgabenbezug verwenden; keine pauschale
+Skill-Aktivierung oder zusätzliche Analyse ohne Bedarf.
+
+Explizite Aufträge, diese AGENTS.md und die zuständigen kanonischen
+Projektdokumente haben Vorrang vor Skill-Empfehlungen. Widersprüche nicht
+stillschweigend zugunsten externer Skills auflösen. Externe Skills ersetzen
+weder Projektvorgaben noch Regeln zu Scope, Verifikation und Agenteneinsatz.
+
 ## Minimaler Kontext
 
 Mit dem kleinsten Kontext arbeiten, der für die aktuelle Aufgabe erforderlich ist.
