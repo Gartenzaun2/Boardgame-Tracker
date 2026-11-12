@@ -60,6 +60,25 @@ Multi-Agent-Orchestrierung oder Best-of-N-Läufe ohne ausdrücklichen Benutzerau
 Bereits erarbeitete Ergebnisse wiederverwenden. Keine Arbeit zwischen Assistenten
 verschieben, wenn dadurch dieselbe Analyse erneut durchgeführt werden müsste.
 
+### Arbeitspakete und Agentenaufträge
+
+Zusammenhängende Aufgaben zu sinnvoll großen, fachlich abgegrenzten Arbeitspaketen
+bündeln. Nicht jeden einzelnen Befund oder jede kleine Korrektur als separaten
+Agentenauftrag vergeben, wenn dadurch Kontext, Analyse und Verifikation unnötig
+wiederholt werden.
+
+Ein Arbeitspaket soll möglichst einen zusammenhängenden Arbeitskontext, gemeinsam
+betroffene Komponenten und eine sinnvolle gemeinsame Verifikation besitzen. Bereits
+bestätigte Befunde und vorhandene Analysen wiederverwenden.
+
+Unabhängige Aufgaben, riskante Architekturentscheidungen oder Änderungen mit
+unterschiedlichen Freigabeanforderungen nicht allein zur Paketvergrößerung
+zusammenfassen. Bei Bedarf an fachlichen oder technischen Entscheidungspunkten teilen.
+
+Innerhalb des beauftragten Pakets Prüfung, Umsetzung und erforderliche Verifikation
+selbstständig durchführen. Nur bei ausdrücklich erforderlicher Entscheidung oder
+Freigabe unterbrechen.
+
 Bei .NET-, C#- und MAUI-Aufgaben können passende externe Agent-Skills, insbesondere
 aus https://github.com/dotnet/skills, als ergänzende technische Referenz genutzt
 werden. Skills nur bei konkretem Aufgabenbezug verwenden; keine pauschale
