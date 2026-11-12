@@ -43,6 +43,22 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
                 await _viewModel.LoadAsync(_id, _points);
         }
     }
+    private void OnPointsEntryReady(object? sender, EventArgs e)
+    {
+        if (sender is not Entry { BindingContext: ManualScoringPlayerViewModel player } entry)
+            return;
+#if ANDROID
+        if (entry.Handler?.PlatformView is global::Android.Widget.EditText input)
+        {
+            input.KeyListener = global::Android.Text.Method.DigitsKeyListener.GetInstance(Java.Util.Locale.Root, player.AllowNegativePoints, false);
+            input.InputType = global::Android.Text.InputTypes.ClassNumber
+                | (player.AllowNegativePoints ? global::Android.Text.InputTypes.NumberFlagSigned : 0);
+        }
+#elif IOS
+        if (entry.Handler?.PlatformView is UIKit.UITextField input)
+            input.KeyboardType = player.AllowNegativePoints ? UIKit.UIKeyboardType.NumbersAndPunctuation : UIKit.UIKeyboardType.NumberPad;
+#endif
+    }
     private async void OnPointsTextChanged(object? sender, TextChangedEventArgs e)
     {
         if (!_viewModel.IsBusy && sender is Entry { BindingContext: ManualScoringPlayerViewModel player })
@@ -90,11 +106,16 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     {
         if (_navigating || !_viewModel.CanInteract || !_correction && !await _viewModel.SaveDraftAsync())
             return;
+        if (_correction && _viewModel.TryReturnToCorrectionPoints())
+            return;
         _navigating = true;
         try
         {
             if (_correction)
+            {
+                _viewModel.CancelCorrection();
                 await _navigation.ReturnFromCorrectionAsync();
+            }
             else if (!_points && _viewModel.HasPointsStep)
             {
                 var stack = Navigation.NavigationStack;
@@ -127,7 +148,13 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
             return;
         if (_correction)
         {
-            await BackAsync();
+            _navigating = true;
+            try
+            {
+                _viewModel.CancelCorrection();
+                await _navigation.ReturnFromCorrectionAsync();
+            }
+            finally { _navigating = false; }
             return;
         }
         bool confirmed;

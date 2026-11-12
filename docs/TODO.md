@@ -10,6 +10,15 @@ Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
 ## Plattformnachweise
 
+### ManualGames: Punkteingabe vor dem manuellen Mobiltest
+
+Auf iOS die Minus-Eingabe über `NumbersAndPunctuation`, auf Android über die
+vorzeichenbehaftete Ganzzahltastatur mit der tatsächlich verwendeten Tastatur prüfen.
+Offen sind Eingabe von `-`, `-1`, `0`, Löschen zum leeren Zwischenstand, Paste,
+Fokus beim Tippen sowie Ablehnung negativer Werte bei deaktivierter Option.
+Die `int`-Validierung ist automatisiert prüfbar; die angebotenen Tasten und das
+Fokusverhalten sind erst auf dem Gerät nachgewiesen. Kein Gerätelauf für diesen Patch.
+
 ### Android ARM64: nativer Gerätelauf
 
 **Status:** offen

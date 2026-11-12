@@ -23,6 +23,7 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
     [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
     [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
     [ObservableProperty] public partial string LastSessionText { get; private set; } = string.Empty;
+    [ObservableProperty] public partial bool LastSessionHasWinners { get; private set; }
     [ObservableProperty] public partial bool CapturePlayerOrder { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
@@ -56,6 +57,7 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
             GroupName = data.GroupName;
             CapturePlayerOrder = data.CapturePlayerOrder;
             LastSessionText = FormatLastSession(data.LastSession);
+            LastSessionHasWinners = HasWinnerResult(data.LastSession);
             ManualPreparationPlayer[] ordered = data.CapturePlayerOrder ? data.Players.OrderBy(player => player.DefaultOrder).ToArray()
                 : data.Players.OrderBy(player => player.Name, StringComparer.CurrentCulture).ToArray();
             Dictionary<Guid, PlayerColor> assigned = [];
@@ -188,13 +190,19 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
             return AppResources.NoPreviousGameSession;
         string date = session.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
         IReadOnlyList<ManualLastPlayer> players = session.Players;
-        if (players.Count > 0 && players.All(player => player.Placement.HasValue))
+        if (players.Count > 0 && players.All(player => player.Placement.HasValue)
+            && (session.CapturePlacements || players.Any(player => player.Placement > 1)))
             return date + " · " + string.Join(" · ", players.OrderBy(player => player.Placement).ThenBy(player => player.Name)
                 .Select(player => player.Placement + ". " + player.Name));
         if (players.Any(player => player.Placement == 1))
-            return date + " · 🏆 " + string.Join(" · ", players.Where(player => player.Placement == 1).Select(player => player.Name));
+            return date + " · " + string.Join(" · ", players.Where(player => player.Placement == 1).Select(player => player.Name));
         if (players.Count > 0 && players.All(player => player.Points.HasValue))
             return date + " · " + string.Join(" · ", players.Select(player => player.Name + ": " + player.Points));
         return date;
     }
+
+    public static bool HasWinnerResult(ManualLastSession? session) => session is not null
+        && session.Players.Any(player => player.Placement == 1)
+        && !(session.Players.All(player => player.Placement.HasValue)
+            && (session.CapturePlacements || session.Players.Any(player => player.Placement > 1)));
 }

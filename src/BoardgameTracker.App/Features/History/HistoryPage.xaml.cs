@@ -207,7 +207,8 @@ public sealed record HistoryCard(HistoryGameSession Data, string GameName)
             return string.Format(AppResources.HistoryDurationFormat, minutes / 60, minutes % 60);
         }
     }
-    public string Placements => string.Join(" · ", Data.Players.Select(p => $"{p.Placement}. {p.Name}"));
+    public string Placements => string.Join(" · ", Data.Players.Select(p =>
+        p.Placement is int rank ? $"{rank}. {p.Name}" : p.Name));
 }
 
 public sealed class HistoryMonth(string title, IEnumerable<HistoryCard> cards) : List<HistoryCard>(cards)

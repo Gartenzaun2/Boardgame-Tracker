@@ -310,7 +310,8 @@ public sealed class ManualSessionTests
         Assert.Equal(date, data.LastSession!.StartedAt);
         string text = ManualPreparationViewModel.FormatLastSession(data.LastSession);
         if (result == "places") { Assert.Contains("1. Anna", text); Assert.Contains("2. Ben", text); }
-        if (result == "winners") { Assert.Contains("🏆 Anna", text); Assert.DoesNotContain("Ben", text); }
+        Assert.Equal(result == "winners", ManualPreparationViewModel.HasWinnerResult(data.LastSession));
+        if (result == "winners") { Assert.Contains("Anna", text); Assert.DoesNotContain("Ben", text); }
         if (result == "points") { Assert.Contains("Anna: 0", text); Assert.Contains("Ben: -2", text); }
         if (result is "partial-points" or "date") { Assert.DoesNotContain("Anna", text); Assert.DoesNotContain("Ben", text); }
         Assert.Equal(AppResources.NoPreviousGameSession, ManualPreparationViewModel.FormatLastSession(null));

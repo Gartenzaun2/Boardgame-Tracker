@@ -39,6 +39,13 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.1.0 – 2026-11-12
+
+- Fehlende Historienplätze bleiben leer; die letzte ManualGames-Partie unterscheidet historische Siegerwertung und vollständige Platzierung auch bei ausschließlich ersten Plätzen.
+- Historische Korrekturen erlauben die Rückkehr zum Punkteschritt mit unverändertem Entwurf; Abbrechen verwirft den Entwurf ohne Persistenzänderung.
+- ManualGames verwendet gemeinsame Auswahl- und Icon-Muster sowie plattformgerechte Eingabefelder für vorzeichenbehaftete ganze Punkte.
+- Transferdokumentation präzisiert die Trennung von Wertungssnapshot und gemeinsamen Reihenfolge-/Farbdaten; Format- und Schemaversion bleiben 1.
+
 ## 0.22.0.0 – 2026-11-11
 
 - ManualGames unterstützt den bestehenden .bgt-Import/Export mit Format- und Schemaversion 1. Das Pflichtfeld placementKind erhält keine, reine Sieger- oder vollständige Platzierungswertungen einschließlich gemeinsamem Platz 1; minimale importierte Snapshots entstehen ausschließlich aus historischen Werten.

@@ -15,7 +15,8 @@ public sealed class ManualResultPlayerViewModel(Guid id, string name) : ManualPa
     public bool FullPlacements { get; init; }
     public bool HasPoints => Points.HasValue;
     public string PointsText => Points is int value ? string.Format(AppResources.PointsFormat, value) : string.Empty;
-    public string PlacementText => FullPlacements && Placement.HasValue ? Placement + "." : Placement == 1 ? "🏆" : string.Empty;
+    public string PlacementText => FullPlacements && Placement.HasValue ? Placement + "." : string.Empty;
+    public bool IsWinner => !FullPlacements && Placement == 1;
     public bool HasPlacement => !string.IsNullOrEmpty(PlacementText);
 }
 public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<ManualResultViewModel> logger) : ObservableObject

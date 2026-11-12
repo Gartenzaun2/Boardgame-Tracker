@@ -139,7 +139,7 @@ public sealed class TieResolutionTests
         ArkNovaGameSessionResultData saved = (await database.Scoring.LoadGameSessionResultAsync(database.Session.Id, Token))!;
         Assert.Equal(new int?[] { 1, 2, 2, 4 }, saved.Players.OrderBy(player => player.Order).Select(player => player.Placement));
         var history = await new CompletedGameSessionsQuery(database).ListAsync(cancellationToken: Token);
-        Assert.Equal(new[] { 1, 2, 2, 4 }, Assert.Single(history).Players.Select(player => player.Placement));
+        Assert.Equal(new int?[] { 1, 2, 2, 4 }, Assert.Single(history).Players.Select(player => player.Placement));
     }
 
     [Fact]

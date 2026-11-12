@@ -67,6 +67,7 @@ public sealed class ManualScoringTests
         }
         ManualScoringViewModel resumed = fixture.ViewModel();
         await resumed.LoadAsync(fixture.Id, true, Token);
+        Assert.False(resumed.TryReturnToCorrectionPoints());
         Assert.Equal(new[] { "0", "" }, resumed.Players.Select(player => player.PointsText));
         Assert.False(resumed.CanSubmit);
         resumed.Players[1].PointsText = "-2";
@@ -192,7 +193,7 @@ public sealed class ManualScoringTests
         await result.LoadAsync(fixture.Id, Token);
         Assert.All(result.Players, player => Assert.False(player.HasPoints));
         if (!full)
-            Assert.Equal(ties ? 2 : 1, result.Players.Count(player => player.PlacementText == "🏆"));
+            Assert.Equal(ties ? 2 : 1, result.Players.Count(player => player.IsWinner));
     }
 
     [Fact]

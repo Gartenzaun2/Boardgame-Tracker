@@ -1,6 +1,7 @@
 using BoardgameTracker.App;
 using BoardgameTracker.App.Games.ManualGames;
 using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result;
+using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Preparation;
 using BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Scoring;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ManualGames;
@@ -103,7 +104,7 @@ public sealed class ManualHistoryCorrectionTests
         var last = (await new ManualPreparationQuery(fixture.Database).GetAsync(fixture.Key, fixture.GroupId, Token)).LastSession!;
         Assert.All(last.Players, player => Assert.Equal(values.Single(value => value.PlayerId == player.PlayerId).Points, player.Points));
         var history = Assert.Single(await new BoardgameTracker.Application.History.CompletedGameSessionsQuery(fixture.Database).ListAsync(cancellationToken: Token));
-        Assert.All(history.Players, player => Assert.Equal(values.Single(value => value.PlayerId == player.PlayerId).Placement ?? 0, player.Placement));
+        Assert.All(history.Players, player => Assert.Equal(values.Single(value => value.PlayerId == player.PlayerId).Placement, player.Placement));
     }
 
     [Theory]
@@ -119,7 +120,22 @@ public sealed class ManualHistoryCorrectionTests
         Assert.Equal(ManualSubmitResult.Completed, await editor.SubmitAsync(Token));
         ManualResultViewModel result = fixture.Result();
         await result.LoadAsync(fixture.Id, Token);
-        Assert.All(result.Players, player => Assert.Equal(full ? "1." : "🏆", player.PlacementText));
+        Assert.All(result.Players, player =>
+        {
+            Assert.Equal(full ? "1." : string.Empty, player.PlacementText);
+            Assert.Equal(!full, player.IsWinner);
+        });
+        await using (BoardgameTrackerDbContext db = fixture.Database.CreateDbContext())
+        {
+            (await db.ManualGames.SingleAsync(Token)).SetConfiguration(new(CaptureWinner: true, CapturePlacements: !full));
+            await db.SaveChangesAsync(Token);
+        }
+        ManualLastSession last = (await new ManualPreparationQuery(fixture.Database).GetAsync(fixture.Key, fixture.GroupId, Token)).LastSession!;
+        Assert.Equal(full, last.CapturePlacements);
+        Assert.Equal(!full, ManualPreparationViewModel.HasWinnerResult(last));
+        string text = ManualPreparationViewModel.FormatLastSession(last);
+        Assert.Contains(full ? "1. P1" : "P1", text);
+        if (!full) Assert.DoesNotContain("1.", text.Split(" · ", 2)[1]);
         Assert.Equal(full ? ManualHistoricalPlacements.Full : ManualHistoricalPlacements.Winners,
             ManualHistoricalResult.FromValues((await fixture.Query.GetAsync(fixture.Id, Token))!.Values, (await fixture.Query.GetAsync(fixture.Id, Token))!.Session.ScoringRules).Placements);
     }
@@ -143,6 +159,12 @@ public sealed class ManualHistoryCorrectionTests
         Assert.Equal(AppResources.SaveCorrection, editor.PrimaryText);
         await editor.SelectRankAsync(editor.Players[0], 2);
         await editor.SelectRankAsync(editor.Players[1], 1);
+        Assert.True(editor.TryReturnToCorrectionPoints());
+        Assert.True(editor.IsPointsPage);
+        Assert.Equal("-50", editor.Players[0].PointsText);
+        Assert.Equal(new int?[] { 2, 1 }, editor.Players.Select(player => player.Placement));
+        Assert.False(editor.TryReturnToCorrectionPoints());
+        Assert.Equal(ManualSubmitResult.Decision, await editor.SubmitAsync(Token));
         await editor.LoadCorrectionAsync(fixture.Id, Token); // A lifecycle reappearance keeps the same draft.
         Assert.Equal("-50", editor.Players[0].PointsText);
         Assert.Equal(before.Values, (await fixture.Query.GetAsync(fixture.Id, Token))!.Values);
@@ -152,6 +174,48 @@ public sealed class ManualHistoryCorrectionTests
         Assert.False(await abandoned.DiscardAsync(true, Token)); // Correction cannot delete the session.
         Assert.Equal(ManualSubmitResult.Completed, await editor.SubmitAsync(Token));
         Assert.Equal(fixture.Values([-50, 100], [2, 1]), (await fixture.Query.GetAsync(fixture.Id, Token))!.Values);
+    }
+
+    [Theory]
+    [InlineData("points")]
+    [InlineData("none")]
+    [InlineData("winners")]
+    [InlineData("ties")]
+    public async Task History_PreservesMissingPlacesAndSortsOnlyRecordedRanks(string form)
+    {
+        int?[] ranks = form switch { "winners" => [null, 1, null], "ties" => [3, 1, 1], _ => [null, null, null] };
+        await using Fixture fixture = await Fixture.CreateAsync(form == "points" ? [0, -2, 10] : [null, null, null], ranks);
+        var card = Assert.Single(await new BoardgameTracker.Application.History.CompletedGameSessionsQuery(fixture.Database).ListAsync(cancellationToken: Token));
+        Assert.All(card.Players, player => Assert.Equal(ranks[Array.IndexOf(fixture.Players, player.PlayerId)], player.Placement));
+        Assert.Equal(ranks.OrderBy(rank => rank ?? int.MaxValue), card.Players.Select(player => player.Placement));
+        Assert.DoesNotContain(card.Players, player => player.Placement == 0);
+        if (form == "winners") Assert.Equal(fixture.Players[1], card.Players[0].PlayerId);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CancelCorrection_FromEitherStepDropsDraftWithoutPersisting(bool secondStep)
+    {
+        await using Fixture fixture = await Fixture.CreateAsync([0, 2], [1, null]);
+        ManualScoringViewModel editor = fixture.Editor();
+        await editor.LoadCorrectionAsync(fixture.Id, Token);
+        editor.Players[0].PointsText = "-9";
+        await editor.PointsChangedAsync();
+        if (secondStep)
+        {
+            Assert.Equal(ManualSubmitResult.Decision, await editor.SubmitAsync(Token));
+            await editor.SelectWinnerAsync(editor.Players[1], true);
+        }
+        editor.CancelCorrection();
+        Assert.False(editor.CanEdit);
+        Assert.False(editor.CanSubmit);
+        ManualScoringData persisted = (await fixture.Query.GetAsync(fixture.Id, Token))!;
+        Assert.Equal(fixture.Values([0, 2], [1, null]), persisted.Values);
+        Assert.Equal(GameSessionStatus.Completed, persisted.Session.Status);
+        await editor.LoadCorrectionAsync(fixture.Id, Token);
+        Assert.Equal(new[] { "0", "2" }, editor.Players.Select(player => player.PointsText));
+        Assert.True(editor.IsPointsPage);
     }
 
     [Theory]

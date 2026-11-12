@@ -38,7 +38,11 @@ public sealed class ManualPreparationQuery(IDbContextFactory<BoardgameTrackerDbC
                 where participant.GameSessionId == last.Id
                 select new ManualLastPlayer(participant.PlayerId, player.Name, participant.Placement,
                     detail == null ? (int?)null : detail.Points)).ToArrayAsync(cancellationToken);
-            lastSession = new(last.StartedAt, results);
+            bool capturedPlacements = await db.ManualGameSessions.AsNoTracking()
+                .Where(session => session.GameSessionId == last.Id)
+                .Select(session => session.ScoringRulesSnapshot.CapturePlacements)
+                .SingleAsync(cancellationToken);
+            lastSession = new(last.StartedAt, results, capturedPlacements);
         }
         return new(context.Game.Id, context.Game.Key, context.Game.Name, context.Game.BadgeText, context.Group.Id,
             context.Group.Name, context.Configuration.CapturePlayerOrder, context.Configuration.CapturePlayerColors, players, lastSession);
@@ -75,5 +79,5 @@ internal sealed record ManualPreparationContext(Game Game, ManualGame Configurat
 public sealed record ManualPreparationData(Guid GameId, string GameKey, string GameName, string BadgeText, Guid GroupId,
     string GroupName, bool CapturePlayerOrder, bool CapturePlayerColors, IReadOnlyList<ManualPreparationPlayer> Players, ManualLastSession? LastSession);
 public sealed record ManualPreparationPlayer(Guid PlayerId, string Name, int DefaultOrder, PlayerColor? DefaultColor);
-public sealed record ManualLastSession(DateTimeOffset StartedAt, IReadOnlyList<ManualLastPlayer> Players);
+public sealed record ManualLastSession(DateTimeOffset StartedAt, IReadOnlyList<ManualLastPlayer> Players, bool CapturePlacements);
 public sealed record ManualLastPlayer(Guid PlayerId, string Name, int? Placement, int? Points);

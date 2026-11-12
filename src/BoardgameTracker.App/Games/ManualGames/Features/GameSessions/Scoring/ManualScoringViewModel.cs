@@ -109,6 +109,28 @@ public partial class ManualScoringViewModel(ManualScoringQuery query, ManualScor
 
     public Task LoadCorrectionAsync(Guid id, CancellationToken token = default) => LoadSessionAsync(id, false, true, token);
 
+    public bool TryReturnToCorrectionPoints()
+    {
+        if (!IsCorrection || !CanEdit || IsPointsPage || !HasPointsStep)
+            return false;
+        IsPointsPage = true;
+        OnPropertyChanged(nameof(IsDecisionPage));
+        RefreshDecision();
+        return true;
+    }
+
+    public void CancelCorrection()
+    {
+        if (!IsCorrection || !CanEdit)
+            return;
+        _discarded = true;
+        _loaded = false;
+        Players.Clear();
+        DecisionPlayers.Clear();
+        OnPropertyChanged(nameof(CanEdit));
+        OnPropertyChanged(nameof(CanSubmit));
+    }
+
     private async Task LoadSessionAsync(Guid id, bool pointsPage, bool isCorrection, CancellationToken token)
     {
         // Returning from a confirmation or switching tabs must not reload a correction over its unsaved edits.

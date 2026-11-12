@@ -54,7 +54,7 @@ Da das lokale `ManualGameSession`-Modell einen `ScoringRulesSnapshot` besitzt, d
 - `CaptureWinner` genau dann, wenn `placementKind` nicht `none` ist; `CapturePlacements` genau bei `placements`.
 - `AllowTies` bei historisch vorhandenen Gleichständen passend setzen.
 - `ResultFromPoints = false`, `PointsDirection = null`: Es wird keine ursprüngliche automatische Ableitungsart oder Punkterichtung behauptet oder rekonstruiert.
-- Optionen für historische Startreihenfolge/Farben entsprechen den tatsächlich übertragenen optionalen Sessiondaten, soweit für einen konsistenten lokalen Konfigurationszustand benötigt.
+- Historische Startreihenfolge und Farben sind keine Felder des `ScoringRulesSnapshot`; sie werden ausschließlich aus den übertragenen Sessiondaten in den gemeinsamen Session-Tabellen wiederhergestellt.
 
 Dieser Snapshot ist ausschließlich ein **lokaler Rekonstruktionswert für bereits abgeschlossene importierte Partien**, nicht der nachgewiesene ursprüngliche Regelsnapshot. Die tatsächlichen Plätze, Punkte, Farben, Reihenfolge und die ausdrücklich übertragene Platzierungsart bleiben maßgeblich. Er wird nicht verwendet, um Ergebnisse erneut zu berechnen oder gegen heutige Spieleinstellungen einzuschränken. Insbesondere bleibt im Fall „alle Platz 1“ durch `CapturePlacements` die übertragene Unterscheidung auch nach einem erneuten Export und in der historischen Ergebniskorrektur erhalten.
 

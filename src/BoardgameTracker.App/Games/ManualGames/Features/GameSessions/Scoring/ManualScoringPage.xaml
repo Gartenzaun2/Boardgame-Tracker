@@ -31,13 +31,7 @@
                                                 </Label.Triggers>
                                             </Label>
                                         </VerticalStackLayout>
-                                        <Entry Grid.Column="1" Text="{Binding PointsText}" Keyboard="Numeric" TextChanged="OnPointsTextChanged" SemanticProperties.Description="{x:Static res:AppResources.ManualPointsLabel}" TextColor="{DynamicResource TextPrimary}" BackgroundColor="{DynamicResource Surface}">
-                                            <Entry.Triggers>
-                                                <DataTrigger TargetType="Entry" Binding="{Binding AllowNegativePoints}" Value="True">
-                                                    <Setter Property="Keyboard" Value="Default" />
-                                                </DataTrigger>
-                                            </Entry.Triggers>
-                                        </Entry>
+                                        <Entry Grid.Column="1" Text="{Binding PointsText}" Keyboard="Numeric" Loaded="OnPointsEntryReady" HandlerChanged="OnPointsEntryReady" TextChanged="OnPointsTextChanged" SemanticProperties.Description="{x:Static res:AppResources.ManualPointsLabel}" TextColor="{DynamicResource TextPrimary}" BackgroundColor="{DynamicResource Surface}" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

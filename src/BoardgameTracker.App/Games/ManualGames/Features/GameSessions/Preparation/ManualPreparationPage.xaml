@@ -16,7 +16,11 @@
             </controls:AppPageHeader>
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Padding="20,0" Spacing="12">
-                    <Label Text="{Binding LastSessionText}" LineBreakMode="WordWrap" />
+                    <Label Text="{x:Static res:AppResources.PreviousGameSection}" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                        <Image Source="icon_trophy.png" Style="{StaticResource NavigationChevron}" IsVisible="{Binding LastSessionHasWinners}" />
+                        <Label Grid.Column="1" Text="{Binding LastSessionText}" LineBreakMode="WordWrap" />
+                    </Grid>
                     <Button Text="{x:Static res:AppResources.RotateOrder}" Clicked="OnRotateClicked" IsVisible="{Binding CapturePlayerOrder}" Style="{StaticResource SecondaryActionButton}" />
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"><BindableLayout.ItemTemplate><DataTemplate x:DataType="rows:ManualParticipantViewModel">
     <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
@@ -42,17 +46,28 @@
             </VerticalStackLayout>
         </Grid>
         <Grid IsVisible="{Binding IsChoosingColor}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
-            <Border Style="{StaticResource CardBorder}" Padding="12">
-                <Grid RowDefinitions="Auto,*" RowSpacing="12">
+            <Border Style="{StaticResource SelectionDialog}">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="520">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                         <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnClosePaletteClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" Text="{Binding ColorPickerTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" LineBreakMode="WordWrap" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding ColorOptions}" SelectionMode="None">
                         <CollectionView.ItemTemplate><DataTemplate x:DataType="rows:ManualColorOption">
-                            <Border BackgroundColor="{Binding Background}" Padding="12" Margin="0,0,0,6" MinimumHeightRequest="48" Stroke="{Binding Text}" StrokeShape="RoundRectangle 10">
+                            <Border BackgroundColor="{DynamicResource Surface}" Padding="12" Margin="0,0,0,6" MinimumHeightRequest="48" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                                        <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                    </DataTrigger>
+                                </Border.Triggers>
                                 <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnColorTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
-                                <Grid ColumnDefinitions="*,Auto"><Label Text="{Binding Name}" TextColor="{Binding Text}" /><Label Grid.Column="1" Text="✓" TextColor="{Binding Text}" IsVisible="{Binding IsSelected}" /></Grid>
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <Border BackgroundColor="{Binding Background}" Stroke="{DynamicResource Outline}" WidthRequest="28" HeightRequest="28" StrokeShape="Ellipse" />
+                                    <Label Grid.Column="1" Text="{Binding Name}" TextColor="{DynamicResource TextPrimary}" VerticalOptions="Center" />
+                                    <Image Grid.Column="2" Source="icon_check.png" Style="{StaticResource NavigationChevron}" IsVisible="{Binding IsSelected}" />
+                                </Grid>
                             </Border>
                         </DataTemplate></CollectionView.ItemTemplate>
                     </CollectionView>
