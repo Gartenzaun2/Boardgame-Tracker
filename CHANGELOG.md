@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.2.0 – 2026-11-12
+
+- Android-Haupttabnavigation und betroffene MAUI-Event-/Dispatcher-Grenzen behandeln Navigationsfehler mit technischer Diagnose und lokalisierter Rückmeldung.
+- Arche-Nova-Partiestart, Wertungsbeginn und Verwerfen wiederholen nach erfolgreicher Speicherung bei Navigationsfehlern nur den Seitenwechsel.
+
 ## 0.22.1.1 – 2026-11-12
 
 - Native ManualGames-Tastaturkonfiguration ohne Verhaltensänderung aus der gemeinsamen Wertungsseite in Android-/iOS-Partial-Implementierungen ausgelagert.

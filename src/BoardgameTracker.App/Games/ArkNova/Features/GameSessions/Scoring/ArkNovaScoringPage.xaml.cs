@@ -220,7 +220,33 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
     private async void OnBackClicked(object? sender, EventArgs e)
     {
         if (_viewModel.IsScoringContentEnabled)
+            await ReturnAsync();
+    }
+
+    private async Task ReturnAsync()
+    {
+        if (_saving || !_viewModel.TryBeginNavigation())
+            return;
+        try
+        {
             await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..", false) : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not return from Ark Nova scoring.");
+            try
+            {
+                await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.NavigationFailed, AppResources.Ok);
+            }
+            catch (Exception dialogException)
+            {
+                _logger.LogError(dialogException, "Could not display the Ark Nova scoring navigation error.");
+            }
+        }
+        finally
+        {
+            _viewModel.EndNavigation();
+        }
     }
 
     protected override bool OnBackButtonPressed()
@@ -243,7 +269,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             return true;
         }
 
-        Dispatcher.Dispatch(async () => await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..", false) : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync()));
+        Dispatcher.Dispatch(async () => await ReturnAsync());
         return true;
     }
 }

@@ -4,6 +4,7 @@ using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Core.Games.ArkNova;
 using BoardgameTracker.Core.Players;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Preparation;
 
@@ -15,11 +16,15 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
 {
     private readonly ArkNovaPreparationViewModel _viewModel;
     private Guid _groupId;
+    private readonly ILogger<ArkNovaPreparationPage> _logger;
+    private Guid? _startedGameSessionId;
+    private bool _isStarting;
 
-    public ArkNovaPreparationPage(ArkNovaPreparationViewModel viewModel)
+    public ArkNovaPreparationPage(ArkNovaPreparationViewModel viewModel, ILogger<ArkNovaPreparationPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _logger = logger;
         BindingContext = _viewModel;
     }
 
@@ -171,38 +176,63 @@ public partial class ArkNovaPreparationPage : ContentPage, IQueryAttributable
 
     private async void OnStartClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.CanStart)
-        {
-            string message = _viewModel.Players
-                .Select(player => player.Color)
-                .Distinct()
-                .Count() != _viewModel.Players.Count
-                ? AppResources.UniqueColorsRequired
-                : AppResources.ZooPlanSelectionRequired;
-
-            await AppDialogPage.ShowAsync(this,
-                AppResources.StartValidationTitle,
-                message,
-                AppResources.Ok);
+        if (_isStarting || _viewModel.IsBusy)
             return;
-        }
-
-        Guid? gameSessionId = await _viewModel.StartAsync();
-
-        if (gameSessionId is null)
+        _isStarting = true;
+        try
         {
-            return;
-        }
-
-        if (Shell.Current is AppShell shell)
-        {
-            shell.CaptureGameSessionCaller(useRoot: true);
-            shell.RememberGameSession(gameSessionId.Value, ArkNovaGame.Key);
-        }
-
-        await Shell.Current.GoToAsync(nameof(ArkNovaRunningPage), false, new ShellNavigationQueryParameters
+            if (_startedGameSessionId is null && !_viewModel.CanStart)
             {
-                [NavigationParameters.GameSessionId] = gameSessionId.Value
-            });
+                string message = _viewModel.Players
+                    .Select(player => player.Color)
+                    .Distinct()
+                    .Count() != _viewModel.Players.Count
+                    ? AppResources.UniqueColorsRequired
+                    : AppResources.ZooPlanSelectionRequired;
+
+                await AppDialogPage.ShowAsync(this,
+                    AppResources.StartValidationTitle,
+                    message,
+                    AppResources.Ok);
+                return;
+            }
+
+            // Retain a successful start so a navigation retry never starts another session.
+            _startedGameSessionId ??= await _viewModel.StartAsync();
+            Guid? gameSessionId = _startedGameSessionId;
+
+            if (gameSessionId is null)
+            {
+                return;
+            }
+
+            if (Shell.Current is AppShell shell)
+            {
+                shell.CaptureGameSessionCaller(useRoot: true);
+                shell.RememberGameSession(gameSessionId.Value, ArkNovaGame.Key);
+            }
+
+            await Shell.Current.GoToAsync(nameof(ArkNovaRunningPage), false, new ShellNavigationQueryParameters
+                {
+                    [NavigationParameters.GameSessionId] = gameSessionId.Value
+                });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not open Ark Nova after starting. Persistence completed: {Persisted}.", _startedGameSessionId is not null);
+            try
+            {
+                await AppDialogPage.ShowAsync(this, AppResources.ArkNova,
+                    _startedGameSessionId is not null ? AppResources.NavigationAfterStartFailed : AppResources.StartGameFailed, AppResources.Ok);
+            }
+            catch (Exception dialogException)
+            {
+                _logger.LogError(dialogException, "Could not display the Ark Nova start navigation error.");
+            }
+        }
+        finally
+        {
+            _isStarting = false;
+        }
     }
 }

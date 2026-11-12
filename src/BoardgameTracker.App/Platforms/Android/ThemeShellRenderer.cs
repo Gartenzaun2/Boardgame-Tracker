@@ -4,6 +4,10 @@ using Google.Android.Material.BottomNavigation;
 using Microsoft.Maui.Controls.Handlers.Compatibility;
 using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
 namespace BoardgameTracker.App.Platforms.Android;
 
 public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context)
@@ -19,7 +23,26 @@ public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context)
             if (context.Shell is AppShell shell && item.ItemId >= 0 && item.ItemId < tabs.Count)
             {
                 ShellSection tab = tabs[item.ItemId];
-                shell.Dispatcher.Dispatch(async () => await shell.NavigateFromMainTabTapAsync(tab));
+                ILogger<ThemeShellRenderer> logger = shell.Handler!.MauiContext!.Services.GetRequiredService<ILogger<ThemeShellRenderer>>();
+                shell.Dispatcher.Dispatch(async () =>
+                {
+                    try
+                    {
+                        await shell.NavigateFromMainTabTapAsync(tab);
+                    }
+                    catch (Exception exception)
+                    {
+                        logger.LogError(exception, "Could not navigate from an Android main tab tap.");
+                        try
+                        {
+                            await AppDialogPage.ShowAsync(shell.CurrentPage, AppResources.NavigationErrorTitle, AppResources.NavigationFailed, AppResources.Ok);
+                        }
+                        catch (Exception dialogException)
+                        {
+                            logger.LogError(dialogException, "Could not display the main tab navigation error.");
+                        }
+                    }
+                });
                 return false;
             }
             return base.OnItemSelected(item);

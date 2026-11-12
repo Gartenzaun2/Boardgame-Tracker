@@ -1,0 +1,318 @@
+using System.Reflection;
+using System.Runtime.Loader;
+using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Resources.Localization;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace BoardgameTracker.Application.Tests.Presentation;
+
+public sealed class EventBoundaryTests
+{
+    [Fact]
+    public async Task StartedSession_NavigationRetryReusesSavedIdentityWithoutStartingAgain()
+    {
+        EventBoundaryTestHost page = Create("ArkNovaPreparationPage.xaml.cs");
+        page.Navigation.FailNavigation = true;
+        await page.InvokeAsync("OnStartClicked");
+        Assert.Equal(1, page.ViewModel.StartCalls);
+        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(page.Logger.Errors));
+        Assert.Equal(AppResources.NavigationAfterStartFailed, Assert.Single(page.Messages));
+
+        page.ViewModel.CanStart = false;
+        page.Navigation.FailNavigation = false;
+        await page.InvokeAsync("OnStartClicked");
+        Assert.Equal(1, page.ViewModel.StartCalls);
+        Assert.Equal(2, page.Navigation.Calls.Count);
+        Assert.All(page.Navigation.Calls, call =>
+        {
+            Assert.Equal("ArkNovaRunningPage", call.Route);
+            Assert.Equal(page.ViewModel.GameSessionId, call.Parameters![NavigationParameters.GameSessionId]);
+        });
+        Assert.Single(page.Messages);
+        Assert.Single(page.Logger.Errors);
+    }
+
+    [Theory]
+    [InlineData("OnEndClicked")]
+    [InlineData("OnDiscardClicked")]
+    public async Task RunningWrite_NavigationRetryDoesNotRepeatPersistedOperation(string action)
+    {
+        EventBoundaryTestHost page = Create("ArkNovaRunningPage.xaml.cs");
+        page.Navigation.FailNavigation = true;
+        await page.InvokeAsync(action);
+        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(page.Logger.Errors));
+        Assert.Equal(action == "OnEndClicked" ? AppResources.NavigationAfterScoringStartedFailed : AppResources.NavigationAfterDiscardFailed,
+            Assert.Single(page.Messages));
+
+        page.Navigation.FailNavigation = false;
+        await page.InvokeAsync(action);
+        Assert.Equal(action == "OnEndClicked" ? 1 : 0, page.ViewModel.EndCalls);
+        Assert.Equal(action == "OnDiscardClicked" ? 1 : 0, page.ViewModel.DiscardCalls);
+        Assert.Equal(action == "OnDiscardClicked" ? 1 : 0, page.ConfirmationCalls);
+        Assert.Equal(2, page.Navigation.Calls.Count);
+        Assert.All(page.Navigation.Calls, call => Assert.Equal(action == "OnEndClicked" ? "ArkNovaScoringPage" : "return", call.Route));
+        Assert.Single(page.Logger.Errors);
+        Assert.Single(page.Messages);
+    }
+
+    [Fact]
+    public async Task CancelledDiscard_DoesNotWriteAndReleasesGuardForNextAttempt()
+    {
+        EventBoundaryTestHost page = Create("ArkNovaRunningPage.xaml.cs");
+        page.ConfirmDiscard = false;
+        await page.InvokeAsync("OnDiscardClicked");
+        Assert.Equal(0, page.ViewModel.DiscardCalls);
+        Assert.Empty(page.Navigation.Calls);
+        Assert.Empty(page.Messages);
+        Assert.Empty(page.Logger.Errors);
+
+        page.ConfirmDiscard = true;
+        await page.InvokeAsync("OnDiscardClicked");
+        Assert.Equal(1, page.ViewModel.DiscardCalls);
+        Assert.Equal("return", Assert.Single(page.Navigation.Calls).Route);
+        Assert.Equal(2, page.ConfirmationCalls);
+    }
+
+    [Theory]
+    [InlineData("ArkNovaPreparationPage.xaml.cs", "OnStartClicked")]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnEndClicked")]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnDiscardClicked")]
+    public async Task HandledWriteFailure_DoesNotNavigateOrAddAnotherError(string source, string action)
+    {
+        EventBoundaryTestHost page = Create(source);
+        page.ViewModel.WriteSucceeds = false;
+        await page.InvokeAsync(action);
+        Assert.Empty(page.Navigation.Calls);
+        Assert.Empty(page.Logger.Errors);
+        Assert.Empty(page.Messages);
+
+        page.ViewModel.WriteSucceeds = true;
+        await page.InvokeAsync(action);
+        Assert.Single(page.Navigation.Calls);
+        Assert.Equal(2, page.ViewModel.StartCalls + page.ViewModel.EndCalls + page.ViewModel.DiscardCalls);
+    }
+
+    [Theory]
+    [InlineData("ArkNovaPreparationPage.xaml.cs", "OnStartClicked")]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnEndClicked")]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnDiscardClicked")]
+    public async Task ConcurrentTap_DoesNotDuplicateWriteOrNavigation(string source, string action)
+    {
+        EventBoundaryTestHost page = Create(source);
+        TaskCompletionSource gate = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        page.ViewModel.WriteGate = gate.Task;
+        Task first = page.InvokeAsync(action);
+        Assert.False(first.IsCompleted);
+        await page.InvokeAsync(action);
+        gate.SetResult();
+        await first;
+        Assert.Equal(1, page.ViewModel.StartCalls + page.ViewModel.EndCalls + page.ViewModel.DiscardCalls);
+        Assert.Single(page.Navigation.Calls);
+    }
+
+    [Theory]
+    [InlineData("AppSettingsPage.xaml.cs", "OnMyGamesClicked", "MyGamesPage", false)]
+    [InlineData("AppSettingsPage.xaml.cs", "OnLicensesClicked", "LicenseListPage", false)]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnBackClicked", "return", false)]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnBackButtonPressed", "return", false)]
+    [InlineData("ArkNovaScoringPage.xaml.cs", "OnBackClicked", "return", false)]
+    [InlineData("ArkNovaScoringPage.xaml.cs", "OnBackButtonPressed", "return", false)]
+    [InlineData("ArkNovaScoringPage.xaml.cs", "OnBackButtonPressed", "..", true)]
+    [InlineData("AndroidThemeShellRenderer.cs", "AndroidTapAsync", "tab", false)]
+    public async Task NavigationBoundary_LogsShowsErrorAndAllowsRetry(string source, string action, string route, bool historical)
+    {
+        EventBoundaryTestHost page = Create(source);
+        page.ViewModel.IsHistorical = historical;
+        page.Navigation.FailNavigation = true;
+        await page.InvokeAsync(action);
+        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(page.Logger.Errors));
+        Assert.Equal(AppResources.NavigationFailed, Assert.Single(page.Messages));
+
+        page.Navigation.FailNavigation = false;
+        await page.InvokeAsync(action);
+        Assert.Equal(2, page.Navigation.Calls.Count);
+        Assert.All(page.Navigation.Calls, call => Assert.Equal(route, call.Route));
+        Assert.Single(page.Messages);
+        Assert.Single(page.Logger.Errors);
+        Assert.False(page.ViewModel.IsBusy);
+    }
+
+    [Theory]
+    [InlineData("ArkNovaPreparationPage.xaml.cs", "OnStartClicked")]
+    [InlineData("ArkNovaRunningPage.xaml.cs", "OnEndClicked")]
+    [InlineData("ArkNovaScoringPage.xaml.cs", "OnBackButtonPressed")]
+    [InlineData("AppSettingsPage.xaml.cs", "OnLicensesClicked")]
+    [InlineData("AndroidThemeShellRenderer.cs", "AndroidTapAsync")]
+    public async Task ErrorDialogFailure_IsLoggedWithoutEscapingBoundary(string source, string action)
+    {
+        EventBoundaryTestHost page = Create(source);
+        page.Navigation.FailNavigation = true;
+        page.FailErrorDialog = true;
+        await page.InvokeAsync(action);
+        Assert.Equal(2, page.Logger.Errors.Count);
+        Assert.Same(page.Navigation.NavigationFailure, page.Logger.Errors[0]);
+        Assert.Same(page.DialogFailure, page.Logger.Errors[1]);
+        Assert.Single(page.Messages);
+    }
+
+    private static EventBoundaryTestHost Create(string file)
+    {
+        Assembly assembly = typeof(EventBoundaryTests).Assembly;
+        string resource = assembly.GetManifestResourceNames().Single(name => name.EndsWith(file, StringComparison.Ordinal)
+            && (name.StartsWith("PresentationBoundary.", StringComparison.Ordinal) || name.StartsWith("EventBoundary.", StringComparison.Ordinal)));
+        using StreamReader reader = new(assembly.GetManifestResourceStream(resource)!);
+        SyntaxNode root = CSharpSyntaxTree.ParseText(reader.ReadToEnd()).GetRoot();
+        string[] names = file switch
+        {
+            "ArkNovaPreparationPage.xaml.cs" => ["OnStartClicked"],
+            "ArkNovaRunningPage.xaml.cs" => ["OnBackClicked", "OnBackButtonPressed", "ReturnAsync", "OnEndClicked", "OnDiscardClicked", "ShowNavigationErrorAsync"],
+            "ArkNovaScoringPage.xaml.cs" => ["OnBackClicked", "OnBackButtonPressed", "ReturnAsync"],
+            _ => ["OnMyGamesClicked", "OnLicensesClicked", "ShowNavigationErrorAsync"]
+        };
+        IEnumerable<string> fields = root.DescendantNodes().OfType<FieldDeclarationSyntax>()
+            .Where(field => field.Declaration.Type.ToString() is "bool" or "Guid?").Select(field => field.ToFullString());
+        IEnumerable<string> methods = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(method => names.Contains(method.Identifier.ValueText)).Select(method =>
+            {
+                // Await the original event body deterministically, without a native UI loop.
+                if (method.Modifiers.Any(SyntaxKind.AsyncKeyword) && method.ReturnType.ToString() == "void")
+                    method = method.WithReturnType(SyntaxFactory.ParseTypeName("Task").WithTrailingTrivia(SyntaxFactory.Space));
+                method = method.WithModifiers(SyntaxFactory.TokenList(method.Modifiers.Where(token => !token.IsKind(SyntaxKind.OverrideKeyword))));
+                return method.ToFullString();
+            });
+        if (file == "AndroidThemeShellRenderer.cs")
+        {
+            BlockSyntax body = root.DescendantNodes().OfType<ParenthesizedLambdaExpressionSyntax>()
+                .Single(lambda => lambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword)).Block!;
+            methods = ["private async Task AndroidTapAsync() { var shell = Navigation; var logger = Logger; object tab = new(); " + body.ToFullString() + " }"];
+        }
+        string code = """
+            using System;
+            using System.Collections.Generic;
+            using System.Linq;
+            using System.Threading.Tasks;
+            using BoardgameTracker.App.Navigation;
+            using BoardgameTracker.App.Resources.Localization;
+            using BoardgameTracker.Core.Games.ArkNova;
+            using BoardgameTracker.Application.Tests.Presentation;
+            using Shell = BoardgameTracker.Application.Tests.Presentation.BoundaryShell;
+            using AppShell = BoardgameTracker.Application.Tests.Presentation.BoundaryShell;
+            using AppDialogPage = BoardgameTracker.Application.Tests.Presentation.BoundaryDialogs;
+            using ShellNavigationQueryParameters = System.Collections.Generic.Dictionary<string, object>;
+            public sealed class Handler : EventBoundaryTestHost
+            {
+            """ + string.Join("\n", fields.Concat(methods)) + """
+            }
+            public sealed class ArkNovaRunningPage;
+            public sealed class ArkNovaScoringPage;
+            public sealed class MyGamesPage;
+            public sealed class LicenseListPage;
+            """;
+        string[] paths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator);
+        MetadataReference[] references = paths.Append(assembly.Location).Distinct()
+            .Select(path => MetadataReference.CreateFromFile(path)).ToArray();
+        using StreamReader parametersReader = new(assembly.GetManifestResourceStream("LicenseNavigation.NavigationParameters.cs")!);
+        CSharpCompilation compilation = CSharpCompilation.Create("EventBoundary_" + Guid.NewGuid().ToString("N"),
+            [CSharpSyntaxTree.ParseText(code), CSharpSyntaxTree.ParseText(parametersReader.ReadToEnd())], references,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        using MemoryStream output = new();
+        var result = compilation.Emit(output);
+        Assert.True(result.Success, string.Join(Environment.NewLine, result.Diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)));
+        output.Position = 0;
+        Assembly compiled = AssemblyLoadContext.Default.LoadFromStream(output);
+        EventBoundaryTestHost page = (EventBoundaryTestHost)Activator.CreateInstance(compiled.GetType("Handler")!)!;
+        BoundaryShell.Current = page.Navigation;
+        page.Navigation.CurrentPage = page;
+        return page;
+    }
+}
+
+// Only the platform/UI dependencies are doubles; the executed action bodies and guards come from embedded production source.
+public class EventBoundaryTestHost
+{
+    public BoundaryViewModel ViewModel { get; } = new();
+    public BoundaryLogger Logger { get; } = new();
+    public BoundaryShell Navigation { get; } = new();
+    public BoundaryDispatcher Dispatcher { get; } = new();
+    public List<string> Messages { get; } = [];
+    public int ConfirmationCalls { get; set; }
+    public bool ConfirmDiscard { get; set; } = true;
+    public bool FailErrorDialog { get; set; }
+    public Exception DialogFailure { get; } = new InvalidOperationException("Dialog unavailable");
+    protected BoundaryViewModel _viewModel => ViewModel;
+    protected BoundaryLogger _logger => Logger;
+    public async Task InvokeAsync(string method)
+    {
+        MethodInfo action = GetType().GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance)!;
+        object? result = action.Invoke(this, action.GetParameters().Length == 0 ? null : [null, EventArgs.Empty]);
+        if (result is Task task) await task;
+        else await Dispatcher.Pending;
+    }
+}
+
+public sealed class BoundaryViewModel
+{
+    public bool CanStart { get; set; } = true;
+    public bool IsBusy { get; set; }
+    public bool IsHistorical { get; set; }
+    public bool IsScoringContentEnabled => !IsBusy;
+    public bool IsIdle => !IsBusy;
+    public bool IsSpecialCardPickerVisible => false;
+    public bool IsPhotoSourceVisible => false;
+    public bool IsPhotoReviewVisible => false;
+    public void CloseSpecialCardPicker() { }
+    public void ClosePhotoSource() { }
+    public Task CancelPhotoReviewAsync() => Task.CompletedTask;
+    public bool TryBeginNavigation() { if (IsBusy) return false; IsBusy = true; return true; }
+    public void EndNavigation() => IsBusy = false;
+    public List<BoundaryPlayer> Players { get; } = [];
+    public Guid GameSessionId { get; } = Guid.NewGuid();
+    public bool WriteSucceeds { get; set; } = true;
+    public Task WriteGate { get; set; } = Task.CompletedTask;
+    public int StartCalls { get; private set; }
+    public int EndCalls { get; private set; }
+    public int DiscardCalls { get; private set; }
+    public async Task<Guid?> StartAsync() { StartCalls++; await WriteGate; return WriteSucceeds ? GameSessionId : null; }
+    public async Task<bool> BeginScoringAsync() { EndCalls++; await WriteGate; return WriteSucceeds; }
+    public async Task<bool> DiscardAsync() { DiscardCalls++; await WriteGate; return WriteSucceeds; }
+}
+public sealed class BoundaryPlayer { public int Color => 0; }
+public sealed class BoundaryLogger
+{
+    public List<Exception> Errors { get; } = [];
+    public void LogError(Exception exception, string message, params object[] args) => Errors.Add(exception);
+}
+public sealed class BoundaryShell
+{
+    public static BoundaryShell Current { get; set; } = null!;
+    public EventBoundaryTestHost CurrentPage { get; set; } = null!;
+    public bool FailNavigation { get; set; }
+    public Exception NavigationFailure { get; } = new InvalidOperationException("Navigation unavailable");
+    public List<(string Route, Dictionary<string, object>? Parameters)> Calls { get; } = [];
+    public Task GoToAsync(string route, bool animate, Dictionary<string, object>? parameters = null)
+    {
+        Calls.Add((route, parameters));
+        return FailNavigation ? Task.FromException(NavigationFailure) : Task.CompletedTask;
+    }
+    public Task ReturnToGameSessionCallerAsync() => GoToAsync("return", false);
+    public Task NavigateFromMainTabTapAsync(object tab) => GoToAsync("tab", false);
+    public void CaptureGameSessionCaller(bool useRoot) { }
+    public void RememberGameSession(Guid id, string key) { }
+}
+public sealed class BoundaryDispatcher
+{
+    public Task Pending { get; private set; } = Task.CompletedTask;
+    public void Dispatch(Func<Task> callback) => Pending = callback();
+}
+public static class BoundaryDialogs
+{
+    public static Task<bool> ShowAsync(object owner, string title, string message, string accept, string? cancel = null, bool destructive = false)
+    {
+        EventBoundaryTestHost page = (EventBoundaryTestHost)owner;
+        if (cancel is not null) { page.ConfirmationCalls++; return Task.FromResult(page.ConfirmDiscard); }
+        page.Messages.Add(message);
+        return page.FailErrorDialog ? Task.FromException<bool>(page.DialogFailure) : Task.FromResult(true);
+    }
+}

@@ -738,6 +738,21 @@
   <data name="SpecialCardUsageHint" xml:space="preserve">
     <value>Spezialkarten können Spielern in einer Partie zugeordnet werden. So bleibt nachvollziehbar, wer welche Karte in welcher Partie hatte. Diese Angaben können später ausgewertet werden.</value>
   </data>
+  <data name="NavigationErrorTitle" xml:space="preserve">
+    <value>Ansicht nicht geöffnet</value>
+  </data>
+  <data name="NavigationFailed" xml:space="preserve">
+    <value>Die gewünschte Ansicht konnte nicht geöffnet werden. Bitte erneut versuchen.</value>
+  </data>
+  <data name="NavigationAfterStartFailed" xml:space="preserve">
+    <value>Die Partie wurde gestartet und gespeichert. Die Partieansicht konnte nicht geöffnet werden. Bitte erneut auf Starten tippen, um die gespeicherte Partie zu öffnen.</value>
+  </data>
+  <data name="NavigationAfterScoringStartedFailed" xml:space="preserve">
+    <value>Die Partie wurde beendet und der Wertungsbeginn gespeichert. Die Wertung konnte nicht geöffnet werden. Bitte erneut auf Partie beenden tippen, um die Wertung zu öffnen.</value>
+  </data>
+  <data name="NavigationAfterDiscardFailed" xml:space="preserve">
+    <value>Die Partie wurde verworfen. Die vorherige Ansicht konnte nicht geöffnet werden. Bitte erneut zurückgehen.</value>
+  </data>
   <data name="NavigationAfterSaveFailed" xml:space="preserve">
     <value>Die Wertung wurde gespeichert. Die nächste Ansicht konnte nicht geöffnet werden. Bitte zurückgehen und die Partie erneut öffnen.</value>
   </data>

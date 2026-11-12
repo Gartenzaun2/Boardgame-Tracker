@@ -4,6 +4,7 @@ using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.App.Features.Settings.Licenses;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.AppSettings;
 
@@ -12,13 +13,15 @@ public partial class AppSettingsPage : ContentPage
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly BoardgameTracker.App.Theming.ThemeManager _themes;
     private bool _choosing;
+    private readonly ILogger<AppSettingsPage> _logger;
 
-    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes)
+    public AppSettingsPage(IAppNavigationSettingsStore navigationSettingsStore, BoardgameTracker.App.Theming.ThemeManager themes, ILogger<AppSettingsPage> logger)
     {
         InitializeComponent();
         AppVersionLabel.Text = string.Format(AppResources.AppVersionFormat, AppInfo.Current.VersionString, AppInfo.Current.BuildString);
         _navigationSettingsStore = navigationSettingsStore;
         _themes = themes;
+        _logger = logger;
 
 
     }
@@ -58,6 +61,11 @@ public partial class AppSettingsPage : ContentPage
         {
             await Shell.Current.GoToAsync(nameof(MyGamesPage), false);
         }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not open game management.");
+            await ShowNavigationErrorAsync();
+        }
         finally
         {
             _choosing = false;
@@ -73,9 +81,26 @@ public partial class AppSettingsPage : ContentPage
         {
             await Shell.Current.GoToAsync(nameof(LicenseListPage), false);
         }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not open third-party licenses.");
+            await ShowNavigationErrorAsync();
+        }
         finally
         {
             _choosing = false;
+        }
+    }
+
+    private async Task ShowNavigationErrorAsync()
+    {
+        try
+        {
+            await AppDialogPage.ShowAsync(this, AppResources.AppSettingsTitle, AppResources.NavigationFailed, AppResources.Ok);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Could not display the settings navigation error.");
         }
     }
 

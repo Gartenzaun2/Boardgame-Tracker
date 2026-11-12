@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Platforms/Android/ThemeShellRenderer.cs" LogicalName="EventBoundary.AndroidThemeShellRenderer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Use the C# parser shipped with the SDK; no additional NuGet dependency. -->
     <Reference Include="Microsoft.CodeAnalysis" HintPath="$(MSBuildToolsPath)/Roslyn/bincore/Microsoft.CodeAnalysis.dll" />
     <Reference Include="Microsoft.CodeAnalysis.CSharp" HintPath="$(MSBuildToolsPath)/Roslyn/bincore/Microsoft.CodeAnalysis.CSharp.dll" />
