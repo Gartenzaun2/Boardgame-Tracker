@@ -10,17 +10,21 @@ public sealed class RunningGameSessionUseCase(IDbContextFactory<BoardgameTracker
     public async Task BeginScoringAsync(Guid gameSessionId, DateTimeOffset endedAt, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         GameSession gameSession = await GetRunningGameSessionAsync(db, gameSessionId, cancellationToken);
         gameSession.BeginScoring(endedAt);
         await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task DiscardAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
     {
         await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         GameSession gameSession = await GetRunningGameSessionAsync(db, gameSessionId, cancellationToken);
         db.GameSessions.Remove(gameSession);
         await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 
     private static async Task<GameSession> GetRunningGameSessionAsync(BoardgameTrackerDbContext db,

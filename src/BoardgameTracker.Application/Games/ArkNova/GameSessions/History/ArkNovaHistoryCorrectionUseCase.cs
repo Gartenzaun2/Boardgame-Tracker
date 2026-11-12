@@ -81,15 +81,21 @@ public sealed class ArkNovaHistoryCorrectionUseCase(IDbContextFactory<BoardgameT
         }
         ArkNovaGameSessionSpecialCardAssignment[] existingCards = await dbContext.ArkNovaGameSessionSpecialCardAssignments.AsNoTracking()
             .Where(c => c.GameSessionId == gameSession.Id).ToArrayAsync(cancellationToken);
+        Guid[] requestedCards = resultData.SpecialCards.Select(assignment => assignment.SpecialCardId).Distinct().ToArray();
+        HashSet<Guid> activeCards = [];
+        if (requestedCards.Length > 0)
+            activeCards = (await dbContext.ArkNovaSpecialCards.Where(card => requestedCards.Contains(card.Id) && !card.IsArchived)
+                .Select(card => card.Id).ToArrayAsync(cancellationToken)).ToHashSet();
         foreach (ArkNovaSpecialCardAssignmentData assignment in resultData.SpecialCards)
         {
-            bool active = await dbContext.ArkNovaSpecialCards.AnyAsync(c => c.Id == assignment.SpecialCardId && !c.IsArchived, cancellationToken);
+            bool active = activeCards.Contains(assignment.SpecialCardId);
             bool retained = existingCards.Any(c => c.PlayerId == assignment.PlayerId && c.SpecialCardId == assignment.SpecialCardId);
             if (!active && !retained)
                 throw new InvalidOperationException("Archived cards cannot be newly assigned.");
         }
         await dbContext.ArkNovaGameSessionSpecialCardAssignments.Where(c => c.GameSessionId == gameSession.Id).ExecuteDeleteAsync(cancellationToken);
         dbContext.ArkNovaGameSessionSpecialCardAssignments.AddRange(resultData.SpecialCards.Select(c => new ArkNovaGameSessionSpecialCardAssignment(gameSession.Id, c.PlayerId, c.SpecialCardId)));
+        gameSession.RecordHistoricalCorrection(DateTimeOffset.UtcNow);
         await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }

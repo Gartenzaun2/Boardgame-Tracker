@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.4.0 – 2026-11-12
+
+- Historische Arche-Nova-Korrekturen aktualisieren den Änderungszeitpunkt atomar mit Ergebnisdaten und Karten; der History-Export übernimmt den korrigierten Zeitwert.
+- Arche-Nova-Wertungszugriffe und die zugehörigen Running-Übergänge prüfen Status und Schreibdaten innerhalb derselben Transaktion. Veraltete Operationen können abgeschlossene Partien nicht nachträglich verändern, löschen oder wieder öffnen.
+- Reine Statusprüfungen laden keine vollständigen Ergebnis-Read-Models mehr; historische Kartenprüfungen werden gesammelt ausgeführt.
+
 ## 0.22.3.0 – 2026-11-12
 
 - Sessionöffnung, Haupttab- und Spielwechsel übernehmen Navigationszustand erst nach erreichtem Ziel; Fehler mit teilweise verändertem Shell-Stack behalten den tatsächlich erreichten Kontext ohne UI-Rollback.
