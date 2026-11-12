@@ -64,7 +64,7 @@ public sealed class PhotoRecognitionTests
         ArkNovaPhotoReviewPlayer review = new(database.First.Id, "Anna", 70, 20, 8, true, result.Colors["red"]);
         Assert.Equal("63", review.AttractivenessText);
         review.AttractivenessText = "67";
-        await Task.Delay(600, Token); // Past the existing manual editor's autosave debounce.
+        // The detached proposal changes synchronously and has no queued save to await.
         await using (var context = database.CreateDbContext())
             Assert.Equal(70, (await context.ArkNovaGameSessionPlayers.SingleAsync(Token)).Attractiveness);
         Assert.True(review.TryRead(out ArkNovaConfirmedPhotoScore? confirmed));

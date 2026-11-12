@@ -4,7 +4,6 @@ using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Application.History;
 using BoardgameTracker.App.Features.Players.EditPlayer;
 using BoardgameTracker.App.Features.Players.ListPlayers;
-using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Players;
 using BoardgameTracker.Core.GameSessions;
 using BoardgameTracker.Core.Games;
@@ -114,22 +113,17 @@ public sealed class PlayerManagementTests
     }
 
     [Fact]
-    public async Task Management_FiltersPlayersAndSwitchesSegmentsWithoutOpeningSessions()
+    public async Task Management_FiltersPlayersAndSwitchesSegments()
     {
         await using Database database = await Database.CreateAsync();
-        HistoryHandler matching = new("test-game");
-        HistoryHandler other = new("other-game");
         PlayerListViewModel viewModel = new(database.Query, new(database), NullLogger<PlayerListViewModel>.Instance);
         await viewModel.LoadAsync(Token);
         Assert.False(viewModel.IncludeGuests);
         Assert.False(viewModel.IncludeArchived);
-        Assert.Empty(matching.Opened);
-        Assert.Empty(matching.Opened);
         viewModel.SelectGroups();
         Assert.True(viewModel.ShowGroups);
         viewModel.SelectPlayers();
         Assert.True(viewModel.ShowPlayers);
-        Assert.Empty(other.Opened);
         viewModel.IncludeGuests = true;
         viewModel.IncludeArchived = true;
         await viewModel.LoadAsync(Token);
@@ -147,21 +141,6 @@ public sealed class PlayerManagementTests
             using Stream stream = assembly.GetManifestResourceStream(resource)!;
             using StreamReader reader = new(stream);
             Assert.DoesNotContain("ArkNova", reader.ReadToEnd(), StringComparison.Ordinal);
-        }
-    }
-
-    private sealed class HistoryHandler(string key) : IGameSessionNavigationHandler
-    {
-        public string GameKey => key;
-        public bool CanHandle(string gameKey) => gameKey == key;
-        public string DisplayName => key;
-        public string BadgeText => DisplayName;
-        public Task OpenGroupAsync(string gameKey, Guid groupId, Guid? openGameSessionId, GameSessionStatus? openGameSessionStatus) => throw new NotSupportedException();
-        public List<Guid> Opened { get; } = [];
-        public Task OpenGameSessionAsync(Guid gameSessionId)
-        {
-            Opened.Add(gameSessionId);
-            return Task.CompletedTask;
         }
     }
 

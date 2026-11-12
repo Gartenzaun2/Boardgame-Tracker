@@ -140,15 +140,15 @@ public sealed class ManualSessionTests
     }
 
     [Theory]
-    [InlineData("membership")]
-    [InlineData("duplicate-player")]
-    [InlineData("mixed-order")]
-    [InlineData("duplicate-order")]
-    [InlineData("duplicate-color")]
-    [InlineData("invalid-color")]
-    [InlineData("changed-order-setting")]
-    [InlineData("changed-color-setting")]
-    public async Task InvalidDraft_StartWritesNoSessionOrDefaults(string invalid)
+    [InlineData("membership", typeof(InvalidOperationException))]
+    [InlineData("duplicate-player", typeof(InvalidOperationException))]
+    [InlineData("mixed-order", typeof(ArgumentException))]
+    [InlineData("duplicate-order", typeof(ArgumentException))]
+    [InlineData("duplicate-color", typeof(ArgumentException))]
+    [InlineData("invalid-color", typeof(ArgumentOutOfRangeException))]
+    [InlineData("changed-order-setting", typeof(InvalidOperationException))]
+    [InlineData("changed-color-setting", typeof(InvalidOperationException))]
+    public async Task InvalidDraft_StartWritesNoSessionOrDefaults(string invalid, Type expectedException)
     {
         await using Fixture fixture = await Fixture.CreateAsync();
         StartManualGameSessionCommand command = await fixture.CommandAsync();
@@ -170,7 +170,7 @@ public sealed class ManualSessionTests
                     CapturePlayerColors: invalid != "changed-color-setting"));
             await db.SaveChangesAsync(Token);
         }
-        await Assert.ThrowsAnyAsync<Exception>(() => fixture.Start.StartAsync(command, Token));
+        await Assert.ThrowsAsync(expectedException, () => fixture.Start.StartAsync(command, Token));
         await using BoardgameTrackerDbContext verify = fixture.Database.CreateDbContext();
         Assert.Empty(await verify.GameSessions.ToArrayAsync(Token));
         Assert.Empty(await verify.ManualGameSessions.ToArrayAsync(Token));

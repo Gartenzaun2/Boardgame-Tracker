@@ -204,10 +204,19 @@ public sealed class NumberWheelTests
         ArkNovaPlayerScoringViewModel viewModel = new(new(data, new(data, TestGameContent.Create())), new SettingsStore(), NullLogger<ArkNovaPlayerScoringViewModel>.Instance);
         CancellationToken token = TestContext.Current.CancellationToken;
         await viewModel.LoadAsync(data.GameSessionId, data.PlayerId, token);
+        await using (BoardgameTrackerDbContext before = data.CreateDbContext())
+            Assert.Equal(70, (await before.ArkNovaGameSessionPlayers.SingleAsync(token)).Attractiveness);
+        viewModel.AttractivenessValue = 90;
         await Assert.ThrowsAsync<InvalidOperationException>(() => viewModel.FlushAsync(token));
         Assert.False(viewModel.IsBusy);
+        Assert.Equal(90, viewModel.AttractivenessValue);
+        await using (BoardgameTrackerDbContext failed = data.CreateDbContext())
+            Assert.Equal(70, (await failed.ArkNovaGameSessionPlayers.SingleAsync(token)).Attractiveness);
         await viewModel.FlushAsync(token);
         Assert.Equal(2, data.SaveCount);
+        Assert.False(viewModel.IsBusy);
+        await using (BoardgameTrackerDbContext retried = data.CreateDbContext())
+            Assert.Equal(90, (await retried.ArkNovaGameSessionPlayers.SingleAsync(token)).Attractiveness);
     }
 
     private sealed class ScoringDatabase : IDbContextFactory<BoardgameTrackerDbContext>, IAsyncDisposable

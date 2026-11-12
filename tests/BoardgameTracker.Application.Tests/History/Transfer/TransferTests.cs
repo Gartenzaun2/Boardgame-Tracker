@@ -105,10 +105,17 @@ public sealed class TransferTests
     [Fact]
     public async Task FormatRejectsVersionsEncodingPropertiesAndLimits()
     {
-        foreach (string json in new[] { "{\"formatVersion\":2}", "{\"formatVersion\":0}", "{\"formatVersion\":1,\"formatVersion\":1}" })
+        foreach ((string json, bool updateRequired) in new[]
+        {
+            ("{\"formatVersion\":2}", true),
+            ("{\"formatVersion\":0}", true),
+            ("{\"formatVersion\":1,\"formatVersion\":1}", false)
+        })
         {
             using MemoryStream stream = new(Encoding.UTF8.GetBytes(json));
-            await Assert.ThrowsAnyAsync<Exception>(() => Format.ReadAsync(stream, Token));
+            InvalidDataException exception = await Assert.ThrowsAsync<InvalidDataException>(() => Format.ReadAsync(stream, Token));
+            if (updateRequired)
+                Assert.Equal("UpdateRequired", exception.Message);
         }
         using MemoryStream invalidUtf8 = new([0xff, 0xfe]);
         await Assert.ThrowsAsync<DecoderFallbackException>(() => Format.ReadAsync(invalidUtf8, Token));

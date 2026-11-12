@@ -110,32 +110,32 @@ public sealed class ManualTransferTests
     }
 
     [Theory]
-    [InlineData("placementKind-missing")]
-    [InlineData("placementKind-null")]
-    [InlineData("placementKind-unknown")]
-    [InlineData("placementKind-mismatch")]
-    [InlineData("points-missing")]
-    [InlineData("points-partial")]
-    [InlineData("points-overflow")]
-    [InlineData("points-fraction")]
-    [InlineData("color-missing")]
-    [InlineData("color-partial")]
-    [InlineData("color-duplicate")]
-    [InlineData("color-invalid")]
-    [InlineData("extra-session")]
-    [InlineData("extra-game")]
-    [InlineData("missing-game-field")]
-    [InlineData("wrong-version")]
-    [InlineData("wrong-format")]
-    [InlineData("unknown-key")]
-    [InlineData("mixed-order")]
-    [InlineData("missing-placement")]
-    [InlineData("invalid-placement")]
-    [InlineData("partial-placements")]
-    [InlineData("foreign-player")]
-    [InlineData("duplicate-player")]
-    [InlineData("inconsistent-options")]
-    public async Task StrictReading_RejectsInvalidPayloadBeforeAnyWrites(string invalid)
+    [InlineData("placementKind-missing", typeof(JsonException))]
+    [InlineData("placementKind-null", typeof(JsonException))]
+    [InlineData("placementKind-unknown", typeof(InvalidDataException))]
+    [InlineData("placementKind-mismatch", typeof(InvalidDataException))]
+    [InlineData("points-missing", typeof(JsonException))]
+    [InlineData("points-partial", typeof(ArgumentException))]
+    [InlineData("points-overflow", typeof(JsonException))]
+    [InlineData("points-fraction", typeof(JsonException))]
+    [InlineData("color-missing", typeof(JsonException))]
+    [InlineData("color-partial", typeof(InvalidDataException))]
+    [InlineData("color-duplicate", typeof(InvalidDataException))]
+    [InlineData("color-invalid", typeof(InvalidDataException))]
+    [InlineData("extra-session", typeof(JsonException))]
+    [InlineData("extra-game", typeof(JsonException))]
+    [InlineData("missing-game-field", typeof(JsonException))]
+    [InlineData("wrong-version", typeof(InvalidDataException))]
+    [InlineData("wrong-format", typeof(InvalidDataException))]
+    [InlineData("unknown-key", typeof(InvalidDataException))]
+    [InlineData("mixed-order", typeof(InvalidDataException))]
+    [InlineData("missing-placement", typeof(JsonException))]
+    [InlineData("invalid-placement", typeof(InvalidDataException))]
+    [InlineData("partial-placements", typeof(ArgumentException))]
+    [InlineData("foreign-player", typeof(InvalidDataException))]
+    [InlineData("duplicate-player", typeof(InvalidDataException))]
+    [InlineData("inconsistent-options", typeof(InvalidDataException))]
+    public async Task StrictReading_RejectsInvalidPayloadBeforeAnyWrites(string invalid, Type expectedException)
     {
         JsonNode file = JsonNode.Parse(JsonSerializer.Serialize(File(), BgtFormat.JsonOptions))!;
         JsonObject game = file["games"]![0]!["data"]!.AsObject();
@@ -171,7 +171,11 @@ public sealed class ManualTransferTests
             case "inconsistent-options": game["allowNegativePoints"] = true; break;
         }
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        await Assert.ThrowsAnyAsync<Exception>(() => new HistoryTransferUseCase(Store(db), Format).AnalyzeAsync(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(file.ToJsonString())), Token));
+        using MemoryStream stream = new(System.Text.Encoding.UTF8.GetBytes(file.ToJsonString()));
+        Exception exception = await Assert.ThrowsAsync(expectedException,
+            () => new HistoryTransferUseCase(Store(db), Format).AnalyzeAsync(stream, Token));
+        if (invalid is "wrong-version" or "wrong-format" or "unknown-key")
+            Assert.Equal("UpdateRequired", exception.Message);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
         Assert.Empty(await verify.GameSessions.ToArrayAsync(Token));

@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.4.2 – 2026-11-13
+
+- Alle 42 Arche-Nova-Wertungspositionen werden anhand unabhängiger Regelreferenzen geprüft; der Speicher-Retry-Test weist erhaltene Eingaben und den tatsächlich gespeicherten Wert nach.
+- Negativtests unterscheiden erwartete Validierungsfehler von technischen Exceptions. Wirkungslose Navigations-Doubles und die unnötige Wartezeit beim synchronen Fotoentwurf entfallen.
+
 ## 0.22.4.1 – 2026-11-12
 
 - Plattformspezifische ManualGames-Tastaturimplementierungen liegen im Spielmodul und werden ausdrücklich nur für ihre jeweilige Zielplattform kompiliert.
