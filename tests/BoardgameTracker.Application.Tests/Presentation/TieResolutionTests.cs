@@ -25,6 +25,82 @@ public sealed class TieResolutionTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Theory]
+    [InlineData(NavigationFailurePoint.Before, false)]
+    [InlineData(NavigationFailurePoint.Before, true)]
+    [InlineData(NavigationFailurePoint.After, false)]
+    [InlineData(NavigationFailurePoint.After, true)]
+    public async Task FailedSessionEntry_PreservesOldContextOrCommitsReachedSession(NavigationFailurePoint point, bool fromGroup)
+    {
+        await using TieDatabase database = await TieDatabase.CreateAsync(running: true);
+        var store = new MainSectionNavigationTests.SettingsStore();
+        var shell = MainSectionNavigationTests.CreateShell(store, database);
+        Shell.Current = shell;
+        await shell.NavigateToMainSectionAsync(BoardgameTracker.Application.Settings.Navigation.AppMainSection.History);
+        Page history = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        shell.CaptureGameSessionCaller();
+        shell.RememberGameSession(Guid.NewGuid(), "previous-game");
+        await shell.GoToAsync("PreviousSession");
+        Page previousSession = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        var before = store.Value;
+        var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));
+        Func<Task> open = fromGroup
+            ? () => handler.OpenGroupAsync(ArkNovaGame.Key, database.Session.GroupId, database.Session.Id, GameSessionStatus.Running)
+            : () => handler.OpenGameSessionAsync(database.Session.Id);
+        shell.FailNextNavigation = point;
+        await Assert.ThrowsAsync<InvalidOperationException>(open);
+        if (point == NavigationFailurePoint.Before)
+        {
+            Assert.Equal(before, store.Value);
+            Assert.Same(previousSession, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(history, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+            await open();
+            Assert.Equal(database.Session.Id, store.Value.LastGameSessionId);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(history, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        }
+        else
+        {
+            Assert.Equal(database.Session.Id, store.Value.LastGameSessionId);
+            Assert.Equal(ArkNovaGame.Key, store.Value.SelectedGameKey);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(previousSession, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        }
+    }
+
+    [Theory]
+    [InlineData(NavigationFailurePoint.Before)]
+    [InlineData(NavigationFailurePoint.AfterRoot)]
+    [InlineData(NavigationFailurePoint.AfterGroups)]
+    [InlineData(NavigationFailurePoint.After)]
+    public async Task FailedStartupResume_RetryResolvesTheSameOpenSession(NavigationFailurePoint point)
+    {
+        await using TieDatabase database = await TieDatabase.CreateAsync(running: true);
+        var store = new MainSectionNavigationTests.SettingsStore();
+        store.Value = store.Value with { LastGameSessionId = database.Session.Id,
+            LastMainSection = BoardgameTracker.Application.Settings.Navigation.AppMainSection.History };
+        // Startup has not enabled navigation memory yet.
+        BoardgameTracker.App.AppShell shell = new(new(), new(), new(), new(), store, new(database, new TestGameActivationStore()));
+        Shell.Current = shell;
+        var startup = new BoardgameTracker.Application.Settings.Navigation.StartupNavigationQuery(database, new(database));
+        var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));
+        var first = await startup.ResolveAsync(store.Value, Token);
+        shell.FailNextNavigation = point;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.ResumeAsync(shell, first.Resume!));
+        Assert.Equal(database.Session.Id, store.Value.LastGameSessionId);
+        var retry = await startup.ResolveAsync(store.Value, Token);
+        Assert.Equal(database.Session.Id, retry.Resume!.GameSessionId);
+        await handler.ResumeAsync(shell, retry.Resume);
+        Assert.Equal(database.Session.Id, store.Value.LastGameSessionId);
+        Assert.Equal(BoardgameTracker.Application.Settings.Navigation.AppMainSection.History, store.Value.LastMainSection);
+        Assert.All(shell.Calls, call => Assert.Equal(database.Session.Id,
+            call.Parameters[BoardgameTracker.App.Navigation.NavigationParameters.GameSessionId]));
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.IsType<BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage>(shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        Assert.Null(store.Value.LastGameSessionId);
+    }
+
+    [Theory]
     [InlineData(GameSessionStatus.Running, "ArkNovaRunningPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
     [InlineData(GameSessionStatus.Scoring, "ArkNovaScoringPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]
     [InlineData(GameSessionStatus.Completed, "ArkNovaResultPage", false, BoardgameTracker.Application.Settings.Navigation.AppMainSection.Settings)]

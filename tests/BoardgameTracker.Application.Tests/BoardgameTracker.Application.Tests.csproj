@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Platforms/Android/ThemeShellRenderer.cs" LogicalName="EventBoundary.AndroidThemeShellRenderer.cs" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Platforms/iOS/ThemeShellRenderer.cs" LogicalName="EventBoundary.iOSThemeShellRenderer.cs" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/App.xaml.cs" LogicalName="EventBoundary.App.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- Use the C# parser shipped with the SDK; no additional NuGet dependency. -->

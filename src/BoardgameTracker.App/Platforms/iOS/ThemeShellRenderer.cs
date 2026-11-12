@@ -4,6 +4,9 @@ using Microsoft.Maui.Controls.Handlers.Compatibility;
 using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
 using UIKit;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using BoardgameTracker.App.Resources.Localization;
 namespace BoardgameTracker.App.Platforms.iOS;
 
 public sealed class ThemeShellRenderer : ShellRenderer
@@ -35,18 +38,25 @@ public sealed class ThemeShellRenderer : ShellRenderer
                     if (index < 0 || index >= shell.CurrentItem.Items.Count)
                         return;
                     ShellSection target = shell.CurrentItem.Items[index];
+                    ILogger<ThemeShellRenderer> logger = shell.Handler!.MauiContext!.Services.GetRequiredService<ILogger<ThemeShellRenderer>>();
                     shell.Dispatcher.Dispatch(async () =>
                     {
                         try
                         {
                             await shell.NavigateFromMainTabTapAsync(target);
                         }
-                        catch (Exception)
+                        catch (Exception exception)
                         {
+                            logger.LogError(exception, "Could not navigate from an iOS main tab tap.");
                             // Keep native event exceptions out of the iOS run loop.
-                            await shell.DisplayAlertAsync(Resources.Localization.AppResources.Settings,
-                                Resources.Localization.AppResources.PlayerNavigationFailed,
-                                Resources.Localization.AppResources.Ok);
+                            try
+                            {
+                                await shell.DisplayAlertAsync(AppResources.NavigationErrorTitle, AppResources.NavigationFailed, AppResources.Ok);
+                            }
+                            catch (Exception dialogException)
+                            {
+                                logger.LogError(dialogException, "Could not display the main tab navigation error.");
+                            }
                         }
                     });
                 }) { CancelsTouchesInView = true, DelaysTouchesEnded = true };

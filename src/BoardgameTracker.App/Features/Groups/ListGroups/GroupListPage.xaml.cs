@@ -2,16 +2,20 @@ using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
 public partial class GroupListPage : ContentPage, IQueryAttributable
 {
     private readonly GroupListViewModel _viewModel;
-    public GroupListPage(GroupListViewModel viewModel)
+    private readonly ILogger<GroupListPage> _logger;
+    public string GameKey => _viewModel.SelectedGameKey;
+    public GroupListPage(GroupListViewModel viewModel, ILogger<GroupListPage> logger)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _logger = logger;
         BindingContext = viewModel;
     }
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -42,9 +46,10 @@ public partial class GroupListPage : ContentPage, IQueryAttributable
         {
             await Shell.Current.GoToAsync(nameof(CreateGroupPage), false, new ShellNavigationQueryParameters { [NavigationParameters.GameKey] = _viewModel.SelectedGameKey });
         }
-        catch (Exception)
+        catch (Exception exception)
         {
-            await AppDialogPage.ShowAsync(this, AppResources.Groups, AppResources.GroupNavigationFailed, AppResources.Ok);
+            _logger.LogError(exception, "Could not open group creation.");
+            await AppDialogPage.ShowAsync(this, AppResources.Groups, AppResources.NavigationFailed, AppResources.Ok);
         }
         finally
         {

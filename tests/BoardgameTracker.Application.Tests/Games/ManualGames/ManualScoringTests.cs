@@ -26,6 +26,74 @@ public sealed class ManualScoringTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
+    [Theory]
+    [InlineData(NavigationFailurePoint.Before)]
+    [InlineData(NavigationFailurePoint.After)]
+    public async Task FailedSessionEntry_PreservesOldContextOrCommitsReachedSession(NavigationFailurePoint point)
+    {
+        await using Fixture fixture = await Fixture.CreateAsync(new() { CapturePoints = true });
+        var store = new MainSectionNavigationTests.SettingsStore();
+        AppShell shell = MainSectionNavigationTests.CreateShell(store, fixture.Database);
+        Shell.Current = shell;
+        await shell.NavigateToGroupsForGameAsync(fixture.Key);
+        Page groups = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        shell.CaptureGameSessionCaller();
+        shell.RememberGameSession(Guid.NewGuid(), "previous-game");
+        await shell.GoToAsync("PreviousSession");
+        Page previousSession = shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1];
+        var before = store.Value;
+        shell.FailNextNavigation = point;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Handler.OpenGameSessionAsync(fixture.Id));
+        if (point == NavigationFailurePoint.Before)
+        {
+            Assert.Equal(before, store.Value);
+            Assert.Same(previousSession, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(groups, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+            await fixture.Handler.OpenGameSessionAsync(fixture.Id);
+            Assert.Equal(fixture.Id, store.Value.LastGameSessionId);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(groups, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        }
+        else
+        {
+            Assert.Equal(fixture.Id, store.Value.LastGameSessionId);
+            Assert.Equal(fixture.Key, store.Value.SelectedGameKey);
+            await shell.ReturnToGameSessionCallerAsync();
+            Assert.Same(previousSession, shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        }
+    }
+
+    [Theory]
+    [InlineData(NavigationFailurePoint.Before)]
+    [InlineData(NavigationFailurePoint.AfterRoot)]
+    [InlineData(NavigationFailurePoint.AfterGroups)]
+    [InlineData(NavigationFailurePoint.After)]
+    public async Task FailedStartupResume_RetryResolvesTheSameOpenSession(NavigationFailurePoint point)
+    {
+        await using Fixture fixture = await Fixture.CreateAsync(new() { CapturePoints = true });
+        var store = new MainSectionNavigationTests.SettingsStore();
+        store.Value = store.Value with { SelectedGameKey = fixture.Key, LastGameSessionId = fixture.Id,
+            LastMainSection = BoardgameTracker.Application.Settings.Navigation.AppMainSection.History };
+        AppShell shell = new(new(), new(), new(), new(), store, new(fixture.Database, new TestGameActivationStore()));
+        Shell.Current = shell;
+        var startup = new BoardgameTracker.Application.Settings.Navigation.StartupNavigationQuery(fixture.Database, new(fixture.Database));
+        var first = await startup.ResolveAsync(store.Value, Token);
+        shell.FailNextNavigation = point;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Handler.ResumeAsync(shell, first.Resume!));
+        Assert.Equal(fixture.Id, store.Value.LastGameSessionId);
+        var retry = await startup.ResolveAsync(store.Value, Token);
+        Assert.Equal(fixture.Id, retry.Resume!.GameSessionId);
+        await fixture.Handler.ResumeAsync(shell, retry.Resume);
+        Assert.Equal(fixture.Id, store.Value.LastGameSessionId);
+        Assert.Equal(fixture.Key, store.Value.SelectedGameKey);
+        Assert.Equal(BoardgameTracker.Application.Settings.Navigation.AppMainSection.History, store.Value.LastMainSection);
+        Assert.All(shell.Calls, call => Assert.Equal(fixture.Id, call.Parameters[NavigationParameters.GameSessionId]));
+        await shell.ReturnToGameSessionCallerAsync();
+        Assert.IsType<BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage>(shell.CurrentItem.CurrentItem.Navigation.NavigationStack[^1]);
+        Assert.Null(store.Value.LastGameSessionId);
+    }
+
     private sealed record Fixture(SliceDatabase Database, Guid GameId, string Key, Guid Id, Guid[] Players) : IAsyncDisposable
     {
         public ManualScoringQuery Query => new(Database);

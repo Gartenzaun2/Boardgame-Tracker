@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.3.0 – 2026-11-12
+
+- Sessionöffnung, Haupttab- und Spielwechsel übernehmen Navigationszustand erst nach erreichtem Ziel; Fehler mit teilweise verändertem Shell-Stack behalten den tatsächlich erreichten Kontext ohne UI-Rollback.
+- Fehlgeschlagene Session-Wiederaufnahme erhält das Resume-Ziel für einen erneuten Startversuch; Rücknavigation bleibt auch nach entfernten Zwischenpages wiederholbar.
+- Verbleibende Navigationsfehler in Spiele-/Gruppenübersicht und iOS-Tabs werden protokolliert; Startup-Diagnosen nennen die betroffene Initialisierungsphase.
+
 ## 0.22.2.0 – 2026-11-12
 
 - Android-Haupttabnavigation und betroffene MAUI-Event-/Dispatcher-Grenzen behandeln Navigationsfehler mit technischer Diagnose und lokalisierter Rückmeldung.

@@ -82,9 +82,8 @@ public partial class AppShell : Shell
             _ => _gamesTab
         };
 
-        _gameSessionCaller = null;
-        _gameSessionCallerSection = null;
-        _navigationSettingsStore.Save(_navigationSettingsStore.Get() with { LastGameSessionId = null });
+        ShellSection previousSection = CurrentItem.CurrentItem;
+        Page previousPage = previousSection.Navigation.NavigationStack[^1];
         _isProgrammaticMainNavigation = true;
         try
         {
@@ -96,33 +95,52 @@ public partial class AppShell : Shell
             {
                 route += $"/{nameof(GroupListPage)}";
                 parameters[NavigationParameters.GameKey] = openGameKey;
-                RememberSelectedGame(openGameKey);
             }
             // One Shell request builds the logical stack and presents only its final page.
             await GoToAsync(route, false, parameters);
+        }
+        catch
+        {
+            // Shell can change its stack before reporting an error. Keep the state of
+            // an already reached root instead of restoring an obsolete session context.
+            if (CurrentItem.CurrentItem == target && previousPage != target.Navigation.NavigationStack[^1]
+                && (openGameKey is null ? target.Navigation.NavigationStack.Count == 1
+                    : target.Navigation.NavigationStack[^1] is GroupListPage groups && groups.GameKey == openGameKey))
+                RememberDestination();
+            else
+                ReconcileFailedNavigation(previousSection, previousPage);
+            throw;
         }
         finally
         {
             _isProgrammaticMainNavigation = false;
         }
 
-        if (remember)
+        RememberDestination();
+
+        void RememberDestination()
         {
-            RememberMainSection(section);
+            ClearGameSessionCaller();
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with
+            {
+                LastGameSessionId = null,
+                SelectedGameKey = openGameKey ?? current.SelectedGameKey,
+                LastMainSection = remember ? section : current.LastMainSection
+            });
         }
     }
 
 
     public async Task NavigateToGroupsForGameAsync(string gameKey, bool remember = true,
-        string? destinationRoute = null, ShellNavigationQueryParameters? parameters = null)
+        string? destinationRoute = null, ShellNavigationQueryParameters? parameters = null, Guid? resumeGameSessionId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(gameKey);
-        _gameSessionCaller = null;
-        _gameSessionCallerSection = null;
+        ShellSection previousSection = CurrentItem.CurrentItem;
+        Page previousPage = previousSection.Navigation.NavigationStack[^1];
         _isProgrammaticMainNavigation = true;
         try
         {
-            RememberSelectedGame(gameKey);
             parameters ??= new();
             parameters[NavigationParameters.GameKey] = gameKey;
             string route = $"//{_gamesTab.Route}/{nameof(GroupListPage)}";
@@ -130,17 +148,108 @@ public partial class AppShell : Shell
                 route += $"/{destinationRoute}";
             await GoToAsync(route, false, parameters);
         }
+        catch
+        {
+            if (CurrentItem.CurrentItem == _gamesTab && previousPage != _gamesTab.Navigation.NavigationStack[^1]
+                && (destinationRoute is null
+                    ? _gamesTab.Navigation.NavigationStack[^1] is GroupListPage groups && groups.GameKey == gameKey
+                    : _gamesTab.Navigation.NavigationStack.Count >= 3
+                        && _gamesTab.Navigation.NavigationStack[^2] is GroupListPage sessionGroups && sessionGroups.GameKey == gameKey))
+                RememberDestination();
+            else
+                ReconcileFailedNavigation(previousSection, previousPage, preserveResumeTarget: resumeGameSessionId is not null);
+            throw;
+        }
         finally
         {
             _isProgrammaticMainNavigation = false;
         }
-        if (remember) RememberMainSection(AppMainSection.Play);
+        RememberDestination();
+
+        void RememberDestination()
+        {
+            ClearGameSessionCaller();
+            if (destinationRoute is not null)
+                CaptureGameSessionCaller(useRoot: true);
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with
+            {
+                SelectedGameKey = gameKey,
+                LastGameSessionId = resumeGameSessionId,
+                LastMainSection = remember ? AppMainSection.Play : current.LastMainSection
+            });
+        }
     }
 
-    private void RememberSelectedGame(string gameKey)
+    // Capture the actual entry page before a relative push, but publish the caller
+    // and resume target only after Shell has reached the session destination.
+    public async Task OpenGameSessionPageAsync(string route, ShellNavigationQueryParameters parameters,
+        string gameKey, Guid? resumeGameSessionId)
     {
+        ShellSection section = CurrentItem.CurrentItem;
+        Page caller = section.Navigation.NavigationStack[^1];
+        _isProgrammaticMainNavigation = true;
+        try
+        {
+            await GoToAsync(route, false, parameters);
+        }
+        catch
+        {
+            // These handlers push one registered page. Inspect page identity rather
+            // than CurrentState, which may not have been updated before the failure.
+            if (CurrentItem.CurrentItem == section && section.Navigation.NavigationStack.Contains(caller)
+                && section.Navigation.NavigationStack[^1] != caller)
+                RememberDestination();
+            else
+                ReconcileFailedNavigation(section, caller);
+            throw;
+        }
+        finally
+        {
+            _isProgrammaticMainNavigation = false;
+        }
+        RememberDestination();
+
+        void RememberDestination()
+        {
+            _gameSessionCallerSection = CurrentItem.CurrentItem;
+            var stack = _gameSessionCallerSection.Navigation.NavigationStack;
+            _gameSessionCaller = _gameSessionCallerSection == section && stack.Contains(caller) ? caller : stack[0];
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with
+            {
+                SelectedGameKey = gameKey,
+                LastGameSessionId = resumeGameSessionId,
+                LastMainSection = _isNavigationMemoryEnabled ? GetMainSection(CurrentItem.CurrentItem) : current.LastMainSection
+            });
+        }
+    }
+
+    private void ClearGameSessionCaller()
+    {
+        _gameSessionCaller = null;
+        _gameSessionCallerSection = null;
+    }
+
+    private void ReconcileFailedNavigation(ShellSection previousSection, Page previousPage, bool preserveResumeTarget = false)
+    {
+        ShellSection section = CurrentItem.CurrentItem;
+        var stack = section.Navigation.NavigationStack;
         AppNavigationSettings current = _navigationSettingsStore.Get();
-        _navigationSettingsStore.Save(current with { SelectedGameKey = gameKey, LastGameSessionId = null });
+        if (section == previousSection && stack[^1] == previousPage
+            && (previousPage is not GroupListPage visibleGroups || visibleGroups.GameKey == current.SelectedGameKey))
+            return;
+
+        // No UI rollback: record the section/game actually visible after a partial
+        // transition. A startup resume target remains pending until its retry.
+        GroupListPage? groups = stack.OfType<GroupListPage>().LastOrDefault();
+        _navigationSettingsStore.Save(current with
+        {
+            SelectedGameKey = !string.IsNullOrWhiteSpace(groups?.GameKey) ? groups.GameKey : current.SelectedGameKey,
+            LastMainSection = _isNavigationMemoryEnabled ? GetMainSection(section) : current.LastMainSection,
+            LastGameSessionId = preserveResumeTarget ? current.LastGameSessionId : null
+        });
+        ClearGameSessionCaller();
     }
 
     public void CaptureGameSessionCaller(bool useRoot = false)
@@ -155,13 +264,15 @@ public partial class AppShell : Shell
         if (_isReturningToCaller)
             return;
         _isReturningToCaller = true;
+        ShellSection section = CurrentItem.CurrentItem;
+        var navigation = section.Navigation;
+        Page previousPage = navigation.NavigationStack[^1];
+        Page caller = section == _gameSessionCallerSection && _gameSessionCaller is not null
+            && navigation.NavigationStack.Contains(_gameSessionCaller)
+            ? _gameSessionCaller : navigation.NavigationStack[0];
+        _isProgrammaticMainNavigation = true;
         try
         {
-            ShellSection section = CurrentItem.CurrentItem;
-            var navigation = section.Navigation;
-            Page caller = section == _gameSessionCallerSection && _gameSessionCaller is not null
-                && navigation.NavigationStack.Contains(_gameSessionCaller)
-                ? _gameSessionCaller : navigation.NavigationStack[0];
             // Remove intermediate session screens, then pop once to the retained caller.
             while (navigation.NavigationStack[^1] != caller
                 && navigation.NavigationStack.Count > 1 && navigation.NavigationStack[^2] != caller)
@@ -169,14 +280,34 @@ public partial class AppShell : Shell
             if (navigation.NavigationStack[^1] != caller)
                 await GoToAsync("..", false);
             // Leaving the session flow ends resume even when its caller is below the section root.
-            AppNavigationSettings current = _navigationSettingsStore.Get();
-            _navigationSettingsStore.Save(current with { LastGameSessionId = null });
-            _gameSessionCaller = null;
-            _gameSessionCallerSection = null;
+            RememberReturn();
+        }
+        catch
+        {
+            if (CurrentItem.CurrentItem == section && navigation.NavigationStack[^1] == caller)
+                RememberReturn();
+            else
+            {
+                ReconcileFailedNavigation(section, previousPage);
+                if (CurrentItem.CurrentItem == section && navigation.NavigationStack.Contains(caller))
+                {
+                    _gameSessionCallerSection = section;
+                    _gameSessionCaller = caller;
+                }
+            }
+            throw;
         }
         finally
         {
             _isReturningToCaller = false;
+            _isProgrammaticMainNavigation = false;
+        }
+
+        void RememberReturn()
+        {
+            AppNavigationSettings current = _navigationSettingsStore.Get();
+            _navigationSettingsStore.Save(current with { LastGameSessionId = null });
+            ClearGameSessionCaller();
         }
     }
 

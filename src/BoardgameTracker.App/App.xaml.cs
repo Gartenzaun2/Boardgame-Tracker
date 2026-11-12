@@ -58,13 +58,16 @@ public partial class App : Microsoft.Maui.Controls.Application
 
     private async Task InitializeApplicationAsync(Window window)
     {
+        string stage = "database initialization";
         try
         {
             await _databaseInitializer.InitializeAsync();
+            stage = "Shell creation";
             AppShell shell = _services.GetRequiredService<AppShell>();
 
             AppNavigationSettings state = _navigationSettingsStore.Get();
 
+            stage = "startup navigation resolution";
             StartupNavigation startup = await _startupNavigation.ResolveAsync(state);
             window.Page = shell;
             if (startup.Resume is OpenGameSession rememberedGameSession)
@@ -72,6 +75,7 @@ public partial class App : Microsoft.Maui.Controls.Application
                 IGameSessionResumeHandler? handler = _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));
                 if (handler is not null)
                 {
+                    stage = "session restoration";
                     await handler.ResumeAsync(shell, rememberedGameSession);
                     shell.EnableNavigationMemory();
                     return;
@@ -81,12 +85,13 @@ public partial class App : Microsoft.Maui.Controls.Application
                 _navigationSettingsStore.Save(state);
             }
 
+            stage = "main section navigation";
             await shell.NavigateToMainSectionAsync(startup.Section, remember: false);
             shell.EnableNavigationMemory();
         }
         catch (Exception exception)
         {
-            _logger.LogCritical(exception, "The application database could not be initialized.");
+            _logger.LogCritical(exception, "Application startup failed during {StartupStage}.", stage);
             window.Page = CreateStartupErrorPage(window, exception);
         }
     }

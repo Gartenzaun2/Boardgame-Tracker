@@ -47,11 +47,11 @@ public sealed class ManualGameSessionNavigationHandler(ManualRunningGameSessionQ
         ManualRunningData data = await query.GetAsync(gameSessionId) ?? throw new InvalidOperationException("Manual session not found.");
         if (Shell.Current is AppShell shell)
         {
-            shell.CaptureGameSessionCaller();
-            if (data.Status != GameSessionStatus.Completed)
-                shell.RememberGameSession(gameSessionId, data.GameKey);
+            await shell.OpenGameSessionPageAsync(route, Parameters(gameSessionId, route), data.GameKey,
+                data.Status != GameSessionStatus.Completed ? gameSessionId : null);
         }
-        await Shell.Current.GoToAsync(route, false, Parameters(gameSessionId, route));
+        else
+            await Shell.Current.GoToAsync(route, false, Parameters(gameSessionId, route));
     }
     public async Task OpenCorrectionAsync(Guid gameSessionId)
     {
@@ -99,9 +99,7 @@ public sealed class ManualGameSessionNavigationHandler(ManualRunningGameSessionQ
             return;
         string route = await ResolveRouteAsync(data.SessionId);
         await shell.NavigateToGroupsForGameAsync(data.GameKey, remember: false, destinationRoute: route,
-            parameters: Parameters(data.SessionId, route));
-        shell.CaptureGameSessionCaller(useRoot: true);
-        if (route != nameof(ManualResultPage))
-            shell.RememberGameSession(data.SessionId, data.GameKey);
+            parameters: Parameters(data.SessionId, route),
+            resumeGameSessionId: route != nameof(ManualResultPage) ? data.SessionId : null);
     }
 }

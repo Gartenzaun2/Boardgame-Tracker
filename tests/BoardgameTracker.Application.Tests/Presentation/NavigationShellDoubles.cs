@@ -7,6 +7,7 @@ namespace Microsoft.Maui.Controls
     public class Page;
     public sealed class ShellNavigationQueryParameters : Dictionary<string, object>;
     public sealed class ShellNavigatedEventArgs : EventArgs;
+    public enum NavigationFailurePoint { Before, AfterRoot, AfterGroups, After }
     public sealed class ShellNavigation
     {
         public List<Page> NavigationStackPages { get; } = [new Page()];
@@ -34,7 +35,12 @@ namespace Microsoft.Maui.Controls
     }
     public class Shell
     {
-        public static Shell Current { get; set; } = null!;
+        public NavigationFailurePoint? FailNextNavigation { get; set; }
+        public Exception NavigationFailure { get; } = new InvalidOperationException("Shell navigation failed.");
+        // Parallel tests each represent an independent UI; their current Shell must
+        // follow the async test context rather than leak into another test.
+        private static readonly AsyncLocal<Shell?> CurrentShell = new();
+        public static Shell Current { get => CurrentShell.Value!; set => CurrentShell.Value = value; }
         public List<TabBar> Items { get; } = [];
         public TabBar CurrentItem => Items[0];
         public List<(string Route, ShellNavigationQueryParameters Parameters)> Calls { get; } = [];
@@ -45,14 +51,24 @@ namespace Microsoft.Maui.Controls
         {
             Calls.Add((route, parameters ?? []));
             Animations.Add(animate);
+            NavigationFailurePoint? failure = FailNextNavigation;
+            FailNextNavigation = null;
+            if (failure == NavigationFailurePoint.Before)
+                return Task.FromException(NavigationFailure);
             if (route.StartsWith("//", StringComparison.Ordinal))
             {
                 string[] parts = route[2..].Split('/');
                 CurrentItem.CurrentItem = CurrentItem.Items.Single(tab => tab.Route == parts[0]);
                 CurrentItem.CurrentItem.Navigation.NavigationStackPages.RemoveRange(1,
                     CurrentItem.CurrentItem.Navigation.NavigationStack.Count - 1);
+                if (failure == NavigationFailurePoint.AfterRoot)
+                    return Task.FromException(NavigationFailure);
                 foreach (string part in parts.Skip(1))
-                    CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(part == "GroupListPage" ? new BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage() : new Page());
+                {
+                    AddPage(part, parameters);
+                    if (failure == NavigationFailurePoint.AfterGroups && part == "GroupListPage")
+                        return Task.FromException(NavigationFailure);
+                }
             }
             else if (route == ".." || route == "../..")
             {
@@ -61,9 +77,19 @@ namespace Microsoft.Maui.Controls
                 stack.RemoveRange(stack.Count - count, count);
             }
             else
-                CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(route == "GroupListPage" ? new BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage() : new Page());
+                AddPage(route, parameters);
             Navigated?.Invoke(this, new());
+            if (failure == NavigationFailurePoint.After)
+                return Task.FromException(NavigationFailure);
             return Task.CompletedTask;
+        }
+        private void AddPage(string route, ShellNavigationQueryParameters? parameters)
+        {
+            Page page = route == "GroupListPage" ? new BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage
+            {
+                GameKey = parameters?.GetValueOrDefault(BoardgameTracker.App.Navigation.NavigationParameters.GameKey) as string ?? ""
+            } : new Page();
+            CurrentItem.CurrentItem.Navigation.NavigationStackPages.Add(page);
         }
         public void NotifyNavigated() => Navigated?.Invoke(this, new());
     }
@@ -73,7 +99,7 @@ namespace BoardgameTracker.App { public partial class AppShell { private void In
 namespace BoardgameTracker.App.Features.Games.ListGames { public sealed class GamesPage : Page; }
 namespace BoardgameTracker.App.Features.Groups.CreateGroup { public sealed class CreateGroupPage : Page; public sealed class DuplicateGroupPage : Page; }
 namespace BoardgameTracker.App.Features.Groups.EditGroup { public sealed class EditGroupPage : Page; }
-namespace BoardgameTracker.App.Features.Groups.ListGroups { public sealed class GroupListPage : Page; }
+namespace BoardgameTracker.App.Features.Groups.ListGroups { public sealed class GroupListPage : Page { public string GameKey { get; set; } = ""; } }
 namespace BoardgameTracker.App.Features.History { public sealed class HistoryPage : Page; }
 namespace BoardgameTracker.App.Features.Settings.AppSettings { public sealed class AppSettingsPage : Page; }
 namespace BoardgameTracker.App.Features.Settings.Licenses

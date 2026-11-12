@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Runtime.Loader;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.GameSessions;
+using BoardgameTracker.Application.Settings.Navigation;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,6 +12,60 @@ namespace BoardgameTracker.Application.Tests.Presentation;
 
 public sealed class EventBoundaryTests
 {
+    [Theory]
+    [InlineData("GamesPage.xaml.cs", "OnGameTapped", "groups")]
+    [InlineData("GroupListPage.xaml.cs", "OnCreateGroupClicked", "CreateGroupPage")]
+    [InlineData("iOSThemeShellRenderer.cs", "IosTapAsync", "tab")]
+    public async Task RemainingNavigationBoundary_LogsOneTechnicalErrorAndAllowsRetry(string source, string action, string route)
+    {
+        EventBoundaryTestHost page = Create(source);
+        page.Navigation.FailNavigation = true;
+        await page.InvokeAsync(action);
+        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(page.Logger.Errors));
+        Assert.Equal(source == "GamesPage.xaml.cs" ? AppResources.OpenGroupFailed : AppResources.NavigationFailed,
+            Assert.Single(page.Messages));
+        page.Navigation.FailNavigation = false;
+        await page.InvokeAsync(action);
+        Assert.Equal(2, page.Navigation.Calls.Count);
+        Assert.All(page.Navigation.Calls, call => Assert.Equal(route, call.Route));
+        Assert.Single(page.Logger.Errors);
+        Assert.Single(page.Messages);
+        Assert.True(page.IsEnabled);
+        Assert.False(page.ViewModel.IsBusy);
+    }
+
+    [Theory]
+    [InlineData("database initialization")]
+    [InlineData("Shell creation")]
+    [InlineData("startup navigation resolution")]
+    [InlineData("session restoration")]
+    public async Task StartupFailure_LogsTheActualStageAndShowsErrorPage(string stage)
+    {
+        EventBoundaryTestHost page = Create("App.xaml.cs");
+        page.StartupFailureStage = stage;
+        await page.InvokeAsync("InitializeApplicationAsync");
+        Assert.Same(page.StartupFailure, Assert.Single(page.Logger.Errors));
+        Assert.Equal(stage, Assert.Single(page.Logger.StartupStages));
+        Assert.Same(page.StartupErrorPage, page.StartupWindow.Page);
+        Assert.False(page.Navigation.MemoryEnabled);
+    }
+
+    [Fact]
+    public async Task StartupResumeFailure_RetryRunsTheSameTargetAndEnablesMemoryOnlyAfterSuccess()
+    {
+        EventBoundaryTestHost page = Create("App.xaml.cs");
+        page.StartupFailureStage = "session restoration";
+        await page.InvokeAsync("InitializeApplicationAsync");
+        Assert.False(page.Navigation.MemoryEnabled);
+        page.StartupFailureStage = null;
+        await page.InvokeAsync("InitializeApplicationAsync");
+        Assert.Same(page.Navigation, page.StartupWindow.Page);
+        Assert.True(page.Navigation.MemoryEnabled);
+        Assert.Equal(2, page.ResumeAttempts.Count);
+        Assert.All(page.ResumeAttempts, id => Assert.Equal(page.StartupSettings.LastGameSessionId, id));
+        Assert.Single(page.Logger.Errors);
+    }
+
     [Fact]
     public async Task StartedSession_NavigationRetryReusesSavedIdentityWithoutStartingAgain()
     {
@@ -160,8 +216,10 @@ public sealed class EventBoundaryTests
     private static EventBoundaryTestHost Create(string file)
     {
         Assembly assembly = typeof(EventBoundaryTests).Assembly;
-        string resource = assembly.GetManifestResourceNames().Single(name => name.EndsWith(file, StringComparison.Ordinal)
-            && (name.StartsWith("PresentationBoundary.", StringComparison.Ordinal) || name.StartsWith("EventBoundary.", StringComparison.Ordinal)));
+        string resource = assembly.GetManifestResourceNames().Single(name =>
+            (name.EndsWith("." + file, StringComparison.Ordinal) || name.EndsWith("/" + file, StringComparison.Ordinal) || name.EndsWith("\\" + file, StringComparison.Ordinal))
+            && (name.StartsWith("PresentationBoundary.", StringComparison.Ordinal) || name.StartsWith("EventBoundary.", StringComparison.Ordinal)
+                || name.StartsWith("GeneralGroupFeature.", StringComparison.Ordinal)));
         using StreamReader reader = new(assembly.GetManifestResourceStream(resource)!);
         SyntaxNode root = CSharpSyntaxTree.ParseText(reader.ReadToEnd()).GetRoot();
         string[] names = file switch
@@ -169,6 +227,9 @@ public sealed class EventBoundaryTests
             "ArkNovaPreparationPage.xaml.cs" => ["OnStartClicked"],
             "ArkNovaRunningPage.xaml.cs" => ["OnBackClicked", "OnBackButtonPressed", "ReturnAsync", "OnEndClicked", "OnDiscardClicked", "ShowNavigationErrorAsync"],
             "ArkNovaScoringPage.xaml.cs" => ["OnBackClicked", "OnBackButtonPressed", "ReturnAsync"],
+            "GamesPage.xaml.cs" => ["OnGameTapped"],
+            "GroupListPage.xaml.cs" => ["OnCreateGroupClicked"],
+            "App.xaml.cs" => ["InitializeApplicationAsync"],
             _ => ["OnMyGamesClicked", "OnLicensesClicked", "ShowNavigationErrorAsync"]
         };
         IEnumerable<string> fields = root.DescendantNodes().OfType<FieldDeclarationSyntax>()
@@ -182,11 +243,12 @@ public sealed class EventBoundaryTests
                 method = method.WithModifiers(SyntaxFactory.TokenList(method.Modifiers.Where(token => !token.IsKind(SyntaxKind.OverrideKeyword))));
                 return method.ToFullString();
             });
-        if (file == "AndroidThemeShellRenderer.cs")
+        if (file is "AndroidThemeShellRenderer.cs" or "iOSThemeShellRenderer.cs")
         {
             BlockSyntax body = root.DescendantNodes().OfType<ParenthesizedLambdaExpressionSyntax>()
                 .Single(lambda => lambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword)).Block!;
-            methods = ["private async Task AndroidTapAsync() { var shell = Navigation; var logger = Logger; object tab = new(); " + body.ToFullString() + " }"];
+            string method = file == "AndroidThemeShellRenderer.cs" ? "AndroidTapAsync" : "IosTapAsync";
+            methods = ["private async Task " + method + "() { var shell = Navigation; var logger = Logger; object tab = new(); object target = tab; " + body.ToFullString() + " }"];
         }
         string code = """
             using System;
@@ -196,10 +258,15 @@ public sealed class EventBoundaryTests
             using BoardgameTracker.App.Navigation;
             using BoardgameTracker.App.Resources.Localization;
             using BoardgameTracker.Core.Games.ArkNova;
+            using BoardgameTracker.Application.GameSessions;
+            using BoardgameTracker.Application.Settings.Navigation;
             using BoardgameTracker.Application.Tests.Presentation;
             using Shell = BoardgameTracker.Application.Tests.Presentation.BoundaryShell;
             using AppShell = BoardgameTracker.Application.Tests.Presentation.BoundaryShell;
             using AppDialogPage = BoardgameTracker.Application.Tests.Presentation.BoundaryDialogs;
+            using Window = BoardgameTracker.Application.Tests.Presentation.BoundaryWindow;
+            using TappedEventArgs = BoardgameTracker.Application.Tests.Presentation.BoundaryTappedEventArgs;
+            using IGameSessionResumeHandler = BoardgameTracker.Application.Tests.Presentation.EventBoundaryTestHost;
             using ShellNavigationQueryParameters = System.Collections.Generic.Dictionary<string, object>;
             public sealed class Handler : EventBoundaryTestHost
             {
@@ -209,6 +276,7 @@ public sealed class EventBoundaryTests
             public sealed class ArkNovaScoringPage;
             public sealed class MyGamesPage;
             public sealed class LicenseListPage;
+            public sealed class CreateGroupPage;
             """;
         string[] paths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator);
         MetadataReference[] references = paths.Append(assembly.Location).Distinct()
@@ -240,13 +308,45 @@ public class EventBoundaryTestHost
     public int ConfirmationCalls { get; set; }
     public bool ConfirmDiscard { get; set; } = true;
     public bool FailErrorDialog { get; set; }
+    public bool IsEnabled { get; set; } = true;
+    public string? StartupFailureStage { get; set; }
+    public Exception StartupFailure { get; } = new InvalidOperationException("Startup unavailable");
+    public BoundaryWindow StartupWindow { get; } = new();
+    public object StartupErrorPage { get; } = new();
+    public AppNavigationSettings StartupSettings { get; set; } = AppNavigationSettings.Default with { LastGameSessionId = Guid.NewGuid() };
+    public List<Guid> ResumeAttempts { get; } = [];
+    protected EventBoundaryTestHost _databaseInitializer => this;
+    protected EventBoundaryTestHost _services => this;
+    protected EventBoundaryTestHost _navigationSettingsStore => this;
+    protected EventBoundaryTestHost _startupNavigation => this;
+    protected EventBoundaryTestHost[] _resumeHandlers => [this];
+    public Task InitializeAsync() => StartupFailureStage == "database initialization" ? Task.FromException(StartupFailure) : Task.CompletedTask;
+    public T GetRequiredService<T>() => StartupFailureStage == "Shell creation" ? throw StartupFailure : (T)(object)Navigation;
+    public AppNavigationSettings Get() => StartupSettings;
+    public void Save(AppNavigationSettings state) => StartupSettings = state;
+    public Task<StartupNavigation> ResolveAsync(AppNavigationSettings state) => StartupFailureStage == "startup navigation resolution"
+        ? Task.FromException<StartupNavigation>(StartupFailure)
+        : Task.FromResult(new StartupNavigation(AppMainSection.Play, new(state.LastGameSessionId!.Value, "game", BoardgameTracker.Core.GameSessions.GameSessionStatus.Running, DateTimeOffset.UtcNow)));
+    public bool CanHandle(string key) => true;
+    public Task ResumeAsync(BoundaryShell shell, OpenGameSession session)
+    {
+        ResumeAttempts.Add(session.GameSessionId);
+        return StartupFailureStage == "session restoration" ? Task.FromException(StartupFailure) : Task.CompletedTask;
+    }
+    protected object CreateStartupErrorPage(BoundaryWindow window, Exception exception) => StartupErrorPage;
     public Exception DialogFailure { get; } = new InvalidOperationException("Dialog unavailable");
     protected BoundaryViewModel _viewModel => ViewModel;
     protected BoundaryLogger _logger => Logger;
     public async Task InvokeAsync(string method)
     {
         MethodInfo action = GetType().GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance)!;
-        object? result = action.Invoke(this, action.GetParameters().Length == 0 ? null : [null, EventArgs.Empty]);
+        object?[]? arguments = action.GetParameters().Length switch
+        {
+            0 => null,
+            1 => [StartupWindow],
+            _ => [null, action.GetParameters()[1].ParameterType == typeof(BoundaryTappedEventArgs) ? new BoundaryTappedEventArgs() : EventArgs.Empty]
+        };
+        object? result = action.Invoke(this, arguments);
         if (result is Task task) await task;
         else await Dispatcher.Pending;
     }
@@ -254,6 +354,9 @@ public class EventBoundaryTestHost
 
 public sealed class BoundaryViewModel
 {
+    public bool CanCreate => true;
+    public string SelectedGameKey => "game";
+    public List<BoundaryGame> Games { get; } = [new()];
     public bool CanStart { get; set; } = true;
     public bool IsBusy { get; set; }
     public bool IsHistorical { get; set; }
@@ -279,15 +382,29 @@ public sealed class BoundaryViewModel
     public async Task<bool> DiscardAsync() { DiscardCalls++; await WriteGate; return WriteSucceeds; }
 }
 public sealed class BoundaryPlayer { public int Color => 0; }
+public sealed class BoundaryGame { public string Key => "game"; public bool CanOpen => true; }
+public sealed class BoundaryTappedEventArgs : EventArgs { public object Parameter => "game"; }
+public sealed class BoundaryWindow { public object? Page { get; set; } }
 public sealed class BoundaryLogger
 {
     public List<Exception> Errors { get; } = [];
+    public List<object> StartupStages { get; } = [];
     public void LogError(Exception exception, string message, params object[] args) => Errors.Add(exception);
+    public void LogCritical(Exception exception, string message, params object[] args)
+    {
+        Errors.Add(exception);
+        StartupStages.Add(args.Single());
+    }
 }
 public sealed class BoundaryShell
 {
     public static BoundaryShell Current { get; set; } = null!;
     public EventBoundaryTestHost CurrentPage { get; set; } = null!;
+    public bool MemoryEnabled { get; private set; }
+    public void EnableNavigationMemory() => MemoryEnabled = true;
+    public Task NavigateToGroupsForGameAsync(string key) => GoToAsync("groups", false);
+    public Task NavigateToMainSectionAsync(AppMainSection section, bool remember) => GoToAsync("main", false);
+    public Task<bool> DisplayAlertAsync(string title, string message, string accept) => BoundaryDialogs.ShowAsync(CurrentPage, title, message, accept);
     public bool FailNavigation { get; set; }
     public Exception NavigationFailure { get; } = new InvalidOperationException("Navigation unavailable");
     public List<(string Route, Dictionary<string, object>? Parameters)> Calls { get; } = [];
