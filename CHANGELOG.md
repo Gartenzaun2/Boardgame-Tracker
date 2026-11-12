@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.1.1 – 2026-11-12
+
+- Native ManualGames-Tastaturkonfiguration ohne Verhaltensänderung aus der gemeinsamen Wertungsseite in Android-/iOS-Partial-Implementierungen ausgelagert.
+
 ## 0.22.1.0 – 2026-11-12
 
 - Fehlende Historienplätze bleiben leer; die letzte ManualGames-Partie unterscheidet historische Siegerwertung und vollständige Platzierung auch bei ausschließlich ersten Plätzen.

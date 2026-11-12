@@ -47,18 +47,11 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     {
         if (sender is not Entry { BindingContext: ManualScoringPlayerViewModel player } entry)
             return;
-#if ANDROID
-        if (entry.Handler?.PlatformView is global::Android.Widget.EditText input)
-        {
-            input.KeyListener = global::Android.Text.Method.DigitsKeyListener.GetInstance(Java.Util.Locale.Root, player.AllowNegativePoints, false);
-            input.InputType = global::Android.Text.InputTypes.ClassNumber
-                | (player.AllowNegativePoints ? global::Android.Text.InputTypes.NumberFlagSigned : 0);
-        }
-#elif IOS
-        if (entry.Handler?.PlatformView is UIKit.UITextField input)
-            input.KeyboardType = player.AllowNegativePoints ? UIKit.UIKeyboardType.NumbersAndPunctuation : UIKit.UIKeyboardType.NumberPad;
-#endif
+        ConfigurePointsKeyboard(entry, player.AllowNegativePoints);
     }
+
+    private static partial void ConfigurePointsKeyboard(Entry entry, bool allowNegativePoints);
+
     private async void OnPointsTextChanged(object? sender, TextChangedEventArgs e)
     {
         if (!_viewModel.IsBusy && sender is Entry { BindingContext: ManualScoringPlayerViewModel player })
