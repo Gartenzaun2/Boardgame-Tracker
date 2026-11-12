@@ -52,6 +52,10 @@ src/BoardgameTracker.App/Games/<GameName>/
 Spieltests spiegeln diese Struktur; spielabhängige Entwicklungswerkzeuge dürfen unter
 `tools/Games/<GameName>/` liegen.
 
+Auch plattformspezifische Spielimplementierungen bleiben im jeweiligen Spielmodul.
+Dateien wie `Page.Android.cs` und `Page.iOS.cs` werden in der App-Projektdatei
+ausdrücklich auf die jeweilige Zielplattform beschränkt.
+
 Regeln:
 
 - Ein Entwickler soll am Pfad erkennen, ob Code allgemein oder spielabhängig ist.

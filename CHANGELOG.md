@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.4.1 – 2026-11-12
+
+- Plattformspezifische ManualGames-Tastaturimplementierungen liegen im Spielmodul und werden ausdrücklich nur für ihre jeweilige Zielplattform kompiliert.
+- Die Presentation-Architekturprüfung erkennt EF-/SQLite-Typabhängigkeiten semantisch, auch über globale Imports und Aliase.
+
 ## 0.22.4.0 – 2026-11-12
 
 - Historische Arche-Nova-Korrekturen aktualisieren den Änderungszeitpunkt atomar mit Ergebnisdaten und Karten; der History-Export übernimmt den korrigierten Zeitwert.

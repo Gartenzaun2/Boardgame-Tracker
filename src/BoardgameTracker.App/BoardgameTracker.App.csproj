@@ -17,14 +17,21 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.22.4.0</ApplicationDisplayVersion>
-    <ApplicationVersion>127</ApplicationVersion>
+    <ApplicationDisplayVersion>0.22.4.1</ApplicationDisplayVersion>
+    <ApplicationVersion>128</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
   </PropertyGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'">
+    <Compile Remove="Games/ManualGames/Features/GameSessions/Scoring/ManualScoringPage.Android.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios'">
+    <Compile Remove="Games/ManualGames/Features/GameSessions/Scoring/ManualScoringPage.iOS.cs" />
+  </ItemGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
     <MtouchInterpreter>-all,Microsoft.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Relational,Microsoft.EntityFrameworkCore.Sqlite</MtouchInterpreter>

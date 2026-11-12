@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
@@ -8,6 +9,33 @@ namespace BoardgameTracker.Application.Tests.Architecture;
 
 public sealed class GameSessionSliceBoundaryTests
 {
+    [Theory]
+    [InlineData("global using Microsoft.EntityFrameworkCore;", "class ExampleViewModel { DbContext context; }")]
+    [InlineData("global using Store = Microsoft.EntityFrameworkCore.DbContext;", "class ExamplePage { Store context; }")]
+    [InlineData("global using Microsoft.EntityFrameworkCore;", "class ExampleViewModel { IDbContextFactory<DbContext> factory; }")]
+    [InlineData("global using Connection = Microsoft.Data.Sqlite.SqliteConnection;", "class ExamplePage { Connection connection; }")]
+    public void IndirectPersistenceDependenciesAreRejected(string imports, string presentation)
+    {
+        // All three previous text checks pass despite a real persistence dependency.
+        Assert.DoesNotContain("BoardgameTrackerDbContext", presentation, StringComparison.Ordinal);
+        Assert.DoesNotContain("Microsoft.EntityFrameworkCore", presentation, StringComparison.Ordinal);
+        Assert.DoesNotContain("Microsoft.Data.Sqlite", presentation, StringComparison.Ordinal);
+        GameModuleBoundary.Source[] sources = [new("GlobalUsings.cs", imports), new("Presentation.cs", presentation)];
+        string[] violations = PresentationBoundary.FindViolations(sources, ["Presentation.cs"]);
+        Assert.Contains(violations, violation => violation.Contains("Presentation.cs", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ApplicationUseCasesAndReadModelsRemainAllowed()
+    {
+        GameModuleBoundary.Source[] sources =
+        [
+            new("Application.cs", "using Microsoft.EntityFrameworkCore; public class LoadPlayers { private DbContext db; public string[] Load() => []; }"),
+            new("Presentation.cs", "class ExampleViewModel(LoadPlayers query) { public string[] Load() => query.Load(); }")
+        ];
+        Assert.Empty(PresentationBoundary.FindViolations(sources, ["Presentation.cs"]));
+    }
+
     [Fact]
     public void PagesAndViewModelsDoNotUseEntityFramework()
     {
@@ -26,6 +54,22 @@ public sealed class GameSessionSliceBoundaryTests
             Assert.DoesNotContain("Microsoft.EntityFrameworkCore", code, StringComparison.Ordinal);
             Assert.DoesNotContain("Microsoft.Data.Sqlite", code, StringComparison.Ordinal);
         }
+        AssertPresentationTypesArePersistenceFree();
+    }
+
+    private static void AssertPresentationTypesArePersistenceFree([CallerFilePath] string sourcePath = "")
+    {
+        string root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourcePath)!, "../../.."));
+        GameModuleBoundary.Source[] sources = Directory.GetFiles(Path.Combine(root, "src", "BoardgameTracker.App"), "*.cs", SearchOption.AllDirectories)
+            .Where(path => !Path.GetRelativePath(root, path).Split(Path.DirectorySeparatorChar).Any(part => part is "bin" or "obj"))
+            .Select(path => new GameModuleBoundary.Source(Path.GetRelativePath(root, path).Replace('\\', '/'), File.ReadAllText(path))).ToArray();
+        string[] presentationPaths = sources.Select(source => source.Path)
+            .Where(path => path.Contains("/Features/", StringComparison.Ordinal)
+                && !path.EndsWith("/HistoryExportTargets.cs", StringComparison.Ordinal)).ToArray();
+        Assert.NotEmpty(presentationPaths);
+        string[] violations = new[] { new[] { "DEBUG", "ANDROID" }, new[] { "DEBUG", "IOS" } }
+            .SelectMany(symbols => PresentationBoundary.FindViolations(sources, presentationPaths, symbols)).Distinct().ToArray();
+        Assert.True(violations.Length == 0, string.Join(Environment.NewLine, violations));
     }
 
     [Fact]

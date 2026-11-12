@@ -16,7 +16,7 @@ internal static class GameModuleBoundary
         return parts.Length > 4 && parts[2] == "Games" ? parts[3] : null;
     }
 
-    internal static string[] FindViolations(IReadOnlyList<Source> sources, params string[] symbols)
+    internal static CSharpCompilation CreateCompilation(IReadOnlyList<Source> sources, params string[] symbols)
     {
         SyntaxTree[] trees = sources.Where(source => source.Path.EndsWith(".cs", StringComparison.Ordinal))
             .Select(source => CSharpSyntaxTree.ParseText(source.Text,
@@ -24,8 +24,14 @@ internal static class GameModuleBoundary
         // Framework references resolve strings and constants; project symbols come from source.
         MetadataReference[] references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(System.IO.Path.PathSeparator).Select(path => MetadataReference.CreateFromFile(path)).ToArray();
-        CSharpCompilation compilation = CSharpCompilation.Create("ModuleBoundaries", trees, references,
+        return CSharpCompilation.Create("ModuleBoundaries", trees, references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+    }
+
+    internal static string[] FindViolations(IReadOnlyList<Source> sources, params string[] symbols)
+    {
+        CSharpCompilation compilation = CreateCompilation(sources, symbols);
+        SyntaxTree[] trees = compilation.SyntaxTrees.ToArray();
         string[] modules = sources.Select(source => Module(source.Path)).OfType<string>().Distinct().ToArray();
         Dictionary<string, string> keys = new(StringComparer.Ordinal);
         Dictionary<string, string> routes = new(StringComparer.Ordinal);
@@ -47,7 +53,6 @@ internal static class GameModuleBoundary
                     routes[route] = module;
             }
         }
-
         List<string> violations = [];
         foreach (SyntaxTree tree in trees)
         {
