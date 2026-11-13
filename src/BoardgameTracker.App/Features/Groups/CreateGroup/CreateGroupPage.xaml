@@ -39,10 +39,11 @@
                     <Button
                     Command="{Binding SaveCommand}"
                     Style="{StaticResource PrimaryCompactButton}"
-                    Text="{x:Static res:AppResources.Save}" />
+                    Text="{Binding SaveText}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
-            <ScrollView Grid.Row="2">
+            <Label Grid.Row="1" Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" Margin="20,0" />
+            <ScrollView Grid.Row="2" IsEnabled="{Binding CanEdit}">
                 <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
                     <VerticalStackLayout Spacing="16">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupName}" />

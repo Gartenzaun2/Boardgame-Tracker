@@ -11,7 +11,6 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase useCase, ILogger<ArkNovaSpecialCardEditorViewModel> logger) : ObservableObject
 {
     private Guid? _id;
-    private bool _originalIsArchived;
     private readonly List<ArkNovaCardSymbol> _symbols = [];
     private int _position;
     public ObservableCollection<ArkNovaSymbolOption> SymbolOptions { get; } = [];
@@ -23,6 +22,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     [NotifyPropertyChangedFor(nameof(CanSave))]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
     [NotifyPropertyChangedFor(nameof(IsEditorContentEnabled))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -30,13 +30,23 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEditorContentEnabled))]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsSymbolPickerVisible { get; private set; }
     public bool IsIdle => !IsBusy;
     public bool IsEditorContentEnabled => IsIdle && !IsSymbolPickerVisible;
+    public bool CanEdit => IsEditorContentEnabled && !IsSaved;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(SaveText))]
+    public partial bool IsSaved { get; private set; }
+    public Guid? CardId => _id;
+    public string SaveText => IsSaved ? AppResources.Done : AppResources.Save;
+    public Func<Task>? SavedAsync { get; set; }
     public bool IsEditing => _id.HasValue;
     [ObservableProperty] public partial bool IsArchived { get; set; }
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-    public bool CanSave => IsEditorContentEnabled && !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaUserContent.MaximumNameLength;
+    public bool CanSave => IsEditorContentEnabled && (IsSaved || !string.IsNullOrWhiteSpace(NameText) && NameText.Trim().Length <= ArkNovaUserContent.MaximumNameLength);
     public string Title => _id.HasValue ? AppResources.EditSpecialCard : AppResources.NewSpecialCard;
     public ArkNovaSpecialCardData Preview => new(_id ?? Guid.Empty, string.IsNullOrWhiteSpace(NameText) ? AppResources.NewSpecialCard : NameText,
         _symbols.Count > 0 ? _symbols[0] : null, _symbols.Count > 1 ? _symbols[1] : null, _symbols.Count > 2 ? _symbols[2] : null, false);
@@ -59,10 +69,11 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
             IsBusy = true;
             ErrorMessage = null;
             _id = id;
+            IsSaved = false;
             _symbols.Clear();
             ArkNovaSpecialCardData? card = id.HasValue ? (await useCase.ListAsync(true)).Single(c => c.Id == id.Value) : null;
             NameText = card?.Name ?? string.Empty;
-            IsArchived = _originalIsArchived = card?.IsArchived ?? false;
+            IsArchived = card?.IsArchived ?? false;
             if (card is not null)
                 _symbols.AddRange(card.Symbols);
             RefreshSymbols();
@@ -81,7 +92,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     }
     public void OpenSymbolPicker(int position)
     {
-        if (position < 0 || position > _symbols.Count || position > 2 || !IsEditorContentEnabled)
+        if (position < 0 || position > _symbols.Count || position > 2 || !CanEdit)
             return;
         _position = position;
         ArkNovaCardSymbol? selected = position < _symbols.Count ? _symbols[position] : null;
@@ -94,7 +105,7 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
     public void CloseSymbolPicker() => IsSymbolPickerVisible = false;
     public void SelectSymbol(ArkNovaCardSymbol? symbol)
     {
-        if (!IsSymbolPickerVisible || !IsIdle)
+        if (!IsSymbolPickerVisible || !IsIdle || IsSaved)
             return;
         if (symbol.HasValue)
         {
@@ -121,24 +132,26 @@ public partial class ArkNovaSpecialCardEditorViewModel(ArkNovaSpecialCardUseCase
         {
             IsBusy = true;
             ErrorMessage = null;
-            ArkNovaSpecialCardData values = Preview;
-            if (_id is Guid id)
+            if (!IsSaved)
             {
-                await useCase.UpdateAsync(id, NameText, values.Symbol1, values.Symbol2, values.Symbol3);
-                if (IsArchived != _originalIsArchived)
-                {
-                    await useCase.SetArchivedAsync(id, IsArchived);
-                    _originalIsArchived = IsArchived;
-                }
+                ArkNovaSpecialCardData values = Preview;
+                if (_id is Guid id)
+                    await useCase.UpdateAsync(id, NameText, values.Symbol1, values.Symbol2, values.Symbol3, IsArchived);
+                else
+                    _id = await useCase.CreateAsync(NameText, values.Symbol1, values.Symbol2, values.Symbol3);
+                IsSaved = true;
+                OnPropertyChanged(nameof(CardId));
+                OnPropertyChanged(nameof(IsEditing));
+                OnPropertyChanged(nameof(Title));
             }
-            else
-                await useCase.CreateAsync(NameText, values.Symbol1, values.Symbol2, values.Symbol3);
+            if (SavedAsync is not null)
+                await SavedAsync();
             return true;
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Could not save special card {SpecialCardId}.", _id);
-            ErrorMessage = AppResources.SpecialCardOperationFailed;
+            logger.LogError(exception, "Could not complete special card editor {SpecialCardId}. Persistence completed: {Persisted}.", _id, IsSaved);
+            ErrorMessage = IsSaved ? AppResources.NavigationAfterSaveFailed : AppResources.SpecialCardOperationFailed;
             return false;
         }
         finally

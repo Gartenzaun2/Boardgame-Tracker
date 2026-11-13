@@ -24,6 +24,42 @@ namespace BoardgameTracker.Application.Tests.Games.ManualGames;
 
 public sealed class ManualSessionTests
 {
+    [Fact]
+    public async Task ScoringNavigationFailure_ExposesRetryWithoutChangingSessionOrEndTime()
+    {
+        await using Fixture fixture = await Fixture.CreateAsync();
+        Guid id = await fixture.Start.StartAsync(await fixture.CommandAsync(), Token);
+        ManualRunningViewModel model = new(fixture.Running, new(fixture.Database), NullLogger<ManualRunningViewModel>.Instance);
+        await model.LoadAsync(id, Token);
+        Assert.True(await model.BeginScoringAsync(Token));
+        ManualRunningData before = (await fixture.Running.GetAsync(id, Token))!;
+        Assert.True(model.IsScoring);
+        Assert.True(model.ShowEnd);
+        Assert.True(model.CanEnd);
+        Assert.Equal(AppResources.ResumeScoring, model.EndText);
+        AppShell shell = MainSectionNavigationTests.CreateShell(new(), fixture.Database);
+        Shell.Current = shell;
+        ManualGameSessionNavigationHandler handler = new(fixture.Running, new(fixture.Database), new(fixture.Database));
+        shell.FailNextNavigation = NavigationFailurePoint.Before;
+        await Assert.ThrowsAsync<InvalidOperationException>(() => handler.ContinueAsync(id));
+        await using (BoardgameTrackerDbContext db = fixture.Database.CreateDbContext())
+            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedWrite BEFORE UPDATE ON GameSessions BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
+        Assert.True(await model.BeginScoringAsync(Token));
+        await handler.ContinueAsync(model.SessionId);
+        Assert.Equal(ManualGameSessionNavigationHandler.PointsRoute, shell.Calls.Last().Route);
+        Assert.Equal(id, shell.Calls.Last().Parameters[NavigationParameters.GameSessionId]);
+        await using BoardgameTrackerDbContext verify = fixture.Database.CreateDbContext();
+        GameSession saved = await verify.GameSessions.SingleAsync(Token);
+        Assert.Equal(id, saved.Id);
+        Assert.Equal(GameSessionStatus.Scoring, saved.Status);
+        Assert.Equal(before.EndedAt, saved.EndedAt);
+        Assert.Equal(before.StartedAt, saved.StartedAt);
+        var page = AppPageHeaderTests.ReadPage("ManualRunningPage");
+        var action = Assert.Single(page.Descendants(), element => (string?)element.Attribute("Clicked") == "OnEndClicked");
+        Assert.Equal("{Binding EndText}", (string?)action.Attribute("Text"));
+        Assert.Equal("{Binding CanEnd}", (string?)action.Attribute("IsEnabled"));
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     private sealed record Fixture(SliceDatabase Database, Guid GameId, string Key, bool Order, bool Colors) : IAsyncDisposable
@@ -331,7 +367,8 @@ public sealed class ManualSessionTests
         Assert.NotNull(await fixture.Running.GetAsync(id, Token));
         Assert.True(await running.BeginScoringAsync(Token));
         Assert.True(running.IsScoring);
-        Assert.False(running.ShowEnd);
+        Assert.True(running.ShowEnd);
+        Assert.Equal(AppResources.ResumeScoring, running.EndText);
         ManualRunningData scoring = (await fixture.Running.GetAsync(id, Token))!;
         Assert.Equal(GameSessionStatus.Scoring, scoring.Status);
         Assert.NotNull(scoring.EndedAt);

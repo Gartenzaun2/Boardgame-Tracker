@@ -24,6 +24,23 @@ public sealed class ManualScoringNavigationCollection;
 [Collection("Manual scoring navigation")]
 public sealed class ManualScoringTests
 {
+    [Fact]
+    public async Task AutomaticSharedLowerRank_CompletesAndReloadsExactPlacements()
+    {
+        await using Fixture fixture = await Fixture.CreateAsync(new(true, false, true, true, true, true, PointsDirection.Highest), 4);
+        await fixture.Draft.SaveDraftAsync(fixture.Id, fixture.Values([100, 80, 80, 60]), Token);
+        ManualScoringViewModel model = fixture.ViewModel();
+        await model.LoadAsync(fixture.Id, false, Token);
+        foreach (var player in model.DecisionPlayers.ToArray())
+            await model.SelectRankAsync(player, 3);
+        Assert.True(model.CanSubmit);
+        Assert.Equal(ManualSubmitResult.Completed, await model.SubmitAsync(Token));
+        ManualScoringData saved = (await fixture.Query.GetAsync(fixture.Id, Token))!;
+        Assert.Equal(GameSessionStatus.Completed, saved.Session.Status);
+        Assert.Equal(new int?[] { 1, 3, 3, 4 }, fixture.Players.Select(id => saved.Values.Single(player => player.PlayerId == id).Placement));
+        Assert.Equal(new int?[] { 100, 80, 80, 60 }, fixture.Players.Select(id => saved.Values.Single(player => player.PlayerId == id).Points));
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Theory]

@@ -238,6 +238,7 @@ public partial class ManualGameEditorViewModel(ManualGameUseCase useCase, GameAc
         ManualGameError.MaximumLocked => AppResources.ManualMaximumLocked,
         ManualGameError.AssignedGroups => AppResources.ManualAssignedGroups,
         ManualGameError.HasSessions => AppResources.ManualDeleteBlocked,
+        ManualGameError.BadgeTooLong => AppResources.ManualBadgeTooLong,
         _ => AppResources.ManualLoadFailed
     };
 }

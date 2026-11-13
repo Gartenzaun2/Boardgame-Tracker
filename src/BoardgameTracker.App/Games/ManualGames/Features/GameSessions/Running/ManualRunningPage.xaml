@@ -33,7 +33,7 @@
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                     <Button Text="{x:Static res:AppResources.Discard}" Clicked="OnDiscardClicked" Style="{StaticResource DangerButton}" />
-                    <Button Grid.Column="1" Text="{x:Static res:AppResources.EndGame}" Clicked="OnEndClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanEnd}" IsVisible="{Binding ShowEnd}" />
+                    <Button Grid.Column="1" Text="{Binding EndText}" Clicked="OnEndClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding CanEnd}" IsVisible="{Binding ShowEnd}" />
                 </Grid>
             </VerticalStackLayout>
         </Grid>

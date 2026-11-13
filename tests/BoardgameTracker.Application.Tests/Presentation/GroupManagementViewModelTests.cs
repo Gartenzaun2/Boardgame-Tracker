@@ -12,11 +12,70 @@ using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.Application.Tests.Presentation;
 
 public sealed class GroupManagementViewModelTests
 {
+    [Theory]
+    [InlineData("CreateGroupPage")]
+    [InlineData("ArkNovaSpecialCardEditorPage")]
+    public void SavedEditor_BindsInputLockAndVisibleCompletion(string pageName)
+    {
+        var page = AppPageHeaderTests.ReadPage(pageName);
+        Assert.Contains(page.Descendants(), element => element.Name.LocalName == "ScrollView"
+            && (string?)element.Attribute("IsEnabled") == "{Binding CanEdit}");
+        Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Button"
+            && (string?)element.Attribute("Text") == "{Binding SaveText}");
+        Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Label"
+            && (string?)element.Attribute("IsVisible") == "{Binding IsSaved}"
+            && (string?)element.Attribute("Text") == "{x:Static res:AppResources.EditorSavedHint}");
+    }
+
+    [Fact]
+    public async Task CreatedGroup_NavigationFailuresLockDraftAndRetryWithoutFurtherWrites()
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        CreateGroupViewModel model = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+        await model.LoadAsync(Token);
+        model.GroupName = "Gespeicherte Gruppe";
+        model.SelectedExistingPlayer = model.AvailablePlayers.Single(player => player.Id == db.First.Id);
+        model.AddSelectedPlayerCommand.Execute(null);
+        model.NewPlayerName = "Neuer Gast";
+        model.NewPlayerIsGuest = true;
+        model.AddNewPlayerCommand.Execute(null);
+        model.Games[0].IsSelected = true;
+        List<Guid> completedIds = [];
+        model.SavedAsync = outcome =>
+        {
+            completedIds.Add(outcome.GroupId);
+            return Task.FromException(new InvalidOperationException("Navigation failed."));
+        };
+        await model.SaveCommand.ExecuteAsync(null);
+        Assert.True(model.IsSaved);
+        Assert.False(model.CanEdit);
+        Assert.Equal(AppResources.Done, model.SaveText);
+        Assert.StartsWith(AppResources.GroupNavigationFailed, model.ErrorMessage);
+        model.RemovePlayerCommand.Execute(model.Players[0]);
+        model.BeginNewPlayer();
+        Assert.Equal(2, model.Players.Count);
+        Assert.False(model.IsAddingNewPlayer);
+        // Completion must no longer depend on draft validation, even if a stale binding changes it.
+        model.GroupName = "";
+        Assert.True(model.SaveCommand.CanExecute(null));
+        await model.SaveCommand.ExecuteAsync(null);
+        model.SavedAsync = outcome => { completedIds.Add(outcome.GroupId); return Task.CompletedTask; };
+        await model.SaveCommand.ExecuteAsync(null);
+        Assert.Equal(3, completedIds.Count);
+        Assert.All(completedIds, id => Assert.Equal(completedIds[0], id));
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.Equal(3, await verify.Players.CountAsync(Token));
+        Assert.Equal(2, await verify.Groups.CountAsync(Token));
+        Assert.Single(await verify.GroupGames.ToArrayAsync(Token));
+        Assert.Equal("Gespeicherte Gruppe", (await verify.Groups.SingleAsync(group => group.Id == completedIds[0], Token)).Name);
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private sealed class Settings : IAppNavigationSettingsStore
     {

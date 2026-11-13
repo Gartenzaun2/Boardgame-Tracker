@@ -11,6 +11,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
+        _viewModel.SavedAsync = () => Shell.Current.GoToAsync("..", false);
     }
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -25,7 +26,8 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadAsync(_id);
+        if (!_viewModel.IsSaved)
+            await _viewModel.LoadAsync(_id);
     }
     private async void OnSaveClicked(object? sender, EventArgs e)
     {
@@ -34,8 +36,7 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
         _leaving = true;
         try
         {
-            if (await _viewModel.SaveAsync())
-                await Shell.Current.GoToAsync("..", false);
+            await _viewModel.SaveAsync();
         }
         finally
         {
@@ -44,6 +45,11 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     }
     private async void OnBackClicked(object? sender, EventArgs e)
     {
+        if (_viewModel.IsSaved)
+        {
+            await _viewModel.SaveAsync();
+            return;
+        }
         if (_leaving || !_viewModel.IsEditorContentEnabled)
             return;
         _leaving = true;
@@ -71,6 +77,11 @@ public partial class ArkNovaSpecialCardEditorPage : ContentPage, IQueryAttributa
     {
         if (_leaving || _viewModel.IsBusy)
             return true;
+        if (_viewModel.IsSaved)
+        {
+            Dispatcher.Dispatch(async () => await _viewModel.SaveAsync());
+            return true;
+        }
         if (!_viewModel.IsSymbolPickerVisible)
             return base.OnBackButtonPressed();
         _viewModel.CloseSymbolPicker();

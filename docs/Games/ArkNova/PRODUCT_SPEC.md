@@ -152,6 +152,10 @@ Eine Karte besitzt stabile GUID, null bis drei geordnete Symbole, aktuellen Cont
 
 Bearbeiten verändert nicht die mitgelieferte Contentdatei.
 
+Eine Speicheraktion übernimmt Name, Symbole und Archivierungsstatus atomar: Entweder werden alle Änderungen gespeichert oder keine. Historische Referenzen und Kartenidentität bleiben erhalten.
+
+Nach erfolgreicher Speicherung bleibt der Editor gesperrt und zeigt den gespeicherten Zustand. Schlägt die anschließende Navigation fehl, wiederholt **Fertig** nur den Abschluss mit derselben Kartenidentität; es wird keine weitere Karte angelegt.
+
 ### Zuordnung in der Wertung
 
 Neue Zuordnungen sind nur für aktive Karten erlaubt. Eine Karte darf mehreren Spielern derselben Partie zugeordnet sein, aber nicht doppelt demselben Spieler. Die bestehende Sicherheitsabfrage für neue Mehrfachzuordnungen bleibt erhalten.

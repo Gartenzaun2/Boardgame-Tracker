@@ -138,7 +138,7 @@ Unten **Spieler anlegen** (neue eigenständige Entität, keine Zuordnung zu eine
 
 **Spieler bearbeiten:** Header **Spieler bearbeiten**; Name, Archiv-Switch und **Speichern**, kein Gast-Control.
 
-Nach erfolgreichem Speichern im Spielereditor oder in der Gruppenbearbeitung bleiben die Eingaben gesperrt. Ein sichtbarer Hinweis bestätigt die Speicherung; die bisherige Speicheraktion heißt dann **Fertig**. Schlägt die anschließende Navigation fehl, führen Fertig und Zurück nur den Abschluss erneut aus. **Weiteren hinzufügen** öffnet nach erfolgreicher Spieleranlage weiterhin einen neuen leeren Entwurf.
+Nach erfolgreichem Speichern im Spielereditor, in der Gruppenanlage oder in der Gruppenbearbeitung bleiben die Eingaben gesperrt. Ein sichtbarer Hinweis bestätigt die Speicherung; die bisherige Speicheraktion heißt dann **Fertig**. Schlägt die anschließende Navigation fehl, führen Fertig und Zurück nur den Abschluss erneut aus. **Weiteren hinzufügen** öffnet nach erfolgreicher Spieleranlage weiterhin einen neuen leeren Entwurf.
 
 ### Gruppenübersicht (Verwaltung)
 

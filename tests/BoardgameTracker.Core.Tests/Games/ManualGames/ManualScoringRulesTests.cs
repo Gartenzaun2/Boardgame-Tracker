@@ -5,6 +5,41 @@ namespace BoardgameTracker.Core.Tests.Games.ManualGames;
 
 public sealed class ManualScoringRulesTests
 {
+    [Fact]
+    public void AutomaticTopBlock_PreservesHistoricalFirstPlaceInvariantWhileAllowingGaps()
+    {
+        ScoringRulesSnapshot rules = Rules(new(true, false, true, true, true, true, PointsDirection.Highest));
+        ManualScoreInput[] values = Values([100, 100, 100, 60], [1, 3, 3, null]);
+        var result = ManualScoringRules.ResolveFinal(rules, values);
+        Assert.Equal(new int?[] { 1, 3, 3, 4 }, values.Select(player => result[player.PlayerId]));
+        ManualScoreInput[] withoutWinner = [values[0] with { Placement = 3 }, .. values.Skip(1)];
+        Assert.Throws<ArgumentException>(() => ManualScoringRules.ResolveFinal(rules, withoutWinner));
+    }
+
+    [Theory]
+    [InlineData(2, 2)]
+    [InlineData(2, 3)]
+    [InlineData(3, 3)]
+    public void AutomaticPlacements_AllowSharedRanksAndGapsInsidePointBlock(int second, int third)
+    {
+        ScoringRulesSnapshot rules = Rules(new(true, false, true, true, true, true, PointsDirection.Highest));
+        ManualScoreInput[] values = Values([100, 80, 80, 60], [null, second, third, null]);
+        var result = ManualScoringRules.ResolveFinal(rules, values);
+        Assert.Equal(new int?[] { 1, second, third, 4 }, values.Select(player => result[player.PlayerId]));
+    }
+
+    [Fact]
+    public void AutomaticPlacements_KeepIndependentBlocksAndRejectInvalidDecisions()
+    {
+        ScoringRulesSnapshot rules = Rules(new(true, false, true, true, true, true, PointsDirection.Highest));
+        ManualScoreInput[] values = Values([100, 80, 80, 60, 60, 20], [null, 3, 3, 5, 5, null]);
+        var result = ManualScoringRules.ResolveFinal(rules, values);
+        Assert.Equal(new int?[] { 1, 3, 3, 5, 5, 6 }, values.Select(player => result[player.PlayerId]));
+        Assert.Throws<ArgumentException>(() => ManualScoringRules.ResolveFinal(rules with { AllowTies = false }, values));
+        Assert.Throws<ArgumentException>(() => ManualScoringRules.ResolveFinal(rules, [values[0], values[1] with { Placement = 4 }, .. values.Skip(2)]));
+        Assert.Throws<ArgumentException>(() => ManualScoringRules.ResolveFinal(rules, [values[0], values[1] with { Placement = null }, .. values.Skip(2)]));
+    }
+
     private static ScoringRulesSnapshot Rules(ManualGameOptions options) => new ManualGameSession(Guid.NewGuid(),
         new ManualGame(new Game(ManualGame.CreateKey(), "Game", "G", 1, 12), options)).ScoringRulesSnapshot;
     private static ManualScoreInput[] Values(int?[] points, int?[] ranks) => points.Select((value, index) => new ManualScoreInput(Guid.NewGuid(), value, ranks[index])).ToArray();

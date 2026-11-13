@@ -967,6 +967,8 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="ManualPreparationInvalid" xml:space="preserve"><value>Die Vorbereitung ist nicht mehr gültig. Prüfe die Gruppenzuordnung und lade die Vorbereitung erneut.</value></data>
   <data name="ManualSessionLoadFailed" xml:space="preserve"><value>Die Partie konnte nicht geladen werden.</value></data>
   <data name="ManualContinue" xml:space="preserve"><value>Weiter</value></data>
+  <data name="ResumeScoring" xml:space="preserve"><value>Wertung fortsetzen</value></data>
+  <data name="ManualBadgeTooLong" xml:space="preserve"><value>Der Capsule-Tag darf nach dem Entfernen äußerer Leerzeichen höchstens 1.000 Zeichen enthalten.</value></data>
   <data name="ManualSelectWinners" xml:space="preserve"><value>Sieger auswählen</value></data>
   <data name="ManualAssignPlacements" xml:space="preserve"><value>Plätze zuordnen</value></data>
   <data name="ManualResolveTies" xml:space="preserve"><value>Gleichstand auflösen</value></data>

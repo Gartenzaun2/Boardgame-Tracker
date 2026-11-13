@@ -12,11 +12,33 @@ using BoardgameTracker.Core.Groups;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.Application.Tests.Games.ManualGames;
 
 public sealed class ManualGameUseCaseTests
 {
+    [Theory]
+    [InlineData(999)]
+    [InlineData(1000)]
+    [InlineData(1001)]
+    public async Task BadgeInput_UsesTransferLimitAndRetainsInvalidDraft(int length)
+    {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        ManualGameEditorViewModel model = new(new(db, new TestGameActivationStore()), new(db, new TestGameActivationStore()), NullLogger<ManualGameEditorViewModel>.Instance);
+        await model.LoadAsync(null, Token);
+        model.GameName = "Grenzfall";
+        model.BadgeText = "  " + new string('X', length) + "  ";
+        Assert.Equal(length <= 1000, await model.SaveAsync(Token));
+        Assert.Equal("  " + new string('X', length) + "  ", model.BadgeText);
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.Equal(length <= 1000 ? 1 : 0, await verify.ManualGames.CountAsync(Token));
+        if (length > 1000)
+            Assert.Equal(AppResources.ManualBadgeTooLong, model.ErrorMessage);
+        else
+            Assert.Equal(new string('X', length), (await verify.Games.SingleAsync(game => game.Name == "Grenzfall", Token)).BadgeText);
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private static ManualGameCommand Command(string name = "Manual", int min = 1, int max = 12) =>
         new(null, name, " Tag ", min, max, new(true, true, true, true, true, true, PointsDirection.Lowest, true, true));

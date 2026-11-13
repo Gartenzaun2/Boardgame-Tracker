@@ -4,6 +4,7 @@ using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Results;
 using BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 using Microsoft.Extensions.Logging.Abstractions;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.History;
 using BoardgameTracker.Application.Games.ArkNova.GameSessions.Scoring;
 using BoardgameTracker.Application.Games.ArkNova.SpecialCards;
@@ -22,6 +23,82 @@ namespace BoardgameTracker.Application.Tests.Games.ArkNova.SpecialCards;
 
 public sealed class SpecialCardTests
 {
+    [Fact]
+    public async Task NewCard_NavigationRetryKeepsSavedIdentityAndLocksInput()
+    {
+        await using SpecialCardDatabase database = await SpecialCardDatabase.CreateAsync();
+        ArkNovaSpecialCardEditorViewModel editor = new(database.Cards, NullLogger<ArkNovaSpecialCardEditorViewModel>.Instance);
+        await editor.LoadAsync(null);
+        editor.NameText = "Einmalige Karte";
+        int attempts = 0;
+        TaskCompletionSource navigation = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource entered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        editor.SavedAsync = () => { attempts++; entered.SetResult(); return navigation.Task; };
+        Task<bool> pending = editor.SaveAsync();
+        await entered.Task.WaitAsync(Token);
+        Assert.True(editor.IsBusy);
+        Assert.True(editor.IsSaved);
+        Assert.False(editor.CanEdit);
+        Assert.False(await editor.SaveAsync());
+        Guid savedId = editor.CardId!.Value;
+        navigation.SetException(new InvalidOperationException("Navigation failed."));
+        Assert.False(await pending);
+        Assert.Equal(AppResources.NavigationAfterSaveFailed, editor.ErrorMessage);
+        Assert.True(editor.CanSave);
+        editor.OpenSymbolPicker(0);
+        Assert.False(editor.IsSymbolPickerVisible);
+        editor.SavedAsync = () => { attempts++; return Task.CompletedTask; };
+        Assert.True(await editor.SaveAsync());
+        Assert.Equal(savedId, editor.CardId);
+        Assert.Equal(2, attempts);
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.Equal(6, await verify.ArkNovaSpecialCards.CountAsync(Token));
+        Assert.Equal(savedId.ToString(), (await verify.ArkNovaUserContent.SingleAsync(Token)).ObjectId);
+        Assert.Equal("Einmalige Karte", (await database.Cards.ListAsync(true, Token)).Single(card => card.Id == savedId).Name);
+    }
+
+    [Fact]
+    public async Task CardEdit_ArchiveFailureRollsBackAllFieldsAndRetryKeepsReferences()
+    {
+        await using SpecialCardDatabase database = await SpecialCardDatabase.CreateAsync();
+        GameSession session = await database.AddSessionAsync(completed: true);
+        Guid id = ArkNovaSpecialCardDefaults.SunBear;
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            db.ArkNovaGameSessionSpecialCardAssignments.Add(new(session.Id, database.A.Id, id));
+            await db.SaveChangesAsync(Token);
+            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectCardArchive BEFORE UPDATE OF IsArchived ON ArkNovaSpecialCards WHEN NEW.IsArchived = 1 BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
+        }
+        var before = (await database.Cards.ListAsync(true, Token)).Single(card => card.Id == id);
+        ArkNovaSpecialCardEditorViewModel editor = new(database.Cards, NullLogger<ArkNovaSpecialCardEditorViewModel>.Instance);
+        await editor.LoadAsync(id);
+        editor.NameText = "Atomare Änderung";
+        editor.OpenSymbolPicker(0);
+        editor.SelectSymbol(ArkNovaCardSymbol.Science);
+        editor.IsArchived = true;
+        Assert.False(await editor.SaveAsync());
+        Assert.False(editor.IsSaved);
+        Assert.True(editor.CanEdit);
+        var failed = (await database.Cards.ListAsync(true, Token)).Single(card => card.Id == id);
+        Assert.Equal(before.Name, failed.Name);
+        Assert.Equal(before.Symbols, failed.Symbols);
+        Assert.False(failed.IsArchived);
+        await using (BoardgameTrackerDbContext verify = database.CreateDbContext())
+        {
+            Assert.Empty(await verify.ArkNovaUserContent.ToArrayAsync(Token));
+            Assert.Single(await verify.ArkNovaGameSessionSpecialCardAssignments.ToArrayAsync(Token));
+            await verify.Database.ExecuteSqlRawAsync("DROP TRIGGER RejectCardArchive;", Token);
+        }
+        Assert.True(await editor.SaveAsync());
+        var saved = (await database.Cards.ListAsync(true, Token)).Single(card => card.Id == id);
+        Assert.Equal("Atomare Änderung", saved.Name);
+        Assert.Equal(ArkNovaCardSymbol.Science, saved.Symbol1);
+        Assert.True(saved.IsArchived);
+        await using BoardgameTrackerDbContext final = database.CreateDbContext();
+        Assert.Equal(id, (await final.ArkNovaGameSessionSpecialCardAssignments.SingleAsync(Token)).SpecialCardId);
+        Assert.Equal(GameSessionStatus.Completed, (await final.GameSessions.SingleAsync(Token)).Status);
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]

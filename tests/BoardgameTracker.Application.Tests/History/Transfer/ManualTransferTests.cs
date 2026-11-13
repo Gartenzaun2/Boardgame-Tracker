@@ -12,11 +12,58 @@ using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Games.ManualGames;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
+using BoardgameTracker.Application.Groups;
 
 namespace BoardgameTracker.Application.Tests.History.Transfer;
 
 public sealed class ManualTransferTests
 {
+    [Theory]
+    [InlineData(999)]
+    [InlineData(1000)]
+    [InlineData(1001)]
+    public async Task PersistedBadge_ExportsReadableBytesOrRejectsLegacyOverflowWithoutTruncation(int length)
+    {
+        await using SliceDatabase database = await SliceDatabase.CreateAsync();
+        string badge = new('X', length);
+        Guid gameId = await new ManualGameUseCase(database, new TestGameActivationStore()).SaveAsync(
+            new(null, "Grenzfall", length <= 1000 ? badge : "TAG", 1, 4, new()), Token);
+        string key;
+        await using (BoardgameTrackerDbContext db = database.CreateDbContext())
+        {
+            Game game = await db.Games.SingleAsync(game => game.Id == gameId, Token);
+            key = game.Key;
+            // Represent data persisted before the input limit existed.
+            if (length > 1000)
+            {
+                game.SetMetadata(game.Name, badge, game.MinPlayers, game.MaxPlayers);
+                await db.SaveChangesAsync(Token);
+            }
+        }
+        await new AddGroupGameUseCase(database).AddGroupGameAsync(database.Group.Id, gameId, Token);
+        Guid id = await new StartManualGameSessionUseCase(database).StartAsync(new(key, database.Group.Id,
+            DateTimeOffset.UtcNow.AddHours(-2), [new(database.First.Id, null, null), new(database.Second.Id, null, null)]), Token);
+        await new ManualRunningGameSessionUseCase(database).BeginScoringAsync(id, DateTimeOffset.UtcNow.AddHours(-1), Token);
+        await new CompleteManualGameSessionUseCase(database).CompleteAsync(id, cancellationToken: Token);
+        HistoryTransferUseCase transfer = new(Store(database), Format);
+        if (length <= 1000)
+        {
+            BgtExportContent output = await transfer.CreateExportContentAsync([id], "test", Token);
+            using MemoryStream bytes = new(output.Bytes.ToArray());
+            BgtFile read = await Format.ReadAsync(bytes, Token);
+            Assert.Equal(badge, ManualTransferSchema.Read<ManualTransferGame>(read.Games.Single().Data).BadgeText);
+            Assert.Equal(id, read.GameSessions.Single().Id);
+        }
+        else
+        {
+            InvalidDataException failure = await Assert.ThrowsAsync<InvalidDataException>(() => transfer.CreateExportContentAsync([id], "test", Token));
+            Assert.Equal("StringLimit", failure.Message);
+        }
+        await using BoardgameTrackerDbContext verify = database.CreateDbContext();
+        Assert.Equal(badge, (await verify.Games.SingleAsync(game => game.Id == gameId, Token)).BadgeText);
+        Assert.Equal(GameSessionStatus.Completed, (await verify.GameSessions.SingleAsync(Token)).Status);
+    }
+
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private static BgtFormat Format => new([new ArkNovaTransferSchema(), new ManualTransferSchema()]);
     private static HistoryTransferPersistence Store(SliceDatabase db) => new(db, [new ArkNovaTransferPersistence(), new ManualTransferPersistence()]);

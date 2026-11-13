@@ -17,6 +17,11 @@ public partial class DuplicateGroupPage : ContentPage, IQueryAttributable
     {
         if (ViewModel.IsBusy)
             return;
+        if (ViewModel.IsSaved)
+        {
+            await ViewModel.SaveCommand.ExecuteAsync(null);
+            return;
+        }
         ViewModel.CancelDuplicates();
         await Shell.Current.GoToAsync("..", false);
     }
@@ -24,6 +29,11 @@ public partial class DuplicateGroupPage : ContentPage, IQueryAttributable
     {
         if (ViewModel.IsBusy)
             return true;
+        if (ViewModel.IsSaved)
+        {
+            ViewModel.SaveCommand.Execute(null);
+            return true;
+        }
         ViewModel.CancelDuplicates();
         return base.OnBackButtonPressed();
     }

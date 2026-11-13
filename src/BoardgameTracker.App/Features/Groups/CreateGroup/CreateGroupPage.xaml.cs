@@ -59,7 +59,9 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.IsBusy)
+        if (_viewModel.IsSaved)
+            await _viewModel.SaveCommand.ExecuteAsync(null);
+        else if (!_viewModel.IsBusy)
             await Shell.Current.GoToAsync("..", false);
     }
 
@@ -84,14 +86,14 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
 
     private void OnChooseExistingPlayerClicked(object? sender, EventArgs e)
     {
-        if (_viewModel.IsBusy || !_viewModel.HasAvailablePlayers)
+        if (!_viewModel.CanEdit || !_viewModel.HasAvailablePlayers)
             return;
         ExistingPlayerOverlay.IsVisible = true;
     }
     private void OnCloseExistingPlayerClicked(object? sender, EventArgs e) => ExistingPlayerOverlay.IsVisible = false;
     private void OnExistingPlayerTapped(object? sender, TappedEventArgs e)
     {
-        if (!ExistingPlayerOverlay.IsVisible || _viewModel.IsBusy || e.Parameter is not SelectablePlayer player
+        if (!ExistingPlayerOverlay.IsVisible || !_viewModel.CanEdit || e.Parameter is not SelectablePlayer player
             || !_viewModel.AvailablePlayers.Contains(player)) return;
         ExistingPlayerOverlay.IsVisible = false;
         _viewModel.SelectedExistingPlayer = player;
@@ -99,7 +101,7 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
     }
     private void OnChooseGameClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.IsBusy) _viewModel.IsChoosingGame = true;
+        if (_viewModel.CanEdit) _viewModel.IsChoosingGame = true;
     }
     private void OnCloseGameClicked(object? sender, EventArgs e) => _viewModel.IsChoosingGame = false;
     private void OnGameTapped(object? sender, TappedEventArgs e)
@@ -112,6 +114,11 @@ public partial class CreateGroupPage : ContentPage, IQueryAttributable
     {
         if (_viewModel.IsBusy)
             return true;
+        if (_viewModel.IsSaved)
+        {
+            _viewModel.SaveCommand.Execute(null);
+            return true;
+        }
         if (_viewModel.IsChoosingGame) { _viewModel.IsChoosingGame = false; return true; }
         if (_viewModel.IsAddingNewPlayer) { _viewModel.CancelNewPlayer(); return true; }
         if (!ExistingPlayerOverlay.IsVisible) return base.OnBackButtonPressed();

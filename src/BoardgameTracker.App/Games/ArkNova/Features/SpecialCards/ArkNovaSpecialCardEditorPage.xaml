@@ -20,7 +20,7 @@
                 BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
             </VerticalStackLayout>
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="16">
-<ScrollView Grid.Row="0">
+<ScrollView Grid.Row="0" IsEnabled="{Binding CanEdit}">
                 <VerticalStackLayout Spacing="16">
                     <Label Text="{x:Static res:AppResources.SpecialCardName}" FontAttributes="Bold" />
                     <Entry Text="{Binding NameText}" MaxLength="{x:Static content:ArkNovaUserContent.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
@@ -41,10 +41,13 @@
                         <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
                         <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding IsIdle}" />
                     </Grid>
-                    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 </VerticalStackLayout>
             </ScrollView>
-<Button Grid.Row="1" Text="{x:Static res:AppResources.Save}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
+<VerticalStackLayout Grid.Row="1" Spacing="8">
+    <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
+    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+    <Button Text="{Binding SaveText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
+</VerticalStackLayout>
 </Grid>
 </Grid>
 

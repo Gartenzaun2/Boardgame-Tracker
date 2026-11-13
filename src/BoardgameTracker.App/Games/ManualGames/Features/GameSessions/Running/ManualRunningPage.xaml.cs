@@ -70,7 +70,8 @@ public partial class ManualRunningPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not open manual scoring.");
-            await AppDialogPage.ShowAsync(this, AppResources.Scoring, AppResources.ScoringLoadFailed, AppResources.Ok);
+            await AppDialogPage.ShowAsync(this, AppResources.Scoring,
+                _viewModel.IsScoring ? AppResources.NavigationAfterScoringStartedFailed : AppResources.ScoringLoadFailed, AppResources.Ok);
         }
         finally
         {

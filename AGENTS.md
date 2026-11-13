@@ -51,8 +51,8 @@ dafür keinen zusätzlichen Coding-Agenten einschalten.
 
 Codex bzw. lokale Coding-Werkzeuge bevorzugen, wenn nicht gepushte Arbeitsbaumdaten,
 lokale Codeänderungen, Builds, Tests oder andere lokale Ausführung tatsächlich nötig
-sind. Wenn ein anderer Arbeitsweg klar besser geeignet ist, den Entwickler kurz darauf
-hinweisen.
+sind. Wenn ein anderer Arbeitsweg klar besser geeignet ist, den Entwickler kurz
+darauf hinweisen.
 
 Standardmäßig genau einen Agenten verwenden. Keine Subagenten, parallelen Agenten,
 Multi-Agent-Orchestrierung oder Best-of-N-Läufe ohne ausdrücklichen Benutzerauftrag.
@@ -62,18 +62,27 @@ verschieben, wenn dadurch dieselbe Analyse erneut durchgeführt werden müsste.
 
 ### Arbeitspakete und Agentenaufträge
 
-Zusammenhängende Aufgaben zu sinnvoll großen, fachlich abgegrenzten Arbeitspaketen
-bündeln. Nicht jeden einzelnen Befund oder jede kleine Korrektur als separaten
-Agentenauftrag vergeben, wenn dadurch Kontext, Analyse und Verifikation unnötig
-wiederholt werden.
+Vor der Aufteilung eines Auftrags oder mehrerer bekannter Befunde aktiv prüfen,
+welche Aufgaben sinnvoll zu einem größeren Arbeitspaket zusammengefasst werden
+können. Bündelung ist der Ausgangspunkt; separate Aufträge benötigen einen
+konkreten sachlichen Grund, nicht nur unterschiedliche Dateien oder Features.
 
-Ein Arbeitspaket soll möglichst einen zusammenhängenden Arbeitskontext, gemeinsam
-betroffene Komponenten und eine sinnvolle gemeinsame Verifikation besitzen. Bereits
-bestätigte Befunde und vorhandene Analysen wiederverwenden.
+Auch featureübergreifende Korrekturen gemeinsam bearbeiten, wenn sie auf derselben
+vorhandenen Analyse aufbauen, vergleichbare Risiken besitzen oder durch gemeinsame
+Umsetzung und Verifikation wiederholte Kontextarbeit vermeiden. Bereits bestätigte
+Befunde und vorhandene Analysen wiederverwenden; keine erneute Grundsatzanalyse
+pro Teilaufgabe.
 
-Unabhängige Aufgaben, riskante Architekturentscheidungen oder Änderungen mit
-unterschiedlichen Freigabeanforderungen nicht allein zur Paketvergrößerung
-zusammenfassen. Bei Bedarf an fachlichen oder technischen Entscheidungspunkten teilen.
+Ein Arbeitspaket soll einen klar abgegrenzten Gesamtauftrag, nachvollziehbare
+Teilziele und eine sinnvolle gemeinsame Verifikation besitzen. Es darf mehrere
+Fachbereiche umfassen, solange die Umsetzung ohne zusätzliche ungeklärte
+Grundsatzentscheidungen zuverlässig ausführbar bleibt.
+
+Nicht allein zur Paketvergrößerung unabhängige oder deutlich unterschiedlich
+riskante Änderungen zusammenfassen. Offene Produkt-, Architektur- oder
+Persistenzentscheidungen sowie unterschiedliche Freigabeanforderungen können
+eine Trennung begründen. Vor einer Aufteilung abwägen, ob ein größerer Auftrag
+mit klar benannten Entscheidungspunkten sinnvoller ist.
 
 Innerhalb des beauftragten Pakets Prüfung, Umsetzung und erforderliche Verifikation
 selbstständig durchführen. Nur bei ausdrücklich erforderlicher Entscheidung oder
@@ -95,8 +104,8 @@ Mit dem kleinsten Kontext arbeiten, der für die aktuelle Aufgabe erforderlich i
 
 Zuerst nur direkt betroffene Dateien lesen. Weitere Dateien nur laden, wenn eine
 konkrete Abhängigkeit, Unsicherheit, Fehlermeldung oder Entscheidung dies erfordert.
-Große Dateien, Logs und Dokumente bevorzugt gezielt nach relevantem Abschnitt, Symbol
-oder Zeilenbereich lesen statt vollständig.
+Große Dateien, Logs und Dokumente bevorzugt gezielt nach relevantem Abschnitt,
+Symbol oder Zeilenbereich lesen statt vollständig.
 
 Keine vorsorgliche Repository-Vollanalyse. Bereits gelesene unveränderte Inhalte
 nicht ohne konkreten Grund erneut vollständig lesen.
@@ -203,19 +212,21 @@ Schlägt eine notwendige Prüfung fehl, Ursache korrigieren und nur den betroffe
 notwendigen Schritt wiederholen. Bereits erfolgreiche unabhängige Prüfungen nicht
 ohne konkreten Grund erneut ausführen.
 
-Ist der Scope umgesetzt und die notwendige Verifikation erfolgreich, ist die Aufgabe
-beendet. Keine zusätzlichen „zur Sicherheit“-Prüfungen starten.
+Ist der Scope umgesetzt und die notwendige Verifikation erfolgreich, ist die
+Aufgabe beendet. Keine zusätzlichen „zur Sicherheit“-Prüfungen starten.
 
 ## Git, Versionierung und Lieferung
 
 Vor Änderungen `git status` prüfen; nach Änderungen `git diff` und `git status`.
 Neue unversionierte Dateien zusätzlich direkt prüfen.
 
-Agenten erstellen keine Commits, kein Staging und keinen Push. Keine Branches löschen
-oder Git-History umschreiben, sofern der Benutzer dies nicht ausdrücklich neu anweist.
+Agenten erstellen keine Commits, kein Staging und keinen Push. Keine Branches
+löschen oder Git-History umschreiben, sofern der Benutzer dies nicht ausdrücklich
+neu anweist.
 
-Für Versionswerte und `CHANGELOG.md` ausschließlich die für die konkrete Änderungsart
-geltenden Regeln aus `SETUP.md` anwenden; deren Details hier nicht duplizieren.
+Für Versionswerte und `CHANGELOG.md` ausschließlich die für die konkrete
+Änderungsart geltenden Regeln aus `SETUP.md` anwenden; deren Details hier nicht
+duplizieren.
 
 Der Abschlussbericht bleibt kurz: Ergebnis, tatsächlich ausgeführte Verifikation,
 offene relevante Punkte und Git-Status. Keine Tätigkeitschronik.

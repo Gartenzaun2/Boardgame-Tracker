@@ -13,7 +13,7 @@
                 BackClicked="OnBackClicked" />
             </VerticalStackLayout>
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto,Auto" RowSpacing="16">
-<CollectionView Grid.Row="0" ItemsSource="{Binding Duplicates}" SelectionMode="None">
+<CollectionView Grid.Row="0" ItemsSource="{Binding Duplicates}" SelectionMode="None" IsEnabled="{Binding CanEdit}">
                 <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="12" /></CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:DuplicateGroupRow">
@@ -32,7 +32,9 @@
 <Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
 <VerticalStackLayout Grid.Row="2" Spacing="16">
                 <BoxView Style="{StaticResource HeaderDivider}" />
-                <Button Text="{x:Static res:AppResources.CreateAdditionalGroup}" Command="{Binding CreateAdditionalGroupCommand}" Style="{StaticResource SecondaryActionButton}" />
+                <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
+                <Button Text="{Binding SaveText}" Command="{Binding SaveCommand}" IsVisible="{Binding IsSaved}" Style="{StaticResource PrimaryCompactButton}" />
+                <Button Text="{x:Static res:AppResources.CreateAdditionalGroup}" Command="{Binding CreateAdditionalGroupCommand}" IsVisible="{Binding CanEdit}" Style="{StaticResource SecondaryActionButton}" />
             </VerticalStackLayout>
 </Grid>
 </Grid>

@@ -39,6 +39,12 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.7.0 – 2026-11-13
+
+- Automatische ManualGames-Platzierungen erlauben geteilte Plätze und Ranglücken innerhalb ihres ursprünglichen Punkteblocks. Bereits begonnene Wertungen können nach Navigationsfehlern ohne erneuten Statuswechsel fortgesetzt werden.
+- Spezialkartenänderungen speichern Namen, Symbole und Archivstatus atomar. Spezialkarteneditor und Gruppenanlage sperren gespeicherte Eingaben und erlauben den erneuten Navigationsabschluss ohne doppelte Neuanlagen.
+- Export und Import prüfen dieselben allgemeinen Stringgrenzen; neue manuelle Capsule-Texte sind auf die bestehende Grenze von 1.000 Zeichen beschränkt. Überlange Bestandsdaten werden nicht gekürzt und nicht als inkompatible Exportdatei ausgegeben.
+
 ## 0.22.6.0 – 2026-11-13
 
 - Entsorgbare Ergebnisse der Fotobibliotheksauswahl werden nach der Verarbeitung auch bei Fehlern und Abbruch freigegeben; der Lesestream wird zuvor geschlossen. Dadurch bleiben temporäre iOS-Pickerdateien nicht unnötig liegen.

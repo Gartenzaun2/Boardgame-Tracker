@@ -31,6 +31,7 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
 {
     public const int MaximumBytes = 16 * 1024 * 1024;
     public const int MaximumItems = 10000;
+    public const int MaximumStringLength = 1000;
     public static JsonSerializerOptions JsonOptions { get; } = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = false,
@@ -91,7 +92,7 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
             foreach (JsonElement child in element.EnumerateArray())
                 CheckProperties(child);
         }
-        else if (element.ValueKind == JsonValueKind.String && element.GetString()!.Length > 1000)
+        else if (element.ValueKind == JsonValueKind.String && element.GetString()!.Length > MaximumStringLength)
             throw new InvalidDataException("StringLimit");
     }
 
@@ -101,6 +102,8 @@ public sealed class BgtFormat(IEnumerable<IGameTransferSchema> schemas)
             throw new InvalidDataException("UpdateRequired");
         if (file.AppVersion is null || file.AppVersion.Length > 100)
             throw new InvalidDataException("InvalidMetadata");
+        // Exported DTOs must satisfy the same general limits as incoming JSON.
+        CheckProperties(JsonSerializer.SerializeToElement(file, JsonOptions));
         CheckIds(file.Games.Select(game => game.Id));
         CheckIds(file.Players.Select(player => player.Id));
         CheckIds(file.Groups.Select(group => group.Id));

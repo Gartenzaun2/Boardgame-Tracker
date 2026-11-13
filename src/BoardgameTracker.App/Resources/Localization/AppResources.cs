@@ -19,6 +19,8 @@ public static class AppResources
     public static string NavigationAfterScoringStartedFailed => GetString(nameof(NavigationAfterScoringStartedFailed));
     public static string NavigationAfterDiscardFailed => GetString(nameof(NavigationAfterDiscardFailed));
     public static string ManualContinue => GetString(nameof(ManualContinue));
+    public static string ResumeScoring => GetString(nameof(ResumeScoring));
+    public static string ManualBadgeTooLong => GetString(nameof(ManualBadgeTooLong));
     public static string ManualSelectWinners => GetString(nameof(ManualSelectWinners));
     public static string ManualAssignPlacements => GetString(nameof(ManualAssignPlacements));
     public static string ManualResolveTies => GetString(nameof(ManualResolveTies));

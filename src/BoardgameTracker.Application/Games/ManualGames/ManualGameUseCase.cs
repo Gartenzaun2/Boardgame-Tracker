@@ -1,4 +1,5 @@
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.Application.Settings;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Games.ManualGames;
@@ -13,6 +14,8 @@ public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContex
         ArgumentNullException.ThrowIfNull(command);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Name);
         ArgumentException.ThrowIfNullOrWhiteSpace(command.BadgeText);
+        if (command.BadgeText.Trim().Length > BgtFormat.MaximumStringLength)
+            throw new ManualGameValidationException(ManualGameError.BadgeTooLong);
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         string name = command.Name.Trim();
@@ -93,7 +96,7 @@ public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContex
 public sealed record ManualGameCommand(Guid? GameId, string Name, string BadgeText, int MinPlayers, int MaxPlayers, ManualGameOptions Options);
 public sealed record ManualGameDetails(Guid Id, string Key, string Name, string BadgeText, int MinPlayers, int MaxPlayers,
     ManualGameOptions Options, bool HasSessions);
-public enum ManualGameError { DuplicateName, MaximumLocked, AssignedGroups, HasSessions, NotFound }
+public enum ManualGameError { DuplicateName, MaximumLocked, AssignedGroups, HasSessions, NotFound, BadgeTooLong }
 public sealed class ManualGameValidationException(ManualGameError error) : InvalidOperationException(error.ToString())
 {
     public ManualGameError Error { get; } = error;

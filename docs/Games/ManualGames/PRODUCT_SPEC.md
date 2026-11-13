@@ -10,7 +10,7 @@ Gemeinsame Identitäten, Gruppen, Sessions, Farben, Historie, Navigation und Sic
 
 - **Spiel anlegen** ist über die Spieleübersicht erreichbar; dort gibt es keine Bearbeiten-Aktion an Spielkacheln.
 - Bearbeiten erfolgt über **Einstellungen → Spiele verwalten → [Spiel]**, wie bei integrierten Spielen. Dort steht **Spiel anzeigen** zuerst. Liste: Name, Kennzeichnung „Manuelles Spiel“ und bei ausgeblendeten Spielen „Deaktiviert“.
-- Spielname und kurzer Capsule-Tag sind beim Anlegen verpflichtend und später änderbar; der Name ist unter manuellen Spielen nach `Trim` und `OrdinalIgnoreCase` eindeutig. Ein gleichnamiges integriertes Spiel ist zulässig.
+- Spielname und kurzer Capsule-Tag sind beim Anlegen verpflichtend und später änderbar; der Name ist unter manuellen Spielen nach `Trim` und `OrdinalIgnoreCase` eindeutig. Ein gleichnamiges integriertes Spiel ist zulässig. Für den Capsule-Tag gilt nach `Trim` die bestehende Transfer-Stringgrenze von höchstens 1.000 Zeichen. Bereits gespeicherte längere Inhalte werden nicht gekürzt; ihr Export wird mit einem Fehler abgelehnt.
 - `MinPlayers` ist zunächst 1, `MaxPlayers` frei wählbar bis 12. Das Maximum bleibt nach Anlage unveränderlich. Eine Änderung des Minimums darf bestehende Gruppenzuordnungen nicht ungültig machen.
 - Ein manuelles Spiel darf ausschließlich gelöscht werden, wenn keine Session irgendeines Status existiert. Zugehörige `GroupGame`-Zuordnungen, Konfigurationen, Farbdefaults und Sichtbarkeits-Preferences werden entfernt, nie aber die referenzierten Gruppen oder Spieler. Andernfalls ist die Löschaktion gesperrt; **Spiel anzeigen** kann stattdessen deaktiviert werden. Löschen benötigt eine Sicherheitsabfrage.
 

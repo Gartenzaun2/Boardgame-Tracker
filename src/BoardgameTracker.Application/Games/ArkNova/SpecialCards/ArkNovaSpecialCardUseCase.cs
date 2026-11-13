@@ -19,11 +19,21 @@ public sealed class ArkNovaSpecialCardUseCase(IDbContextFactory<BoardgameTracker
     }
     public async Task UpdateAsync(Guid id, string name, ArkNovaCardSymbol? symbol1, ArkNovaCardSymbol? symbol2,
         ArkNovaCardSymbol? symbol3, CancellationToken cancellationToken = default)
+        => await UpdateCoreAsync(id, name, symbol1, symbol2, symbol3, null, cancellationToken);
+
+    public async Task UpdateAsync(Guid id, string name, ArkNovaCardSymbol? symbol1, ArkNovaCardSymbol? symbol2,
+        ArkNovaCardSymbol? symbol3, bool isArchived, CancellationToken cancellationToken = default)
+        => await UpdateCoreAsync(id, name, symbol1, symbol2, symbol3, isArchived, cancellationToken);
+
+    private async Task UpdateCoreAsync(Guid id, string name, ArkNovaCardSymbol? symbol1, ArkNovaCardSymbol? symbol2,
+        ArkNovaCardSymbol? symbol3, bool? isArchived, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         await using BoardgameTrackerDbContext db = await factory.CreateDbContextAsync(cancellationToken);
         ArkNovaSpecialCard card = await GetAsync(db, id, cancellationToken);
         card.UpdateSymbols(symbol1, symbol2, symbol3);
+        if (isArchived is bool archived)
+            card.SetArchived(archived);
         string objectId = id.ToString();
         ArkNovaUserContent? user = await db.ArkNovaUserContent.SingleOrDefaultAsync(
             value => value.ResourceType == ArkNovaUserContent.SpecialCard && value.ObjectId == objectId, cancellationToken);
@@ -35,6 +45,7 @@ public sealed class ArkNovaSpecialCardUseCase(IDbContextFactory<BoardgameTracker
             else
                 user.SetName(name);
         }
+        // EF commits card metadata and its user content in one SaveChanges transaction.
         await db.SaveChangesAsync(cancellationToken);
     }
     public async Task SetArchivedAsync(Guid id, bool archived, CancellationToken cancellationToken = default)

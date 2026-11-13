@@ -85,8 +85,15 @@ public static class ManualScoringRules
                 {
                     if (block.PlayerIds.Count == 1)
                         result[block.PlayerIds[0]] = block.FirstRank;
-                    ValidateRanks(block.PlayerIds.Select(id => result[id]).ToArray(), block.FirstRank, rules.AllowTies);
+                    int?[] ranks = block.PlayerIds.Select(id => result[id]).ToArray();
+                    // ValidateDraft already protects the original point block's range.
+                    // Shared ranks and gaps are intentional for automatic tie resolution.
+                    if (ranks.Any(rank => rank is null) || !rules.AllowTies && ranks.Distinct().Count() != ranks.Length)
+                        throw new ArgumentException("The point block needs complete, permitted placements.");
                 }
+                // Completed ManualGames results must remain valid historical forms.
+                if (!result.Values.Any(rank => rank == 1))
+                    throw new ArgumentException("A complete placement result needs at least one first place.");
             }
         }
         else if (rules.CapturePlacements)

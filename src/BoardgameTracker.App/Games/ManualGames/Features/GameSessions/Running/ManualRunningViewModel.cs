@@ -26,8 +26,9 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
     [NotifyPropertyChangedFor(nameof(CanEnd))]
     public partial bool IsConfirming { get; set; }
     public bool CanInteract => !IsBusy && !IsConfirming;
-    public bool CanEnd => CanInteract && _data?.Status == GameSessionStatus.Running;
-    public bool ShowEnd => _data?.Status == GameSessionStatus.Running;
+    public bool CanEnd => CanInteract && _data is not null;
+    public bool ShowEnd => _data is not null;
+    public string EndText => IsScoring ? AppResources.ResumeScoring : AppResources.EndGame;
     public bool IsScoring => _data?.Status == GameSessionStatus.Scoring;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -61,6 +62,7 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
             Players.Add(new(player.PlayerId, player.Name) { Position = player.Order, Color = player.Color });
         OnPropertyChanged(nameof(ShowEnd));
         OnPropertyChanged(nameof(IsScoring));
+        OnPropertyChanged(nameof(EndText));
         OnPropertyChanged(nameof(CanEnd));
         RefreshDuration(DateTimeOffset.UtcNow);
     }
@@ -79,6 +81,8 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
     {
         if (!CanEnd || _data is null)
             return false;
+        if (IsScoring)
+            return true;
         IsBusy = true;
         ErrorMessage = null;
         try

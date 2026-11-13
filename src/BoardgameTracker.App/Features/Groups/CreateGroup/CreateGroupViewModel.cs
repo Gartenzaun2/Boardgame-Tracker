@@ -34,7 +34,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void AddGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count)) return;
+        if (!CanEdit || game is null || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count)) return;
         game.IsSelected = true;
         IsChoosingGame = false;
     }
@@ -42,7 +42,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void RemoveGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game) || !game.CanChange) return;
+        if (!CanEdit || game is null || !Games.Contains(game) || !game.CanChange) return;
         game.IsSelected = false;
     }
 
@@ -53,6 +53,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     public void SetGameContext(string gameKey) => _gameKey = gameKey;
     public void CancelDuplicates()
     {
+        if (IsSaved)
+            return;
         _pendingCommand = null;
         Duplicates.Clear();
     }
@@ -71,6 +73,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
 
     public void BeginNewPlayer()
     {
+        if (!CanEdit)
+            return;
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
         IsAddingNewPlayer = true;
@@ -78,6 +82,8 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
 
     public void CancelNewPlayer()
     {
+        if (IsSaved)
+            return;
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
         IsAddingNewPlayer = false;
@@ -93,6 +99,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
 
     [ObservableProperty]
@@ -100,6 +107,13 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     public partial string? ErrorMessage { get; private set; }
 
     public bool IsIdle => !IsBusy;
+    public bool CanEdit => IsIdle && !IsSaved;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    [NotifyPropertyChangedFor(nameof(SaveText))]
+    public partial bool IsSaved { get; private set; }
+    public string SaveText => IsSaved ? AppResources.Done : AppResources.Save;
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
@@ -157,14 +171,14 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     }
 
     private bool CanAddSelectedPlayer() =>
-        !IsBusy && SelectedExistingPlayer is not null;
+        CanEdit && SelectedExistingPlayer is not null;
 
     [RelayCommand(CanExecute = nameof(CanAddSelectedPlayer))]
     private void AddSelectedPlayer()
     {
         SelectablePlayer? player = SelectedExistingPlayer;
 
-        if (player is null || Players.Any(candidate => candidate.PlayerId == player.Id))
+        if (!CanEdit || player is null || Players.Any(candidate => candidate.PlayerId == player.Id))
         {
             return;
         }
@@ -179,7 +193,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void AddNewPlayer()
     {
-        if (IsBusy)
+        if (!CanEdit)
         {
             return;
         }
@@ -203,7 +217,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void RemovePlayer(GroupMemberDraft? player)
     {
-        if (IsBusy || player is null || !Players.Remove(player))
+        if (!CanEdit || player is null || !Players.Remove(player))
         {
             return;
         }
@@ -224,7 +238,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void MovePlayerUp(GroupMemberDraft? player)
     {
-        if (IsBusy || player is null)
+        if (!CanEdit || player is null)
         {
             return;
         }
@@ -240,7 +254,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     [RelayCommand]
     private void MovePlayerDown(GroupMemberDraft? player)
     {
-        if (IsBusy || player is null)
+        if (!CanEdit || player is null)
         {
             return;
         }
@@ -255,8 +269,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
 
     private bool CanSave() =>
         !IsBusy
-        && !string.IsNullOrWhiteSpace(GroupName)
-        && Players.Count > 0;
+        && (IsSaved || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -270,17 +283,17 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
         {
             IsBusy = true;
             ErrorMessage = null;
+            if (_savedOutcome is not null)
+            {
+                await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
+                return;
+            }
             if (Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count)))
             {
                 ErrorMessage = AppResources.GroupPlayerLimitExceeded;
                 return;
             }
 
-            if (_savedOutcome is not null)
-            {
-                await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
-                return;
-            }
             _pendingCommand = new CreateGroupCommand(GroupName,
                 [.. Players.Select(player => new CreateGroupPlayerInput(player.PlayerId, player.Name, player.IsGuest))],
                 Games.Where(game => game.IsSelected).Select(game => game.Id).ToArray());
@@ -371,6 +384,7 @@ public partial class CreateGroupViewModel(CreateGroupUseCase createGroup, FindGr
     private async Task CompleteSaveAsync(Guid groupId, bool fromDuplicates)
     {
         _savedOutcome ??= new(groupId, _gameKey, fromDuplicates);
+        IsSaved = true;
         if (SavedAsync is not null)
             await SavedAsync(_savedOutcome);
     }
