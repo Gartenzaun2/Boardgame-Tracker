@@ -10,6 +10,10 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
 {
     private Guid _playerId;
     private bool _saved;
+    public Guid PlayerId => _playerId;
+    public bool IsSaved => _saved;
+    public bool CanEdit => IsIdle && !_saved;
+    public string SaveText => _saved ? AppResources.Done : AppResources.Save;
     [ObservableProperty] public partial bool IsNew { get; private set; }
     [ObservableProperty] public partial bool IsGuest { get; set; }
     public bool IsExisting => !IsNew;
@@ -25,11 +29,13 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
         IsNew = true;
         OnPropertyChanged(nameof(IsExisting));
         OnPropertyChanged(nameof(Title));
+        NotifySavedState();
     }
     [ObservableProperty] public partial string Name { get; set; } = string.Empty;
     [ObservableProperty] public partial bool IsArchived { get; set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -75,8 +81,18 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
             return true;
         if (IsBusy || (!IsNew && _playerId == Guid.Empty))
             return false;
-        IsBusy = true;
         ErrorMessage = null;
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            ErrorMessage = AppResources.PlayerNameRequired;
+            return false;
+        }
+        if (Name.Trim().Length > 100)
+        {
+            ErrorMessage = AppResources.PlayerNameTooLong;
+            return false;
+        }
+        IsBusy = true;
         try
         {
             if (IsNew)
@@ -87,12 +103,8 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
             else
                 await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
             _saved = true;
+            NotifySavedState();
             return true;
-        }
-        catch (ArgumentException)
-        {
-            ErrorMessage = AppResources.PlayerNameRequired;
-            return false;
         }
         catch (Exception exception)
         {
@@ -104,5 +116,13 @@ public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayer
         {
             IsBusy = false;
         }
+    }
+
+    private void NotifySavedState()
+    {
+        OnPropertyChanged(nameof(PlayerId));
+        OnPropertyChanged(nameof(IsSaved));
+        OnPropertyChanged(nameof(CanEdit));
+        OnPropertyChanged(nameof(SaveText));
     }
 }

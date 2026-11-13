@@ -64,7 +64,14 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
         catch (Exception exception)
         {
             _logger.LogError(exception, "Could not leave player editor after saving.");
-            await AppDialogPage.ShowAsync(this, AppResources.EditPlayer, AppResources.PlayerNavigationFailed, AppResources.Ok);
+            try
+            {
+                await AppDialogPage.ShowAsync(this, AppResources.EditPlayer, AppResources.PlayerEditorNavigationFailed, AppResources.Ok);
+            }
+            catch (Exception dialogException)
+            {
+                _logger.LogError(dialogException, "Could not show player editor navigation error.");
+            }
         }
         finally
         {
@@ -75,8 +82,22 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (!_saving)
+        if (_saving)
+            return;
+        if (_viewModel.IsSaved)
+            await SaveAsync(false);
+        else
             await Shell.Current.GoToAsync("..", false);
     }
-    protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
+    protected override bool OnBackButtonPressed()
+    {
+        if (_saving)
+            return true;
+        if (_viewModel.IsSaved)
+        {
+            Dispatcher.Dispatch(async () => await SaveAsync(false));
+            return true;
+        }
+        return base.OnBackButtonPressed();
+    }
 }

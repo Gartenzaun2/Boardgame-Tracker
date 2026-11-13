@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Features.Players.EditPlayer;
+using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.GameSessions;
 using BoardgameTracker.Application.Settings.Navigation;
@@ -10,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace BoardgameTracker.Application.Tests.Presentation;
 
-public sealed class EventBoundaryTests
+public sealed partial class EventBoundaryTests
 {
     [Theory]
     [InlineData("GamesPage.xaml.cs", "OnGameTapped", "groups")]
@@ -213,13 +215,14 @@ public sealed class EventBoundaryTests
         Assert.Single(page.Messages);
     }
 
-    private static EventBoundaryTestHost Create(string file)
+    internal static EventBoundaryTestHost Create(string file, EditPlayerViewModel? playerEditor = null, EditGroupViewModel? groupEditor = null)
     {
         Assembly assembly = typeof(EventBoundaryTests).Assembly;
         string resource = assembly.GetManifestResourceNames().Single(name =>
             (name.EndsWith("." + file, StringComparison.Ordinal) || name.EndsWith("/" + file, StringComparison.Ordinal) || name.EndsWith("\\" + file, StringComparison.Ordinal))
             && (name.StartsWith("PresentationBoundary.", StringComparison.Ordinal) || name.StartsWith("EventBoundary.", StringComparison.Ordinal)
-                || name.StartsWith("GeneralGroupFeature.", StringComparison.Ordinal)));
+                || name.StartsWith("GeneralGroupFeature.", StringComparison.Ordinal)
+                || name.StartsWith("PlayerFeature.", StringComparison.Ordinal)));
         using StreamReader reader = new(assembly.GetManifestResourceStream(resource)!);
         SyntaxNode root = CSharpSyntaxTree.ParseText(reader.ReadToEnd()).GetRoot();
         string[] names = file switch
@@ -230,6 +233,8 @@ public sealed class EventBoundaryTests
             "GamesPage.xaml.cs" => ["OnGameTapped"],
             "GroupListPage.xaml.cs" => ["OnCreateGroupClicked"],
             "App.xaml.cs" => ["InitializeApplicationAsync"],
+            "EditPlayerPage.xaml.cs" => ["OnSaveClicked", "OnAddAnotherClicked", "SaveAsync", "OnBackClicked", "OnBackButtonPressed"],
+            "EditGroupPage.xaml.cs" => ["OnSavedAsync", "OnBackClicked", "OnBackButtonPressed"],
             _ => ["OnMyGamesClicked", "OnLicensesClicked", "ShowNavigationErrorAsync"]
         };
         IEnumerable<string> fields = root.DescendantNodes().OfType<FieldDeclarationSyntax>()
@@ -270,7 +275,9 @@ public sealed class EventBoundaryTests
             using ShellNavigationQueryParameters = System.Collections.Generic.Dictionary<string, object>;
             public sealed class Handler : EventBoundaryTestHost
             {
-            """ + string.Join("\n", fields.Concat(methods)) + """
+            """ + (file == "EditPlayerPage.xaml.cs" ? "private new BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerViewModel _viewModel => PlayerEditor!;\n" : string.Empty)
+            + (file == "EditGroupPage.xaml.cs" ? "private new BoardgameTracker.App.Features.Groups.EditGroup.EditGroupViewModel _viewModel => GroupEditor!;\n" : string.Empty)
+            + string.Join("\n", fields.Concat(methods)) + """
             }
             public sealed class ArkNovaRunningPage;
             public sealed class ArkNovaScoringPage;
@@ -291,6 +298,8 @@ public sealed class EventBoundaryTests
         output.Position = 0;
         Assembly compiled = AssemblyLoadContext.Default.LoadFromStream(output);
         EventBoundaryTestHost page = (EventBoundaryTestHost)Activator.CreateInstance(compiled.GetType("Handler")!)!;
+        page.PlayerEditor = playerEditor;
+        page.GroupEditor = groupEditor;
         BoundaryShell.Current = page.Navigation;
         page.Navigation.CurrentPage = page;
         return page;
@@ -300,6 +309,10 @@ public sealed class EventBoundaryTests
 // Only the platform/UI dependencies are doubles; the executed action bodies and guards come from embedded production source.
 public class EventBoundaryTestHost
 {
+    public EditPlayerViewModel? PlayerEditor { get; set; }
+    public EditGroupViewModel? GroupEditor { get; set; }
+    public BoundaryElement EditorContent { get; } = new();
+    protected virtual bool OnBackButtonPressed() => false;
     public BoundaryViewModel ViewModel { get; } = new();
     public BoundaryLogger Logger { get; } = new();
     public BoundaryShell Navigation { get; } = new();
@@ -352,6 +365,8 @@ public class EventBoundaryTestHost
     }
 }
 
+public sealed class BoundaryElement { public bool IsEnabled { get; set; } = true; }
+
 public sealed class BoundaryViewModel
 {
     public bool CanCreate => true;
@@ -403,15 +418,20 @@ public sealed class BoundaryShell
     public bool MemoryEnabled { get; private set; }
     public void EnableNavigationMemory() => MemoryEnabled = true;
     public Task NavigateToGroupsForGameAsync(string key) => GoToAsync("groups", false);
-    public Task NavigateToMainSectionAsync(AppMainSection section, bool remember) => GoToAsync("main", false);
+    public Task NavigateToMainSectionAsync(AppMainSection section, bool remember = true) => GoToAsync("main", false);
     public Task<bool> DisplayAlertAsync(string title, string message, string accept) => BoundaryDialogs.ShowAsync(CurrentPage, title, message, accept);
     public bool FailNavigation { get; set; }
     public Exception NavigationFailure { get; } = new InvalidOperationException("Navigation unavailable");
     public List<(string Route, Dictionary<string, object>? Parameters)> Calls { get; } = [];
-    public Task GoToAsync(string route, bool animate, Dictionary<string, object>? parameters = null)
+    public Task NavigationGate { get; set; } = Task.CompletedTask;
+    public TaskCompletionSource NavigationStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public async Task GoToAsync(string route, bool animate, Dictionary<string, object>? parameters = null)
     {
         Calls.Add((route, parameters));
-        return FailNavigation ? Task.FromException(NavigationFailure) : Task.CompletedTask;
+        NavigationStarted.TrySetResult();
+        await NavigationGate;
+        if (FailNavigation)
+            throw NavigationFailure;
     }
     public Task ReturnToGameSessionCallerAsync() => GoToAsync("return", false);
     public Task NavigateFromMainTabTapAsync(object tab) => GoToAsync("tab", false);

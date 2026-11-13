@@ -18,7 +18,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
         InitializeComponent();
 
         _viewModel = viewModel;
-        _viewModel.Saved += OnSaved;
+        _viewModel.SavedAsync = OnSavedAsync;
         BindingContext = _viewModel;
     }
 
@@ -49,7 +49,11 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     private async void OnBackClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.IsBusy)
+        if (_viewModel.IsBusy)
+            return;
+        if (_viewModel.IsSaved)
+            await _viewModel.SaveCommand.ExecuteAsync(null);
+        else
             await Shell.Current.GoToAsync("..", false);
     }
 
@@ -71,7 +75,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
 
     private void OnChooseGameClicked(object? sender, EventArgs e)
     {
-        if (!_viewModel.IsBusy) _viewModel.IsChoosingGame = true;
+        if (_viewModel.CanEdit) _viewModel.IsChoosingGame = true;
     }
     private void OnCloseGameClicked(object? sender, EventArgs e) => _viewModel.IsChoosingGame = false;
     private void OnGameTapped(object? sender, TappedEventArgs e)
@@ -84,12 +88,14 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable
     {
         if (_viewModel.IsBusy)
             return true;
+        if (_viewModel.IsSaved)
+        {
+            _viewModel.SaveCommand.Execute(null);
+            return true;
+        }
         if (_viewModel.IsChoosingGame) { _viewModel.IsChoosingGame = false; return true; }
         return base.OnBackButtonPressed();
     }
 
-    private async void OnSaved(object? sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync("..", false);
-    }
+    private Task OnSavedAsync() => Shell.Current.GoToAsync("..", false);
 }

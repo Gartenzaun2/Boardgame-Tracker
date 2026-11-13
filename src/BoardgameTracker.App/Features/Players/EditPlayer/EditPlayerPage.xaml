@@ -9,10 +9,11 @@
                 Title="{Binding Title}"
                 Variant="Subpage"
                 BackClicked="OnBackClicked" />
+            <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" Margin="18,0" />
         </VerticalStackLayout>
 <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
 <ScrollView Grid.Row="0">
-            <VerticalStackLayout Spacing="12" IsEnabled="{Binding IsIdle}">
+            <VerticalStackLayout Spacing="12" IsEnabled="{Binding CanEdit}">
                 <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
                 <Entry Text="{Binding Name}" Style="{StaticResource InlineFormEntry}" />
                 <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsExisting}">
@@ -30,7 +31,7 @@
             <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsIdle}" />
             <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
         </Grid>
-<Button IsVisible="{Binding IsExisting}" Grid.Row="1" Text="{x:Static res:AppResources.Save}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+<Button IsVisible="{Binding IsExisting}" Grid.Row="1" Text="{Binding SaveText}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
 </Grid>
 </Grid>
 </ContentPage>

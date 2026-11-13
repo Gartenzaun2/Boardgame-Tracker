@@ -384,6 +384,8 @@ public sealed class GroupManagementViewModelTests
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
         Assert.Empty(vm.Name);
         Assert.False(vm.IsGuest);
+        Assert.False(vm.IsSaved);
+        Assert.True(vm.CanEdit);
         vm.Name = "Second new";
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
         await using (var failing = db.CreateDbContext())
@@ -443,6 +445,6 @@ public sealed class GroupManagementViewModelTests
         var add = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Clicked") == "OnAddAnotherClicked");
         Assert.Contains(add.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew}");
         var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsExisting}" && element.Name.LocalName == "Button");
-        Assert.Equal("{x:Static res:AppResources.Save}", (string?)editorSave.Attribute("Text"));
+        Assert.Equal("{Binding SaveText}", (string?)editorSave.Attribute("Text"));
     }
 }

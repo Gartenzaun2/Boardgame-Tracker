@@ -29,12 +29,14 @@
                 BackClicked="OnBackClicked">
                 <header:AppPageHeader.Actions>
                     <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
-                    <Button Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{x:Static res:AppResources.Save}" />
+                    <Button Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{Binding SaveText}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
+                <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" Margin="20,0" />
+                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" Margin="20,0" />
             </VerticalStackLayout>
 
-            <ScrollView Grid.Row="1">
+            <ScrollView Grid.Row="1" IsEnabled="{Binding CanEdit}">
                 <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
                     <VerticalStackLayout Spacing="16">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupName}" />
@@ -95,7 +97,6 @@
                         <Button Text="{x:Static res:AppResources.AddGame}" Style="{StaticResource SecondaryActionButton}" Clicked="OnChooseGameClicked" IsEnabled="{Binding HasAvailableGames}" HorizontalOptions="Start" />
                     </VerticalStackLayout>
 
-                    <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
                 </VerticalStackLayout>
             </ScrollView>

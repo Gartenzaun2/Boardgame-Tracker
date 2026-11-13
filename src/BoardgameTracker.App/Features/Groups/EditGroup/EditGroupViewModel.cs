@@ -30,7 +30,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
     [RelayCommand]
     private void AddGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !game.IsVisible || !Games.Contains(game)) return;
+        if (!CanEdit || game is null || !game.IsVisible || !Games.Contains(game)) return;
         game.IsSelected = true;
         IsChoosingGame = false;
     }
@@ -38,7 +38,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
     [RelayCommand]
     private void RemoveGame(GroupGameSelection? game)
     {
-        if (IsBusy || game is null || !Games.Contains(game) || !game.CanChange) return;
+        if (!CanEdit || game is null || !Games.Contains(game) || !game.CanChange) return;
         game.IsSelected = false;
     }
 
@@ -58,7 +58,15 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    [NotifyPropertyChangedFor(nameof(SaveText))]
+    public partial bool IsSaved { get; private set; }
+    public bool CanEdit => !IsBusy && !IsSaved;
+    public string SaveText => IsSaved ? AppResources.Done : AppResources.Save;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -66,7 +74,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
 
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
-    public event EventHandler? Saved;
+    public Func<Task>? SavedAsync { get; set; }
 
     public async Task LoadAsync(
         Guid groupId,
@@ -129,7 +137,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
     [RelayCommand]
     private void MovePlayerUp(GroupMemberDraft? player)
     {
-        if (IsBusy || player is null)
+        if (!CanEdit || player is null)
         {
             return;
         }
@@ -145,7 +153,7 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
     [RelayCommand]
     private void MovePlayerDown(GroupMemberDraft? player)
     {
-        if (IsBusy || player is null)
+        if (!CanEdit || player is null)
         {
             return;
         }
@@ -177,17 +185,27 @@ public partial class EditGroupViewModel(EditGroupUseCase editGroup, GameActivati
             IsBusy = true;
             ErrorMessage = null;
 
-            IReadOnlyList<Guid> orderedPlayerIds =
-                [.. Players.Select(player => player.PlayerId!.Value)];
+            if (!IsSaved)
+            {
+                IReadOnlyList<Guid> orderedPlayerIds =
+                    [.. Players.Select(player => player.PlayerId!.Value)];
 
-            await editGroup.UpdateGroupAsync(new EditGroupCommand(
-                GroupId,
-                GroupName,
-                IsArchived,
-                orderedPlayerIds,
-                Games.Where(game => game.IsSelected).Select(game => game.Id).ToArray()));
+                await editGroup.UpdateGroupAsync(new EditGroupCommand(
+                    GroupId,
+                    GroupName,
+                    IsArchived,
+                    orderedPlayerIds,
+                    Games.Where(game => game.IsSelected).Select(game => game.Id).ToArray()));
+                IsSaved = true;
+            }
 
-            Saved?.Invoke(this, EventArgs.Empty);
+            if (SavedAsync is not null)
+                await SavedAsync();
+        }
+        catch (Exception exception) when (IsSaved)
+        {
+            logger.LogError(exception, "Could not leave group editor after saving group {GroupId}.", GroupId);
+            ErrorMessage = AppResources.GroupEditorNavigationFailed;
         }
         catch (Exception exception)
         {

@@ -9,6 +9,10 @@ namespace BoardgameTracker.App.Resources.Localization;
 /// </summary>
 public static class AppResources
 {
+    public static string EditorSavedHint => GetString(nameof(EditorSavedHint));
+    public static string GroupEditorNavigationFailed => GetString(nameof(GroupEditorNavigationFailed));
+    public static string PlayerEditorNavigationFailed => GetString(nameof(PlayerEditorNavigationFailed));
+    public static string PlayerNameTooLong => GetString(nameof(PlayerNameTooLong));
     public static string NavigationErrorTitle => GetString(nameof(NavigationErrorTitle));
     public static string NavigationFailed => GetString(nameof(NavigationFailed));
     public static string NavigationAfterStartFailed => GetString(nameof(NavigationAfterStartFailed));

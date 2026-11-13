@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.5.0 – 2026-11-13
+
+- Gruppen- und Spielereditoren halten nach erfolgreicher Speicherung die Eingaben gesperrt und erlauben bei Navigationsfehlern einen erneuten Abschluss ohne weitere Schreibvorgänge. Der Gruppenabschluss wird vollständig abgewartet und Navigationsfehler werden gesondert behandelt.
+- Spielernamen mit mehr als 100 Zeichen nach dem Trimmen werden mit einer passenden lokalisierten Meldung abgelehnt.
+
 ## 0.22.4.2 – 2026-11-13
 
 - Alle 42 Arche-Nova-Wertungspositionen werden anhand unabhängiger Regelreferenzen geprüft; der Speicher-Retry-Test weist erhaltene Eingaben und den tatsächlich gespeicherten Wert nach.

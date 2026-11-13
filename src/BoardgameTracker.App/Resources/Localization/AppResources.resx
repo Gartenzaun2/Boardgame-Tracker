@@ -780,6 +780,10 @@
   <data name="PlayerSaveFailed" xml:space="preserve">
     <value>Spieler konnte nicht gespeichert werden.</value>
   </data>
+  <data name="EditorSavedHint" xml:space="preserve"><value>Die Daten sind gespeichert. Sie können den Abschluss erneut versuchen.</value></data>
+  <data name="GroupEditorNavigationFailed" xml:space="preserve"><value>Die Gruppe wurde gespeichert. Die Ansicht konnte nicht geschlossen werden. Bitte erneut versuchen.</value></data>
+  <data name="PlayerEditorNavigationFailed" xml:space="preserve"><value>Der Spieler wurde gespeichert. Die Ansicht konnte nicht geschlossen werden. Bitte erneut versuchen.</value></data>
+  <data name="PlayerNameTooLong" xml:space="preserve"><value>Der Spielername darf höchstens 100 Zeichen enthalten.</value></data>
   <data name="PlayerNameRequired" xml:space="preserve">
     <value>Bitte einen Spielernamen eingeben.</value>
   </data>
