@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
+    <TargetFrameworks>net11.0-android;net11.0-ios</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <ApplicationId>de.boardgametracker.vision.spike</ApplicationId>
     <ApplicationTitle>Ark Nova Native Spike</ApplicationTitle>

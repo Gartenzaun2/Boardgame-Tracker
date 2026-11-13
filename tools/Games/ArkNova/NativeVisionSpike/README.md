@@ -91,7 +91,7 @@ Alternative native Ausgabeordner können über
 ### MAUI Android Release
 
 ```powershell
-dotnet publish src/BoardgameTracker.App -f net10.0-android -c Release `
+dotnet publish src/BoardgameTracker.App -f net11.0-android -c Release `
   -p:RuntimeIdentifier=android-arm64 `
   -p:PublishTrimmed=true `
   -p:TrimMode=full
@@ -154,7 +154,7 @@ OpenCV-Checkout.
 ```bash
 bash tools/Games/ArkNova/NativeVisionSpike/Build-iOS.sh   artifacts/native-spike/opencv   artifacts/native-spike/ios-arm64
 
-dotnet build src/BoardgameTracker.App -f net10.0-ios -c Release   -p:RuntimeIdentifier=ios-arm64
+dotnet build src/BoardgameTracker.App -f net11.0-ios -c Release   -p:RuntimeIdentifier=ios-arm64
 ```
 
 Das Skript:
@@ -179,7 +179,7 @@ ARM64-Simulator:
 ```bash
 ANV_IOS_SDK=iphonesimulator ANV_IOS_ARCH=arm64   bash tools/Games/ArkNova/NativeVisionSpike/Build-iOS.sh   artifacts/native-spike/opencv   artifacts/native-spike/ios-simulator-arm64
 
-dotnet build src/BoardgameTracker.App -f net10.0-ios -c Release   -p:RuntimeIdentifier=iossimulator-arm64   -p:ArkNovaIosBuildDirectory="$PWD/artifacts/native-spike/ios-simulator-arm64"
+dotnet build src/BoardgameTracker.App -f net11.0-ios -c Release   -p:RuntimeIdentifier=iossimulator-arm64   -p:ArkNovaIosBuildDirectory="$PWD/artifacts/native-spike/ios-simulator-arm64"
 ```
 
 Intel-Simulator analog mit:

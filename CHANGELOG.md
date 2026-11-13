@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.7.1 – 2026-11-13
+
+- Projekte einschließlich MAUI-App, Tests und Entwicklungstools auf .NET 11 umgestellt; MAUI 11.0.10 und EF Core/Microsoft.Extensions 11.0.0 zentral angebunden.
+- Mono-spezifische iOS-Interpreter-Konfiguration zugunsten des MAUI-11-CoreCLR-Standards entfernt; bestehende Shell-, Tastatur-, Trimming- und native Integrationsverträge beibehalten. Lizenzressourcen und Toolchain-Dokumentation aktualisiert; Mac-/iPhone-Abnahme bleibt offen.
+
 ## 0.22.7.0 – 2026-11-13
 
 - Automatische ManualGames-Platzierungen erlauben geteilte Plätze und Ranglücken innerhalb ihres ursprünglichen Punkteblocks. Bereits begonnene Wertungen können nach Navigationsfehlern ohne erneuten Statuswechsel fortgesetzt werden.

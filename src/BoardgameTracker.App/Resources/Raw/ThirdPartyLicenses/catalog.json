@@ -126,14 +126,14 @@
     },
     {
       "id": "dotnet-runtime",
-      "displayName": ".NET Runtime (Mono)",
-      "version": "10.0.14",
+      "displayName": ".NET Runtime (CoreCLR)",
+      "version": "11.0.0",
       "licenseDisplayName": "MIT / Third-Party Notices",
       "spdxIdentifier": null,
       "assetPath": "ThirdPartyLicenses/texts/cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310.txt",
-      "attributionText": ".NET Foundation and contributors. Microsoft.NETCore.App.Runtime.Mono.android-arm64; upstream runtime notices are retained in full.",
+      "attributionText": ".NET Foundation and contributors. .NET 11 CoreCLR; upstream runtime notices are retained in full.",
       "additionalAssetPaths": [
-        "ThirdPartyLicenses/texts/66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54.txt"
+        "ThirdPartyLicenses/texts/4790bb15f0edd1b105aecb05174fc6c589d4d9fad0c50616ef5f7dc365f1c8a6.txt"
       ]
     },
     {
@@ -151,19 +151,19 @@
     {
       "id": "dotnet-maui",
       "displayName": ".NET MAUI",
-      "version": "10.0.110",
+      "version": "11.0.10",
       "licenseDisplayName": "MIT",
       "spdxIdentifier": "MIT",
-      "assetPath": "ThirdPartyLicenses/texts/d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b.txt",
+      "assetPath": "ThirdPartyLicenses/texts/cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310.txt",
       "attributionText": "© Microsoft Corporation. All rights reserved.",
       "additionalAssetPaths": [
-        "ThirdPartyLicenses/texts/45fb89606fe922d1615ee62be7f42342db766685af2ebaf2fe8d2a187100687c.txt"
+        "ThirdPartyLicenses/texts/c0a274fea4b590fb153ad42e87fdec524b7c2926357075c99ce9eea277ae7147.txt"
       ]
     },
     {
       "id": "entity-framework-core",
       "displayName": "Entity Framework Core / Microsoft.Data.Sqlite",
-      "version": "10.0.14",
+      "version": "11.0.0",
       "licenseDisplayName": "MIT",
       "spdxIdentifier": "MIT",
       "assetPath": "ThirdPartyLicenses/texts/cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310.txt",
@@ -183,7 +183,7 @@
     {
       "id": "sqlitepclraw",
       "displayName": "SQLitePCLRaw",
-      "version": "2.1.13",
+      "version": "3.0.5",
       "licenseDisplayName": "Apache License 2.0",
       "spdxIdentifier": "Apache-2.0",
       "assetPath": "ArkNovaVision/licenses/OpenCV.txt",

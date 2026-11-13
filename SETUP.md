@@ -13,10 +13,9 @@ Arbeits- und Verifikationspolicy: [`AGENTS.md`](AGENTS.md).
 
 ## 2. Voraussetzungen
 
-- Für die `net10.0`-Ziele geeignetes .NET SDK und passende Plattform-Workloads;
-  macOS/iOS verwendet die unten dokumentierte lokale SDK-Version `10.0.403`.
-- .NET MAUI 10.0.110 (über `MauiVersion` im App-Projekt gepinnt)
-- EF Core 10
+- .NET SDK `11.0.100` für die `net11.0`-Ziele und passende Plattform-Workloads.
+- .NET MAUI `11.0.10` (über `MauiVersion` im App-Projekt gepinnt)
+- EF Core / Microsoft.Data.Sqlite und Microsoft.Extensions `11.0.0`
 - SQLite
 - Visual Studio bzw. passende .NET-MAUI-Toolchain
 - Android- und/oder iOS-Toolchain für die jeweilige Zielplattform
@@ -29,6 +28,24 @@ iOS 15
 ```
 
 Paketversionen werden zentral über `Directory.Packages.props` verwaltet.
+Der EF-SQLite-Provider löst SQLitePCLRaw `3.0.5` und SQLite `3.53.4` auf.
+
+Der verwendete Windows-Buildsatz besteht aus SDK `11.0.100`, Android-Workload
+`37.2.31`, iOS-/MacCatalyst-Workloads `27.2.11039` und MAUI-Windows `11.0.0`
+(Manifestmodus `11.0.100-manifests.073a2387`). Die App-Paketversion wird separat
+durch `MauiVersion` bestimmt. Ein Windows-iOS-Build prüft verwalteten Code; für
+native Verlinkung und Release-Pakete ist weiterhin ein Mac erforderlich.
+
+MAUI 11 verwendet auf mobilen Plattformen standardmäßig CoreCLR. Die bisherige
+Mono-Einstellung `MtouchInterpreter` entfällt; CoreCLR verwaltet seinen Interpreter
+selbst. Die EF-/Domain-`TrimmerRootAssembly`-Einträge bleiben wegen reflektierter
+Mappings/Konstruktoren erhalten, ebenso die native Linkereinbindung und
+`MtouchNoSymbolStrip`. Eigene Shell-/NumberWheel-Handler und die iOS-Tastaturanpassung
+bleiben bestehen, solange kein gleichwertiger Standardmechanismus nachgewiesen ist.
+
+Referenzen: [MAUI 11](https://learn.microsoft.com/dotnet/maui/whats-new/dotnet-11),
+[mobile Codegenerierung](https://learn.microsoft.com/dotnet/core/compatibility/maui/11/mobile-code-generation),
+[EF Core 11](https://learn.microsoft.com/ef/core/what-is-new/ef-core-11.0/breaking-changes).
 
 ### Gemeinsame SDK-Konfiguration und macOS/iOS
 
@@ -42,15 +59,16 @@ auf jedem Entwicklungsrechner trotzdem installiert sein.
 **Mac-Codex verwaltet die eigene, nicht versionierte Konfiguration unter
 `.local/ios/global.json` (Repository-Root → `.local` → `ios`).** `.local/` steht in
 `.gitignore`; weder diese Datei noch persönliche Signing-/Device-Konfigurationen
-werden ins Repository übernommen. Ein lokaler Mac-Pin sieht aktuell so aus:
+werden ins Repository übernommen. Für den .NET-11-Build ist folgender lokaler
+Mac-Pin vorgesehen; die tatsächliche Mac-Installation ist vor dem Build abzugleichen:
 
 ```json
 {
   "sdk": {
-    "version": "10.0.403",
+    "version": "11.0.100",
     "rollForward": "disable",
     "allowPrerelease": false,
-    "workloadVersion": "10.0.401"
+    "workloadVersion": "11.0.100.1"
   },
   "test": {
     "runner": "Microsoft.Testing.Platform"
@@ -58,9 +76,12 @@ werden ins Repository übernommen. Ein lokaler Mac-Pin sieht aktuell so aus:
 }
 ```
 
-Das Workload-Set `10.0.401` dient der lokalen iOS-/Xcode-26.6-Toolchain.
-Die MAUI-Paketversion `10.0.110` bleibt unabhängig davon im App-Projekt gepinnt,
-damit der iOS-Kamera-Fix erhalten bleibt. Bei einer Toolchain-Aktualisierung SDK,
+Das [iOS-Workload-Set `11.0.100.1`](https://github.com/dotnet/macios/releases/tag/dotnet-11.0.1xx-xcode27.2.11039)
+verwendet iOS `27.2.11039` mit Xcode `27.2` und benötigt macOS `16.6` oder neuer.
+Die SDK-Version für den Build setzt nicht die Mindest-iOS-Version der App;
+das Abnahmegerät iPhone 12 Pro mit iOS 26.2 bleibt vorgesehen.
+Die MAUI-Paketversion `11.0.10` bleibt unabhängig davon im App-Projekt gepinnt.
+Bei einer Toolchain-Aktualisierung SDK,
 Workload-Set und MAUI-Paket gemeinsam prüfen, aber keinen plattformübergreifenden
 Pin aus der Mac-Konfiguration in die Root-`global.json` übertragen.
 
@@ -80,7 +101,7 @@ dotnet workload --version
 dotnet workload restore ../../src/BoardgameTracker.App/BoardgameTracker.App.csproj
 ```
 
-Der erwartete lokale SDK-Wert ist `10.0.403`, die Workload-Set-Version `10.0.401`.
+Der erwartete lokale SDK-Wert ist `11.0.100`, die Workload-Set-Version `11.0.100.1`.
 Vor einem iOS-Build zusätzlich überprüfen, ob auch der konkrete MSBuild-Aufruf
 diese Toolchain verwendet. Stimmt die effektive Auswahl nicht, muss **die lokale
 Mac-Build-Aufrufkonfiguration** korrigiert werden, nicht die gemeinsame Root-Datei.
@@ -250,7 +271,7 @@ unversioniert. Für weitergegebene Diagnosen gelten die Redaktionsregeln unter
 ### iOS-Simulator-Builds
 
 Für normale UI-/Navigationsprüfungen im iOS-Simulator `Debug` mit
-`net10.0-ios` und passender Simulator-RID verwenden. Release nur, wenn
+`net11.0-ios` und passender Simulator-RID verwenden. Release nur, wenn
 Release-, AOT-, Trimming- oder Device-Verhalten geprüft werden soll.
 
 Bei unerwartet langer `AOTCompile`-Phase zuerst Konfiguration, RuntimeIdentifier

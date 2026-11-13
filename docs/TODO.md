@@ -8,75 +8,36 @@ gelesen. Neue Einträge nur aufnehmen, wenn ein Problem bewusst offen bleibt und
 später gezielt bearbeitet werden soll. Erledigte Einträge entfernen statt eine
 Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
-## .NET 11 / MAUI 11: kontrollierte Migration
+## .NET 11 / MAUI 11: ausstehende Plattformabnahme
 
-**Status:** vorbereitet; .NET-11-Umstellung, Builds und Runtime-Abnahme noch offen.
-**Ausgangslage (13.11.2026):** App-TFMs `net10.0-android;net10.0-ios`, MAUI
-`10.0.110`, EF Core `10.0.14`, lokal dokumentierte Mac-SDK-/Workload-Pins
-`10.0.403`/`10.0.401`; die Root-`global.json` legt weiterhin nur den
-Microsoft-Testing-Platform-Runner fest. Diese Ist-Werte erst bei tatsächlicher
-Migration in `SETUP.md` ersetzen.
+**Status:** Projekt- und Paketumstellung erfolgt; Mac-/iPhone-Abnahme offen.
+SDK-/Workload-/Paketvorgaben stehen ausschließlich in `SETUP.md`.
 
-**Ziel:** Android und iOS gemeinsam auf .NET 11 / MAUI 11 / EF Core 11 bringen,
-mit möglichst standardmäßigen MAUI-Handlern und CoreCLR statt unnötiger
-historischer iOS-Sonderkonfiguration. Bewährte und nötige native Adapter bleiben
-bestehen. Das iPhone 12 Pro mit iOS 26.2 ist ein verbindliches Abnahmegerät;
-frühere iOS-Versionen müssen nicht allein aus Kompatibilitätsgründen erhalten
-bleiben. Die konkrete deklarierte Mindest-iOS-Version anhand des finalen SDKs
-festlegen und die tatsächlich unterstützten Geräte beachten.
+Das MacBook ist für dieses Arbeitspaket nicht verfügbar. Der Windows-iOS-Build
+belegt weder die native Verlinkung noch die Release-Runtime. Vor dem späteren
+Mac-Build die effektive lokale SDK-/Workload-Auswahl sowie Xcode prüfen; die
+lokale `.local/ios/global.json` wird nicht vom Windows-Auftrag angepasst.
 
-**Technische Referenzen:**
-- `https://github.com/dotnet/skills/tree/main/plugins/dotnet-upgrade/skills/migrate-dotnet10-to-dotnet11`
-  als migrationsspezifischer Leitfaden; Stand 13.11.2026 enthält er noch
-  Preview-3-Angaben, die nicht als aktuelle GA-Versionen/Pins übernommen werden.
-- `https://learn.microsoft.com/dotnet/maui/whats-new/dotnet-11`
-- `https://learn.microsoft.com/dotnet/maui/deployment/runtimes-compilation`
-- `https://learn.microsoft.com/dotnet/maui/macios/interpreter`
-- `https://learn.microsoft.com/dotnet/core/compatibility/11`
-- `https://learn.microsoft.com/ef/core/what-is-new/ef-core-11.0/breaking-changes`
+**Gezielte verbleibende Prüfungen:**
+1. Auf dem Mac nativen iOS-Build mit dem vorhandenen Ark-Nova-Archiv durchführen;
+   bei fehlendem oder inkompatiblem Archiv gemäß NativeVisionSpike-README bauen.
+2. Nach unmittelbar zuvor erteilter Entwicklerfreigabe auf dem iPhone 12 Pro mit
+   iOS 26.2 App-Start, alle vier Haupttabs einschließlich Reselect, Rückkehr aus
+   Unterseiten und Zurücknavigation prüfen; dabei das untenstehende M-04-Gate
+   einbeziehen. Safe Areas, helles/dunkles Theme und Layout kontrollieren.
+3. ManualGames-Punkteeingabe einschließlich negativer Zahlen sowie NumberWheel,
+   Kamera, Fotobibliothek und native Ark-Nova-Fotoerkennung prüfen.
+4. SQLite-Laden/-Speichern und Updateinstallation über den vorhandenen Datenbestand
+   ohne Verlust prüfen; Import-/Exportvertrag unverändert erhalten.
+5. iOS-Release-Runtime mit CoreCLR/ReadyToRun und EF-Reflexion/Trimming gezielt
+   abnehmen. Erst mit belegtem Ersatz weitere Shell-/Tastatur-/Trimming- oder
+   Symbolstrip-Sonderkonfiguration entfernen.
 
-**Gemeinsames Migrationspaket (in sinnvoller Reihenfolge):**
-1. Entwickler legt vor der ersten Nicht-Markdown-Änderung gemäß `SETUP.md` die
-   Versionsart fest. Vor Umsetzung effektive SDK-/Workload-/MAUI-/EF-Core-GA-Versionen
-   für beide Build-Hosts prüfen; keine Preview-Pins aus dem Skill übernehmen.
-2. Core-, Application-, App- und Test-TFMs sowie zentral verwaltete Microsoft-/EF-
-   Pakete konsistent auf .NET 11 aktualisieren. Root-`global.json` ohne Mac-Pin
-   belassen, Mac-SDK-/Workload-Pin unter `.local/ios/` lokal anpassen; ggf. weitere
-   konkret betroffene Build-Konfigurationen prüfen. Inkrementelle Verifikation
-   gemäß `AGENTS.md`/`SETUP.md`; keine vorsorglichen Clean-/Rebuilds.
-3. .NET-11-/C#-15-/EF-Core-11-Breaking-Changes nur dort korrigieren, wo der Code
-   betroffen ist. SQLite-Provider/SQLitePCLRaw, relationale EF-Queries und
-   vorhandene `EnsureCreatedAsync`-Entwicklungsdatenbankstrategie prüfen; keine
-   ungeplanten EF-Migrationen oder Datenbank-Löschungen.
-4. iOS-Release-Einstellungen prüfen: `MtouchInterpreter` steuert den CoreCLR-
-   Interpreter unter .NET 11 nicht und ist als bisheriger Mono-Sonderweg zu
-   entfernen, sobald die neue Konfiguration und Runtime-Verifikation stehen.
-   `MtouchNoSymbolStrip` und `TrimmerRootAssembly` einzeln auf Erforderlichkeit
-   prüfen; nicht ohne Nachweis pauschal löschen. CoreCLR-/ReadyToRun-/Trimming-
-   Verhalten für EF-Reflexion, Startup und SQLite validieren.
-5. Shell/`ThemeShellRenderer` und die plattformspezifische ManualGames-
-   Punkteingabe auf MAUI-11-Standardmechanismen überprüfen. Nur nach belegtem
-   gleichwertigem Verhalten vereinfachen; kein vorsorglicher Renderer-Umbau.
-   Vorhandenes iOS-M-04-Follow-up bleibt bis zur Runtime-Abnahme offen.
-6. Native Ark-Nova-Interop-Bibliothek und Xcode-/iOS-Workload-Kompatibilität
-   prüfen; native Bibliotheken nur bei geänderter Toolchain, fehlendem oder
-   ungültigem Artefakt neu erstellen. Android x64/ARM64 und iOS Device/Simulator
-   getrennt betrachten. Signing- und Provisioning-Daten bleiben lokal.
-7. Verifikation: einmal passende Core-/Application-Tests mit echtem SQLite,
-   gezielte Android-/iOS-Builds sowie explizite Migrations-Abnahme für iOS Debug
-   und Release. Nach unmittelbarer Entwicklerfreigabe auf dem iPhone 12 Pro
-   Startup, Tabs/Zurücknavigation inkl. Rückkehr aus Unterseiten, Punkte-/Minus-
-   Eingabe, Datenbestand nach Update, Kamera/Fotoerkennung und Release-Runtime
-   prüfen. Native Android-ARM64-Geräteprüfung bleibt eigenes offenes Gate.
-8. Erst nach nachgewiesenem neuen Ist-Zustand `SETUP.md` auf .NET-11-Pins,
-   TFM-/Buildbefehle und iOS-Toolchain aktualisieren; Tests und nachweislich
-   erledigte TODO-Punkte abhaken/entfernen. Relevante Versions-/Historienänderung
-   nach `SETUP.md` in `CHANGELOG.md` festhalten.
-
-**Abbruchkriterien:** fehlender kompatibler SDK-/Workload-/Xcode-Satz,
-fehlgeschlagener Restore/Build, nicht bestandene Core-/Application-Tests,
-iOS-Startup-/Release-Fehler, Datenverlust oder fehlerhafte Navigation/Interop.
-Bei Plattformprüfungen Umfang und Freigaben aus `AGENTS.md`/`SETUP.md` beachten.
+**Abbruchkriterien:** inkompatibler Toolchain-Satz, fehlerhafte native Verlinkung,
+Startup-/Release-Fehler, Datenverlust oder fehlerhafte Navigation/Interop.
+Keine dieser Runtime-Prüfungen ist durch den automatisierten Windows-Lauf erledigt.
+Das native Android-ARM64-Geräte-Gate bleibt separat bestehen. Umfang/Freigaben
+richten sich nach `AGENTS.md`/`SETUP.md`; iPhone-Deployment ist zurückgestellt.
 
 ## Plattformnachweise
 
