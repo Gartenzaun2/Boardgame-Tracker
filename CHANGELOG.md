@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.6.0 – 2026-11-13
+
+- Entsorgbare Ergebnisse der Fotobibliotheksauswahl werden nach der Verarbeitung auch bei Fehlern und Abbruch freigegeben; der Lesestream wird zuvor geschlossen. Dadurch bleiben temporäre iOS-Pickerdateien nicht unnötig liegen.
+
 ## 0.22.5.0 – 2026-11-13
 
 - Gruppen- und Spielereditoren halten nach erfolgreicher Speicherung die Eingaben gesperrt und erlauben bei Navigationsfehlern einen erneuten Abschluss ohne weitere Schreibvorgänge. Der Gruppenabschluss wird vollständig abgewartet und Navigationsfehler werden gesondert behandelt.

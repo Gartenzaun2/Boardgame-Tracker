@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="..\..\tools\Games\ArkNova\PhotoRecognition\ArkNovaMaskFraction.cs" Link="Games\ArkNova\ArkNovaMaskFraction.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\PhotoRecognition\IArkNovaPhotoInput.cs" Link="Presentation\IArkNovaPhotoInput.cs" />
+    <Compile Include="../../src/BoardgameTracker.App/Games/ArkNova/PhotoRecognition/MauiArkNovaPhotoInput.cs" Link="Presentation/MauiArkNovaPhotoInput.cs" />
     <Compile Include="..\..\src\BoardgameTracker.App\Games\ArkNova\Features\GameSessions\Scoring\ArkNovaPhotoReview.cs" Link="Presentation\ArkNovaPhotoReview.cs" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="CommunityToolkit.Mvvm" />

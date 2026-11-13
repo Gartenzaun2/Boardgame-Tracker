@@ -27,6 +27,8 @@ public sealed class MauiArkNovaPhotoInput(IMediaPicker picker) : IArkNovaPhotoIn
         });
         if (selected is null)
             return null;
+        // iOS library results own temporary files; the later stream scope must close first.
+        using IDisposable? pickerResult = source == ArkNovaPhotoSource.Library ? selected as IDisposable : null;
         cancellationToken.ThrowIfCancellationRequested();
         using Stream stream = await selected.OpenReadAsync();
         using MemoryStream buffer = new();
