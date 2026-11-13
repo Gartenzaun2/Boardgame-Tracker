@@ -10,6 +10,27 @@ Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
 ## Plattformnachweise
 
+### iOS M-04: Native Haupttabzuordnung zur Laufzeit verifizieren
+
+**Status:** zurückgestellt – MacBook derzeit nicht verfügbar; Runtime-Verifikation offen
+
+**Ist:** Der iOS-`ThemeShellRenderer` ordnet einen Tap auf die native `UITabBar` über
+direkte `UIControl`-Subviews, deren Positionen (`Frame.X`) und eine RTL-Umkehr den
+`ShellSection`-Tabs zu. Diese Zuordnung ist durch die öffentliche UIKit-Schnittstelle
+nicht garantiert. Statische Prüfungen und vorhandene Navigationstests bestätigen
+keinen konkreten Fehlablauf, können die native Trefferzuordnung aber nicht belegen.
+
+**Ziel:** Sobald das MacBook wieder verfügbar ist, die aktuelle App auf einem
+iOS-Simulator oder iPhone gezielt prüfen: aus Unterseiten alle vier Haupttabs
+antippen, auch den bereits aktiven Tab erneut wählen; jeweils den richtigen Root,
+den verworfenen Unterstack und die passende visuelle Tabmarkierung bestätigen. Zusätzlich
+RTL und ein breiteres Layout prüfen, soweit in der Testumgebung möglich. Nur bei
+reproduzierbarem Fehler die konkrete Tab-/Gestenzuordnung korrigieren; kein
+vorsorglicher Renderer-Umbau.
+
+**Freigabe:** Unmittelbar vor jedem Simulator- oder Gerätelauf die ausdrückliche
+Entwicklerfreigabe einholen. Bis dahin M-04 nicht als erledigt betrachten.
+
 ### ManualGames: Punkteingabe vor dem manuellen Mobiltest
 
 Auf iOS die Minus-Eingabe über `NumbersAndPunctuation`, auf Android über die
