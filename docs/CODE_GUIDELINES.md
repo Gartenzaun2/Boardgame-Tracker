@@ -43,6 +43,26 @@ Kommentare erklären **warum**, geschützte Invarianten, Transaktionsgrenzen ode
 relevante Plattform-/Provider-Einschränkungen. Sie wiederholen nicht den sichtbaren
 Code und ersetzen keine guten Namen.
 
+Bei ungewöhnlichen Zuständen und Schutzmechanismen dürfen Kommentare ausführlicher
+sein: Sie sollen Anlass, Zeitpunkt und Konsequenz einer Entscheidung verständlich
+machen. Offensichtliche Getter und selbsterklärende Properties bleiben unkommentiert.
+XML-`<summary>` darf bei kurzen Erklärungen vollständig in einer Zeile stehen;
+für umfangreichere Begründungen ist eine mehrzeilige Summary sinnvoll.
+Eine XML-Summary steht **vor** den Attributen der dokumentierten Deklaration.
+
+Beispiel für einen erklärungsbedürftigen Dialogzustand (nicht als pauschale
+Vorlage für jeden Speichervorgang verwenden):
+
+```csharp
+/// <summary>
+/// Set to true after a successful save to preserve the completed state if navigation fails.
+/// This prevents further editing or saving while the dialog remains open,
+/// allowing the user to retry leaving without modifying the saved player.
+/// </summary>
+[ObservableProperty]
+public partial bool IsSaveCompleted { get; private set; }
+```
+
 XML-Dokumentation gezielt für zentrale Verträge und ungewöhnliche APIs verwenden,
 nicht für jede triviale Methode oder Property. Hilfreiche Erklärungen bei
 Refactorings erhalten und an geändertes Verhalten anpassen.
@@ -64,6 +84,25 @@ deutlich besserer Lesbarkeit.
 Implementierungsdetails möglichst privat verschachteln, soweit XAML-, DI-, EF- oder
 Modulgrenzen dies zulassen.
 
+**Lesereihenfolge innerhalb einer Klasse:** Bei ViewModels bevorzugt zuerst
+explizite DI-Felder, dann Konstruktor, danach eigener Zustand und Properties,
+anschließend Methoden in der Reihenfolge des fachlichen Ablaufs. Hilfsmethoden
+stehen nach Möglichkeit nahe bei dem Ablauf, zu dem sie gehören; mehrfach genutzte
+Hilfsmethoden dürfen gesammelt werden. Diese Reihenfolge ist eine Orientierung,
+keine starre Sortierung nach Sichtbarkeit oder Member-Typ.
+
+Technische Dialogzustände (z. B. `IsBusy`), fachliche Prozessdaten (z. B.
+`PlayerId`, `Name`) und reine UI-Text-Properties werden möglichst erkennbar
+gruppiert. Zusammengehörige Zustände und ihre abgeleiteten Properties bleiben
+beieinander. Keine Abschnittskommentare, die nur Offensichtliches wiederholen.
+
+`#region` ist zur Navigation erlaubt, aber kein Ersatz für passende
+Verantwortlichkeiten. Regions heißen konkret nach ihrem Inhalt, z. B.
+`#region Localized UI Text` für lokalisierte Titel und Buttontexte. Eine solche
+Region darf dort stehen, wo sie den Lesefluss am besten unterstützt; sie muss
+nicht am Dateiende liegen. Eine zusätzliche verschachtelte Klasse oder
+`partial`-Datei nur für einfache Texte ist kein Standard.
+
 Ordner-/Slicestruktur: `ARCHITECTURE.md`.
 
 ## 5. C#-Stil
@@ -73,13 +112,108 @@ Einfache oder kurze Typen explizit schreiben, insbesondere `string?`, `bool`, `i
 oder bei komplexen Typen klarer ist; ein offensichtlicher Initialisierer allein ist
 kein Grund für `var`.
 
-Bei `if` mit genau einer einfachen Anweisung keine geschweiften Klammern; die
-Anweisung steht eingerückt in einer eigenen Zeile. Bei mehreren Anweisungen einen
-mehrzeiligen Klammerblock verwenden. Bei verschachtelten Bedingungen Klammern
-verwenden, wenn sie die Zuordnung klarer machen.
+### 5.1 Klammern und Einrückung
+
+Vier **Leerzeichen** je Einrückungsebene, keine Tab-Zeichen. Die Tab-Taste im
+Editor darf selbstverständlich Leerzeichen einfügen. Öffnende geschweifte
+Klammern stehen bei Typen, Konstruktoren, Methoden und Kontrollstrukturen
+**in derselben Zeile**; schließende Klammern stehen auf einer eigenen Zeile
+(außer bei kompakten Property-Accessors).
+
+Bei `if`, `foreach` und vergleichbaren Kontrollstrukturen mit genau einer
+einfachen Anweisung keine geschweiften Klammern; die Anweisung steht eingerückt
+auf einer eigenen Zeile. Bei mehreren Anweisungen einen mehrzeiligen Klammerblock
+verwenden. Bei verschachtelten Kontrollstrukturen Klammern setzen, wenn sie die
+Zuordnung und den Ablauf klarer machen.
+
+```csharp
+foreach (Player player in Players)
+    player.RefreshScore();
+
+if (IsHistorical) {
+    if (CanSave)
+        await SaveCorrectionAsync();
+    else
+        ShowValidationError();
+}
+```
 
 Eine Anweisung pro Zeile. Komplexe Abläufe mit Absätzen, benannten
 Zwischenschritten und bei Bedarf privaten Methoden gliedern.
+
+### 5.2 Attribute, Properties und Methoden
+
+Attribute stehen **immer oberhalb** der zugehörigen Deklaration, nie in derselben
+Zeile wie Feld, Property, Methode oder Typ. Parameterlose Attribute dürfen
+zusammen in einer Attributzeile stehen; jedes Attribut mit Parametern steht
+bevorzugt in einer eigenen Zeile. Mehrere Parameter desselben Attributs bleiben
+möglichst zusammen in einer Zeile. Zwischen Attributen und Deklaration steht
+keine Leerzeile.
+
+```csharp
+[ObservableProperty, JsonIgnore]
+[NotifyPropertyChangedFor(nameof(IsHistorical), nameof(IsLiveScoring))]
+public partial ScoringMode Mode { get; private set; }
+```
+
+Zwischen eigenständigen Properties standardmäßig eine Leerzeile. Einfache,
+logisch zusammengehörige Hilfsproperties ohne Attribute dürfen ohne Leerzeile
+gruppiert werden, auch wenn eine tatsächlich notwendige einzeilige Summary
+davorsteht. Selbsterklärende Getter-only-Properties benötigen keinen Kommentar.
+
+Kompakte Properties dürfen in einer Zeile stehen. Kurze Methoden dürfen einen
+Expression Body verwenden, aber `=>` steht dann **eingerückt am Anfang der
+nächsten Zeile**. Blockmethoden verwenden die Klammerregel oben.
+
+```csharp
+public bool IsHistorical => Mode == ScoringMode.Historical;
+public bool IsLiveScoring => Mode == ScoringMode.Live;
+
+private bool HasValidScore(PlayerScore player)
+    => player.Score >= 0;
+
+private void ResetScores()
+    => Players.Clear();
+
+private void RefreshScores() {
+    foreach (PlayerScore player in Players)
+        player.RefreshScore();
+}
+```
+
+Parameter von Methoden und Konstruktoren bleiben grundsätzlich auf einer Zeile.
+Ein manueller Zeilenumbruch ist erlaubt, wenn er die Lesbarkeit verbessert,
+beispielsweise bei einem langen letzten Argument. **Keine Regel „ein Parameter
+pro Zeile“ und keine starre maximale Zeilenlänge.** Rein visueller Zeilenumbruch
+im Editor ändert die Quelldatei nicht.
+
+### 5.3 Zustand und Felddeklarationen
+
+Auto-Properties bevorzugen, wenn kein explizites Backing-Field erforderlich ist:
+`public Guid PlayerId { get; private set; }` statt eines privaten Feldes mit
+bloßem weiterleitendem Getter. Bei konkretem Bedarf bewusst zwischen
+Auto-Property, `field`, Toolkit-generierter Observable Property und explizitem
+Backing-Field entscheiden; keine pauschale Ersetzung von Feldern.
+
+Bei ViewModels klassische Konstruktoren mit sichtbar deklarierten `readonly`-
+DI-Feldern bevorzugen. Primary Constructors können bei sehr kleinen,
+übersichtlichen Klassen ohne nennenswerte weitere Zustandsverwaltung passend sein.
+Positional Records erfüllen eine andere, datenorientierte Rolle. Keine starre
+Grenze nach Dateilänge.
+
+Nur für die UI benötigte **einfache boolesche Negationen** bevorzugt über einen
+vorhandenen invertierenden Bool-Converter im XAML ausdrücken, statt eine zusätzliche
+ViewModel-Property wie `IsIdle => !IsBusy` anzulegen. Eine abgeleitete Property
+beibehalten, wenn sie eine eigenständige, verständliche Bedingung ausdrückt,
+insbesondere wenn dieselbe zusammengesetzte Bedingung mehrfach gebraucht wird
+(z. B. `CanEdit => !IsBusy && !IsSaveCompleted`). Keine unnötige Verdopplung
+unabhängig gespeicherter Zustände. Vor dem Entfernen oder Umbenennen einer Property
+alle Bindings und Änderungsbenachrichtigungen prüfen.
+
+Ein `IsBusy`-Zustand darf verschiedene laufende Operationen kennzeichnen;
+der konkrete Scope muss dem tatsächlichen Dialogverhalten entsprechen. Ein
+Kommentar kann den Schutz vor parallelen Vorgängen und die Rücksetzung auch
+nach Fehlern erklären, wenn das nicht ohnehin eindeutig ist.
 
 Projekt-Typnamen über `using` einbinden, sofern kein Konflikt besteht. Keine festen
 Zeilengrenzen oder zusätzliche Wrapper nur zur optischen Aufteilung.
