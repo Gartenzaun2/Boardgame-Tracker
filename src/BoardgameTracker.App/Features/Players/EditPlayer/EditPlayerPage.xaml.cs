@@ -1,29 +1,27 @@
+using System.Globalization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Settings.Navigation;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Players.EditPlayer;
 
-public partial class EditPlayerPage : ContentPage, IQueryAttributable
-{
+public partial class EditPlayerPage : ContentPage, IQueryAttributable {
     private readonly EditPlayerViewModel _viewModel;
     private readonly ILogger<EditPlayerPage> _logger;
     private Guid _playerId;
     private bool _saving;
 
-    public EditPlayerPage(EditPlayerViewModel viewModel, ILogger<EditPlayerPage> logger)
-    {
+    public EditPlayerPage(EditPlayerViewModel viewModel, ILogger<EditPlayerPage> logger) {
         InitializeComponent();
         _viewModel = viewModel;
         _logger = logger;
         BindingContext = viewModel;
     }
 
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        if (query.TryGetValue(NavigationParameters.NewPlayer, out object? create) && create is true)
-        {
+    public void ApplyQueryAttributes(IDictionary<string, object> query) {
+        if (query.TryGetValue(NavigationParameters.NewPlayer, out object? create) && create is true) {
             _viewModel.InitializeNew();
             return;
         }
@@ -32,72 +30,72 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable
         _playerId = id;
     }
 
-    protected override async void OnAppearing()
-    {
+    protected override async void OnAppearing() {
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this) && !_viewModel.IsNew)
             await _viewModel.LoadAsync(_playerId);
     }
 
-    private async void OnSaveClicked(object? sender, EventArgs e) => await SaveAsync(false);
-    private async void OnAddAnotherClicked(object? sender, EventArgs e) => await SaveAsync(true);
+    private async void OnSaveClicked(object? sender, EventArgs e)
+        => await SaveAsync(false);
 
-    private async Task SaveAsync(bool addAnother)
-    {
+    private async void OnAddAnotherClicked(object? sender, EventArgs e)
+        => await SaveAsync(true);
+
+    private async Task SaveAsync(bool addAnother) {
         if (_saving)
             return;
         _saving = true;
         EditorContent.IsEnabled = false;
-        try
-        {
-            if (addAnother ? await _viewModel.SaveAndAddAnotherAsync() : await _viewModel.SaveAsync())
-            {
-                if (!addAnother)
-                {
+        try {
+            if (addAnother ? await _viewModel.SaveAndAddAnotherAsync() : await _viewModel.SaveAsync()) {
+                if (!addAnother) {
                     if (_viewModel.IsNew && Shell.Current is AppShell shell)
-                        await shell.NavigateToMainSectionAsync(BoardgameTracker.Application.Settings.Navigation.AppMainSection.Participants);
+                        await shell.NavigateToMainSectionAsync(AppMainSection.Participants);
                     else
                         await Shell.Current.GoToAsync("..", false);
                 }
             }
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not leave player editor after saving.");
-            try
-            {
+            try {
                 await AppDialogPage.ShowAsync(this, AppResources.EditPlayer, AppResources.PlayerEditorNavigationFailed, AppResources.Ok);
             }
-            catch (Exception dialogException)
-            {
+            catch (Exception dialogException) {
                 _logger.LogError(dialogException, "Could not show player editor navigation error.");
             }
         }
-        finally
-        {
+        finally {
             _saving = false;
             EditorContent.IsEnabled = true;
         }
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e)
-    {
+    private async void OnBackClicked(object? sender, EventArgs e) {
         if (_saving)
             return;
-        if (_viewModel.IsSaved)
+        if (_viewModel.IsSaveCompleted)
             await SaveAsync(false);
         else
             await Shell.Current.GoToAsync("..", false);
     }
-    protected override bool OnBackButtonPressed()
-    {
+
+    protected override bool OnBackButtonPressed() {
         if (_saving)
             return true;
-        if (_viewModel.IsSaved)
-        {
+        if (_viewModel.IsSaveCompleted) {
             Dispatcher.Dispatch(async () => await SaveAsync(false));
             return true;
         }
         return base.OnBackButtonPressed();
     }
+}
+
+public sealed class PlayerEditorBoolNegationConverter : IValueConverter {
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool flag ? !flag : BindableProperty.UnsetValue;
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => value is bool flag ? !flag : BindableProperty.UnsetValue;
 }

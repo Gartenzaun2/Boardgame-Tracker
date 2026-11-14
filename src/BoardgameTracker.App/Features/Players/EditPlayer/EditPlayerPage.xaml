@@ -1,37 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.EditPlayer" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    x:Class="BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerPage" x:DataType="local:EditPlayerViewModel" Shell.NavBarIsVisible="False">
-    <Grid RowDefinitions="Auto,*" RowSpacing="12" x:Name="EditorContent">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.EditPlayer"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:Class="BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerPage"
+    x:DataType="local:EditPlayerViewModel"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <local:PlayerEditorBoolNegationConverter x:Key="NegateBool" />
+    </ContentPage.Resources>
 
-<VerticalStackLayout Spacing="8">
+    <Grid x:Name="EditorContent" RowDefinitions="Auto,*" RowSpacing="12">
+        <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{Binding Title}"
                 Variant="Subpage"
                 BackClicked="OnBackClicked" />
-            <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" Margin="18,0" />
+            <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" Margin="18,0" />
         </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
-<ScrollView Grid.Row="0">
-            <VerticalStackLayout Spacing="12" IsEnabled="{Binding CanEdit}">
-                <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
-                <Entry Text="{Binding Name}" Style="{StaticResource InlineFormEntry}" />
-                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsExisting}">
-                    <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                    <Switch IsToggled="{Binding IsArchived}" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsNew}">
-                    <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
-                    <Switch IsToggled="{Binding IsGuest}" />
-                </HorizontalStackLayout>
-                <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
-            </VerticalStackLayout>
-        </ScrollView>
-<Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
-            <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsIdle}" />
-            <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+
+        <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Spacing="12" IsEnabled="{Binding CanEdit}">
+                    <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
+                    <Entry Text="{Binding Name}" Style="{StaticResource InlineFormEntry}" />
+                    <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsNew, Converter={StaticResource NegateBool}}">
+                        <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                        <Switch IsToggled="{Binding IsArchived}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsNew}">
+                        <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
+                        <Switch IsToggled="{Binding IsGuest}" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
+                <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
+                <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
+            </Grid>
+            <Button Grid.Row="1" IsVisible="{Binding IsNew, Converter={StaticResource NegateBool}}" Text="{Binding SaveText}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
         </Grid>
-<Button IsVisible="{Binding IsExisting}" Grid.Row="1" Text="{Binding SaveText}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
-</Grid>
-</Grid>
+    </Grid>
 </ContentPage>

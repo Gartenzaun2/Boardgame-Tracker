@@ -98,7 +98,7 @@ public sealed partial class EventBoundaryTests
         try
         {
             Assert.False(pending.IsCompleted);
-            Assert.True(editor.IsSaved);
+            Assert.True(editor.IsSaveCompleted);
             Assert.False(editor.CanEdit);
             Assert.False(page.EditorContent.IsEnabled);
             await page.InvokeAsync("OnSaveClicked");
@@ -158,7 +158,7 @@ public sealed partial class EventBoundaryTests
         editor.Name = new string(' ', padding) + name + new string(' ', padding);
         editor.IsArchived = true;
         Assert.Equal(valid, await editor.SaveAsync(EditorToken));
-        Assert.Equal(valid, editor.IsSaved);
+        Assert.Equal(valid, editor.IsSaveCompleted);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Equal(create && valid ? 3 : 2, await verify.Players.CountAsync(EditorToken));
         if (valid)
@@ -179,16 +179,16 @@ public sealed partial class EventBoundaryTests
     }
 
     [Theory]
-    [InlineData("PlayerFeature.EditPlayerPage.xaml")]
-    [InlineData("GeneralGroupFeature.EditGroupPage.xaml")]
-    public void SavedEditor_BindsInputLockAndVisibleCompletionHint(string resource)
+    [InlineData("PlayerFeature.EditPlayerPage.xaml", "IsSaveCompleted")]
+    [InlineData("GeneralGroupFeature.EditGroupPage.xaml", "IsSaved")]
+    public void SavedEditor_BindsInputLockAndVisibleCompletionHint(string resource, string savedProperty)
     {
         using Stream stream = typeof(EventBoundaryTests).Assembly.GetManifestResourceStream(resource)!;
         XDocument page = XDocument.Load(stream);
         XElement name = Assert.Single(page.Descendants(), element => element.Name.LocalName == "Entry");
         Assert.Contains(name.Ancestors(), element => (string?)element.Attribute("IsEnabled") == "{Binding CanEdit}");
         Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Label"
-            && (string?)element.Attribute("IsVisible") == "{Binding IsSaved}"
+            && (string?)element.Attribute("IsVisible") == "{Binding " + savedProperty + "}"
             && (string?)element.Attribute("Text") == "{x:Static res:AppResources.EditorSavedHint}");
         Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Button" && (string?)element.Attribute("Text") == "{Binding SaveText}");
     }
@@ -207,13 +207,85 @@ public sealed partial class EventBoundaryTests
         editor.Name = "  Ben  ";
         editor.IsArchived = true;
         Assert.False(await editor.SaveAsync(EditorToken));
-        Assert.False(editor.IsSaved);
+        Assert.False(editor.IsSaveCompleted);
         Assert.True(editor.CanEdit);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Equal(2, await verify.Players.CountAsync(EditorToken));
         Player first = await verify.Players.SingleAsync(player => player.Id == db.First.Id, EditorToken);
         Assert.Equal("Anna", first.Name);
         Assert.False(first.IsArchived);
+    }
+
+    [Fact]
+    public async Task PlayerStateChanges_NotifyBindingsAndRejectConcurrentSave() {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        List<string?> changed = [];
+        List<bool> editingStates = [];
+        List<Task<bool>> concurrentSaves = [];
+        editor.PropertyChanged += (_, args) => {
+            changed.Add(args.PropertyName);
+            if (args.PropertyName == nameof(editor.CanEdit))
+                editingStates.Add(editor.CanEdit);
+            if (args.PropertyName == nameof(editor.IsBusy) && editor.IsBusy)
+                concurrentSaves.Add(editor.SaveAsync(EditorToken));
+        };
+
+        editor.InitializeNew();
+        Assert.Contains(nameof(editor.Title), changed);
+        Assert.Equal(AppResources.AddPlayer, editor.Title);
+        Assert.False(await editor.SaveAsync(EditorToken));
+        Assert.Contains(nameof(editor.HasError), changed);
+        Assert.True(editor.HasError);
+
+        changed.Clear();
+        editor.Name = "New guest";
+        editor.IsGuest = true;
+        Assert.True(await editor.SaveAsync(EditorToken));
+        Assert.False(await Assert.Single(concurrentSaves));
+        Assert.False(editor.IsBusy);
+        Assert.True(editor.IsSaveCompleted);
+        Assert.False(editor.CanEdit);
+        Assert.False(editor.HasError);
+        Assert.Equal(AppResources.Done, editor.SaveText);
+        Assert.NotEqual(Guid.Empty, editor.PlayerId);
+        Assert.Contains(nameof(editor.PlayerId), changed);
+        Assert.Contains(nameof(editor.IsSaveCompleted), changed);
+        Assert.Contains(nameof(editor.SaveText), changed);
+        Assert.Contains(nameof(editor.HasError), changed);
+        Assert.NotEmpty(editingStates);
+        Assert.All(editingStates, state => Assert.False(state));
+
+        changed.Clear();
+        editor.InitializeNew();
+        Assert.Equal(Guid.Empty, editor.PlayerId);
+        Assert.False(editor.IsSaveCompleted);
+        Assert.True(editor.CanEdit);
+        Assert.Empty(editor.Name);
+        Assert.False(editor.IsGuest);
+        Assert.Equal(AppResources.Save, editor.SaveText);
+        Assert.Contains(nameof(editor.PlayerId), changed);
+        Assert.Contains(nameof(editor.IsSaveCompleted), changed);
+        Assert.Contains(nameof(editor.CanEdit), changed);
+        Assert.Contains(nameof(editor.SaveText), changed);
+
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Player saved = await verify.Players.SingleAsync(player => player.Name == "New guest", EditorToken);
+        Assert.True(saved.IsGuest);
+        Assert.Equal(3, await verify.Players.CountAsync(EditorToken));
+    }
+
+    [Fact]
+    public void PlayerEditor_BindsNegationsToOriginalObservableState() {
+        using Stream stream = typeof(EventBoundaryTests).Assembly.GetManifestResourceStream("PlayerFeature.EditPlayerPage.xaml")!;
+        XDocument page = XDocument.Load(stream);
+        Assert.Contains(page.Descendants(), element => element.Name.LocalName == "PlayerEditorBoolNegationConverter"
+            && (string?)element.Attribute(XName.Get("Key", "http://schemas.microsoft.com/winfx/2009/xaml")) == "NegateBool");
+        XElement[] buttons = page.Descendants().Where(element => element.Name.LocalName == "Button").ToArray();
+        Assert.Equal(3, buttons.Length);
+        Assert.All(buttons, button => Assert.Equal("{Binding IsBusy, Converter={StaticResource NegateBool}}", (string?)button.Attribute("IsEnabled")));
+        XElement archivedSwitch = Assert.Single(page.Descendants(), element => (string?)element.Attribute("IsToggled") == "{Binding IsArchived}");
+        Assert.Equal("{Binding IsNew, Converter={StaticResource NegateBool}}", (string?)archivedSwitch.Parent!.Attribute("IsVisible"));
     }
 
     private sealed class EditorLogger<T> : ILogger<T>

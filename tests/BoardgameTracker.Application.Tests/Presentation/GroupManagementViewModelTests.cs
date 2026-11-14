@@ -443,7 +443,7 @@ public sealed class GroupManagementViewModelTests
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
         Assert.Empty(vm.Name);
         Assert.False(vm.IsGuest);
-        Assert.False(vm.IsSaved);
+        Assert.False(vm.IsSaveCompleted);
         Assert.True(vm.CanEdit);
         vm.Name = "Second new";
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
@@ -503,7 +503,7 @@ public sealed class GroupManagementViewModelTests
         var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
         var add = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Clicked") == "OnAddAnotherClicked");
         Assert.Contains(add.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew}");
-        var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsExisting}" && element.Name.LocalName == "Button");
+        var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew, Converter={StaticResource NegateBool}}" && element.Name.LocalName == "Button");
         Assert.Equal("{Binding SaveText}", (string?)editorSave.Attribute("Text"));
     }
 }

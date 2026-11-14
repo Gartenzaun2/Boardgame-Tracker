@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.7.2 – 2026-11-14
+
+- Spielereditor gemäß den lernorientierten Code-Guidelines strukturiert; Speicherabschluss als expliziten Zustand mit abhängigen Binding-Benachrichtigungen abgebildet und einfache XAML-Negationen über einen lokalen Converter ausgedrückt. Speicher-, Validierungs- und Navigationsverhalten beibehalten.
+
 ## 0.22.7.1 – 2026-11-13
 
 - Projekte einschließlich MAUI-App, Tests und Entwicklungstools auf .NET 11 umgestellt; MAUI 11.0.10 und EF Core/Microsoft.Extensions 11.0.0 zentral angebunden.

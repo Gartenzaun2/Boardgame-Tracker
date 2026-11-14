@@ -6,123 +6,135 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Players.EditPlayer;
 
-public partial class EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayerUseCase createPlayer, ILogger<EditPlayerViewModel> logger) : ObservableObject
-{
-    private Guid _playerId;
-    private bool _saved;
-    public Guid PlayerId => _playerId;
-    public bool IsSaved => _saved;
-    public bool CanEdit => IsIdle && !_saved;
-    public string SaveText => _saved ? AppResources.Done : AppResources.Save;
-    [ObservableProperty] public partial bool IsNew { get; private set; }
-    [ObservableProperty] public partial bool IsGuest { get; set; }
-    public bool IsExisting => !IsNew;
+public partial class EditPlayerViewModel : ObservableObject {
+    private readonly EditPlayerUseCase _useCase;
+    private readonly CreatePlayerUseCase _createPlayer;
+    private readonly ILogger<EditPlayerViewModel> _logger;
+
+    public EditPlayerViewModel(EditPlayerUseCase useCase, CreatePlayerUseCase createPlayer, ILogger<EditPlayerViewModel> logger) {
+        _useCase = useCase;
+        _createPlayer = createPlayer;
+        _logger = logger;
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    public partial bool IsBusy { get; private set; }
+
+    /// <summary>
+    /// Set to true after a successful save to preserve the completed state if navigation fails.
+    /// This prevents further editing or saving while the dialog remains open,
+    /// allowing the user to retry leaving without modifying the saved player.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEdit), nameof(SaveText))]
+    public partial bool IsSaveCompleted { get; private set; }
+
+    public bool CanEdit => !IsBusy && !IsSaveCompleted;
+
+    [ObservableProperty]
+    public partial Guid PlayerId { get; private set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Title))]
+    public partial bool IsNew { get; private set; }
+
+    [ObservableProperty]
+    public partial string Name { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsGuest { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsArchived { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => ErrorMessage is not null;
+
+    #region Localized UI Text
+
     public string Title => IsNew ? AppResources.AddPlayer : AppResources.EditPlayer;
-    public void InitializeNew()
-    {
-        _playerId = Guid.Empty;
-        _saved = false;
+    public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
+
+    #endregion
+
+    public void InitializeNew() {
+        PlayerId = Guid.Empty;
+        IsSaveCompleted = false;
         Name = string.Empty;
         IsGuest = false;
         IsArchived = false;
         ErrorMessage = null;
         IsNew = true;
-        OnPropertyChanged(nameof(IsExisting));
-        OnPropertyChanged(nameof(Title));
-        NotifySavedState();
     }
-    [ObservableProperty] public partial string Name { get; set; } = string.Empty;
-    [ObservableProperty] public partial bool IsArchived { get; set; }
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
-    [NotifyPropertyChangedFor(nameof(CanEdit))]
-    public partial bool IsBusy { get; private set; }
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
-    public partial string? ErrorMessage { get; private set; }
-    public bool HasError => ErrorMessage is not null;
-    public bool IsIdle => !IsBusy;
 
-    public async Task LoadAsync(Guid playerId, CancellationToken cancellationToken = default)
-    {
-        if (IsBusy || _playerId == playerId)
+    public async Task LoadAsync(Guid playerId, CancellationToken cancellationToken = default) {
+        if (IsBusy || PlayerId == playerId)
             return;
+
         IsBusy = true;
-        try
-        {
-            Player player = await useCase.GetAsync(playerId, cancellationToken)
+        try {
+            Player player = await _useCase.GetAsync(playerId, cancellationToken)
                 ?? throw new InvalidOperationException("The player does not exist.");
             Name = player.Name;
             IsArchived = player.IsArchived;
-            _playerId = playerId;
+            PlayerId = playerId;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load player for editing.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load player for editing.");
             ErrorMessage = AppResources.PlayersLoadFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public async Task<bool> SaveAndAddAnotherAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task<bool> SaveAndAddAnotherAsync(CancellationToken cancellationToken = default) {
         if (!IsNew || !await SaveAsync(cancellationToken))
             return false;
+
         InitializeNew();
         return true;
     }
 
-    public async Task<bool> SaveAsync(CancellationToken cancellationToken = default)
-    {
-        if (_saved)
+    public async Task<bool> SaveAsync(CancellationToken cancellationToken = default) {
+        if (IsSaveCompleted)
             return true;
-        if (IsBusy || (!IsNew && _playerId == Guid.Empty))
+        if (IsBusy || (!IsNew && PlayerId == Guid.Empty))
             return false;
+
         ErrorMessage = null;
-        if (string.IsNullOrWhiteSpace(Name))
-        {
+        if (string.IsNullOrWhiteSpace(Name)) {
             ErrorMessage = AppResources.PlayerNameRequired;
             return false;
         }
-        if (Name.Trim().Length > 100)
-        {
+        if (Name.Trim().Length > 100) {
             ErrorMessage = AppResources.PlayerNameTooLong;
             return false;
         }
+
         IsBusy = true;
-        try
-        {
-            if (IsNew)
-            {
-                CreatePlayerResult result = await createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
-                _playerId = result.Id;
+        try {
+            if (IsNew) {
+                CreatePlayerResult result = await _createPlayer.CreatePlayerAsync(Name, IsGuest, cancellationToken);
+                PlayerId = result.Id;
             }
             else
-                await useCase.UpdatePlayerAsync(_playerId, Name, IsArchived, cancellationToken);
-            _saved = true;
-            NotifySavedState();
+                await _useCase.UpdatePlayerAsync(PlayerId, Name, IsArchived, cancellationToken);
+
+            IsSaveCompleted = true;
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not save player.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not save player.");
             ErrorMessage = AppResources.PlayerSaveFailed;
             return false;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
-    }
-
-    private void NotifySavedState()
-    {
-        OnPropertyChanged(nameof(PlayerId));
-        OnPropertyChanged(nameof(IsSaved));
-        OnPropertyChanged(nameof(CanEdit));
-        OnPropertyChanged(nameof(SaveText));
     }
 }
