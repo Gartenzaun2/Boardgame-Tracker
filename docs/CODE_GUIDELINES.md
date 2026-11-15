@@ -21,6 +21,13 @@ Orientierung verwenden. Ein altes Beispiel ersetzt keine heutige Regel. Gleiche
 Probleme möglichst gleich lösen; unterschiedliche Anforderungen nicht in eine
 künstlich einheitliche Schablone zwingen.
 
+**Beispiele veranschaulichen Regeln, keine verbindlichen Member-Namen oder
+Refactoring-Aufträge.** Namen wie `RefreshPositionsAndMoveAvailability()`,
+`GamesAvailableToAdd` und `OpenGameSelectionCommand` sind Beispiele, keine
+Behauptung über bereits vorhandenen Code. Sie nur übernehmen, wenn sie zur
+konkreten Verantwortung und den bestehenden Verträgen passen; nicht allein
+wegen eines Beispiels projektweit umbenennen.
+
 ## 2. Namen und Verantwortlichkeiten
 
 Namen sollen erkennen lassen, **was** ein Zustand beschreibt oder **welche** Aktion
@@ -94,6 +101,27 @@ einer kurzen XML-`<summary>` versehen, wenn Aufrufgrund und Zweck nicht aus
 dem Methodennamen hervorgehen (z. B. `OnBackButtonPressed()` für System-Zurück
 unabhängig vom Header-Button). Auch ungewöhnliche Guards und Early Returns
 kommentieren, sofern ihr Grund ohne Kommentar unverständlich wäre.
+
+Beispiel für einen **Warum-Kommentar** an einem MAUI-Lifecycle-Override:
+
+```csharp
+/// <summary>
+/// MAUI calls this when the page appears or resumes; dialog transitions may
+/// also trigger it. Skip loading while a dialog is open, or unsaved form
+/// changes could be overwritten.
+/// </summary>
+protected override async void OnAppearing() {
+    base.OnAppearing();
+    if (AppDialogPage.IsOpen(this))
+        return;
+
+    if (_groupId != Guid.Empty)
+        await _viewModel.LoadAsync(_groupId);
+}
+```
+
+Der Kommentar begründet die **zusätzliche Lifecycle-Prüfung**; er beschreibt
+nicht bloß, dass `OnAppearing()` beim Anzeigen einer Seite aufgerufen wird.
 
 ### Bewusste Architekturabstraktionen für Einsteiger dokumentieren
 
@@ -407,10 +435,6 @@ typisierte `ViewModel`-Property):
     </CollectionView.ItemTemplate>
 </CollectionView>
 ```
-
-Diese Beispielnamen illustrieren den **gewünschten Stil**; sie stellen keine
-Behauptung dar, dass sämtliche gezeigten Properties/Commands bereits im
-aktuellen Code existieren.
 
 Neue/geänderte Bindings als **compiled bindings** mit passendem `x:DataType`
 für Page, Template und jeden BindingContext-Wechsel schreiben. `x:Reference`
