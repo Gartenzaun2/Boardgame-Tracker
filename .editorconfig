@@ -4,11 +4,26 @@ root = true
 end_of_line = lf
 charset = utf-8
 insert_final_newline = true
+trim_trailing_whitespace = true
 
 [*.cs]
 indent_style = space
 indent_size = 4
 csharp_style_namespace_declarations = file_scoped:suggestion
+
+# Keep C# formatting consistent with the documented K&R style.
+# This does not change the preferred separate lines for else/catch/finally.
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_preserve_single_line_statements = false
+
+# Simple single statements may omit braces; multiline control flow remains guarded.
+csharp_prefer_braces = when_multiline:suggestion
+
+# DI fields and other fields not reassigned after construction should be readonly.
+dotnet_style_readonly_field = true:suggestion
 
 # Production symbols use naming warnings; test methods may keep descriptive underscores.
 [src/**/*.cs]
