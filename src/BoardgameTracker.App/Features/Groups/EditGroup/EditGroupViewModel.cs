@@ -23,17 +23,29 @@ public partial class EditGroupViewModel : ObservableObject {
         _logger = logger;
     }
 
-    public ObservableCollection<GroupGameSelection> Games { get; } = [];
-    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected && game.IsVisible).ToArray();
-    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.IsVisible).ToArray();
-    public bool HasAvailableGames => AvailableGames.Count > 0;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    public partial bool IsBusy { get; private set; }
+
+    /// <summary>Keeps saved inputs frozen while a failed departure can be retried without another write.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEdit), nameof(SaveText))]
+    public partial bool IsSaved { get; private set; }
+
+    public bool CanEdit => !IsBusy && !IsSaved;
+
     [ObservableProperty]
     public partial bool IsChoosingGame { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    public partial string? ErrorMessage { get; private set; }
+
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    [ObservableProperty]
     public partial bool CanArchive { get; private set; }
-    public bool ArchiveLocked => !CanArchive;
-    public ObservableCollection<GroupMemberDraft> Players { get; } = [];
 
     [ObservableProperty]
     public partial Guid GroupId { get; private set; }
@@ -45,51 +57,43 @@ public partial class EditGroupViewModel : ObservableObject {
     [ObservableProperty]
     public partial bool IsArchived { get; set; }
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyPropertyChangedFor(nameof(CanEdit))]
-    public partial bool IsBusy { get; private set; }
+    public ObservableCollection<GroupMemberDraft> Players { get; } = [];
+    public ObservableCollection<GroupGameSelection> Games { get; } = [];
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanEdit))]
-    [NotifyPropertyChangedFor(nameof(SaveText))]
-    public partial bool IsSaved { get; private set; }
-    public bool CanEdit => !IsBusy && !IsSaved;
+    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected && game.IsVisible).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.IsVisible).ToArray();
+    public bool HasAvailableGames => AvailableGames.Count > 0;
+
     public string SaveText => IsSaved ? AppResources.Done : AppResources.Save;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
-    public partial string? ErrorMessage { get; private set; }
-
-    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     public Func<Task>? SavedAsync { get; set; }
 
-    private void GamesChanged() {
-        OnPropertyChanged(nameof(SelectedGames));
-        OnPropertyChanged(nameof(AvailableGames));
-        OnPropertyChanged(nameof(HasAvailableGames));
-    }
-
     [RelayCommand]
     private void AddGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || !game.IsVisible || !Games.Contains(game))
+        if (!CanEdit)
             return;
+        if (game is null || !game.IsVisible || !Games.Contains(game))
+            return;
+
         game.IsSelected = true;
         IsChoosingGame = false;
     }
 
     [RelayCommand]
     private void RemoveGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || !Games.Contains(game) || !game.CanChange)
+        if (!CanEdit)
             return;
+        if (game is null || !Games.Contains(game) || !game.CanChange)
+            return;
+
         game.IsSelected = false;
     }
 
-    public async Task LoadAsync(
-        Guid groupId,
-        CancellationToken cancellationToken = default) {
-        if (IsBusy || groupId == Guid.Empty || GroupId == groupId)
+    public async Task LoadAsync(Guid groupId, CancellationToken cancellationToken = default) {
+        if (IsBusy)
+            return;
+        // Returning from an overlay must not replace edits to an already loaded group.
+        if (groupId == Guid.Empty || GroupId == groupId)
             return;
 
         try {
@@ -104,15 +108,16 @@ public partial class EditGroupViewModel : ObservableObject {
                 return;
             }
 
-            HashSet<string> visibleGames = (await _activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
+            IReadOnlyList<GameActivationState> activationStates = await _activation.GetGamesAsync(cancellationToken);
+            HashSet<string> enabledGameKeys = activationStates.Where(game => game.IsEnabled)
+                .Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
             foreach (EditGroupGame game in details.Games)
-                Games.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, visibleGames.Contains(game.Key)));
-            foreach (var game in Games)
-                game.PropertyChanged += (_, _) => GamesChanged();
-            GamesChanged();
+                Games.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
+            foreach (GroupGameSelection game in Games)
+                game.PropertyChanged += (_, _) => RefreshGameSelectionBindings();
+            RefreshGameSelectionBindings();
             CanArchive = details.CanArchive;
-            OnPropertyChanged(nameof(ArchiveLocked));
             GroupId = details.Id;
             GroupName = details.Name;
             IsArchived = details.IsArchived;
@@ -143,10 +148,11 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         int index = Players.IndexOf(player);
-        if (index > 0) {
-            Players.Move(index, index - 1);
-            GroupMemberDraft.UpdatePositions(Players);
-        }
+        if (index <= 0)
+            return;
+
+        Players.Move(index, index - 1);
+        GroupMemberDraft.UpdatePositions(Players);
     }
 
     [RelayCommand]
@@ -155,17 +161,15 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         int index = Players.IndexOf(player);
-        if (index >= 0 && index < Players.Count - 1) {
-            Players.Move(index, index + 1);
-            GroupMemberDraft.UpdatePositions(Players);
-        }
+        if (index < 0 || index >= Players.Count - 1)
+            return;
+
+        Players.Move(index, index + 1);
+        GroupMemberDraft.UpdatePositions(Players);
     }
 
     private bool CanSave()
-        => !IsBusy
-        && GroupId != Guid.Empty
-        && !string.IsNullOrWhiteSpace(GroupName)
-        && Players.Count > 0;
+        => !IsBusy && GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0;
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync() {
@@ -176,6 +180,7 @@ public partial class EditGroupViewModel : ObservableObject {
             IsBusy = true;
             ErrorMessage = null;
 
+            // IsBusy covers persistence and the completion callback; retries skip the completed write.
             if (!IsSaved) {
                 IReadOnlyList<Guid> orderedPlayerIds =
                     [.. Players.Select(player => player.PlayerId!.Value)];
@@ -203,5 +208,11 @@ public partial class EditGroupViewModel : ObservableObject {
         finally {
             IsBusy = false;
         }
+    }
+
+    private void RefreshGameSelectionBindings() {
+        OnPropertyChanged(nameof(SelectedGames));
+        OnPropertyChanged(nameof(AvailableGames));
+        OnPropertyChanged(nameof(HasAvailableGames));
     }
 }

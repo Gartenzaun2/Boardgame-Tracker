@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderGeometry.cs" Link="Presentation/AppPageHeaderGeometry.cs" />
+    <Compile Include="../../src/BoardgameTracker.App/Presentation/Converters/BoolNegationConverter.cs" Link="Presentation/BoolNegationConverter.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderLayout.cs" LogicalName="HeaderContract.AppPageHeaderLayout.cs" />
   </ItemGroup>
   <ItemGroup><EmbeddedResource Include="../../src/BoardgameTracker.App/App.xaml" LogicalName="ThemeContract.App.xaml" /></ItemGroup>

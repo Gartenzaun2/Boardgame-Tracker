@@ -156,7 +156,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable {
             AppResources.Cancel, destructive: true);
 
             if (confirmed && await _viewModel.DiscardAsync()) {
-                await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
+                await AppShell.CurrentInstance.ReturnToGameSessionCallerAsync();
             }
 
         }
@@ -207,7 +207,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable {
                 return;
             }
 
-            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
+            await AppShell.CurrentInstance.ReturnToGameSessionCallerAsync();
         }
         catch (Exception exception) {
             _logger.LogError(exception, "Could not return from Ark Nova scoring.");

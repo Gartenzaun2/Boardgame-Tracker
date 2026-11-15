@@ -331,7 +331,8 @@ public sealed class GroupManagementViewModelTests
         EditGroupViewModel vm = new(new(db), new(db, new TestGameActivationStore()), NullLogger<EditGroupViewModel>.Instance);
         await vm.LoadAsync(db.Group.Id, Token);
         Assert.False(vm.CanArchive);
-        Assert.True(vm.ArchiveLocked);
+        Assert.True(Assert.IsType<bool>(new BoardgameTracker.App.Presentation.Converters.BoolNegationConverter()
+            .Convert(vm.CanArchive, typeof(bool), null, System.Globalization.CultureInfo.InvariantCulture)));
         vm.RemoveGameCommand.Execute(Assert.Single(vm.SelectedGames));
         Assert.Single(vm.SelectedGames);
         GroupGameSelection game = Assert.Single(vm.Games);
@@ -363,6 +364,31 @@ public sealed class GroupManagementViewModelTests
         Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
         Assert.Equal("Edited", (await verify.Groups.SingleAsync(Token)).Name);
         Assert.Equal(db.Second.Id, (await verify.GroupPlayers.SingleAsync(player => player.DefaultOrder == 1, Token)).PlayerId);
+    }
+
+    [Fact]
+    public async Task Editor_RejectsForeignGameAndPlayerInstances() {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
+        EditGroupViewModel editor = new(new(db), new(db, new TestGameActivationStore()), NullLogger<EditGroupViewModel>.Instance);
+        await editor.LoadAsync(db.Group.Id, Token);
+        GroupGameSelection ownedGame = Assert.Single(editor.Games);
+        GroupGameSelection foreignSelected = new(ownedGame.Id, ownedGame.Name, true);
+        GroupGameSelection foreignAvailable = new(ownedGame.Id, ownedGame.Name, false);
+        GroupMemberDraft firstPlayer = editor.Players[0];
+        GroupMemberDraft foreignPlayer = new(firstPlayer.PlayerId, firstPlayer.Name, firstPlayer.IsGuest);
+
+        editor.IsChoosingGame = true;
+        editor.AddGameCommand.Execute(foreignAvailable);
+        editor.RemoveGameCommand.Execute(foreignSelected);
+        editor.MovePlayerDownCommand.Execute(foreignPlayer);
+
+        Assert.False(foreignAvailable.IsSelected);
+        Assert.True(foreignSelected.IsSelected);
+        Assert.True(ownedGame.IsSelected);
+        Assert.True(editor.IsChoosingGame);
+        Assert.Same(firstPlayer, editor.Players[0]);
+        Assert.Equal(new[] { 1, 2 }, editor.Players.Select(player => player.Position));
     }
 
     [Fact]

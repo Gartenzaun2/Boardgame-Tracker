@@ -20,9 +20,7 @@ public partial class GamesViewModel : ObservableObject {
 
     public ObservableCollection<PlayGameRow> Games { get; } = [];
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
     public partial bool IsBusy { get; private set; }
-    public bool IsIdle => !IsBusy;
     [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
     public async Task LoadAsync(CancellationToken cancellationToken = default) {

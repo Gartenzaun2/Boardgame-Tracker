@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.2 – 2026-11-15
+
+- Gemeinsamen Bool-Negationsconverter und typisierten Zugriff auf die aktive AppShell ergänzt. Gruppenbearbeitung als begrenzten Presentation-Piloten lesbarer gegliedert; bestehende Auswahl-, Speicher-, Sperr- und Navigationsabläufe erhalten.
+
 ## 0.22.8.1 – 2026-11-15
 
 - Die gesamte Präsentationsschicht nach den gemeinsamen Lesbarkeitsregeln überarbeitet: sichtbare ViewModel-Abhängigkeiten, flachere Fallunterscheidungen, präzisere Operationsnamen und Erklärungen zu Framework-, Autosave- und Navigationszuständen. Verdichtete XAML-Strukturen aufgelöst; Layouts, Bindings und fachliche Abläufe erhalten.

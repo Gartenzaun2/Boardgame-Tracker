@@ -40,7 +40,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-                <Button Grid.Row="1" Text="{x:Static res:AppResources.CreateManualGame}" Clicked="OnCreateGameClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsIdle}" />
+                <Button Grid.Row="1" Text="{x:Static res:AppResources.CreateManualGame}" Clicked="OnCreateGameClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
                 <Label Grid.Row="2" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
             </Grid>
         </Grid>

@@ -164,6 +164,10 @@ insbesondere asynchroner Abläufe. Komplexe Bedingungen bei Bedarf durch
 sprechend benannte boolesche Zwischenvariablen erklären; für triviale
 Bedingungen keine zusätzlichen Variablen einführen.
 
+Guards bei unterschiedlichen Abbruchgründen erkennbar gliedern, etwa
+Nebenläufigkeit getrennt von ungültigem oder nicht zugehörigem UI-Modell.
+Zusammengehörige triviale Prüfungen dürfen in einer Bedingung bleiben.
+
 Boolesche Flag-Parameter, die wesentlich unterschiedliche Abläufe steuern,
 kritisch prüfen. Zuerst eine direkte Fallunterscheidung mit Early Return
 bevorzugen; zusätzliche Methoden oder Delegates nur bei Lesbarkeitsgewinn.
@@ -183,7 +187,8 @@ keine Leerzeile.
 public partial ScoringMode Mode { get; private set; }
 ```
 
-Zwischen eigenständigen Properties standardmäßig eine Leerzeile. Einfache,
+Zwischen unabhängigen Methoden eine Leerzeile; dasselbe gilt standardmäßig für
+eigenständige Properties. Einfache,
 logisch zusammengehörige Hilfsproperties ohne Attribute dürfen ohne Leerzeile
 gruppiert werden, auch wenn eine tatsächlich notwendige einzeilige Summary
 davorsteht. Selbsterklärende Getter-only-Properties benötigen keinen Kommentar.
@@ -249,6 +254,24 @@ Moderne C#-Features verwenden, wenn sie die Absicht klarer ausdrücken und zum
 bestehenden Stil passen. Unberührten Code nicht nur zur Syntaxmodernisierung ändern.
 
 ## 6. XAML und Bindings
+
+Einfache Elemente bevorzugt vollständig auf einer Zeile schreiben. Umfangreiche
+Elemente auf wenige logisch gruppierte Attributzeilen verteilen, etwa
+Darstellung/Layout, Bindings/Zustand, Interaktion und Accessibility. Ein Attribut
+pro Zeile bleibt eine seltene Ausnahme für außergewöhnlich komplexe Elemente.
+Keine starre maximale Zeilenlänge und keine pauschale Umformatierung aller Views.
+
+`.editorconfig` legt aktuell unter anderem Encoding, Zeilenenden und C#-
+Einrückung/Namensregeln. Die semantische Gruppierung von XAML-Attributen und die
+Auswahl passender UI-Parameter bleiben Reviewaufgaben; dafür keinen zusätzlichen
+Formatter ohne konkreten Bedarf einführen.
+
+Ist das betroffene UI-Modell bereits der `BindingContext`, bei Event- und
+Commandparametern bevorzugt das Objekt mit `{Binding .}` übergeben. Nicht nur
+eine ID weiterreichen und dasselbe Objekt ohne fachlichen Grund erneut suchen.
+Prüfungen auf Collection-Zugehörigkeit, Objektidentität, Zugriffsberechtigung und
+Nebenläufigkeit erhalten. IDs bleiben an Navigations-, Persistenz- und sonstigen
+Schichtgrenzen sinnvoll.
 
 Neue oder geänderte Bindings werden als **compiled bindings** umgesetzt:
 

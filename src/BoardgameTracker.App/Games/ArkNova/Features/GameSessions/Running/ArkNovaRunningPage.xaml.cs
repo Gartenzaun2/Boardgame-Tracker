@@ -63,7 +63,7 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable {
             return;
         _isNavigating = true;
         try {
-            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
+            await AppShell.CurrentInstance.ReturnToGameSessionCallerAsync();
         }
         catch (Exception exception) {
             _logger.LogError(exception, "Could not return from the running Ark Nova session.");
@@ -115,7 +115,7 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable {
                 _isDiscarded = true;
             }
 
-            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
+            await AppShell.CurrentInstance.ReturnToGameSessionCallerAsync();
         }
         catch (Exception exception) {
             _logger.LogError(exception, "Could not leave discarded Ark Nova session. Persistence completed: {Persisted}.", _isDiscarded);

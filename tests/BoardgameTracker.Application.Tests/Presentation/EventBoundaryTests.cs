@@ -414,6 +414,7 @@ public sealed class BoundaryLogger
 public sealed class BoundaryShell
 {
     public static BoundaryShell Current { get; set; } = null!;
+    public static BoundaryShell CurrentInstance => Current;
     public EventBoundaryTestHost CurrentPage { get; set; } = null!;
     public bool MemoryEnabled { get; private set; }
     public void EnableNavigationMemory() => MemoryEnabled = true;

@@ -9,8 +9,6 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// </summary>
 public partial class EditGroupPage : ContentPage, IQueryAttributable {
     private readonly EditGroupViewModel _viewModel;
-    public EditGroupViewModel ViewModel => _viewModel;
-    private Guid _groupId;
 
     public EditGroupPage(EditGroupViewModel viewModel) {
         InitializeComponent();
@@ -19,6 +17,10 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
         _viewModel.SavedAsync = OnSavedAsync;
         BindingContext = _viewModel;
     }
+
+    private Guid _groupId;
+
+    public EditGroupViewModel ViewModel => _viewModel;
 
     public void ApplyQueryAttributes(IDictionary<string, object> query) {
         if (!query.TryGetValue(NavigationParameters.GroupId, out object? value)
@@ -37,18 +39,19 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
         if (AppDialogPage.IsOpen(this))
             return;
 
-        if (_groupId != Guid.Empty) {
+        if (_groupId != Guid.Empty)
             await _viewModel.LoadAsync(_groupId);
-        }
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) {
         if (_viewModel.IsBusy)
             return;
-        if (_viewModel.IsSaved)
+        if (_viewModel.IsSaved) {
             await _viewModel.SaveCommand.ExecuteAsync(null);
-        else
-            await Shell.Current.GoToAsync("..", false);
+            return;
+        }
+
+        await Shell.Current.GoToAsync("..", false);
     }
 
     private async void OnInfoClicked(object? sender, EventArgs e) {
@@ -69,11 +72,17 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
         if (_viewModel.CanEdit)
             _viewModel.IsChoosingGame = true;
     }
+
     private void OnCloseGameClicked(object? sender, EventArgs e)
         => _viewModel.IsChoosingGame = false;
+
     private void OnGameTapped(object? sender, TappedEventArgs e) {
-        if (_viewModel.IsChoosingGame && e.Parameter is GroupGameSelection game)
-            _viewModel.AddGameCommand.Execute(game);
+        if (!_viewModel.IsChoosingGame)
+            return;
+        if (e.Parameter is not GroupGameSelection game)
+            return;
+
+        _viewModel.AddGameCommand.Execute(game);
     }
 
     /// <summary>Handles system back by retrying a saved departure or closing game selection before leaving.</summary>
@@ -81,6 +90,7 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
         if (_viewModel.IsBusy)
             return true;
         if (_viewModel.IsSaved) {
+            // MAUI needs a synchronous result; the existing async command handles departure and errors.
             _viewModel.SaveCommand.Execute(null);
             return true;
         }

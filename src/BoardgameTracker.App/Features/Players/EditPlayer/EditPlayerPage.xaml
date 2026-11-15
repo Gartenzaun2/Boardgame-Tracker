@@ -8,10 +8,6 @@
     x:Class="BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerPage"
     x:DataType="local:EditPlayerViewModel"
     Shell.NavBarIsVisible="False">
-    <ContentPage.Resources>
-        <local:PlayerEditorBoolNegationConverter x:Key="NegateBool" />
-    </ContentPage.Resources>
-
     <Grid x:Name="EditorContent" RowDefinitions="Auto,*" RowSpacing="12">
         <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"

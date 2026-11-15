@@ -19,6 +19,11 @@ namespace BoardgameTracker.App;
 /// Defines the MAUI Shell root, persistent main tabs and feature routes.
 /// </summary>
 public partial class AppShell : Shell {
+    /// <summary>Returns the active application Shell and fails if AppShell is not active.</summary>
+    public static AppShell CurrentInstance
+        => Shell.Current as AppShell
+            ?? throw new InvalidOperationException("The current Shell is not an AppShell.");
+
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly Tab _gamesTab;
     private readonly PlayOverviewQuery _playOverview;

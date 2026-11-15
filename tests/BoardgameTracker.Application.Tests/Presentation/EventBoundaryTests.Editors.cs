@@ -325,8 +325,7 @@ public sealed partial class EventBoundaryTests
     public void PlayerEditor_BindsNegationsToOriginalObservableState() {
         using Stream stream = typeof(EventBoundaryTests).Assembly.GetManifestResourceStream("PlayerFeature.EditPlayerPage.xaml")!;
         XDocument page = XDocument.Load(stream);
-        Assert.Contains(page.Descendants(), element => element.Name.LocalName == "PlayerEditorBoolNegationConverter"
-            && (string?)element.Attribute(XName.Get("Key", "http://schemas.microsoft.com/winfx/2009/xaml")) == "NegateBool");
+        Assert.DoesNotContain(page.Descendants(), element => element.Name.LocalName == "ContentPage.Resources");
         XElement[] buttons = page.Descendants().Where(element => element.Name.LocalName == "Button").ToArray();
         Assert.Equal(3, buttons.Length);
         Assert.All(buttons, button => Assert.Equal("{Binding IsBusy, Converter={StaticResource NegateBool}}", (string?)button.Attribute("IsEnabled")));

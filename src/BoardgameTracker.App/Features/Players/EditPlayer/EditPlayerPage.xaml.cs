@@ -1,4 +1,3 @@
-using System.Globalization;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
@@ -102,12 +101,4 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
         // Unsaved editors retain MAUI's default system-back behavior.
         return base.OnBackButtonPressed();
     }
-}
-
-public sealed class PlayerEditorBoolNegationConverter : IValueConverter {
-    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => value is bool flag ? !flag : BindableProperty.UnsetValue;
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => value is bool flag ? !flag : BindableProperty.UnsetValue;
 }

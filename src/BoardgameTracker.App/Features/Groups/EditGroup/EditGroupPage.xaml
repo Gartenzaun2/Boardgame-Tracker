@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls"
-    x:Class="BoardgameTracker.App.Features.Groups.EditGroup.EditGroupPage"
-    x:Name="Page"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:models="clr-namespace:BoardgameTracker.App.Features.Groups"
-    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.EditGroup"
-    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    x:DataType="local:EditGroupViewModel"
-    Shell.NavBarIsVisible="False">
-
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns:models="clr-namespace:BoardgameTracker.App.Features.Groups"
+    xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.EditGroup" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:Class="BoardgameTracker.App.Features.Groups.EditGroup.EditGroupPage" x:Name="Page"
+    x:DataType="local:EditGroupViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
         <Grid x:Name="PageContent" RowDefinitions="Auto,*" IsEnabled="False">
@@ -23,17 +17,17 @@
                 </MultiTrigger>
             </Grid.Triggers>
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                Title="{x:Static res:AppResources.EditGroup}"
-                Variant="Subpage"
-                BackClicked="OnBackClicked">
-                <header:AppPageHeader.Actions>
-                    <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
-                    <Button Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" Text="{Binding SaveText}" />
-                </header:AppPageHeader.Actions>
-            </header:AppPageHeader>
-                <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" Margin="20,0" />
-                <Label IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" Margin="20,0" />
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.EditGroup}"
+                    Variant="Subpage" BackClicked="OnBackClicked">
+                    <header:AppPageHeader.Actions>
+                        <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
+                            Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}"
+                            ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
+                        <Button Style="{StaticResource PrimaryCompactButton}" Text="{Binding SaveText}" Command="{Binding SaveCommand}" />
+                    </header:AppPageHeader.Actions>
+                </header:AppPageHeader>
+                <Label Margin="20,0" Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
+                <Label Margin="20,0" TextColor="{DynamicResource Danger}" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" />
             </VerticalStackLayout>
 
             <ScrollView Grid.Row="1" IsEnabled="{Binding CanEdit}">
@@ -44,17 +38,19 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-
                             </VerticalStackLayout>
                             <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding CanArchive}" />
                         </Grid>
-                        <Label Text="{x:Static res:AppResources.GroupArchiveLocked}" IsVisible="{Binding ArchiveLocked}" FontSize="12" />
+                        <Label FontSize="12" Text="{x:Static res:AppResources.GroupArchiveLocked}"
+                            IsVisible="{Binding CanArchive, Converter={StaticResource NegateBool}}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="10">
                         <HorizontalStackLayout Spacing="2">
-                            <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupPlayers}" VerticalOptions="Center" />
-                            <ImageButton Clicked="OnPlayersInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" Source="icon_info.png" Style="{StaticResource IconButton}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
+                            <Label FontAttributes="Bold" FontSize="18" VerticalOptions="Center" Text="{x:Static res:AppResources.GroupPlayers}" />
+                            <ImageButton Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnPlayersInfoClicked"
+                                SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}"
+                                ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
                         </HorizontalStackLayout>
 
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
@@ -64,11 +60,18 @@
                                         <VerticalStackLayout Spacing="8">
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                                                 <VerticalStackLayout Spacing="2">
-                                                    <HorizontalStackLayout Spacing="8"><Label FontAttributes="Bold" Text="{Binding Position}" /><Label FontAttributes="Bold" Text="{Binding Name}" /></HorizontalStackLayout>
-                                                    <Label FontSize="12" IsVisible="{Binding IsGuest}" Text="{x:Static res:AppResources.Guest}" />
+                                                    <HorizontalStackLayout Spacing="8">
+                                                        <Label FontAttributes="Bold" Text="{Binding Position}" />
+                                                        <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                                    </HorizontalStackLayout>
+                                                    <Label FontSize="12" Text="{x:Static res:AppResources.Guest}" IsVisible="{Binding IsGuest}" />
                                                 </VerticalStackLayout>
-                                                <Button Style="{StaticResource TextActionButton}" MinimumWidthRequest="48" MinimumHeightRequest="48" FontSize="26" Grid.Column="1" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveUp}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Text="↑" />
-                                                <Button Style="{StaticResource TextActionButton}" MinimumWidthRequest="48" MinimumHeightRequest="48" FontSize="26" Grid.Column="2" Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveDown}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Text="↓" />
+                                                <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="↑" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48"
+                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}"
+                                                    CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveUp}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
+                                                <Button Grid.Column="2" Style="{StaticResource TextActionButton}" Text="↓" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48"
+                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}"
+                                                    CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveDown}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
                                             </Grid>
                                         </VerticalStackLayout>
                                     </Border>
@@ -78,23 +81,26 @@
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="{x:Static res:AppResources.GamesSection}" FontAttributes="Bold" FontSize="18" />
+                        <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GamesSection}" />
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedGames}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupGameSelection">
-                                    <Border Style="{StaticResource CardBorder}" Margin="0,4" Padding="12">
+                                    <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                             <VerticalStackLayout VerticalOptions="Center">
-                                                <Label Text="{Binding Name}" FontAttributes="Bold" />
-                                                <Label Text="{Binding LockReason}" IsVisible="{Binding IsLocked}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+                                                <Label FontAttributes="Bold" Text="{Binding Name}" />
+                                                <Label FontSize="12" TextColor="{DynamicResource TextSecondary}" Text="{Binding LockReason}" IsVisible="{Binding IsLocked}" />
                                             </VerticalStackLayout>
-                                            <Button Grid.Column="1" Text="×" FontSize="26" Style="{StaticResource TextActionButton}" TextColor="{DynamicResource Danger}" IsEnabled="{Binding CanChange}" Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemoveGameCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.Remove}" />
+                                            <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="×" FontSize="26" TextColor="{DynamicResource Danger}"
+                                                Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemoveGameCommand, x:DataType=local:EditGroupPage}"
+                                                CommandParameter="{Binding .}" IsEnabled="{Binding CanChange}" SemanticProperties.Description="{x:Static res:AppResources.Remove}" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
-                        <Button Text="{x:Static res:AppResources.AddGame}" Style="{StaticResource SecondaryActionButton}" Clicked="OnChooseGameClicked" IsEnabled="{Binding HasAvailableGames}" HorizontalOptions="Start" />
+                        <Button HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddGame}"
+                            IsEnabled="{Binding HasAvailableGames}" Clicked="OnChooseGameClicked" />
                     </VerticalStackLayout>
 
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
@@ -102,19 +108,21 @@
             </ScrollView>
         </Grid>
 
-
-        <Grid IsVisible="{Binding IsChoosingGame}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
+        <Grid Padding="18" BackgroundColor="{DynamicResource ModalOverlay}" IsVisible="{Binding IsChoosingGame}">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
                     <Grid ColumnDefinitions="Auto,*">
-                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCloseGameClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-                        <Label Grid.Column="1" Text="{x:Static res:AppResources.AddGame}" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" />
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCloseGameClicked"
+                            SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <Label Grid.Column="1" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" Text="{x:Static res:AppResources.AddGame}" />
                     </Grid>
-                    <CollectionView Grid.Row="1" ItemsSource="{Binding AvailableGames}" SelectionMode="None" HeightRequest="300">
+                    <CollectionView Grid.Row="1" HeightRequest="300" ItemsSource="{Binding AvailableGames}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:GroupGameSelection">
                                 <Border Padding="12" Margin="0,4" Style="{StaticResource CardBorder}">
-                                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
                                     <Label Text="{Binding Name}" />
                                 </Border>
                             </DataTemplate>
@@ -124,14 +132,8 @@
             </Border>
         </Grid>
 
-        <Grid
-            BackgroundColor="{DynamicResource BusyOverlay}"
-            InputTransparent="False"
-            IsVisible="{Binding IsBusy}">
-            <ActivityIndicator Color="{DynamicResource BusyIndicator}"
-                HorizontalOptions="Center"
-                IsRunning="{Binding IsBusy}"
-                VerticalOptions="Center" />
+        <Grid BackgroundColor="{DynamicResource BusyOverlay}" InputTransparent="False" IsVisible="{Binding IsBusy}">
+            <ActivityIndicator Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" />
         </Grid>
     </Grid>
 </ContentPage>
