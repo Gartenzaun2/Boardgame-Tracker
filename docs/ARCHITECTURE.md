@@ -228,10 +228,76 @@ registrierte Handler aufgelöst.
 Shell-Parameter verwenden zentrale Konstanten in
 `App/Navigation/NavigationParameters.cs`.
 
+#### ViewModel-Navigation über einen gemeinsamen Vertrag
+
+Für vom ViewModel angestoßene Navigation gibt es einen gemeinsamen
+`INavigationService` im App-/Presentation-Bereich. Die Schnittstelle beschreibt
+**Navigationsabsichten**, während ein einmalig per DI registrierter
+`ShellNavigationService` als MAUI-Adapter die Navigation ausführt. Der konkrete
+Vertrag beginnt mit den tatsächlich benötigten Operationen:
+
+```csharp
+public interface INavigationService {
+    Task GoBackAsync();
+    Task NavigateToMainSectionAsync(AppMainSection section);
+}
+```
+
+ViewModels dürfen damit beispielsweise einen zusammenhängenden Ablauf
+**validieren → speichern → Navigation anfordern** koordinieren. Sie rufen weder
+`Shell.Current` unmittelbar auf noch greifen sie auf konkrete Pages oder
+Controls zu. `.xaml`/`.xaml.cs` verantworten MAUI-spezifische Darstellung,
+Lifecycle, System-Zurück-Ereignisse und andere echte Framework-Mechanik; deren
+Handler dürfen ViewModel-Commands auslösen. Core und Application kennen diese
+App-Navigationsschnittstelle nicht.
+
+**Entscheidungsgrund:** Direkte Shell-Aufrufe im ViewModel wären kürzer, koppeln
+aber den Ablauf an eine laufende MAUI-Shell und erschweren isolierte Tests.
+Navigation ausschließlich im Code-behind ist ebenfalls legitim, teilt bei
+unseren Editierdialogen aber den zusammenhängenden Speicher-/Navigationsablauf
+auf Page und ViewModel auf. Der gemeinsame Vertrag ermöglicht einheitliche
+Commands und Tests mittels Fake-Navigationsservice. Der Preis sind eine
+Schnittstelle, ein Adapter und eine DI-Registrierung; wegen der wiederkehrenden
+Dialogabläufe ist dieser Preis hier bewusst akzeptiert.
+
+Bevorzugt werden absichtsorientierte Methoden (`GoBackAsync`,
+`NavigateToMainSectionAsync`) statt einer allgemeinen Weitergabe von
+Shell-Routen. Keine Services pro Dialog oder universelle Navigationsengine ohne
+realen Bedarf. Der Vertrag erhält direkt im Code eine anfängerfreundliche
+XML-Erklärung mit Grund und Verwendungs-/Testbeispiel; die Regel dafür steht in
+`CODE_GUIDELINES.md`.
+
+**Framework-Grenze:** Die verwendeten `CommunityToolkit.Mvvm`-Attribute sind
+nicht MAUI-spezifisch. Die Navigation des ViewModels soll von MAUI APIs
+unabhängig sein, auch wenn die ViewModels gegenwärtig im App-Projekt liegen.
+Das garantiert nicht automatisch die völlige Frameworkunabhängigkeit aller
+anderen ViewModel-Abhängigkeiten.
+
+In vergleichbaren Editierdialogen führt ein Save-Command im ViewModel die
+Validierung und Speicherung aus und fordert danach Navigation über den Vertrag
+an. Scheitert nur die Navigation, bleibt das Speichern abgeschlossen; ein
+erneuter Navigationsversuch darf **keinen zweiten Write** auslösen.
+
 Navigation, Theme, die aktiv geschalteten Spiele und andere nicht-historische Preferences sind Hostzustand, keine
 GameSession-Daten.
 
-Unterstützte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig sichtbar. Die Auswahl wird anhand der lokal stabilen `Game.Key`-Werte geführt, ohne GameKey-Switches in allgemeinen Features. Integrierte Spiele besitzen feste Keys; ManualGames lokal erzeugte Keys `manual:<GUID>`, die nicht zum Geräte-Matching verwendet werden. Die frühere Standardspiel-Preference entfällt.
+Unterstützte Spiele sind ohne ausdrückliche gespeicherte Abwahl standardmäßig
+aktiviert (`IsEnabled`). Diese persönliche Präferenz wird anhand der lokal
+stabilen `Game.Key`-Werte als Host-/MAUI-Preference gespeichert – nicht als
+persistierte Eigenschaft der `Game`-Entity und nicht in historischen Sessions.
+Allgemeine Features verwenden dafür keine GameKey-Switches. Integrierte Spiele
+besitzen feste Keys; von ManualGames lokal erzeugte Keys `manual:<GUID>` werden
+nicht zum Geräte-Matching verwendet. Die frühere Standardspiel-Preference entfällt.
+
+Fachlich gehören die allgemeine Spieleabfrage und das Aktivieren/Deaktivieren
+zum **Games-Feature**, auch wenn der UI-Einstieg in den Einstellungen liegt.
+Lesende Funktionen werden in einer `GamesQuery`, das Setzen von Enabled in einem
+separaten Games-Use-Case zusammengefasst. Die konkreten Methodennamen und
+Read Models richten sich nach den realen Aufrufern. Für dieselbe Eigenschaft
+intern konsistent `Game`/`Games` und `Enabled`/`IsEnabled` statt konkurrierender
+Begriffe wie `Activation`, `Visible`, `Active` oder `GameCatalog` verwenden.
+Der Schutz vor Deaktivierung bei offenen Sessions und die bisherige effektive
+Enabled-Berücksichtigung offener Sessions bleiben erhalten.
 
 Der Host löst Spieleinstellungen über den zuständigen Spieladapter auf; feste Schlüssel identifizieren integrierte Module, der reservierte manuelle Schlüsselraum das eine ManualGames-Modul. Konkrete Zielseiten bleiben im Modul.
 
@@ -283,7 +349,9 @@ Ohne konkreten Bedarf nicht einführen:
 - `Common`-/`Utils`-Sammelordner;
 - bedeutungslose Ein-Methoden-Interfaces;
 - Wrapper-Services ohne eigene Semantik;
-- Navigation-Service nur als Shell-Wrapper;
+- Navigationswrapper, die nur generische Shell-Routen durchreichen, ohne
+  erkennbare Entkopplung oder testbare Navigationsabsicht; der begründete
+  `INavigationService` aus Abschnitt 9 ist ausdrücklich ausgenommen;
 - generische Game Engine;
 - technische Ordnerhierarchien, die ein Feature zerreißen;
 - leere Modulordner;

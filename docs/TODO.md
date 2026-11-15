@@ -101,6 +101,50 @@ gespeicherte Nutzerauswahlen erhalten.
 
 ## Architektur
 
+### Navigationsabstraktion und vereinheitlichte Editierdialoge
+
+**Ist:** Der Gruppen-Editor verwendet einen `SavedAsync`-Callback von ViewModel zur Page für das Verlassen nach Speichern. Der Spieler-Editor speichert über das ViewModel, lässt aber die Page navigieren und verwaltet teilweise einen zweiten Busy-/Navigationsschutz. Vergleichbare Dialogabläufe verwenden dadurch verschiedene Konzepte.
+
+**Ziel:**
+
+1. Einen **gemeinsamen** `INavigationService` mit anwendungsbezogenen Operationen wie `GoBackAsync()` und `NavigateToMainSectionAsync(AppMainSection section)` und einen MAUI-`ShellNavigationService` im App-/Navigation-Bereich erstellen; einmalig in DI registrieren. Tatsächliche weitere Ziele erst anhand benötigter Navigation ergänzen.
+2. An der **Schnittstelle** direkt anfängerfreundlich dokumentieren: Problem, Gründe für das Interface, Trennung von ViewModel und MAUI Shell, Nutzen in Tests, konkretes Beispiel. An DI ein kurzer Hinweis; dauerhafte Architekturentscheidung in `ARCHITECTURE.md`.
+3. `EditGroup` und `EditPlayer` sowie weitere im Rahmen des Refactorings tatsächlich betroffene Editierdialoge auf **denselben** Ablauf bringen: XAML-Command → VM validiert/speichert → VM fordert Navigation über Service an. Page behält Framework-Lifecycle und System-Back-Ereignisse; `SavedAsync` entfernen. Keine unnötigen separaten Navigation-Services pro Dialog.
+4. Save-Erfolg, Persistenzfehler, Navigationsfehler, Schutz gegen doppelte Aufrufe und **Retry der Navigation ohne erneuten Datenbank-Schreibvorgang** konsistent absichern. `IsSaveCompleted` und Busy-Semantik vereinheitlichen; bei System-Zurück synchrone Frameworkvorgabe und asynchrone Folgeaktion berücksichtigen.
+5. Tests anlegen oder anpassen: Navigation nur nach erfolgreichem Save, keine Navigation nach fehlgeschlagenem Save, Navigationsfehler bleibt sichtbar und erlaubt Retry ohne zweiten Write, parallele/Doppelaufrufe unterbunden; Navigation durch Fake-Service testbar. Verfügbare MAUI-Gerätetests nicht ohne gesonderte Freigabe ausführen.
+
+### EditGroupViewModel – Lesbarkeit, Namen und Benachrichtigungen
+
+**Ist:** `IsSaved`, `IsArchived`, `CanArchive`, `Games`, `SelectedGames`, `AvailableGames`, `HasAvailableGames` sowie `_editGroup`/`_activation` erschweren die Zuordnung von technischem Dialogzustand, Gruppendaten und gefilterten Spielkandidaten. Eine nichtssagende Klassen-Summary ist vorhanden.
+
+**Ziel:**
+
+1. `IsSaved` → `IsSaveCompleted`, inklusive einheitlicher **Warum-XML-Summary** wie beim Spielereditor. `IsArchived` → `IsGroupArchived`, `CanArchive` → `CanArchiveGroup`; XAML und Aufrufer vollständig mitziehen. `GroupId` und `GroupName` beibehalten.
+2. `SaveText` zusammen mit anderen tatsächlich lokalisierten UI-Textproperties in `#region Localized UI Text` gruppieren.
+3. `CanSave()` bei gleichbleibender CanExecute-Semantik als kleine berechnete Property erwägen und direkt bei verwandten Prozessproperties platzieren. Für jede Abhängigkeit die **ursächliche** `NotifyCanExecuteChangedFor`-Benachrichtigung sicherstellen; `PropertyChanged` auf `CanSave` ist **kein** Ersatz. Besonders `Players.Count` und Änderungen daran prüfen.
+4. Die Spielauswahl-Collections durch ihre Rollen benennen. **Aktueller Arbeitsvorschlag, vor Renames noch zu bestätigen:** `Games` → `GameSelections`, `SelectedGames` → `EnabledAssignedGames`, `AvailableGames` → `GamesAvailableToAdd`, `HasAvailableGames` → `HasGamesAvailableToAdd`. `IsChoosingGame` bleibt als Overlayzustand davon getrennt; die genaue Benennung nach XAML-Aufruferprüfung entscheiden.
+5. Benachrichtigungen bei **Collection-Mutationen** und bei **Property-Änderungen innerhalb der Elemente** vollständig und zentral organisieren. Beim erneuten Laden auf korrekte An-/Abmeldung achten; `RefreshGameSelectionBindings` und gebundene XAML-Listen gezielt prüfen. Nicht ungefragt DynamicData oder ein eigenes Notify-Attribut einführen.
+6. Den inhaltlosen Typkommentar `Adapts the existing editor to game-neutral group metadata and order changes.` entfernen. DI-Namen entsprechend der tatsächlichen neuen Rollen konkretisieren (`_editGroupUseCase`, `_gamesQuery`, `_navigationService`).
+7. `AddGame`, `RemoveGame`, `MovePlayerUp/Down` weiterhin als Commands für Zustandsänderungen belassen, sofern beim konkreten Review kein besserer Grund für ein anderes Muster entsteht. Mitgliedschafts-, Berechtigungs- und Busy-Guards behalten.
+
+### Allgemeine Games-Abfrage und Enablement-Use-Case
+
+**Ist:** `GameActivationUseCase` unter `Application/Settings` mischt Lesen und Schreiben und verwendet uneinheitliche Begriffe; weitere allgemeine Spieleabfragen sind auf `PlayOverviewQuery` und den Gruppeneditor verteilt.
+
+**Ziel:**
+
+1. Feature-Ownership unter `Application/Games` vereinheitlichen: lesende `GamesQuery` und separaten schreibenden Use Case, beispielsweise `SetGameEnabledUseCase`. `GetAllAsync`, `GetEnabledAsync`, `GetByKeyAsync` sind **Vorschläge**, keine ohne Aufruferprüfung verbindlich festgelegten Methoden.
+2. Alle Aufrufer / benötigten Read Models gegenüber `PlayOverviewQuery` und Gruppenauswahl prüfen; tatsächlich gemeinsame Abfragen konsolidieren, sessionbezogene Navigation nicht ohne guten Grund in `GamesQuery` verschieben.
+3. Einheitlich `Games`, `IsEnabled`, `SetEnabled` nennen; nicht für denselben Zustand wechselweise `Activation`, `Visible`, `Active`, `GameCatalog`. UI-Modellnamen nur nach Prüfung ihrer übrigen Bedeutung ändern.
+4. **MAUI Preferences als persönlichen Speicher unverändert lassen**, Schlüssel nach `Game.Key`. Keine zusätzliche Entity-Spalte oder Datenmigration. Standardzustand und Schutz bei offenen Sessions erhalten; bisherige effektive Enabled-Berechnung beachten.
+5. Views, ViewModels, DI und passende Tests nach finaler Aufteilung einheitlich anpassen. Keine reinen Rename-Aliase einführen.
+
+### Weitere bereits angesprochene Aufräumarbeiten
+
+- `GamesPage`: `_creation` in einen sprechenden fachlichen Navigationsnamen ändern (Arbeitsvorschlag `_gameCreationNavigation`, `OpenCreateAsync()` → `NavigateToCreationAsync()`), sofern dies nach der Entscheidung zum zentralen Navigationsservice noch fachlich passt. Kein paralleles zweites Navigationsmuster etablieren.
+- Bei UI-Taps/Commands vorhandene gebundene Objekte über `{Binding .}` weitergeben statt IDs zu übergeben und später unnötig neu zu suchen; Prüfungen gegen fremde Objekte erhalten. Nur dort nacharbeiten, wo die aktuelle Pilotüberarbeitung es noch nicht abdeckt.
+- Kurzkommentare für tatsächlich erklärungsbedürftige Framework-Overrides (z. B. `OnAppearing` mit Modal-Guard) konsistent anwenden, keine trivialen Kommentare einführen.
+
 ### Produktentscheidung zu entfernten Spielmodulen
 
 Das gewünschte Verhalten bei lokal vorhandenen Daten eines später entfernten

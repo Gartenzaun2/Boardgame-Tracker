@@ -84,6 +84,47 @@ verständlich wird. Kein Kommentarzwang für offensichtliche Anweisungen.
 C#-Bezeichner sowie Code-/XML-Kommentare sind Englisch; Projektdokumentation bleibt
 Deutsch.
 
+### Lernorientierte Dokumentation von Architekturabstraktionen
+
+Bewusst eingeführte Abstraktionen an Schicht- und Framework-Grenzen (z. B.
+Interfaces, Ports und Adapter) müssen **am zentralen Vertrag selbst** so erklärt
+werden, dass auch ein Einsteiger die Entscheidung nachvollziehen kann. Die
+englischsprachige XML-Dokumentation beschreibt bei Bedarf:
+
+- **Warum** die Abstraktion existiert und welche konkrete Kopplung sie vermeidet;
+- **wer** den Vertrag nutzt und **wer** die technische Umsetzung übernimmt;
+- **wie** er im echten Projekt verwendet wird, möglichst mit einem kurzen Beispiel;
+- **welchen Nutzen** diese Trennung hat, etwa Tests ohne laufendes UI-Framework.
+
+Ein aussagekräftiges `<example>` ist erwünscht, wenn es die Verwendung schneller
+verständlich macht. Eine ausführlichere Abwägung einschließlich bewusst verworfener
+Alternativen gehört in die zuständige Architekturentscheidung in
+`ARCHITECTURE.md`, nicht wiederholt an jeden Aufrufort.
+
+Beispiel einer **begründeten** Navigationsschnittstelle (nicht als Pflichtvorlage
+für beliebige Interfaces verwenden):
+
+```csharp
+/// <summary>
+/// Lets ViewModels request navigation without depending on MAUI Shell.
+/// A Shell adapter handles the framework-specific call, while tests can
+/// replace this contract with a fake and verify the requested navigation.
+/// This avoids requiring a running Page or Shell just to test a save flow.
+/// </summary>
+/// <example>
+/// After a successful save: <code>await _navigationService.GoBackAsync();</code>
+/// The same call can be verified in a ViewModel test without creating a Page.
+/// </example>
+public interface INavigationService {
+    Task GoBackAsync();
+}
+```
+
+Die Schnittstelle bleibt unabhängig von **MAUI-Navigations-APIs**. Das bedeutet
+nicht, dass sämtliche ViewModels schon vollständig unabhängig von jeder anderen
+App- oder Framework-Abhängigkeit sind. Kein Pflichtkommentar für triviale Getter,
+selbsterklärende Methoden oder bloß um des Lernens willen erfundene Interfaces.
+
 ## 4. Dateien und Begleittypen
 
 Kleine Typen, die ausschließlich einem Slice/Haupttyp gehören, bleiben
@@ -116,6 +157,30 @@ Verantwortlichkeiten. Regions heißen konkret nach ihrem Inhalt, z. B.
 Region darf dort stehen, wo sie den Lesefluss am besten unterstützt; sie muss
 nicht am Dateiende liegen. Eine zusätzliche verschachtelte Klasse oder
 `partial`-Datei nur für einfache Texte ist kein Standard.
+
+Bei mehreren injizierten Abhängigkeiten deren Rolle im Feldnamen erkennbar machen,
+z. B. `_editGroupUseCase`, `_gamesQuery` und `_navigationService` statt
+mehrdeutigem `_useCase` oder `_activation`.
+
+Technische Dialogzustände wie `IsBusy` oder `IsSaveCompleted` und fachliche Daten
+wie `GroupName` oder `IsGroupArchived` nicht allein aufgrund eines gemeinsamen
+`Is`-Präfixes vermischen. Den fachlichen Gegenstand bei Mehrdeutigkeit benennen,
+aber nicht jedes Member reflexartig mit `Group` präfixieren.
+
+Kleine parameterlose `CanExecute`-Bedingungen dürfen als berechnete `bool`-Properties
+(`CanSave`) unmittelbar bei den zugehörigen Prozessproperties stehen; eine Methode
+ist nicht zwingend erforderlich. `[RelayCommand(CanExecute = ...)]` wertet die
+Bedingung aus, verfolgt deren Abhängigkeiten aber **nicht** selbst. An den
+ursächlichen Observable-Properties weiterhin
+`[NotifyCanExecuteChangedFor(nameof(SaveCommand))]` verwenden;
+`PropertyChanged(nameof(CanSave))` ersetzt das nicht.
+
+Bei abgeleiteten Ansichten einer `ObservableCollection<T>` Collection-Mutationen
+(`CollectionChanged`) von Änderungen innerhalb enthaltener Elemente
+(`INotifyPropertyChanged`) unterscheiden. Benachrichtigungen samt nötiger
+An-/Abmeldungen zentral und vollständig pflegen. Keine eigene reaktive
+Attribut-Infrastruktur oder zusätzliche Bibliothek für einen einzelnen einfachen
+Filterfall einführen; wiederkehrenden Bedarf gesondert bewerten.
 
 Ordner-/Slicestruktur: `ARCHITECTURE.md`.
 
@@ -322,6 +387,29 @@ Core und Application dürfen nicht von MAUI `MainThread`, `Dispatcher` oder ande
 UI-Thread-APIs abhängen. UI-Thread-Marshalling gehört in App/Presentation und nur
 dorthin, wo es tatsächlich nötig ist. `MainThread` nicht zum Verdecken ungeklärter
 Nebenläufigkeitsprobleme verwenden.
+
+### Einheitliche Editierdialoge
+
+Vergleichbare Editierdialoge nutzen denselben Grundablauf: Ein XAML-Command löst
+im ViewModel die Validierung und Speicherung über Application-Use-Cases aus.
+Nach erfolgreichem Speichern fordert das ViewModel über den gemeinsamen
+`INavigationService` die Navigation an. Eine Callback-Kette
+Page → ViewModel → Page (`SavedAsync`) ist dafür nicht erforderlich.
+
+Ein erfolgreich abgeschlossener Schreibvorgang bleibt auch bei einem Fehler der
+anschließenden Navigation abgeschlossen. `IsSaveCompleted` sperrt erneute
+Bearbeitung und verhindert weitere Writes, erlaubt aber einen neuen
+Navigationsversuch. Busy-/CanExecute-Schutz, Logging und verständliche Fehler
+umfassen den tatsächlichen Ablauf. `try/catch/finally` bleibt sinnvoll; eine
+zusätzliche konkurrierende Busy-Verwaltung in der Page ist zu vermeiden.
+
+MAUI-spezifischer Lifecycle und Framework-Ereignisse wie `OnAppearing` und
+`OnBackButtonPressed` bleiben in `.xaml.cs`. Dort ausgelöste Aktionen dürfen an
+ViewModel-Commands weitergegeben werden; die synchronen Rückgabebedingungen
+des Frameworks und sichere asynchrone Ausführung sind zu berücksichtigen.
+Navigation ist kein Vorwand, beliebige UI-Control-Manipulationen oder
+Dialogpersistenz in den Navigationsservice zu verschieben. Die Schichtgrenze
+ist in `ARCHITECTURE.md` definiert.
 
 ## 8. Fehlerbehandlung
 
