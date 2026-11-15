@@ -11,7 +11,7 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
     private readonly EditPlayerViewModel _viewModel;
     private readonly ILogger<EditPlayerPage> _logger;
     private Guid _playerId;
-    private bool _saving;
+    private bool _isSavingOrNavigating;
 
     public EditPlayerPage(EditPlayerViewModel viewModel, ILogger<EditPlayerPage> logger) {
         InitializeComponent();
@@ -43,19 +43,23 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
         => await SaveAsync(true);
 
     private async Task SaveAsync(bool addAnother) {
-        if (_saving)
+        if (_isSavingOrNavigating)
             return;
-        _saving = true;
+        _isSavingOrNavigating = true;
         EditorContent.IsEnabled = false;
         try {
-            if (addAnother ? await _viewModel.SaveAndAddAnotherAsync() : await _viewModel.SaveAsync()) {
-                if (!addAnother) {
-                    if (_viewModel.IsNew && Shell.Current is AppShell shell)
-                        await shell.NavigateToMainSectionAsync(AppMainSection.Participants);
-                    else
-                        await Shell.Current.GoToAsync("..", false);
-                }
+            if (addAnother) {
+                await _viewModel.SaveAndAddAnotherAsync();
+                return;
             }
+
+            if (!await _viewModel.SaveAsync())
+                return;
+
+            if (_viewModel.IsNew && Shell.Current is AppShell shell)
+                await shell.NavigateToMainSectionAsync(AppMainSection.Participants);
+            else
+                await Shell.Current.GoToAsync("..", false);
         }
         catch (Exception exception) {
             _logger.LogError(exception, "Could not leave player editor after saving.");
@@ -67,13 +71,14 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
             }
         }
         finally {
-            _saving = false;
+            _isSavingOrNavigating = false;
             EditorContent.IsEnabled = true;
         }
     }
 
+    // Keep separate entry points: the header awaits Shell navigation, while system back can defer to MAUI.
     private async void OnBackClicked(object? sender, EventArgs e) {
-        if (_saving)
+        if (_isSavingOrNavigating)
             return;
         if (_viewModel.IsSaveCompleted)
             await SaveAsync(false);
@@ -81,13 +86,20 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
             await Shell.Current.GoToAsync("..", false);
     }
 
+    /// <summary>
+    /// Handles MAUI system back independently of the header button, protecting saves and retrying departure after completion.
+    /// </summary>
     protected override bool OnBackButtonPressed() {
-        if (_saving)
+        // Keep the editor open until both persistence and navigation have finished.
+        if (_isSavingOrNavigating)
             return true;
         if (_viewModel.IsSaveCompleted) {
+            // A completed save only needs another attempt to leave; it must not write again.
+            // This callback returns synchronously, so dispatch the asynchronous navigation attempt.
             Dispatcher.Dispatch(async () => await SaveAsync(false));
             return true;
         }
+        // Unsaved editors retain MAUI's default system-back behavior.
         return base.OnBackButtonPressed();
     }
 }

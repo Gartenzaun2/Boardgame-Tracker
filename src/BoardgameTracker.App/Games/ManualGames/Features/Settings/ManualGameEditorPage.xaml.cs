@@ -68,16 +68,20 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable
                 AppResources.DeleteManualGameQuestion, AppResources.DeleteManualGame, AppResources.Cancel, destructive: true);
         }
         finally { _viewModel.IsChoosing = false; }
-        if (confirmed && await _viewModel.DeleteAsync())
-        {
-            if (_viewModel.DeletionWarning is string warning)
-            {
-                _viewModel.IsChoosing = true;
-                try { await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame, warning, AppResources.Ok); }
-                finally { _viewModel.IsChoosing = false; }
+        if (!confirmed || !await _viewModel.DeleteAsync())
+            return;
+
+        if (_viewModel.DeletionWarning is string warning) {
+            _viewModel.IsChoosing = true;
+            try {
+                await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame, warning, AppResources.Ok);
             }
-            await GoBackAsync();
+            finally {
+                _viewModel.IsChoosing = false;
+            }
         }
+
+        await GoBackAsync();
     }
 
     private async Task GoBackAsync()

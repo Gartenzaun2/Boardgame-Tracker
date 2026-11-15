@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.0 – 2026-11-15
+
+- Der Spielereditor zeigt beim Speichern eines bestehenden Spielers ohne geladene ID die vorhandene Fehlermeldung und protokolliert die technische Ursache. Speicher- und Navigationsabläufe in Views und ViewModels gezielt lesbarer formuliert; bestehende Wiederholungs-, Validierungs- und Formularabläufe erhalten.
+
 ## 0.22.7.2 – 2026-11-14
 
 - Spielereditor gemäß den lernorientierten Code-Guidelines strukturiert; Speicherabschluss als expliziten Zustand mit abhängigen Binding-Benachrichtigungen abgebildet und einfache XAML-Negationen über einen lokalen Converter ausgedrückt. Speicher-, Validierungs- und Navigationsverhalten beibehalten.

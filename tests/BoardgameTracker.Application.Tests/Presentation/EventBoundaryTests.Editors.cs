@@ -14,6 +14,52 @@ public sealed partial class EventBoundaryTests
 {
     private static CancellationToken EditorToken => TestContext.Current.CancellationToken;
 
+    [Fact]
+    public async Task PlayerSave_WithoutExistingPlayerIdShowsAndLogsFailure() {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        EditorLogger<EditPlayerViewModel> logger = new();
+        EditPlayerViewModel editor = new(new(db), new(db), logger);
+        editor.Name = "Unloaded player";
+
+        Assert.False(await editor.SaveAsync(EditorToken));
+
+        Assert.Equal(AppResources.PlayerSaveFailed, editor.ErrorMessage);
+        Assert.True(editor.HasError);
+        Assert.False(editor.IsBusy);
+        Assert.False(editor.IsSaveCompleted);
+        Assert.Equal("Unloaded player", editor.Name);
+        Assert.Contains("no player ID", Assert.Single(logger.ErrorMessages));
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.Equal(2, await verify.Players.CountAsync(EditorToken));
+        Assert.Equal("Anna", (await verify.Players.SingleAsync(player => player.Id == db.First.Id, EditorToken)).Name);
+        Assert.Equal("Ben", (await verify.Players.SingleAsync(player => player.Id == db.Second.Id, EditorToken)).Name);
+    }
+
+    [Fact]
+    public async Task PlayerAddAnother_SavesAndResetsWithoutNavigating() {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        editor.InitializeNew();
+        editor.Name = "Another guest";
+        editor.IsGuest = true;
+        EventBoundaryTestHost page = Create("EditPlayerPage.xaml.cs", editor);
+
+        await page.InvokeAsync("OnAddAnotherClicked");
+
+        Assert.Empty(page.Navigation.Calls);
+        Assert.Empty(page.Messages);
+        Assert.True(page.EditorContent.IsEnabled);
+        Assert.True(editor.CanEdit);
+        Assert.True(editor.IsNew);
+        Assert.False(editor.IsSaveCompleted);
+        Assert.Empty(editor.Name);
+        Assert.False(editor.IsGuest);
+        Assert.Equal(Guid.Empty, editor.PlayerId);
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.Equal(3, await verify.Players.CountAsync(EditorToken));
+        Assert.True((await verify.Players.SingleAsync(player => player.Name == "Another guest", EditorToken)).IsGuest);
+    }
+
     [Theory]
     [InlineData("save")]
     [InlineData("OnBackClicked")]
@@ -291,10 +337,13 @@ public sealed partial class EventBoundaryTests
     private sealed class EditorLogger<T> : ILogger<T>
     {
         public List<Exception> Errors { get; } = [];
+        public List<string> ErrorMessages { get; } = [];
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
+            if (logLevel == LogLevel.Error)
+                ErrorMessages.Add(formatter(state, exception));
             if (exception is not null)
                 Errors.Add(exception);
         }

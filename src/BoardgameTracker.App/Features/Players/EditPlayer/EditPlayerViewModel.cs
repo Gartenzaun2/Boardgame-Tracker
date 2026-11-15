@@ -100,11 +100,21 @@ public partial class EditPlayerViewModel : ObservableObject {
         return true;
     }
 
+    /// <returns>
+    /// True if the player was saved successfully or a previous save already completed;
+    /// false when busy, input or editor state is invalid, or persistence fails.
+    /// </returns>
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default) {
         if (IsSaveCompleted)
             return true;
-        if (IsBusy || (!IsNew && PlayerId == Guid.Empty))
+        if (IsBusy)
             return false;
+
+        if (!IsNew && PlayerId == Guid.Empty) {
+            ErrorMessage = AppResources.PlayerSaveFailed;
+            _logger.LogError("Could not save an existing player because the editor has no player ID.");
+            return false;
+        }
 
         ErrorMessage = null;
         if (string.IsNullOrWhiteSpace(Name)) {

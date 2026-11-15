@@ -27,6 +27,9 @@ machen.
 Keine unnötigen Abkürzungen. Fachliche IDs entsprechend benennen, z. B.
 `gameSessionId`, `playerId`, `specialCardId`. Asynchrone Methoden tragen `Async`.
 
+Zustandsnamen sollen den tatsächlich geschützten Ablauf bezeichnen. Ein Flag für
+Speichern und anschließende Navigation darf nicht nur das Speichern suggerieren.
+
 Interne Renames vollständig durchführen; keine Compatibility-Aliase nur für alte
 interne Namen einführen.
 
@@ -66,6 +69,17 @@ public partial bool IsSaveCompleted { get; private set; }
 XML-Dokumentation gezielt für zentrale Verträge und ungewöhnliche APIs verwenden,
 nicht für jede triviale Methode oder Property. Hilfreiche Erklärungen bei
 Refactorings erhalten und an geändertes Verhalten anpassen.
+
+Nicht offensichtliche Rückgabebedeutungen, insbesondere `bool` mit mehreren
+Abbruchgründen, gezielt mit XML-`<returns>` erläutern. Eine redundante
+`<summary>` ist dafür nicht nötig. Bei System-/Framework-Overrides Auslöser
+und Zweck mit einer kurzen XML-`<summary>` erklären, z. B. bei
+`OnBackButtonPressed()` die vom eigenen Zurück-Button unabhängige
+System-Zurückaktion.
+
+Kommentare dürfen auch ungewöhnliche Zustandszweige, Early Returns und
+zeitliche Abläufe erklären, wenn daraus erst der Grund einer Entscheidung
+verständlich wird. Kein Kommentarzwang für offensichtliche Anweisungen.
 
 C#-Bezeichner sowie Code-/XML-Kommentare sind Englisch; Projektdokumentation bleibt
 Deutsch.
@@ -140,6 +154,19 @@ if (IsHistorical) {
 
 Eine Anweisung pro Zeile. Komplexe Abläufe mit Absätzen, benannten
 Zwischenschritten und bei Bedarf privaten Methoden gliedern.
+
+Early Returns und die Short-Circuit-Auswertung mit `&&`/`||` bevorzugen, wenn
+sie den Kontrollfluss klarer und flacher machen. Mehrfach verschachtelte
+`if`-Blöcke nach Möglichkeit vermeiden. Ternäre Ausdrücke nur für einfache,
+unmittelbar erkennbare Wertauswahl verwenden; nicht innerhalb von
+`if`-Bedingungen und nicht zur Auswahl verschiedener Methodenaufrufe,
+insbesondere asynchroner Abläufe. Komplexe Bedingungen bei Bedarf durch
+sprechend benannte boolesche Zwischenvariablen erklären; für triviale
+Bedingungen keine zusätzlichen Variablen einführen.
+
+Boolesche Flag-Parameter, die wesentlich unterschiedliche Abläufe steuern,
+kritisch prüfen. Zuerst eine direkte Fallunterscheidung mit Early Return
+bevorzugen; zusätzliche Methoden oder Delegates nur bei Lesbarkeitsgewinn.
 
 ### 5.2 Attribute, Properties und Methoden
 

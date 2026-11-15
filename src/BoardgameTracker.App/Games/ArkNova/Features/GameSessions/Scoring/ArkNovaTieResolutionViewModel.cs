@@ -53,9 +53,11 @@ public partial class ArkNovaTieResolutionViewModel(
                 Draft = await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 gameSession = Draft.Data;
             }
-            ArkNovaGameSessionCompletionPlan plan = Draft is not null
-                ? correction.CreateCorrectionCompletionPlan(Draft)
-                : await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
+            ArkNovaGameSessionCompletionPlan plan;
+            if (Draft is not null)
+                plan = correction.CreateCorrectionCompletionPlan(Draft);
+            else
+                plan = await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
 
             GroupName = gameSession.GroupName;
             GameSessionId = gameSessionId;

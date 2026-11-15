@@ -229,7 +229,12 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
             return;
         try
         {
-            await (_viewModel.IsHistorical ? Shell.Current.GoToAsync("..", false) : ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync());
+            if (_viewModel.IsHistorical) {
+                await Shell.Current.GoToAsync("..", false);
+                return;
+            }
+
+            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
         }
         catch (Exception exception)
         {
@@ -249,6 +254,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
     }
 
+    /// <summary>Handles system back by closing the active picker or review before leaving the scoring flow.</summary>
     protected override bool OnBackButtonPressed()
     {
         if (_saving || !_viewModel.IsIdle)
@@ -265,6 +271,7 @@ public partial class ArkNovaScoringPage : ContentPage, IQueryAttributable
         }
         if (_viewModel.IsPhotoReviewVisible)
         {
+            // The synchronous back callback cannot await the asynchronous review cancellation.
             Dispatcher.Dispatch(async () => await _viewModel.CancelPhotoReviewAsync());
             return true;
         }

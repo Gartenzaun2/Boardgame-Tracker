@@ -227,7 +227,10 @@ public partial class ArkNovaScoringViewModel(
         {
             return null;
         }
-        return IsHistorical ? correction.CreateCorrectionCompletionPlan(Draft!) : await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
+        if (IsHistorical)
+            return correction.CreateCorrectionCompletionPlan(Draft!);
+
+        return await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
     }
 
     public async Task CompleteWithoutTieAsync(

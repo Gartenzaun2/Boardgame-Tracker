@@ -112,3 +112,21 @@ Buildverzeichnisse und native Bibliotheken direkt ein.
 Wenn die spielabhängige Buildkonfiguration weiter wächst, soll sie in eine
 modul-eigene importierte Builddatei unter `Games/ArkNova/` ausgelagert werden,
 damit die allgemeine Projektdatei übersichtlich bleibt.
+
+## Spielereditor: zurückgestellte Prüfungen
+
+### MAUI-System-Zurücknavigation gezielt überprüfen
+
+Bei einer späteren Plattformmodernisierung verifizieren, ob
+`OnBackButtonPressed()` unter MAUI 11 auf Android und iOS die gewünschten
+System-Zurückaktionen einschließlich Gesten zuverlässig erfasst. Bestehende
+Speicher-/Navigationssperren erhalten; keine vorsorgliche Änderung ohne
+nachgewiesenes Problem. Geräte- und Simulatorläufe nur mit gesonderter Freigabe.
+
+### AsyncOperationGate: optionaler Lesbarkeitstest (zurückgestellt)
+
+Einen kleinen Gate-Prototyp zuerst nur am Spielereditor erwägen, **nach** der
+vereinbarten Codestyle-Überarbeitung. Ziel wäre weniger wiederholte Busy-/
+`try/finally`-Verwaltung bei gleicher Nebenläufigkeits- und Fehlersemantik.
+Nicht pauschal auf ViewModels mit Autosave, Flush oder eigener Semaphore-Logik
+übertragen; nur übernehmen, wenn der Gesamtcode verständlicher wird.

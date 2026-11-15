@@ -35,13 +35,13 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (!AppDialogPage.IsOpen(this))
-        {
-            if (_correction)
-                await _viewModel.LoadCorrectionAsync(_id);
-            else
-                await _viewModel.LoadAsync(_id, _points);
-        }
+        if (AppDialogPage.IsOpen(this))
+            return;
+
+        if (_correction)
+            await _viewModel.LoadCorrectionAsync(_id);
+        else
+            await _viewModel.LoadAsync(_id, _points);
     }
     private void OnPointsEntryReady(object? sender, EventArgs e)
     {
@@ -97,7 +97,10 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
     }
     private async Task BackAsync()
     {
-        if (_navigating || !_viewModel.CanInteract || !_correction && !await _viewModel.SaveDraftAsync())
+        if (_navigating || !_viewModel.CanInteract)
+            return;
+        // Corrections stay in memory; only live scoring writes a draft before leaving.
+        if (!_correction && !await _viewModel.SaveDraftAsync())
             return;
         if (_correction && _viewModel.TryReturnToCorrectionPoints())
             return;
@@ -129,8 +132,10 @@ public partial class ManualScoringPage : ContentPage, IQueryAttributable
         }
     }
     private async void OnBackClicked(object? sender, EventArgs e) => await BackAsync();
+    /// <summary>Routes system back through draft saving or correction cancellation before navigation.</summary>
     protected override bool OnBackButtonPressed()
     {
+        // MAUI needs an immediate handled result; the guarded asynchronous flow runs via the dispatcher.
         if (_viewModel.CanInteract && !_navigating)
             Dispatcher.Dispatch(async () => await BackAsync());
         return true;
