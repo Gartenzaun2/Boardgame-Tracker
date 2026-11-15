@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.3 – 2026-11-15
+
+- Gemeinsamen, absichtsorientierten Navigationsvertrag für ViewModels mit dokumentierter Testgrenze und einmalig registriertem Shell-Adapter ergänzt. Bestehende Pages und ViewModels bleiben unverändert.
+
 ## 0.22.8.2 – 2026-11-15
 
 - Gemeinsamen Bool-Negationsconverter und typisierten Zugriff auf die aktive AppShell ergänzt. Gruppenbearbeitung als begrenzten Presentation-Piloten lesbarer gegliedert; bestehende Auswahl-, Speicher-, Sperr- und Navigationsabläufe erhalten.

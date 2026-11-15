@@ -121,6 +121,7 @@ public static class MauiProgram
         builder.Services.AddTransient<EditGroupViewModel>();
         builder.Services.AddTransient<EditGroupPage>();
 
+        builder.Services.AddSingleton<INavigationService, ShellNavigationService>();
         builder.Services.AddSingleton<AppShell>();
 
         return builder.Build();
