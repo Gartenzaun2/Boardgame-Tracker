@@ -11,8 +11,10 @@
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding CanInteract}">
             <controls:AppPageHeader Title="{x:Static res:AppResources.PrepareGame}" Variant="Subpage" GameName="{Binding GameName}"
                 BadgeText="{Binding BadgeText}" Subtitle="{Binding GroupName}" BackClicked="OnBackClicked">
-                <controls:AppPageHeader.Actions><ImageButton Source="icon_dice.png" Style="{StaticResource HeaderIconButton}"
-                    IsVisible="{Binding CapturePlayerOrder}" Clicked="OnRandomClicked" SemanticProperties.Description="{x:Static res:AppResources.RotateOrder}" /></controls:AppPageHeader.Actions>
+                <controls:AppPageHeader.Actions>
+                    <ImageButton Source="icon_dice.png" Style="{StaticResource HeaderIconButton}"
+                        IsVisible="{Binding CapturePlayerOrder}" Clicked="OnRandomClicked" SemanticProperties.Description="{x:Static res:AppResources.RotateOrder}" />
+                </controls:AppPageHeader.Actions>
             </controls:AppPageHeader>
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Padding="20,0" Spacing="12">
@@ -22,22 +24,73 @@
                         <Label Grid.Column="1" Text="{Binding LastSessionText}" LineBreakMode="WordWrap" />
                     </Grid>
                     <Button Text="{x:Static res:AppResources.RotateOrder}" Clicked="OnRotateClicked" IsVisible="{Binding CapturePlayerOrder}" Style="{StaticResource SecondaryActionButton}" />
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"><BindableLayout.ItemTemplate><DataTemplate x:DataType="rows:ManualParticipantViewModel">
-    <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
-        <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True"><Setter Property="BackgroundColor" Value="{Binding ColorBrush}" /></DataTrigger></Border.Triggers>
-        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-            <Border WidthRequest="36" HeightRequest="36" StrokeShape="Ellipse" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Outline}" VerticalOptions="Center">
-                <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True"><Setter Property="BackgroundColor" Value="{Binding ColorBrush}" /><Setter Property="Stroke" Value="{Binding PlayerTextColor}" /></DataTrigger></Border.Triggers>
-                <Label Text="{Binding PositionText}" FontSize="17" TextColor="{DynamicResource TextPrimary}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-            </Border>
-            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
-                <Label Text="{Binding Name}" FontSize="17" TextColor="{DynamicResource TextPrimary}" FontAttributes="Bold" LineBreakMode="WordWrap"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-                <Label Text="{Binding ColorName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" IsVisible="{Binding HasColor}"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-            </VerticalStackLayout>
-            <ImageButton Source="icon_palette.png" Clicked="OnPaletteClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" Grid.Column="2" IsVisible="{Binding CanChooseColor}"><ImageButton.Triggers><DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True"><Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" /></DataTrigger></ImageButton.Triggers></ImageButton><ImageButton Source="icon_up.png" Clicked="OnUpClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Grid.Column="3" IsVisible="{Binding HasOrder}" IsEnabled="{Binding CanMoveUp}"><ImageButton.Triggers><DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True"><Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" /></DataTrigger></ImageButton.Triggers></ImageButton><ImageButton Source="icon_down.png" Clicked="OnDownClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Grid.Column="4" IsVisible="{Binding HasOrder}" IsEnabled="{Binding CanMoveDown}"><ImageButton.Triggers><DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True"><Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" /></DataTrigger></ImageButton.Triggers></ImageButton>
-        </Grid>
-    </Border>
-</DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="rows:ManualParticipantViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                                        <Border WidthRequest="36" HeightRequest="36" StrokeShape="Ellipse" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Outline}" VerticalOptions="Center">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                                    <Setter Property="Stroke" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding PositionText}" FontSize="17" TextColor="{DynamicResource TextPrimary}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                            <Label Text="{Binding Name}" FontSize="17" TextColor="{DynamicResource TextPrimary}" FontAttributes="Bold" LineBreakMode="WordWrap">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding ColorName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" IsVisible="{Binding HasColor}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <ImageButton Source="icon_palette.png" Clicked="OnPaletteClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.ChooseColor}" Grid.Column="2" IsVisible="{Binding CanChooseColor}">
+                                            <ImageButton.Triggers>
+                                                <DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </ImageButton.Triggers>
+                                        </ImageButton>
+                                        <ImageButton Source="icon_up.png" Clicked="OnUpClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" Grid.Column="3" IsVisible="{Binding HasOrder}" IsEnabled="{Binding CanMoveUp}">
+                                            <ImageButton.Triggers>
+                                                <DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </ImageButton.Triggers>
+                                        </ImageButton>
+                                        <ImageButton Source="icon_down.png" Clicked="OnDownClicked" Style="{StaticResource IconButton}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" Grid.Column="4" IsVisible="{Binding HasOrder}" IsEnabled="{Binding CanMoveDown}">
+                                            <ImageButton.Triggers>
+                                                <DataTrigger TargetType="ImageButton" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="presentation:IconTint.Color" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </ImageButton.Triggers>
+                                        </ImageButton>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
             <VerticalStackLayout Grid.Row="2" Padding="20,0,20,20" Spacing="8">
@@ -53,27 +106,33 @@
                         <Label Grid.Column="1" Text="{Binding ColorPickerTitle}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" LineBreakMode="WordWrap" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding ColorOptions}" SelectionMode="None">
-                        <CollectionView.ItemTemplate><DataTemplate x:DataType="rows:ManualColorOption">
-                            <Border BackgroundColor="{DynamicResource Surface}" Padding="12" Margin="0,0,0,6" MinimumHeightRequest="48" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
-                                <Border.Triggers>
-                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
-                                        <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
-                                        <Setter Property="StrokeThickness" Value="2" />
-                                    </DataTrigger>
-                                </Border.Triggers>
-                                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnColorTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                    <Border BackgroundColor="{Binding Background}" Stroke="{DynamicResource Outline}" WidthRequest="28" HeightRequest="28" StrokeShape="Ellipse" />
-                                    <Label Grid.Column="1" Text="{Binding Name}" TextColor="{DynamicResource TextPrimary}" VerticalOptions="Center" />
-                                    <Image Grid.Column="2" Source="icon_check.png" Style="{StaticResource NavigationChevron}" IsVisible="{Binding IsSelected}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate></CollectionView.ItemTemplate>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="rows:ManualColorOption">
+                                <Border BackgroundColor="{DynamicResource Surface}" Padding="12" Margin="0,0,0,6" MinimumHeightRequest="48" Stroke="{DynamicResource Outline}" StrokeShape="RoundRectangle 10">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource SelectedSurface}" />
+                                            <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnColorTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border BackgroundColor="{Binding Background}" Stroke="{DynamicResource Outline}" WidthRequest="28" HeightRequest="28" StrokeShape="Ellipse" />
+                                        <Label Grid.Column="1" Text="{Binding Name}" TextColor="{DynamicResource TextPrimary}" VerticalOptions="Center" />
+                                        <Image Grid.Column="2" Source="icon_check.png" Style="{StaticResource NavigationChevron}" IsVisible="{Binding IsSelected}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
             </Border>
         </Grid>
-        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>

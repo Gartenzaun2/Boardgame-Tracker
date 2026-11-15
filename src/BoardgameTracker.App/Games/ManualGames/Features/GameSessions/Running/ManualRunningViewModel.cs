@@ -7,16 +7,32 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Running;
 
-public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query, ManualRunningGameSessionUseCase useCase,
-    ILogger<ManualRunningViewModel> logger) : ObservableObject
-{
+public partial class ManualRunningViewModel : ObservableObject {
+    private readonly ManualRunningGameSessionQuery _query;
+    private readonly ManualRunningGameSessionUseCase _useCase;
+    private readonly ILogger<ManualRunningViewModel> _logger;
+
+    public ManualRunningViewModel(ManualRunningGameSessionQuery query, ManualRunningGameSessionUseCase useCase, ILogger<ManualRunningViewModel> logger) {
+        _query = query;
+        _useCase = useCase;
+        _logger = logger;
+    }
+
     private ManualRunningData? _data;
     public Guid SessionId => _data?.SessionId ?? Guid.Empty;
     public ObservableCollection<ManualParticipantViewModel> Players { get; } = [];
-    [ObservableProperty] public partial string GameName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string DurationText { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string GameName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string BadgeText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string DurationText { get; private set; } = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
     [NotifyPropertyChangedFor(nameof(CanEnd))]
@@ -35,22 +51,21 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
-    public async Task LoadAsync(Guid id, CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(Guid id, CancellationToken cancellationToken = default) {
         if (IsBusy)
             return;
         IsBusy = true;
         ErrorMessage = null;
-        try { Apply(await query.GetAsync(id, cancellationToken) ?? throw new InvalidOperationException("Manual session not found.")); }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load manual session.");
+        try { Apply(await _query.GetAsync(id, cancellationToken) ?? throw new InvalidOperationException("Manual session not found.")); }
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load manual session.");
             ErrorMessage = AppResources.ManualSessionLoadFailed;
         }
-        finally { IsBusy = false; }
+        finally {
+            IsBusy = false;
+        }
     }
-    private void Apply(ManualRunningData data)
-    {
+    private void Apply(ManualRunningData data) {
         if (data.Status is not (GameSessionStatus.Running or GameSessionStatus.Scoring))
             throw new InvalidOperationException("The session is not open.");
         _data = data;
@@ -66,8 +81,7 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
         OnPropertyChanged(nameof(CanEnd));
         RefreshDuration(DateTimeOffset.UtcNow);
     }
-    public void RefreshDuration(DateTimeOffset now)
-    {
+    public void RefreshDuration(DateTimeOffset now) {
         if (_data is null)
             return;
         TimeSpan duration = (_data.EndedAt ?? now) - _data.StartedAt;
@@ -77,49 +91,49 @@ public partial class ManualRunningViewModel(ManualRunningGameSessionQuery query,
         DurationText = hours > 0 ? string.Format(AppResources.DurationHoursFormat, hours, duration.Minutes)
             : string.Format(AppResources.DurationMinutesFormat, (int)duration.TotalMinutes);
     }
-    public async Task<bool> BeginScoringAsync(CancellationToken cancellationToken = default)
-    {
+    /// <returns>True when scoring is already active or was started and reloaded; false when blocked or the transition fails.</returns>
+    public async Task<bool> BeginScoringAsync(CancellationToken cancellationToken = default) {
         if (!CanEnd || _data is null)
             return false;
         if (IsScoring)
             return true;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            await useCase.BeginScoringAsync(SessionId, DateTimeOffset.UtcNow, cancellationToken);
-            Apply(await query.GetAsync(SessionId, cancellationToken) ?? throw new InvalidOperationException("Manual session not found."));
+        try {
+            await _useCase.BeginScoringAsync(SessionId, DateTimeOffset.UtcNow, cancellationToken);
+            Apply(await _query.GetAsync(SessionId, cancellationToken) ?? throw new InvalidOperationException("Manual session not found."));
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not end manual session.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not end manual session.");
             ErrorMessage = AppResources.EndGameFailed;
             return false;
         }
-        finally { IsBusy = false; }
+        finally {
+            IsBusy = false;
+        }
     }
-    public async Task<bool> DiscardAsync(bool confirmed, CancellationToken cancellationToken = default)
-    {
+    /// <returns>True after the confirmed session is discarded; false when cancelled, blocked, unavailable, or persistence fails.</returns>
+    public async Task<bool> DiscardAsync(bool confirmed, CancellationToken cancellationToken = default) {
         if (!confirmed || !CanInteract || _data is null)
             return false;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            await useCase.DiscardAsync(SessionId, cancellationToken);
+        try {
+            await _useCase.DiscardAsync(SessionId, cancellationToken);
             _data = null;
             Players.Clear();
             OnPropertyChanged(nameof(ShowEnd));
             OnPropertyChanged(nameof(CanEnd));
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not discard manual session.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not discard manual session.");
             ErrorMessage = AppResources.DiscardGameFailed;
             return false;
         }
-        finally { IsBusy = false; }
+        finally {
+            IsBusy = false;
+        }
     }
 }

@@ -13,23 +13,31 @@ using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Result;
 
-public partial class ArkNovaResultViewModel(
-    ArkNovaScoringUseCase scoringUseCase,
-    IArkNovaSettingsStore settingsStore) : ObservableObject
-{
+public partial class ArkNovaResultViewModel : ObservableObject {
+    private readonly ArkNovaScoringUseCase _scoringUseCase;
+    private readonly IArkNovaSettingsStore _settingsStore;
+
+    public ArkNovaResultViewModel(ArkNovaScoringUseCase scoringUseCase, IArkNovaSettingsStore settingsStore) {
+        _scoringUseCase = scoringUseCase;
+        _settingsStore = settingsStore;
+    }
+
     public ObservableCollection<ArkNovaResultPlayerViewModel> Players { get; } = [];
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string DurationText { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string DurationText { get; private set; } = string.Empty;
 
     public ObservableCollection<ArkNovaStartingOrderPlayer> StartingOrderPlayers { get; } = [];
 
-    [ObservableProperty] public partial string StartingOrderText { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string StartingOrderText { get; private set; } = string.Empty;
 
-    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
-    {
-        ArkNovaGameSessionResultData gameSession = await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
+    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default) {
+        ArkNovaGameSessionResultData gameSession = await _scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
             ?? throw new InvalidOperationException("The completed Ark Nova GameSession does not exist.");
-        ArkNovaScoringDisplayMode mode = settingsStore.Get().ScoringDisplayMode;
+        ArkNovaScoringDisplayMode mode = _settingsStore.Get().ScoringDisplayMode;
         GroupName = gameSession.GroupName;
         DurationText = gameSession.StartedAt.ToLocalTime().ToString("g") + " · "
             + FormatDuration(gameSession.StartedAt, gameSession.EndedAt);
@@ -43,8 +51,7 @@ public partial class ArkNovaResultViewModel(
 
         foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players
                      .OrderBy(x => x.Placement ?? int.MaxValue)
-                     .ThenBy(x => x.Order).ThenBy(x => x.Name, StringComparer.CurrentCulture))
-        {
+                     .ThenBy(x => x.Order).ThenBy(x => x.Name, StringComparer.CurrentCulture)) {
             ArkNovaSpecialCardData[] cards = gameSession.SpecialCards
                 .Where(x => x.PlayerId == player.PlayerId)
                 .Select(x => gameSession.CardCatalog.Single(c => c.Id == x.SpecialCardId))
@@ -53,8 +60,7 @@ public partial class ArkNovaResultViewModel(
         }
     }
 
-    private static string FormatDuration(DateTimeOffset startedAt, DateTimeOffset? endedAt)
-    {
+    private static string FormatDuration(DateTimeOffset startedAt, DateTimeOffset? endedAt) {
         TimeSpan duration = (endedAt ?? DateTimeOffset.UtcNow) - startedAt;
         int totalMinutes = Math.Max(0, (int)duration.TotalMinutes);
         return totalMinutes >= 60
@@ -64,13 +70,11 @@ public partial class ArkNovaResultViewModel(
 
 }
 
-public sealed class ArkNovaResultPlayerViewModel
-{
+public sealed class ArkNovaResultPlayerViewModel {
     public ArkNovaResultPlayerViewModel(
         ArkNovaGameSessionResultPlayerData player,
         IReadOnlyList<ArkNovaSpecialCardData> cards,
-        ArkNovaScoringDisplayMode mode)
-    {
+        ArkNovaScoringDisplayMode mode) {
         Placement = player.Placement ?? 0;
         Name = player.Name;
         ColorText = PlayerColorPresentation.GetName(player.Color);
@@ -81,11 +85,14 @@ public sealed class ArkNovaResultPlayerViewModel
             + " · " + (player.Reputation is int reputation
                 ? string.Format(AppResources.ResultReputationFormat, reputation)
                 : AppResources.ResultReputationNotCaptured);
-        Score = player.Attractiveness is int attractiveness && player.Conservation is int conservation
-            ? mode == ArkNovaScoringDisplayMode.Old
-                ? ArkNovaScoringRules.CalculateOldScore(attractiveness, conservation)
-                : ArkNovaScoringRules.CalculateNewScore(attractiveness, conservation)
-            : 0;
+        if (player.Attractiveness is int attractiveness && player.Conservation is int conservation) {
+            if (mode == ArkNovaScoringDisplayMode.Old)
+                Score = ArkNovaScoringRules.CalculateOldScore(attractiveness, conservation);
+            else
+                Score = ArkNovaScoringRules.CalculateNewScore(attractiveness, conservation);
+        }
+        else
+            Score = 0;
         Cards = cards;
     }
 
@@ -103,7 +110,6 @@ public sealed class ArkNovaResultPlayerViewModel
 }
 
 /// <summary>One historical name, kept together with its preceding arrow when wrapping.</summary>
-public sealed record ArkNovaStartingOrderPlayer(string Name, bool HasPrevious)
-{
+public sealed record ArkNovaStartingOrderPlayer(string Name, bool HasPrevious) {
     public string LeadingText => HasPrevious ? string.Empty : string.Format(AppResources.StartingOrderFormat, string.Empty).TrimEnd();
 }

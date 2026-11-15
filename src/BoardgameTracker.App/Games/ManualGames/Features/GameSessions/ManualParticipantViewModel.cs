@@ -5,8 +5,7 @@ using MauiColor = Microsoft.Maui.Graphics.Color;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions;
 
-public partial class ManualParticipantViewModel(Guid playerId, string name) : ObservableObject
-{
+public partial class ManualParticipantViewModel(Guid playerId, string name) : ObservableObject {
     public Guid PlayerId { get; } = playerId;
     public string Name { get; } = name;
     [ObservableProperty]
@@ -25,8 +24,10 @@ public partial class ManualParticipantViewModel(Guid playerId, string name) : Ob
     public MauiColor ColorBrush => Color is PlayerColor color ? PlayerColorPresentation.GetBackground(color) : MauiColor.FromArgb("#00000000");
     public MauiColor PlayerTextColor => Color is PlayerColor color ? PlayerColorPresentation.GetText(color) : MauiColor.FromArgb("#00000000");
     public string ColorName => Color is PlayerColor color ? PlayerColorPresentation.GetName(color) : string.Empty;
-    [ObservableProperty] public partial bool CanMoveUp { get; set; }
-    [ObservableProperty] public partial bool CanMoveDown { get; set; }
+    [ObservableProperty]
+    public partial bool CanMoveUp { get; set; }
+    [ObservableProperty]
+    public partial bool CanMoveDown { get; set; }
     public bool CanChooseColor { get; init; }
 }
 

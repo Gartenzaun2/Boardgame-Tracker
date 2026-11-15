@@ -3,15 +3,13 @@ using BoardgameTracker.App.Resources.Localization;
 namespace BoardgameTracker.App.Presentation.Controls;
 
 /// <summary>App-styled modal messages, confirmations and single-choice lists.</summary>
-public sealed class AppDialogPage : ContentPage
-{
+public sealed class AppDialogPage : ContentPage {
     private static readonly HashSet<Page> Owners = [];
     private readonly TaskCompletionSource<int> _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private bool _closing;
 
     private AppDialogPage(string title, string? message, string closeText,
-        string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex)
-    {
+        string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex) {
         Shell.SetNavBarIsVisible(this, false);
         SetDynamicResource(BackgroundColorProperty, "ModalOverlay");
         Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page.SetModalPresentationStyle(
@@ -24,14 +22,11 @@ public sealed class AppDialogPage : ContentPage
         if (message is not null)
             body.Children.Add(new Label { Text = message });
 
-        if (options is not null)
-        {
-            for (int index = 0; index < options.Count; index++)
-            {
+        if (options is not null) {
+            for (int index = 0; index < options.Count; index++) {
                 int choice = index;
                 bool selected = index == selectedIndex;
-                Button option = new()
-                {
+                Button option = new() {
                     Text = selected ? $"✓  {options[index]}" : options[index],
                     Style = Resource<Style>("SecondaryActionButton"),
                     HorizontalOptions = LayoutOptions.Fill,
@@ -49,10 +44,8 @@ public sealed class AppDialogPage : ContentPage
         }
 
         VerticalStackLayout actions = new() { Spacing = 8 };
-        if (acceptText is not null)
-        {
-            Button accept = new()
-            {
+        if (acceptText is not null) {
+            Button accept = new() {
                 Text = acceptText,
                 Style = Resource<Style>(destructive ? "DangerButton" : "PrimaryCompactButton"),
                 AutomationId = "DialogConfirm"
@@ -62,10 +55,8 @@ public sealed class AppDialogPage : ContentPage
         }
 
         View header = heading;
-        if (options is not null)
-        {
-            ImageButton exit = new()
-            {
+        if (options is not null) {
+            ImageButton exit = new() {
                 Source = "icon_back.png",
                 Style = Resource<Style>("IconButton"),
                 AutomationId = "DialogCancel"
@@ -78,10 +69,8 @@ public sealed class AppDialogPage : ContentPage
             heading.VerticalOptions = LayoutOptions.Center;
             header = selectionHeader;
         }
-        else
-        {
-            Button close = new()
-            {
+        else {
+            Button close = new() {
                 Text = closeText,
                 Style = Resource<Style>("TextActionButton"),
                 AutomationId = "DialogCancel"
@@ -90,8 +79,7 @@ public sealed class AppDialogPage : ContentPage
             actions.Children.Add(close);
         }
 
-        Grid layout = new()
-        {
+        Grid layout = new() {
             RowDefinitions = [new(GridLength.Auto), new(GridLength.Auto), new(GridLength.Auto)],
             RowSpacing = 12
         };
@@ -102,8 +90,7 @@ public sealed class AppDialogPage : ContentPage
             layout.Add(actions, 0, 2);
         Border dialog = new() { Style = Resource<Style>("SelectionDialog"), Content = layout };
         Grid backdrop = new() { Padding = 18, Children = { dialog } };
-        void ResizeDialog()
-        {
+        void ResizeDialog() {
             double available = Math.Max(0, backdrop.Height - 36);
             dialog.MaximumHeightRequest = available;
             scroll.MaximumHeightRequest = Math.Max(0, available - header.Height - (options is null ? actions.Height : 0) - 56);
@@ -115,57 +102,54 @@ public sealed class AppDialogPage : ContentPage
     }
 
     // Modal dismissal must not reload an owner's unsaved form or correction draft.
-    public static bool IsOpen(Page owner) => Owners.Contains(owner);
+    public static bool IsOpen(Page owner)
+        => Owners.Contains(owner);
 
+    /// <returns>True only for the explicit accept action in a confirmation; false for dismissal, cancellation, a message-only dialog, or an already open dialog.</returns>
     public static async Task<bool> ShowAsync(Page owner, string title, string message,
-        string accept, string? cancel = null, bool destructive = false)
-    {
+        string accept, string? cancel = null, bool destructive = false) {
         AppDialogPage dialog = new(title, message, cancel ?? accept,
             cancel is null ? null : accept, destructive, null, -1);
         return await PresentAsync(owner, dialog) == 0;
     }
 
-    public static Task<int> ChooseAsync(Page owner, string title, IReadOnlyList<string> options, int selectedIndex, string? cancelText = null) =>
-        PresentAsync(owner, new AppDialogPage(title, null, cancelText ?? AppResources.Close, null, false, options, selectedIndex));
+    public static Task<int> ChooseAsync(Page owner, string title, IReadOnlyList<string> options, int selectedIndex, string? cancelText = null)
+        => PresentAsync(owner, new AppDialogPage(title, null, cancelText ?? AppResources.Close, null, false, options, selectedIndex));
 
-    private static async Task<int> PresentAsync(Page owner, AppDialogPage dialog)
-    {
+    private static async Task<int> PresentAsync(Page owner, AppDialogPage dialog) {
         if (!Owners.Add(owner))
             return -1;
 
-        try
-        {
+        try {
             await owner.Navigation.PushModalAsync(dialog, animated: false);
             return await dialog._completion.Task;
         }
-        finally
-        {
+        finally {
             Owners.Remove(owner);
         }
     }
 
-    private async Task CloseAsync(int result)
-    {
+    private async Task CloseAsync(int result) {
         if (_closing)
             return;
 
         _closing = true;
-        try
-        {
+        try {
             await Navigation.PopModalAsync(animated: false);
             _completion.TrySetResult(result);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _completion.TrySetException(exception);
         }
     }
 
-    protected override bool OnBackButtonPressed()
-    {
+    /// <summary>Treats system back as cancellation and completes the waiting dialog task after modal dismissal.</summary>
+    protected override bool OnBackButtonPressed() {
+        // The synchronous back callback dispatches the asynchronous close/navigation flow.
         Dispatcher.Dispatch(async () => await CloseAsync(-1));
         return true;
     }
 
-    private static T Resource<T>(string key) => (T)Microsoft.Maui.Controls.Application.Current!.Resources[key];
+    private static T Resource<T>(string key)
+        => (T)Microsoft.Maui.Controls.Application.Current!.Resources[key];
 }

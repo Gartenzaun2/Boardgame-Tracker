@@ -12,8 +12,7 @@
     x:DataType="vm:ArkNovaResultViewModel"
     Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="Auto,*" RowSpacing="14">
-
-<VerticalStackLayout Spacing="8">
+        <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.Result}"
                 Variant="Subpage"
@@ -28,56 +27,58 @@
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
             <VerticalStackLayout Padding="18,0,18,0" Spacing="8">
-<FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignItems="Center" AlignContent="Start"
-    BindableLayout.ItemsSource="{Binding StartingOrderPlayers}"
-    SemanticProperties.Description="{Binding StartingOrderText}">
-    <BindableLayout.ItemTemplate>
-        <DataTemplate x:DataType="vm:ArkNovaStartingOrderPlayer">
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="5" HorizontalOptions="Start"
-                FlexLayout.Grow="0" FlexLayout.Shrink="1" Margin="0,0,5,4">
-                <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center"
-                    VerticalTextAlignment="Center">
-                    <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding HasPrevious}" Value="True">
-                            <Setter Property="IsVisible" Value="False" />
-                        </DataTrigger>
-                    </Label.Triggers>
-                </Label>
-                <Image Source="icon_starting_order_arrow.png" WidthRequest="14" HeightRequest="12"
-                    IsVisible="{Binding HasPrevious}" VerticalOptions="Center" Aspect="AspectFit"
-                    presentation:IconTint.Color="{DynamicResource TextPrimary}"
-                    AutomationProperties.IsInAccessibleTree="False" InputTransparent="True" />
-                <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center"
-                    LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
-            </Grid>
-        </DataTemplate>
-    </BindableLayout.ItemTemplate>
-</FlexLayout>
-</VerticalStackLayout>
+                <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="Start" AlignItems="Center" AlignContent="Start"
+                    BindableLayout.ItemsSource="{Binding StartingOrderPlayers}"
+                    SemanticProperties.Description="{Binding StartingOrderText}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ArkNovaStartingOrderPlayer">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="5" HorizontalOptions="Start"
+                                FlexLayout.Grow="0" FlexLayout.Shrink="1" Margin="0,0,5,4">
+                                <Label Text="{Binding LeadingText}" FontSize="13" VerticalOptions="Center"
+                                    VerticalTextAlignment="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding HasPrevious}" Value="True">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Image Source="icon_starting_order_arrow.png" WidthRequest="14" HeightRequest="12"
+                                    IsVisible="{Binding HasPrevious}" VerticalOptions="Center" Aspect="AspectFit"
+                                    presentation:IconTint.Color="{DynamicResource TextPrimary}"
+                                    AutomationProperties.IsInAccessibleTree="False" InputTransparent="True" />
+                                <Label Grid.Column="1" Text="{Binding Name}" FontSize="13" VerticalOptions="Center"
+                                    LineBreakMode="WordWrap" VerticalTextAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
         </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="14">
-<CollectionView Grid.Row="0" ItemsSource="{Binding Players}" SelectionMode="None">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="vm:ArkNovaResultPlayerViewModel">
-                    <Border Margin="0,0,0,8" Padding="12" Style="{StaticResource CardBorder}" BackgroundColor="{Binding Tint}">
-                        <Grid ColumnDefinitions="44,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                            <Label TextColor="{Binding PlayerTextColor}" Text="{Binding PlacementText}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" Grid.RowSpan="3" />
-                            <Label TextColor="{Binding PlayerTextColor}" Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                            <Label TextColor="{Binding PlayerTextColor}" Grid.Column="2" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="16" />
-                            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RawValuesText}" FontSize="11" TextColor="{Binding PlayerTextColor}" />
-                            <VerticalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BindableLayout.ItemsSource="{Binding Cards}" Spacing="4">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="data:ArkNovaSpecialCardData">
-                                        <Border Style="{StaticResource CardBorder}" Padding="6"><ark:ArkNovaSpecialCardView Card="{Binding .}" /></Border>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-<Button x:Name="DoneButton" Grid.Row="1" Text="{x:Static res:AppResources.Done}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnDoneClicked" />
-</Grid>
-</Grid>
+        <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="14">
+            <CollectionView Grid.Row="0" ItemsSource="{Binding Players}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ArkNovaResultPlayerViewModel">
+                        <Border Margin="0,0,0,8" Padding="12" Style="{StaticResource CardBorder}" BackgroundColor="{Binding Tint}">
+                            <Grid ColumnDefinitions="44,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                                <Label TextColor="{Binding PlayerTextColor}" Text="{Binding PlacementText}" FontAttributes="Bold" FontSize="22" VerticalOptions="Center" Grid.RowSpan="3" />
+                                <Label TextColor="{Binding PlayerTextColor}" Grid.Column="1" Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label TextColor="{Binding PlayerTextColor}" Grid.Column="2" Text="{Binding ScoreText}" FontAttributes="Bold" FontSize="16" />
+                                <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RawValuesText}" FontSize="11" TextColor="{Binding PlayerTextColor}" />
+                                <VerticalStackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" BindableLayout.ItemsSource="{Binding Cards}" Spacing="4">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="data:ArkNovaSpecialCardData">
+                                            <Border Style="{StaticResource CardBorder}" Padding="6">
+                                                <ark:ArkNovaSpecialCardView Card="{Binding .}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button x:Name="DoneButton" Grid.Row="1" Text="{x:Static res:AppResources.Done}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnDoneClicked" />
+        </Grid>
+    </Grid>
 </ContentPage>

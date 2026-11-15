@@ -1,8 +1,7 @@
 namespace BoardgameTracker.App.Presentation.Controls;
 
 /// <summary>A bounded native wheel. A displayed suggestion does not change Value.</summary>
-public sealed class NumberWheel : View
-{
+public sealed class NumberWheel : View {
     public static readonly BindableProperty MinimumProperty = BindableProperty.Create(nameof(Minimum), typeof(int), typeof(NumberWheel), 0);
     public static readonly BindableProperty MaximumProperty = BindableProperty.Create(nameof(Maximum), typeof(int), typeof(NumberWheel), 100);
     public static readonly BindableProperty ValueProperty = BindableProperty.Create(nameof(Value), typeof(int?), typeof(NumberWheel), null, BindingMode.TwoWay);

@@ -5,8 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.Licenses;
 
-public partial class LicenseListViewModel(LicenseTextService licenses, ILogger<LicenseListViewModel> logger) : ObservableObject
-{
+public partial class LicenseListViewModel : ObservableObject {
+    private readonly LicenseTextService _licenses;
+    private readonly ILogger<LicenseListViewModel> _logger;
+
+    public LicenseListViewModel(LicenseTextService licenses, ILogger<LicenseListViewModel> logger) {
+        _licenses = licenses;
+        _logger = logger;
+    }
+
     public ObservableCollection<ThirdPartyLicense> Components { get; } = [];
     private bool _loaded;
 
@@ -18,17 +25,16 @@ public partial class LicenseListViewModel(LicenseTextService licenses, ILogger<L
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => ErrorMessage is not null;
-    [ObservableProperty] public partial string IjgAttribution { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string IjgAttribution { get; private set; } = string.Empty;
 
-    public async Task LoadAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(CancellationToken cancellationToken = default) {
         if (IsBusy || _loaded)
             return;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            IReadOnlyList<ThirdPartyLicense> catalog = await licenses.LoadCatalogAsync(cancellationToken);
+        try {
+            IReadOnlyList<ThirdPartyLicense> catalog = await _licenses.LoadCatalogAsync(cancellationToken);
             string attribution = catalog.Single(item => item.Id == "independent-jpeg-group").AttributionText
                 ?? throw new InvalidDataException("Required IJG attribution is missing.");
             Components.Clear();
@@ -37,14 +43,14 @@ public partial class LicenseListViewModel(LicenseTextService licenses, ILogger<L
             IjgAttribution = attribution;
             _loaded = true;
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load the packaged third-party license catalog.");
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
+            // Leaving/cancelling a load is expected; keep the catalog eligible for a later retry.
+        }
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load the packaged third-party license catalog.");
             ErrorMessage = AppResources.LicensesLoadFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }

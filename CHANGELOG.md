@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.1 – 2026-11-15
+
+- Die gesamte Präsentationsschicht nach den gemeinsamen Lesbarkeitsregeln überarbeitet: sichtbare ViewModel-Abhängigkeiten, flachere Fallunterscheidungen, präzisere Operationsnamen und Erklärungen zu Framework-, Autosave- und Navigationszuständen. Verdichtete XAML-Strukturen aufgelöst; Layouts, Bindings und fachliche Abläufe erhalten.
+
 ## 0.22.8.0 – 2026-11-15
 
 - Der Spielereditor zeigt beim Speichern eines bestehenden Spielers ohne geladene ID die vorhandene Fehlermeldung und protokolliert die technische Ursache. Speicher- und Navigationsabläufe in Views und ViewModels gezielt lesbarer formuliert; bestehende Wiederholungs-, Validierungs- und Formularabläufe erhalten.

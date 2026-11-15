@@ -16,11 +16,17 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 /// Holds UI state for a persisted running Ark Nova GameSession and invokes lifecycle
 /// actions such as ending or discarding the gameSession.
 /// </summary>
-public partial class ArkNovaRunningViewModel(
-    ArkNovaRunningGameSessionQuery runningGameSessionQuery,
-    RunningGameSessionUseCase runningGameSessionUseCase,
-    ILogger<ArkNovaRunningViewModel> logger) : ObservableObject
-{
+public partial class ArkNovaRunningViewModel : ObservableObject {
+    private readonly ArkNovaRunningGameSessionQuery _runningGameSessionQuery;
+    private readonly RunningGameSessionUseCase _runningGameSessionUseCase;
+    private readonly ILogger<ArkNovaRunningViewModel> _logger;
+
+    public ArkNovaRunningViewModel(ArkNovaRunningGameSessionQuery runningGameSessionQuery, RunningGameSessionUseCase runningGameSessionUseCase, ILogger<ArkNovaRunningViewModel> logger) {
+        _runningGameSessionQuery = runningGameSessionQuery;
+        _runningGameSessionUseCase = runningGameSessionUseCase;
+        _logger = logger;
+    }
+
     public ObservableCollection<ArkNovaRunningPlayerViewModel> Players { get; } = [];
 
     [ObservableProperty]
@@ -45,24 +51,19 @@ public partial class ArkNovaRunningViewModel(
 
     public async Task LoadAsync(
         Guid gameSessionId,
-        CancellationToken cancellationToken = default)
-    {
+        CancellationToken cancellationToken = default) {
         if (IsBusy)
-        {
             return;
-        }
 
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
 
-            ArkNovaRunningGameSessionData? data = await runningGameSessionQuery.GetRunningGameSessionAsync(
+            ArkNovaRunningGameSessionData? data = await _runningGameSessionQuery.GetRunningGameSessionAsync(
                 gameSessionId,
                 cancellationToken);
 
-            if (data is null)
-            {
+            if (data is null) {
                 ErrorMessage = AppResources.RunningGameSessionNotFound;
                 return;
             }
@@ -72,8 +73,7 @@ public partial class ArkNovaRunningViewModel(
             _startedAt = data.StartedAt;
             Players.Clear();
 
-            foreach (ArkNovaRunningGameSessionPlayer player in data.Players)
-            {
+            foreach (ArkNovaRunningGameSessionPlayer player in data.Players) {
                 Players.Add(new ArkNovaRunningPlayerViewModel(
                     player.Name,
                     player.Order,
@@ -83,31 +83,26 @@ public partial class ArkNovaRunningViewModel(
 
             RefreshDuration(DateTimeOffset.UtcNow);
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load running Ark Nova GameSession {GameSessionId}.", gameSessionId);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load running Ark Nova GameSession {GameSessionId}.", gameSessionId);
             ErrorMessage = UserErrorMessage.Create(
                 AppResources.LoadRunningGameSessionFailed,
                 exception);
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public void RefreshDuration(DateTimeOffset now)
-    {
-        if (_startedAt == default)
-        {
+    public void RefreshDuration(DateTimeOffset now) {
+        if (_startedAt == default) {
             DurationText = string.Empty;
             return;
         }
 
         TimeSpan duration = now - _startedAt;
 
-        if (duration < TimeSpan.Zero)
-        {
+        if (duration < TimeSpan.Zero) {
             duration = TimeSpan.Zero;
         }
 
@@ -117,61 +112,51 @@ public partial class ArkNovaRunningViewModel(
             : string.Format(AppResources.DurationMinutesFormat, duration.Minutes);
     }
 
-    public async Task<bool> BeginScoringAsync(CancellationToken cancellationToken = default)
-    {
+    /// <returns>True after scoring starts; false when busy, no session is loaded, or the transition fails.</returns>
+    public async Task<bool> BeginScoringAsync(CancellationToken cancellationToken = default) {
         if (IsBusy || GameSessionId == Guid.Empty)
-        {
             return false;
-        }
 
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
-            await runningGameSessionUseCase.BeginScoringAsync(
+            await _runningGameSessionUseCase.BeginScoringAsync(
                 GameSessionId,
                 DateTimeOffset.UtcNow,
                 cancellationToken);
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not end Ark Nova GameSession {GameSessionId}.", GameSessionId);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not end Ark Nova GameSession {GameSessionId}.", GameSessionId);
             ErrorMessage = UserErrorMessage.Create(
                 AppResources.EndGameFailed,
                 exception);
             return false;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default)
-    {
+    /// <returns>True after the session is discarded; false when busy, no session is loaded, or persistence fails.</returns>
+    public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default) {
         if (IsBusy || GameSessionId == Guid.Empty)
-        {
             return false;
-        }
 
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
-            await runningGameSessionUseCase.DiscardAsync(GameSessionId, cancellationToken);
+            await _runningGameSessionUseCase.DiscardAsync(GameSessionId, cancellationToken);
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not discard Ark Nova GameSession {GameSessionId}.", GameSessionId);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not discard Ark Nova GameSession {GameSessionId}.", GameSessionId);
             ErrorMessage = UserErrorMessage.Create(
                 AppResources.DiscardGameFailed,
                 exception);
             return false;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
@@ -180,16 +165,14 @@ public partial class ArkNovaRunningViewModel(
 /// <summary>
 /// Presentation projection for one player on the running GameSession screen.
 /// </summary>
-public sealed class ArkNovaRunningPlayerViewModel
-{
+public sealed class ArkNovaRunningPlayerViewModel {
     private readonly PlayerColor _color;
 
     public ArkNovaRunningPlayerViewModel(
         string name,
         int? position,
         PlayerColor color,
-        int zooPlanNumber, string zooPlanName)
-    {
+        int zooPlanNumber, string zooPlanName) {
         Name = name;
         Position = position;
         _color = color;

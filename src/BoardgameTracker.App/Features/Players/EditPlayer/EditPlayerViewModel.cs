@@ -92,6 +92,7 @@ public partial class EditPlayerViewModel : ObservableObject {
         }
     }
 
+    /// <returns>True after a new player was saved and the form reset; false for an existing player or when saving was blocked or failed.</returns>
     public async Task<bool> SaveAndAddAnotherAsync(CancellationToken cancellationToken = default) {
         if (!IsNew || !await SaveAsync(cancellationToken))
             return false;

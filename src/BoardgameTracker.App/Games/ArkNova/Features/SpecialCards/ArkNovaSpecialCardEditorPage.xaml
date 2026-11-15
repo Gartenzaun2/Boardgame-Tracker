@@ -10,58 +10,60 @@
     <Grid>
         <!-- Keep modal and busy layers outside the content they disable. -->
         <Grid x:Name="PageContent" RowDefinitions="Auto,*" RowSpacing="16" IsEnabled="{Binding IsEditorContentEnabled}">
-
-<VerticalStackLayout Spacing="8">
+            <VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
-                Title="{Binding Title}"
-                Variant="Subpage"
-                BackClicked="OnBackClicked"
-                GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
-                BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
+                    Title="{Binding Title}"
+                    Variant="Subpage"
+                    BackClicked="OnBackClicked"
+                    GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
+                    BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
             </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="16">
-<ScrollView Grid.Row="0" IsEnabled="{Binding CanEdit}">
-                <VerticalStackLayout Spacing="16">
-                    <Label Text="{x:Static res:AppResources.SpecialCardName}" FontAttributes="Bold" />
-                    <Entry Text="{Binding NameText}" MaxLength="{x:Static content:ArkNovaUserContent.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
-                    <Border Style="{StaticResource CardBorder}" Padding="12"><ark:ArkNovaSpecialCardView Card="{Binding Preview}" /></Border>
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <Image Source="{Binding Symbol1Image}" IsVisible="{Binding HasSymbol1}" WidthRequest="32" HeightRequest="32" />
-                        <Button Grid.Column="1" Text="{Binding Symbol1Name}" CommandParameter="0" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" />
-                    </Grid>
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <Image Source="{Binding Symbol2Image}" IsVisible="{Binding HasSymbol2}" WidthRequest="32" HeightRequest="32" />
-                        <Button Grid.Column="1" Text="{Binding Symbol2Name}" CommandParameter="1" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" IsEnabled="{Binding CanChooseSymbol2}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                        <Image Source="{Binding Symbol3Image}" IsVisible="{Binding HasSymbol3}" WidthRequest="32" HeightRequest="32" />
-                        <Button Grid.Column="1" Text="{Binding Symbol3Name}" CommandParameter="2" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" IsEnabled="{Binding CanChooseSymbol3}" />
-                    </Grid>
-                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsEditing}">
-                        <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
-                        <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding IsIdle}" />
-                    </Grid>
+            <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="16">
+                <ScrollView Grid.Row="0" IsEnabled="{Binding CanEdit}">
+                    <VerticalStackLayout Spacing="16">
+                        <Label Text="{x:Static res:AppResources.SpecialCardName}" FontAttributes="Bold" />
+                        <Entry Text="{Binding NameText}" MaxLength="{x:Static content:ArkNovaUserContent.MaximumNameLength}" Style="{StaticResource InlineFormEntry}" />
+                        <Border Style="{StaticResource CardBorder}" Padding="12">
+                            <ark:ArkNovaSpecialCardView Card="{Binding Preview}" />
+                        </Border>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Image Source="{Binding Symbol1Image}" IsVisible="{Binding HasSymbol1}" WidthRequest="32" HeightRequest="32" />
+                            <Button Grid.Column="1" Text="{Binding Symbol1Name}" CommandParameter="0" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Image Source="{Binding Symbol2Image}" IsVisible="{Binding HasSymbol2}" WidthRequest="32" HeightRequest="32" />
+                            <Button Grid.Column="1" Text="{Binding Symbol2Name}" CommandParameter="1" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" IsEnabled="{Binding CanChooseSymbol2}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Image Source="{Binding Symbol3Image}" IsVisible="{Binding HasSymbol3}" WidthRequest="32" HeightRequest="32" />
+                            <Button Grid.Column="1" Text="{Binding Symbol3Name}" CommandParameter="2" Clicked="OnSymbolClicked" Style="{StaticResource SecondaryActionButton}" MinimumHeightRequest="48" IsEnabled="{Binding CanChooseSymbol3}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsEditing}">
+                            <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding IsIdle}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+                <VerticalStackLayout Grid.Row="1" Spacing="8">
+                    <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
+                    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+                    <Button Text="{Binding SaveText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
                 </VerticalStackLayout>
-            </ScrollView>
-<VerticalStackLayout Grid.Row="1" Spacing="8">
-    <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
-    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
-    <Button Text="{Binding SaveText}" Style="{StaticResource PrimaryCompactButton}" Clicked="OnSaveClicked" IsEnabled="{Binding CanSave}" />
-</VerticalStackLayout>
-</Grid>
-</Grid>
-
+            </Grid>
+        </Grid>
         <Grid IsVisible="{Binding IsSymbolPickerVisible}" IsEnabled="{Binding IsIdle}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="12">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="480">
                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                         <ImageButton Source="icon_back.png" Clicked="OnCloseSymbolPickerClicked" Style="{StaticResource IconButton}"
-                                     SemanticProperties.Description="{x:Static res:AppResources.Back}"
-                                     ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
+                            SemanticProperties.Description="{x:Static res:AppResources.Back}"
+                            ToolTipProperties.Text="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" Text="{x:Static res:AppResources.SelectCardSymbol}" FontAttributes="Bold" FontSize="20" VerticalOptions="Center" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding SymbolOptions}" SelectionMode="None" HeightRequest="330">
-                        <CollectionView.ItemsLayout><LinearItemsLayout Orientation="Vertical" ItemSpacing="6" /></CollectionView.ItemsLayout>
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" />
+                        </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ArkNovaSymbolOption">
                                 <Border Style="{StaticResource CardBorder}" Padding="12,8" MinimumHeightRequest="48">
@@ -71,7 +73,9 @@
                                             <Setter Property="Stroke" Value="{DynamicResource SelectedBorder}" />
                                         </DataTrigger>
                                     </Border.Triggers>
-                                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnSymbolOptionTapped" CommandParameter="{Binding .}" /></Border.GestureRecognizers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnSymbolOptionTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="32,*,24" ColumnSpacing="12">
                                         <Image Source="{Binding Image}" IsVisible="{Binding HasImage}" WidthRequest="32" HeightRequest="32" />
                                         <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" />

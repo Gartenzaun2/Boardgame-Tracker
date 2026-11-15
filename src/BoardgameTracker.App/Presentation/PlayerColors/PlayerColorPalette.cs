@@ -4,10 +4,9 @@ namespace BoardgameTracker.App.Presentation.PlayerColors;
 public sealed record PlayerColorStyle(string BackgroundHex, string TextHex);
 
 // These are display colors, never camera RGB/HSV thresholds.
-public static class PlayerColorPalette
-{
-    public static PlayerColorStyle Get(PlayerColor color) => color switch
-    {
+public static class PlayerColorPalette {
+    public static PlayerColorStyle Get(PlayerColor color)
+        => color switch {
         PlayerColor.Red => new("#D96B63", "#312220"),
         PlayerColor.Yellow => new("#E7C84A", "#403716"),
         PlayerColor.Green => new("#73A66F", "#243723"),

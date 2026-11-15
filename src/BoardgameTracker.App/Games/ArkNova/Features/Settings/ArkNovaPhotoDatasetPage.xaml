@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns:gameNav="clr-namespace:BoardgameTracker.App.Games.ArkNova.Navigation" xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-             x:Class="BoardgameTracker.App.Games.ArkNova.Features.Settings.ArkNovaPhotoDatasetPage"
-             Shell.NavBarIsVisible="False">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
+    x:Class="BoardgameTracker.App.Games.ArkNova.Features.Settings.ArkNovaPhotoDatasetPage"
+    Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="Auto,*" RowSpacing="20">
-
-<VerticalStackLayout Spacing="8">
+        <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.PhotoDatasetTitle}"
                 Variant="Subpage"
@@ -14,24 +13,24 @@
                 GameName="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameDisplayName}"
                 BadgeText="{x:Static gameNav:ArkNovaGameSessionNavigationHandler.GameBadgeText}" />
         </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="20">
-<ScrollView Grid.Row="0">
-            <VerticalStackLayout x:Name="Actions" Spacing="12">
-                <Border Style="{StaticResource CardBorder}" Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{x:Static res:AppResources.PhotoDatasetLocalHint}" />
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="{x:Static res:AppResources.PhotoDatasetCollection}" VerticalOptions="Center" />
-                            <Switch x:Name="CollectionSwitch" Grid.Column="1" Toggled="OnCollectionToggled" />
-                        </Grid>
-                        <Label x:Name="SummaryLabel" />
-                    </VerticalStackLayout>
-                </Border>
-                <Button x:Name="ExportButton" Text="{x:Static res:AppResources.PhotoDatasetExport}" Style="{StaticResource SecondaryActionButton}" Clicked="OnExportClicked" />
-                <Button x:Name="DeleteButton" Text="{x:Static res:AppResources.PhotoDatasetDelete}" Style="{StaticResource DangerButton}" Clicked="OnDeleteClicked" />
-                <Label x:Name="ErrorLabel" TextColor="{DynamicResource TextPrimary}" IsVisible="False" />
-            </VerticalStackLayout>
-        </ScrollView>
-</Grid>
-</Grid>
+        <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="20">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout x:Name="Actions" Spacing="12">
+                    <Border Style="{StaticResource CardBorder}" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Label Text="{x:Static res:AppResources.PhotoDatasetLocalHint}" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{x:Static res:AppResources.PhotoDatasetCollection}" VerticalOptions="Center" />
+                                <Switch x:Name="CollectionSwitch" Grid.Column="1" Toggled="OnCollectionToggled" />
+                            </Grid>
+                            <Label x:Name="SummaryLabel" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Button x:Name="ExportButton" Text="{x:Static res:AppResources.PhotoDatasetExport}" Style="{StaticResource SecondaryActionButton}" Clicked="OnExportClicked" />
+                    <Button x:Name="DeleteButton" Text="{x:Static res:AppResources.PhotoDatasetDelete}" Style="{StaticResource DangerButton}" Clicked="OnDeleteClicked" />
+                    <Label x:Name="ErrorLabel" TextColor="{DynamicResource TextPrimary}" IsVisible="False" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </Grid>
 </ContentPage>

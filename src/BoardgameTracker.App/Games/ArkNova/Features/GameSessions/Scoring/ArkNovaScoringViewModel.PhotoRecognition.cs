@@ -8,8 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
-public partial class ArkNovaScoringViewModel
-{
+public partial class ArkNovaScoringViewModel {
     public ObservableCollection<ArkNovaPhotoReviewPlayer> PhotoPlayers { get; } = [];
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
@@ -19,77 +18,68 @@ public partial class ArkNovaScoringViewModel
     [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool IsPhotoReviewVisible { get; private set; }
-    [ObservableProperty] public partial string? PhotoError { get; private set; }
+    [ObservableProperty]
+    public partial string? PhotoError { get; private set; }
 
-    public void OpenPhotoSource()
-    {
+    public void OpenPhotoSource() {
         if (IsScoringContentEnabled && IsLiveScoring)
             IsPhotoSourceVisible = true;
     }
-    public void ClosePhotoSource()
-    {
+    public void ClosePhotoSource() {
         if (IsIdle)
             IsPhotoSourceVisible = false;
     }
 
-    public async Task CancelPhotoReviewAsync()
-    {
+    public async Task CancelPhotoReviewAsync() {
         if (!IsIdle)
             return;
         IsPhotoSourceVisible = false;
         IsPhotoReviewVisible = false;
         PhotoPlayers.Clear();
         PhotoError = null;
-        await photoReview.SetReviewStatusAsync("cancelled");
+        await _photoReview.SetReviewStatusAsync("cancelled");
     }
-    public async Task AnalyzePhotoAsync(ArkNovaPhotoSource source, CancellationToken cancellationToken = default)
-    {
+    public async Task AnalyzePhotoAsync(ArkNovaPhotoSource source, CancellationToken cancellationToken = default) {
         if (!IsIdle || !IsLiveScoring || !IsPhotoSourceVisible)
             return;
         IsPhotoSourceVisible = false;
         IsBusy = true;
         ErrorMessage = null;
         PhotoError = null;
-        try
-        {
-            ArkNovaPhotoRecognitionResult? result = await photoReview.AnalyzeAsync(source, cancellationToken, GameSessionId);
+        try {
+            ArkNovaPhotoRecognitionResult? result = await _photoReview.AnalyzeAsync(source, cancellationToken, GameSessionId);
             if (result is null)
                 return;
-            if (!result.Registration.Success)
-            {
+            if (!result.Registration.Success) {
                 ErrorMessage = AppResources.PhotoBoardNotRecognized;
                 return;
             }
             PhotoPlayers.Clear();
-            foreach (ArkNovaScoringPlayerViewModel player in Players)
-            {
+            foreach (ArkNovaScoringPlayerViewModel player in Players) {
                 ColorScores? scores = result.Colors.GetValueOrDefault(player.Color.ToString().ToLowerInvariant());
                 PhotoPlayers.Add(new(player.PlayerId, player.Name, player.Attractiveness, player.Conservation, player.Reputation,
                     player.ShowReputation, scores));
             }
             IsPhotoReviewVisible = true;
         }
-        catch (OperationCanceledException) { }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Ark Nova photo acquisition/analysis failed for {GameSessionId}.", GameSessionId);
+        catch (OperationCanceledException) {
+            // Cancelling camera/library acquisition closes the attempt without proposing score changes.
+        }
+        catch (Exception exception) {
+            _logger.LogError(exception, "Ark Nova photo acquisition/analysis failed for {GameSessionId}.", GameSessionId);
             ErrorMessage = AppResources.PhotoAnalysisFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public async Task ConfirmPhotoReviewAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task ConfirmPhotoReviewAsync(CancellationToken cancellationToken = default) {
         if (!IsIdle || !IsLiveScoring || !IsPhotoReviewVisible)
             return;
         List<ArkNovaConfirmedPhotoScore> confirmed = [];
-        foreach (ArkNovaPhotoReviewPlayer player in PhotoPlayers)
-        {
-            if (!player.TryRead(out ArkNovaConfirmedPhotoScore? score))
-            {
+        foreach (ArkNovaPhotoReviewPlayer player in PhotoPlayers) {
+            if (!player.TryRead(out ArkNovaConfirmedPhotoScore? score)) {
                 PhotoError = AppResources.PhotoValuesInvalid;
                 return;
             }
@@ -97,22 +87,19 @@ public partial class ArkNovaScoringViewModel
         }
         IsSaving = true;
         PhotoError = null;
-        try
-        {
-            await scoringUseCase.SaveConfirmedPhotoScoresAsync(GameSessionId, confirmed, cancellationToken);
-            await photoReview.SetReviewStatusAsync("confirmed");
+        try {
+            await _scoringUseCase.SaveConfirmedPhotoScoresAsync(GameSessionId, confirmed, cancellationToken);
+            await _photoReview.SetReviewStatusAsync("confirmed");
             IsPhotoReviewVisible = false;
             PhotoPlayers.Clear();
             await LoadAsync(GameSessionId, cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Ark Nova confirmed photo scores could not be saved.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Ark Nova confirmed photo scores could not be saved.");
             PhotoError = AppResources.CorrectionFailed;
         }
-        finally
-        {
+        finally {
             IsSaving = false;
         }
     }

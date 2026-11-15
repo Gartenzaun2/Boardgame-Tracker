@@ -6,16 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Running;
 
-public partial class ManualRunningPage : ContentPage, IQueryAttributable
-{
+public partial class ManualRunningPage : ContentPage, IQueryAttributable {
     private readonly ManualRunningViewModel _viewModel;
     private readonly ManualGameSessionNavigationHandler _navigation;
     private readonly IDispatcherTimer _durationTimer;
     private readonly ILogger<ManualRunningPage> _logger;
     private Guid _sessionId;
-    private bool _returning;
-    public ManualRunningPage(ManualRunningViewModel viewModel, ManualGameSessionNavigationHandler navigation, ILogger<ManualRunningPage> logger)
-    {
+    private bool _isTransitioning;
+    public ManualRunningPage(ManualRunningViewModel viewModel, ManualGameSessionNavigationHandler navigation, ILogger<ManualRunningPage> logger) {
         InitializeComponent();
         _viewModel = viewModel;
         _navigation = navigation;
@@ -25,71 +23,70 @@ public partial class ManualRunningPage : ContentPage, IQueryAttributable
         _durationTimer.Interval = TimeSpan.FromSeconds(30);
         _durationTimer.Tick += (_, _) => _viewModel.RefreshDuration(DateTimeOffset.UtcNow);
     }
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
+    public void ApplyQueryAttributes(IDictionary<string, object> query) {
         if (query.TryGetValue(NavigationParameters.GameSessionId, out object? value) && value is Guid id)
             _sessionId = id;
     }
-    protected override async void OnAppearing()
-    {
+    protected override async void OnAppearing() {
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this))
             await _viewModel.LoadAsync(_sessionId);
         _durationTimer.Start();
     }
-    protected override void OnDisappearing()
-    {
+    /// <summary>MAUI hides the page; stop the visual duration timer until the page appears again.</summary>
+    protected override void OnDisappearing() {
         _durationTimer.Stop();
         base.OnDisappearing();
     }
-    private async Task ReturnAsync()
-    {
-        if (_returning || !_viewModel.CanInteract)
+    private async Task ReturnAsync() {
+        if (_isTransitioning || !_viewModel.CanInteract)
             return;
-        _returning = true;
-        try { await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync(); }
-        finally { _returning = false; }
+        _isTransitioning = true;
+        try {
+            await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
+        }
+        finally {
+            _isTransitioning = false;
+        }
     }
-    private async void OnBackClicked(object? sender, EventArgs e) => await ReturnAsync();
-    protected override bool OnBackButtonPressed()
-    {
-        if (_viewModel.CanInteract && !_returning)
+    private async void OnBackClicked(object? sender, EventArgs e)
+        => await ReturnAsync();
+    /// <summary>Routes system back to the retained session caller instead of popping an arbitrary session page.</summary>
+    protected override bool OnBackButtonPressed() {
+        // The synchronous back callback dispatches the asynchronous close/navigation flow.
+        if (_viewModel.CanInteract && !_isTransitioning)
             Dispatcher.Dispatch(async () => await ReturnAsync());
         return true;
     }
-    private async void OnEndClicked(object? sender, EventArgs e)
-    {
-        if (_returning || !_viewModel.CanInteract)
+    private async void OnEndClicked(object? sender, EventArgs e) {
+        if (_isTransitioning || !_viewModel.CanInteract)
             return;
-        _returning = true;
-        try
-        {
+        _isTransitioning = true;
+        try {
             if (await _viewModel.BeginScoringAsync())
                 await _navigation.ContinueAsync(_viewModel.SessionId);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not open manual scoring.");
             await AppDialogPage.ShowAsync(this, AppResources.Scoring,
                 _viewModel.IsScoring ? AppResources.NavigationAfterScoringStartedFailed : AppResources.ScoringLoadFailed, AppResources.Ok);
         }
-        finally
-        {
-            _returning = false;
+        finally {
+            _isTransitioning = false;
         }
     }
-    private async void OnDiscardClicked(object? sender, EventArgs e)
-    {
-        if (!_viewModel.CanInteract || _returning)
+    private async void OnDiscardClicked(object? sender, EventArgs e) {
+        if (!_viewModel.CanInteract || _isTransitioning)
             return;
         bool confirmed;
         _viewModel.IsConfirming = true;
-        try
-        {
+        try {
             confirmed = await AppDialogPage.ShowAsync(this, AppResources.DiscardGameTitle, AppResources.DiscardGameMessage,
                 AppResources.Discard, AppResources.Cancel, destructive: true);
         }
-        finally { _viewModel.IsConfirming = false; }
+        finally {
+            _viewModel.IsConfirming = false;
+        }
         if (await _viewModel.DiscardAsync(confirmed))
             await ReturnAsync();
     }

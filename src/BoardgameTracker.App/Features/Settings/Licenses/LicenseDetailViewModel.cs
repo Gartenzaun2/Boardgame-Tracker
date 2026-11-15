@@ -4,8 +4,15 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.Licenses;
 
-public partial class LicenseDetailViewModel(LicenseTextService licenses, ILogger<LicenseDetailViewModel> logger) : ObservableObject
-{
+public partial class LicenseDetailViewModel : ObservableObject {
+    private readonly LicenseTextService _licenses;
+    private readonly ILogger<LicenseDetailViewModel> _logger;
+
+    public LicenseDetailViewModel(LicenseTextService licenses, ILogger<LicenseDetailViewModel> logger) {
+        _licenses = licenses;
+        _logger = logger;
+    }
+
     private string? _loadedId;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
@@ -15,24 +22,32 @@ public partial class LicenseDetailViewModel(LicenseTextService licenses, ILogger
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => ErrorMessage is not null;
-    [ObservableProperty] public partial string DisplayName { get; private set; } = AppResources.OpenSourceLicenses;
+    [ObservableProperty]
+    public partial string DisplayName { get; private set; } = AppResources.OpenSourceLicenses;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasVersion))]
     public partial string VersionText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string LicenseDisplayName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string LicenseDisplayName { get; private set; } = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSpdx))]
     public partial string SpdxText { get; private set; } = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasAttribution))]
     public partial string AttributionText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string LicenseText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string LicenseText { get; private set; } = string.Empty;
+
     public bool HasVersion => VersionText.Length > 0;
     public bool HasSpdx => SpdxText.Length > 0;
     public bool HasAttribution => AttributionText.Length > 0;
 
-    public async Task LoadAsync(string componentId, CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(string componentId, CancellationToken cancellationToken = default) {
         if (IsBusy || _loadedId == componentId)
             return;
         IsBusy = true;
@@ -44,9 +59,8 @@ public partial class LicenseDetailViewModel(LicenseTextService licenses, ILogger
         LicenseDisplayName = string.Empty;
         SpdxText = string.Empty;
         AttributionText = string.Empty;
-        try
-        {
-            LicenseContent content = await licenses.LoadLicenseAsync(componentId, cancellationToken);
+        try {
+            LicenseContent content = await _licenses.LoadLicenseAsync(componentId, cancellationToken);
             DisplayName = content.Component.DisplayName;
             VersionText = string.IsNullOrWhiteSpace(content.Component.Version) ? string.Empty
                 : string.Format(AppResources.LicenseVersionFormat, content.Component.Version);
@@ -57,14 +71,14 @@ public partial class LicenseDetailViewModel(LicenseTextService licenses, ILogger
             LicenseText = content.Text;
             _loadedId = componentId;
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load packaged license text for {ComponentId}.", componentId);
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
+            // A cancelled read has not published a loaded ID, so the next appearance may retry.
+        }
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load packaged license text for {ComponentId}.", componentId);
             ErrorMessage = AppResources.LicensesLoadFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }

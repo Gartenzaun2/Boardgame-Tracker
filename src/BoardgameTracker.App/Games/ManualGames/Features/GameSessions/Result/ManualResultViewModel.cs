@@ -8,8 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Result;
 
-public sealed class ManualResultPlayerViewModel(Guid id, string name) : ManualParticipantViewModel(id, name)
-{
+public sealed class ManualResultPlayerViewModel(Guid id, string name) : ManualParticipantViewModel(id, name) {
     public int? Points { get; init; }
     public int? Placement { get; init; }
     public bool FullPlacements { get; init; }
@@ -19,28 +18,46 @@ public sealed class ManualResultPlayerViewModel(Guid id, string name) : ManualPa
     public bool IsWinner => !FullPlacements && Placement == 1;
     public bool HasPlacement => !string.IsNullOrEmpty(PlacementText);
 }
-public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<ManualResultViewModel> logger) : ObservableObject
-{
-    [ObservableProperty] public partial bool CanCorrect { get; private set; }
+public partial class ManualResultViewModel : ObservableObject {
+    private readonly ManualScoringQuery _query;
+    private readonly ILogger<ManualResultViewModel> _logger;
+
+    public ManualResultViewModel(ManualScoringQuery query, ILogger<ManualResultViewModel> logger) {
+        _query = query;
+        _logger = logger;
+    }
+
+    [ObservableProperty]
+    public partial bool CanCorrect { get; private set; }
     public ObservableCollection<ManualResultPlayerViewModel> Players { get; } = [];
-    [ObservableProperty] public partial string GameName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string Metadata { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string StartingOrderText { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string GameName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string BadgeText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string Metadata { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string StartingOrderText { get; private set; } = string.Empty;
+
     public bool HasStartingOrder => !string.IsNullOrEmpty(StartingOrderText);
-    [ObservableProperty] public partial bool IsBusy { get; private set; }
-    [ObservableProperty] public partial string? ErrorMessage { get; private set; }
-    public async Task LoadAsync(Guid id, CancellationToken token = default)
-    {
+    [ObservableProperty]
+    public partial bool IsBusy { get; private set; }
+    [ObservableProperty]
+    public partial string? ErrorMessage { get; private set; }
+    public async Task LoadAsync(Guid id, CancellationToken token = default) {
         if (IsBusy)
             return;
         IsBusy = true;
         ErrorMessage = null;
         CanCorrect = false;
-        try
-        {
-            ManualScoringData data = await query.GetAsync(id, token) ?? throw new InvalidOperationException("Manual result not found.");
+        try {
+            ManualScoringData data = await _query.GetAsync(id, token) ?? throw new InvalidOperationException("Manual result not found.");
             if (data.Session.Status != GameSessionStatus.Completed)
                 throw new InvalidOperationException("The session is not completed.");
             GameName = data.Session.GameName;
@@ -53,33 +70,28 @@ public partial class ManualResultViewModel(ManualScoringQuery query, ILogger<Man
             StartingOrderText = data.Session.Players.All(player => player.Order.HasValue)
                 ? string.Format(AppResources.StartingOrderFormat, string.Join(" → ", data.Session.Players.OrderBy(player => player.Order).Select(player => player.Name))) : string.Empty;
             OnPropertyChanged(nameof(HasStartingOrder));
-            bool full = data.Values.All(player => player.Placement.HasValue)
+            bool hasFullPlacements = data.Values.All(player => player.Placement.HasValue)
                 && (data.Session.ScoringRules.CapturePlacements || data.Values.Any(player => player.Placement > 1));
-            try
-            {
+            try {
                 ManualHistoricalResult form = ManualHistoricalResult.FromValues(data.Values, data.Session.ScoringRules);
                 CanCorrect = form.CanCorrect;
-                full = form.Placements == ManualHistoricalPlacements.Full;
+                hasFullPlacements = form.Placements == ManualHistoricalPlacements.Full;
             }
-            catch (ArgumentException exception)
-            {
-                logger.LogWarning(exception, "Historical ManualGames result cannot be corrected because its recorded form is incomplete.");
+            catch (ArgumentException exception) {
+                _logger.LogWarning(exception, "Historical ManualGames result cannot be corrected because its recorded form is incomplete.");
             }
             Players.Clear();
             foreach (var value in data.Values.OrderBy(player => player.Placement ?? int.MaxValue)
-                .ThenBy(player => data.Session.Players.Single(participant => participant.PlayerId == player.PlayerId).Order))
-            {
+                .ThenBy(player => data.Session.Players.Single(participant => participant.PlayerId == player.PlayerId).Order)) {
                 ManualRunningPlayer player = data.Session.Players.Single(player => player.PlayerId == value.PlayerId);
-                Players.Add(new(player.PlayerId, player.Name) { Color = player.Color, Points = value.Points, Placement = value.Placement, FullPlacements = full });
+                Players.Add(new(player.PlayerId, player.Name) { Color = player.Color, Points = value.Points, Placement = value.Placement, FullPlacements = hasFullPlacements });
             }
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load manual result.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load manual result.");
             ErrorMessage = AppResources.ScoringLoadFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }

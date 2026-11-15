@@ -11,8 +11,7 @@ using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.History;
 
-public partial class HistoryPage : ContentPage
-{
+public partial class HistoryPage : ContentPage {
     private readonly CompletedGameSessionsQuery _query;
     private readonly GameActivationUseCase _activation;
     private IReadOnlyList<HistoryGameSession> _exportSessions = [];
@@ -23,6 +22,7 @@ public partial class HistoryPage : ContentPage
     private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
     private readonly IEnumerable<IGameSessionNavigationHandler> _navigationHandlers;
+    // The visible history excludes disabled games; export deliberately retains its separate complete source.
     private IReadOnlyList<HistoryGameSession> _all = [];
     private string?[] _games = [];
     private Guid?[] _groups = [];
@@ -33,8 +33,7 @@ public partial class HistoryPage : ContentPage
     private int _gameIndex;
     private int _groupIndex;
 
-    public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow, GameActivationUseCase activation)
-    {
+    public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow, GameActivationUseCase activation) {
         InitializeComponent();
         ExportButton.Text = string.Format(AppResources.TransferExportMany, 0);
         _query = query;
@@ -46,26 +45,21 @@ public partial class HistoryPage : ContentPage
         _navigationHandlers = navigationHandlers;
     }
 
-    protected override async void OnAppearing()
-    {
+    protected override async void OnAppearing() {
         base.OnAppearing();
         await ReloadAsync();
     }
 
-    private async Task ReloadAsync()
-    {
+    private async Task ReloadAsync() {
         if (_transferring || AppDialogPage.IsOpen(this))
             return;
         if (_loading)
-        {
             return;
-        }
         _loading = true;
         BusyOverlay.IsVisible = true;
         ErrorLabel.IsVisible = false;
 
-        try
-        {
+        try {
             string? game = _games.Length > 0 ? _games[_gameIndex] : null;
             Guid? group = _groups.Length > 0 ? _groups[_groupIndex] : null;
             _exportSessions = await _query.ListAsync();
@@ -73,8 +67,7 @@ public partial class HistoryPage : ContentPage
             _all = _exportSessions.Where(session => visibleGames.Contains(session.GameKey)).ToArray();
             _games = new string?[] { null }.Concat(_all.Select(s => s.GameKey).Distinct().OrderBy(k => k)).ToArray();
             _groups = new Guid?[] { null }.Concat(_all.Select(s => (Guid?)s.GroupId).Distinct()).ToArray();
-            if (!_initialized)
-            {
+            if (!_initialized) {
                 game = _settings.Get().SelectedGameKey;
             }
 
@@ -83,35 +76,36 @@ public partial class HistoryPage : ContentPage
             _initialized = true;
             Refresh();
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not load completed game sessions.");
             ErrorLabel.Text = AppResources.HistoryLoadFailed;
             ErrorLabel.IsVisible = true;
         }
-        finally
-        {
+        finally {
             _loading = false;
             BusyOverlay.IsVisible = false;
         }
     }
 
-    private string GameName(string key) => _exportSessions.First(session => session.GameKey == key).GameName;
+    private string GameName(string key)
+        => _exportSessions.First(session => session.GameKey == key).GameName;
 
-    private async void OnGameFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(true);
-    private async void OnGroupFilterClicked(object? sender, EventArgs e) => await ChooseFilterAsync(false);
+    private async void OnGameFilterClicked(object? sender, EventArgs e)
+        => await ChooseFilterAsync(true);
+    private async void OnGroupFilterClicked(object? sender, EventArgs e)
+        => await ChooseFilterAsync(false);
 
-    private async Task ChooseFilterAsync(bool gameFilter)
-    {
+    private async Task ChooseFilterAsync(bool gameFilter) {
         if (_transferring || _loading || _choosing || _games.Length == 0 || _groups.Length == 0)
             return;
 
         _choosing = true;
-        try
-        {
-            string[] names = gameFilter
-                ? _games.Select(key => key is null ? AppResources.HistoryAllGames : GameName(key)).ToArray()
-                : _groups.Select(id => id is null ? AppResources.HistoryAllGroups : _all.First(session => session.GroupId == id).GroupName).ToArray();
+        try {
+            string[] names;
+            if (gameFilter)
+                names = _games.Select(key => key is null ? AppResources.HistoryAllGames : GameName(key)).ToArray();
+            else
+                names = _groups.Select(id => id is null ? AppResources.HistoryAllGroups : _all.First(session => session.GroupId == id).GroupName).ToArray();
             int choice = await AppDialogPage.ChooseAsync(this,
                 gameFilter ? AppResources.HistoryGameFilter : AppResources.HistoryGroupFilter,
                 names, gameFilter ? _gameIndex : _groupIndex);
@@ -124,21 +118,18 @@ public partial class HistoryPage : ContentPage
                 _groupIndex = choice;
             Refresh();
         }
-        finally
-        {
+        finally {
             _choosing = false;
         }
     }
-    private static void UpdateChip(Button chip, string name, bool selected)
-    {
+    private static void UpdateChip(Button chip, string name, bool selected) {
         chip.Text = string.Format(selected ? AppResources.HistoryFilterSelectedFormat : AppResources.HistoryFilterFormat, name);
         chip.SetDynamicResource(Button.BackgroundColorProperty, selected ? "SelectedSurface" : "Surface");
         chip.SetDynamicResource(Button.BorderColorProperty, selected ? "SelectedBorder" : "Outline");
         SemanticProperties.SetDescription(chip, chip.Text);
     }
 
-    private void Refresh()
-    {
+    private void Refresh() {
         string? game = _games.Length > 0 ? _games[_gameIndex] : null;
         Guid? group = _groups.Length > 0 ? _groups[_groupIndex] : null;
         UpdateChip(GameChip, game is null ? AppResources.HistoryAllGames : GameName(game), game is not null);
@@ -160,49 +151,38 @@ public partial class HistoryPage : ContentPage
             month)).ToArray();
     }
 
-    private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e)
-    {
+    private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e) {
         if (_transferring || _loading || _navigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card)
-        {
             return;
-        }
         _navigating = true;
         Sessions.SelectedItem = null;
         BusyOverlay.IsVisible = true;
 
-        try
-        {
+        try {
             IGameSessionNavigationHandler handler = _navigationHandlers.FirstOrDefault(handler => handler.CanHandle(card.Data.GameKey))
                 ?? throw new InvalidOperationException("No history handler is registered for this game.");
             await handler.OpenGameSessionAsync(card.Data.GameSessionId);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not open historical GameSession {GameSessionId}.", card.Data.GameSessionId);
             ErrorLabel.Text = AppResources.HistoryOpenFailed;
             ErrorLabel.IsVisible = true;
         }
-        finally
-        {
+        finally {
             _navigating = false;
             BusyOverlay.IsVisible = false;
         }
     }
 }
 
-public sealed record HistoryCard(HistoryGameSession Data, string GameName)
-{
+public sealed record HistoryCard(HistoryGameSession Data, string GameName) {
     public string GroupName => Data.GroupName;
     public string Header => string.Format(AppResources.HistoryHeaderFormat, GameName,
         Duration, Data.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
-    public string Duration
-    {
-        get
-        {
+    public string Duration {
+        get {
             if (Data.EndedAt is null)
-            {
                 return "–";
-            }
             int minutes = Math.Max(0, (int)(Data.EndedAt.Value - Data.StartedAt).TotalMinutes);
             return string.Format(AppResources.HistoryDurationFormat, minutes / 60, minutes % 60);
         }
@@ -211,7 +191,6 @@ public sealed record HistoryCard(HistoryGameSession Data, string GameName)
         p.Placement is int rank ? $"{rank}. {p.Name}" : p.Name));
 }
 
-public sealed class HistoryMonth(string title, IEnumerable<HistoryCard> cards) : List<HistoryCard>(cards)
-{
+public sealed class HistoryMonth(string title, IEnumerable<HistoryCard> cards) : List<HistoryCard>(cards) {
     public string Title { get; } = title;
 }

@@ -11,24 +11,56 @@
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" IsEnabled="{Binding CanInteract}">
             <controls:AppPageHeader Title="{x:Static res:AppResources.RunningGame}" Variant="Subpage" GameName="{Binding GameName}"
                 BadgeText="{Binding BadgeText}" Subtitle="{Binding GroupName}" Metadata="{Binding DurationText}" BackClicked="OnBackClicked" />
-            <ScrollView Grid.Row="1"><VerticalStackLayout Padding="20,0" Spacing="12">
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"><BindableLayout.ItemTemplate><DataTemplate x:DataType="rows:ManualParticipantViewModel">
-    <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
-        <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True"><Setter Property="BackgroundColor" Value="{Binding ColorBrush}" /></DataTrigger></Border.Triggers>
-        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-            <Border WidthRequest="36" HeightRequest="36" StrokeShape="Ellipse" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Outline}" VerticalOptions="Center">
-                <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True"><Setter Property="BackgroundColor" Value="{Binding ColorBrush}" /><Setter Property="Stroke" Value="{Binding PlayerTextColor}" /></DataTrigger></Border.Triggers>
-                <Label Text="{Binding PositionText}" FontSize="17" TextColor="{DynamicResource TextPrimary}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-            </Border>
-            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
-                <Label Text="{Binding Name}" FontSize="17" TextColor="{DynamicResource TextPrimary}" FontAttributes="Bold" LineBreakMode="WordWrap"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-                <Label Text="{Binding ColorName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" IsVisible="{Binding HasColor}"><Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True"><Setter Property="TextColor" Value="{Binding PlayerTextColor}" /></DataTrigger></Label.Triggers></Label>
-            </VerticalStackLayout>
-            
-        </Grid>
-    </Border>
-</DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
-            </VerticalStackLayout></ScrollView>
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="20,0" Spacing="12">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="rows:ManualParticipantViewModel">
+                                <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,10">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                                        <Border WidthRequest="36" HeightRequest="36" StrokeShape="Ellipse" BackgroundColor="{DynamicResource SurfaceSecondary}" Stroke="{DynamicResource Outline}" VerticalOptions="Center">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding HasColor}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{Binding ColorBrush}" />
+                                                    <Setter Property="Stroke" Value="{Binding PlayerTextColor}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding PositionText}" FontSize="17" TextColor="{DynamicResource TextPrimary}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                            <Label Text="{Binding Name}" FontSize="17" TextColor="{DynamicResource TextPrimary}" FontAttributes="Bold" LineBreakMode="WordWrap">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label Text="{Binding ColorName}" FontSize="12" TextColor="{DynamicResource TextPrimary}" IsVisible="{Binding HasColor}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding HasColor}" Value="True">
+                                                        <Setter Property="TextColor" Value="{Binding PlayerTextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
             <VerticalStackLayout Grid.Row="2" Padding="20,0,20,20" Spacing="8">
                 <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
@@ -37,6 +69,8 @@
                 </Grid>
             </VerticalStackLayout>
         </Grid>
-        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}"><ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" /></Grid>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>

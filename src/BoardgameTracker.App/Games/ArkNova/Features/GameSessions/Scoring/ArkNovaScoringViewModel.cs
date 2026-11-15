@@ -18,20 +18,33 @@ using BoardgameTracker.Core.Players;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
-public partial class ArkNovaScoringViewModel(
-    ArkNovaScoringUseCase scoringUseCase,
-    ArkNovaHistoryCorrectionUseCase correction,
-    IArkNovaSettingsStore settingsStore,
-    ArkNovaPhotoReviewFlow photoReview,
-    ILogger<ArkNovaScoringViewModel> logger) : ObservableObject
-{
+public partial class ArkNovaScoringViewModel : ObservableObject {
+    private readonly ArkNovaScoringUseCase _scoringUseCase;
+    private readonly ArkNovaHistoryCorrectionUseCase _correction;
+    private readonly IArkNovaSettingsStore _settingsStore;
+    private readonly ArkNovaPhotoReviewFlow _photoReview;
+    private readonly ILogger<ArkNovaScoringViewModel> _logger;
+
+    public ArkNovaScoringViewModel(ArkNovaScoringUseCase scoringUseCase, ArkNovaHistoryCorrectionUseCase correction, IArkNovaSettingsStore settingsStore, ArkNovaPhotoReviewFlow photoReview, ILogger<ArkNovaScoringViewModel> logger) {
+        _scoringUseCase = scoringUseCase;
+        _correction = correction;
+        _settingsStore = settingsStore;
+        _photoReview = photoReview;
+        _logger = logger;
+    }
+
     private IReadOnlyList<ArkNovaSpecialCardData> _cardCatalog = [];
     public ObservableCollection<ArkNovaScoringPlayerViewModel> Players { get; } = [];
     public ObservableCollection<ArkNovaSpecialCardOptionViewModel> SpecialCardOptions { get; } = [];
 
-    [ObservableProperty] public partial Guid GameSessionId { get; private set; }
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string DateText { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial Guid GameSessionId { get; private set; }
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string DateText { get; private set; } = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
     [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
@@ -54,7 +67,8 @@ public partial class ArkNovaScoringViewModel(
     [NotifyPropertyChangedFor(nameof(IsScoringContentEnabled))]
     [NotifyPropertyChangedFor(nameof(CanComplete))]
     public partial bool IsSpecialCardPickerVisible { get; private set; }
-    [ObservableProperty] public partial Guid? SpecialCardTargetPlayerId { get; private set; }
+    [ObservableProperty]
+    public partial Guid? SpecialCardTargetPlayerId { get; private set; }
 
     public ArkNovaHistoryCorrectionDraft? Draft { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
@@ -70,10 +84,8 @@ public partial class ArkNovaScoringViewModel(
     public string DeleteText => IsHistorical ? AppResources.DeleteGameSession : AppResources.Discard;
     public bool CanComplete => IsScoringContentEnabled && !CompletionSaved && Players.Count > 0 && Players.All(x => x.HasRequiredValues);
 
-    public string SpecialCardPickerTitle
-    {
-        get
-        {
+    public string SpecialCardPickerTitle {
+        get {
             ArkNovaScoringPlayerViewModel? player = SpecialCardTargetPlayerId is Guid playerId
                 ? Players.FirstOrDefault(x => x.PlayerId == playerId)
                 : null;
@@ -84,47 +96,38 @@ public partial class ArkNovaScoringViewModel(
         }
     }
 
-    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default) {
         if (IsBusy)
-        {
             return;
-        }
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
-            ArkNovaGameSessionResultData? data = await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
-            if (data is null)
-            {
+            ArkNovaGameSessionResultData? data = await _scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken);
+            if (data is null) {
                 ErrorMessage = AppResources.ScoringNotFound;
                 return;
             }
 
-            if (data.Status == GameSessionStatus.Completed)
-            {
-                if (Draft?.Saved == true)
-                {
+            if (data.Status == GameSessionStatus.Completed) {
+                if (Draft?.Saved == true) {
                     Draft = null;
                 }
-                Draft ??= await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
+                Draft ??= await _correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 Draft.RefreshCardCatalog(data.CardCatalog);
-                data = Draft.Data with
-                {
+                data = Draft.Data with {
                     Players = Draft.Data.Players.OrderBy(p => p.Placement).ThenBy(p => p.Order).ToArray(),
                     ZooPlanNames = data.ZooPlanNames
                 };
             }
             Mode = data.Status == GameSessionStatus.Completed ? ArkNovaScoringMode.HistoryCorrection : ArkNovaScoringMode.Live;
-            ArkNovaSettings settings = settingsStore.Get();
+            ArkNovaSettings settings = _settingsStore.Get();
             GameSessionId = data.GameSessionId;
             CompletionSaved = false;
             GroupName = data.GroupName;
             DateText = data.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
             _cardCatalog = data.CardCatalog;
             Players.Clear();
-            foreach (ArkNovaGameSessionResultPlayerData player in data.Players)
-            {
+            foreach (ArkNovaGameSessionResultPlayerData player in data.Players) {
                 Guid[] cards = data.SpecialCards
                     .Where(x => x.PlayerId == player.PlayerId)
                     .Select(x => x.SpecialCardId)
@@ -139,23 +142,18 @@ public partial class ArkNovaScoringViewModel(
             OnPropertyChanged(nameof(CanComplete));
             RefreshSpecialCardOptions();
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load Ark Nova scoring GameSession {GameSessionId}.", gameSessionId);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load Ark Nova scoring GameSession {GameSessionId}.", gameSessionId);
             ErrorMessage = UserErrorMessage.Create(AppResources.ScoringLoadFailed, exception);
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public void OpenSpecialCardPicker(Guid playerId)
-    {
+    public void OpenSpecialCardPicker(Guid playerId) {
         if (!IsScoringContentEnabled || Players.All(x => x.PlayerId != playerId))
-        {
             return;
-        }
 
         SpecialCardTargetPlayerId = playerId;
         IsSpecialCardPickerVisible = true;
@@ -163,8 +161,7 @@ public partial class ArkNovaScoringViewModel(
         RefreshSpecialCardOptions();
     }
 
-    public void CloseSpecialCardPicker()
-    {
+    public void CloseSpecialCardPicker() {
         IsSpecialCardPickerVisible = false;
         SpecialCardTargetPlayerId = null;
         SpecialCardOptions.Clear();
@@ -174,16 +171,13 @@ public partial class ArkNovaScoringViewModel(
     public async Task AssignSpecialCardAsync(
         Guid playerId,
         Guid card,
-        CancellationToken cancellationToken = default)
-    {
+        CancellationToken cancellationToken = default) {
         CloseSpecialCardPicker();
-        if (IsHistorical)
-        {
+        if (IsHistorical) {
             Draft!.SetCard(playerId, card, true);
         }
-        else
-        {
-            await scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        else {
+            await _scoringUseCase.AssignSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
         }
         await LoadAsync(GameSessionId, cancellationToken);
     }
@@ -191,112 +185,92 @@ public partial class ArkNovaScoringViewModel(
     public async Task RemoveSpecialCardAsync(
         Guid playerId,
         Guid card,
-        CancellationToken cancellationToken = default)
-    {
+        CancellationToken cancellationToken = default) {
         CloseSpecialCardPicker();
-        if (IsHistorical)
-        {
+        if (IsHistorical) {
             Draft!.SetCard(playerId, card, false);
         }
-        else
-        {
-            await scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
+        else {
+            await _scoringUseCase.RemoveSpecialCardAsync(GameSessionId, playerId, card, cancellationToken);
         }
         await LoadAsync(GameSessionId, cancellationToken);
     }
 
-    public bool TryBeginNavigation()
-    {
+    /// <returns>True when scoring content can start navigation and acquires the busy guard; false while another operation or overlay blocks it.</returns>
+    public bool TryBeginNavigation() {
         if (!IsScoringContentEnabled)
-        {
             return false;
-        }
 
         IsBusy = true;
         return true;
     }
 
-    public void EndNavigation() => IsBusy = false;
+    public void EndNavigation()
+        => IsBusy = false;
 
-    public bool IsSpecialCardAssignedToOtherPlayer(Guid playerId, Guid card) =>
-        Players.Any(x => x.PlayerId != playerId && x.SpecialCards.Contains(card));
+    public bool IsSpecialCardAssignedToOtherPlayer(Guid playerId, Guid card)
+        => Players.Any(x => x.PlayerId != playerId && x.SpecialCards.Contains(card));
 
-    public async Task<ArkNovaGameSessionCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task<ArkNovaGameSessionCompletionPlan?> PrepareCompletionAsync(CancellationToken cancellationToken = default) {
         if (Players.Count == 0 || Players.Any(x => !x.HasRequiredValues))
-        {
             return null;
-        }
         if (IsHistorical)
-            return correction.CreateCorrectionCompletionPlan(Draft!);
+            return _correction.CreateCorrectionCompletionPlan(Draft!);
 
-        return await scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
+        return await _scoringUseCase.PrepareCompletionAsync(GameSessionId, cancellationToken);
     }
 
     public async Task CompleteWithoutTieAsync(
         IReadOnlyDictionary<Guid, int> placements,
-        CancellationToken cancellationToken = default) =>
-        await SaveCompletionAsync(placements, cancellationToken);
+        CancellationToken cancellationToken = default)
+        => await SaveCompletionAsync(placements, cancellationToken);
 
-    private async Task SaveCompletionAsync(IReadOnlyDictionary<Guid, int> placements, CancellationToken cancellationToken)
-    {
-        if (IsHistorical)
-        {
-            await correction.SaveCorrectionAsync(Draft!, placements, cancellationToken);
+    private async Task SaveCompletionAsync(IReadOnlyDictionary<Guid, int> placements, CancellationToken cancellationToken) {
+        if (IsHistorical) {
+            await _correction.SaveCorrectionAsync(Draft!, placements, cancellationToken);
             Draft = null;
             await LoadAsync(GameSessionId, cancellationToken);
         }
-        else
-        {
-            await scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
+        else {
+            await _scoringUseCase.CompleteAsync(GameSessionId, placements, DateTimeOffset.UtcNow, cancellationToken);
             CompletionSaved = true;
         }
     }
 
-    public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default)
-    {
+    /// <returns>True after deleting a historical session or discarding live scoring; false when busy or persistence fails.</returns>
+    public async Task<bool> DiscardAsync(CancellationToken cancellationToken = default) {
         if (IsBusy)
-        {
             return false;
-        }
 
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
-            if (IsHistorical)
-            {
-                await correction.DeleteCompletedGameSessionAsync(GameSessionId, cancellationToken);
+            if (IsHistorical) {
+                await _correction.DeleteCompletedGameSessionAsync(GameSessionId, cancellationToken);
             }
-            else
-            {
-                await scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
+            else {
+                await _scoringUseCase.DiscardAsync(GameSessionId, cancellationToken);
             }
             return true;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not discard Ark Nova scoring GameSession {GameSessionId}.", GameSessionId);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not discard Ark Nova scoring GameSession {GameSessionId}.", GameSessionId);
             ErrorMessage = UserErrorMessage.Create(AppResources.DiscardScoringFailed, exception);
             return false;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    private void RefreshSpecialCardOptions()
-    {
-        if (!IsSpecialCardPickerVisible || SpecialCardTargetPlayerId is not Guid targetPlayerId)
-        {
+    private void RefreshSpecialCardOptions() {
+        if (!IsSpecialCardPickerVisible || SpecialCardTargetPlayerId is not Guid targetPlayerId) {
             SpecialCardOptions.Clear();
             return;
         }
 
         SpecialCardOptions.Clear();
-        foreach (ArkNovaSpecialCardData card in _cardCatalog)
-        {
+        foreach (ArkNovaSpecialCardData card in _cardCatalog) {
             bool assignedToTarget = Players.Single(x => x.PlayerId == targetPlayerId).SpecialCards.Contains(card.Id);
             bool assignedToOtherPlayer = Players.Any(x => x.PlayerId != targetPlayerId && x.SpecialCards.Contains(card.Id));
             if (card.IsArchived && !assignedToTarget)
@@ -306,16 +280,14 @@ public partial class ArkNovaScoringViewModel(
     }
 }
 
-public sealed class ArkNovaScoringPlayerViewModel
-{
+public sealed class ArkNovaScoringPlayerViewModel {
     private readonly ArkNovaScoringDisplayMode _displayMode;
 
     public ArkNovaScoringPlayerViewModel(
         ArkNovaGameSessionResultPlayerData data,
         IReadOnlyList<Guid> specialCards,
         ArkNovaScoringDisplayMode displayMode,
-        bool showReputation, string zooPlanName)
-    {
+        bool showReputation, string zooPlanName) {
         PlayerId = data.PlayerId;
         Name = data.Placement is int placement ? $"{placement}. {data.Name}" : data.Name;
         Color = data.Color;
@@ -354,19 +326,23 @@ public sealed class ArkNovaScoringPlayerViewModel
             SpecialCards.Count,
             Reputation?.ToString() ?? "–")
         : string.Format(AppResources.ScoringSecondaryValuesFormat, SpecialCards.Count);
-    public int? Score => HasRequiredValues
-        ? _displayMode == ArkNovaScoringDisplayMode.Old
-            ? ArkNovaScoringRules.CalculateOldScore(Attractiveness!.Value, Conservation!.Value)
-            : ArkNovaScoringRules.CalculateNewScore(Attractiveness!.Value, Conservation!.Value)
-        : null;
+    public int? Score {
+        get {
+            if (!HasRequiredValues)
+                return null;
+            if (_displayMode == ArkNovaScoringDisplayMode.Old)
+                return ArkNovaScoringRules.CalculateOldScore(Attractiveness!.Value, Conservation!.Value);
+
+            return ArkNovaScoringRules.CalculateNewScore(Attractiveness!.Value, Conservation!.Value);
+        }
+    }
     public string NameWithScore => Score is int score ? string.Format(AppResources.ScoreNameFormat, Name, score) : Name;
 }
 
 public sealed class ArkNovaSpecialCardOptionViewModel(
     ArkNovaSpecialCardData card,
     bool isAssignedToTarget,
-    bool isAssignedToOtherPlayer)
-{
+    bool isAssignedToOtherPlayer) {
     public ArkNovaSpecialCardData Card { get; } = card;
     public string Name => Card.Name;
     public bool IsAssignedToTarget { get; } = isAssignedToTarget;
@@ -377,8 +353,7 @@ public sealed class ArkNovaSpecialCardOptionViewModel(
         : AppResources.SpecialCardAvailable;
 }
 
-public enum ArkNovaScoringMode
-{
+public enum ArkNovaScoringMode {
     Live,
     HistoryCorrection
 }

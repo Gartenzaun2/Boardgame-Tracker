@@ -3,15 +3,11 @@ namespace BoardgameTracker.App.Presentation.Controls;
 public enum AppPageHeaderVariant { MainSection, Subpage }
 
 /// <summary>Shared header geometry and presentation slots; pages retain navigation ownership.</summary>
-public partial class AppPageHeader : ContentView
-{
-    public AppPageHeader()
-    {
+public partial class AppPageHeader : ContentView {
+    public AppPageHeader() {
         InitializeComponent();
-        ActionItems.ChildAdded += (_, args) =>
-        {
-            if (args.Element is ImageButton image)
-            {
+        ActionItems.ChildAdded += (_, args) => {
+            if (args.Element is ImageButton image) {
                 // Old pages may still supply 48-dp local requests. Header spacing
                 // is owned here, independent of page padding and action count.
                 image.WidthRequest = 44;
@@ -43,10 +39,10 @@ public partial class AppPageHeader : ContentView
     // Metadata is measured separately; an absent context row consumes no height.
     public bool HasContextRow => HasBadge || !string.IsNullOrWhiteSpace(Subtitle);
     public event EventHandler? BackClicked;
-    private void OnBackClicked(object? sender, EventArgs e) => BackClicked?.Invoke(this, e);
+    private void OnBackClicked(object? sender, EventArgs e)
+        => BackClicked?.Invoke(this, e);
 
-    private static void HeaderChanged(BindableObject bindable, object oldValue, object newValue)
-    {
+    private static void HeaderChanged(BindableObject bindable, object oldValue, object newValue) {
         var header = (AppPageHeader)bindable;
         // Visibility changes never alter the subpage title anchor.
         header.OnPropertyChanged(nameof(IsBackVisible));

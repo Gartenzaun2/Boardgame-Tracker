@@ -10,21 +10,40 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ManualGames.Features.GameSessions.Preparation;
 
-public partial class ManualPreparationViewModel(ManualPreparationQuery query, StartManualGameSessionUseCase start,
-    ILogger<ManualPreparationViewModel> logger) : ObservableObject
-{
+public partial class ManualPreparationViewModel : ObservableObject {
+    private readonly ManualPreparationQuery _query;
+    private readonly StartManualGameSessionUseCase _start;
+    private readonly ILogger<ManualPreparationViewModel> _logger;
+
+    public ManualPreparationViewModel(ManualPreparationQuery query, StartManualGameSessionUseCase start, ILogger<ManualPreparationViewModel> logger) {
+        _query = query;
+        _start = start;
+        _logger = logger;
+    }
+
     private ManualPreparationData? _data;
     private ManualParticipantViewModel? _colorTarget;
+    // Navigation may fail after persistence; reuse the successful start on the next attempt.
     private Guid? _startedSessionId;
     public ObservableCollection<ManualParticipantViewModel> Players { get; } = [];
     public ObservableCollection<ManualColorOption> ColorOptions { get; } = [];
     public string GameKey => _data?.GameKey ?? string.Empty;
-    [ObservableProperty] public partial string GameName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string BadgeText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
-    [ObservableProperty] public partial string LastSessionText { get; private set; } = string.Empty;
-    [ObservableProperty] public partial bool LastSessionHasWinners { get; private set; }
-    [ObservableProperty] public partial bool CapturePlayerOrder { get; private set; }
+    [ObservableProperty]
+    public partial string GameName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string BadgeText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string LastSessionText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool LastSessionHasWinners { get; private set; }
+    [ObservableProperty]
+    public partial bool CapturePlayerOrder { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
     [NotifyPropertyChangedFor(nameof(CanStart))]
@@ -33,25 +52,33 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
     [NotifyPropertyChangedFor(nameof(CanInteract))]
     [NotifyPropertyChangedFor(nameof(CanStart))]
     public partial bool IsChoosingColor { get; private set; }
-    [ObservableProperty] public partial string ColorPickerTitle { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string ColorPickerTitle { get; private set; } = string.Empty;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool CanInteract => !IsBusy && !IsChoosingColor;
-    public bool CanStart => _data is not null && CanInteract && Players.Count == _data.Players.Count
-        && (!_data.CapturePlayerColors || Players.All(player => player.Color is PlayerColor color && Enum.IsDefined(color))
-            && Players.Select(player => player.Color).Distinct().Count() == Players.Count);
+    public bool CanStart {
+        get {
+            if (_data is null || !CanInteract || Players.Count != _data.Players.Count)
+                return false;
+            if (!_data.CapturePlayerColors)
+                return true;
 
-    public async Task LoadAsync(string gameKey, Guid groupId, CancellationToken cancellationToken = default)
-    {
+            bool allColorsAreValid = Players.All(player => player.Color is PlayerColor color && Enum.IsDefined(color));
+            return allColorsAreValid && Players.Select(player => player.Color).Distinct().Count() == Players.Count;
+        }
+    }
+
+    public async Task LoadAsync(string gameKey, Guid groupId, CancellationToken cancellationToken = default) {
         if (_data is not null || IsBusy)
             return;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            ManualPreparationData data = await query.GetAsync(gameKey, groupId, cancellationToken);
+        try {
+            ManualPreparationData data = await _query.GetAsync(gameKey, groupId, cancellationToken);
             GameName = data.GameName;
             BadgeText = data.BadgeText;
             GroupName = data.GroupName;
@@ -62,14 +89,12 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
                 : data.Players.OrderBy(player => player.Name, StringComparer.CurrentCulture).ToArray();
             Dictionary<Guid, PlayerColor> assigned = [];
             HashSet<PlayerColor> used = [];
-            if (data.CapturePlayerColors)
-            {
+            if (data.CapturePlayerColors) {
                 // Reserve all existing valid defaults before filling gaps so later players retain their colors.
                 foreach (ManualPreparationPlayer player in ordered)
                     if (player.DefaultColor is PlayerColor color && Enum.IsDefined(color) && used.Add(color))
                         assigned[player.PlayerId] = color;
-                foreach (ManualPreparationPlayer player in ordered.Where(player => !assigned.ContainsKey(player.PlayerId)))
-                {
+                foreach (ManualPreparationPlayer player in ordered.Where(player => !assigned.ContainsKey(player.PlayerId))) {
                     PlayerColor color = Enum.GetValues<PlayerColor>().First(color => !used.Contains(color));
                     assigned[player.PlayerId] = color;
                     used.Add(color);
@@ -77,24 +102,23 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
             }
             Players.Clear();
             foreach (ManualPreparationPlayer player in ordered)
-                Players.Add(new(player.PlayerId, player.Name)
-                {
+                Players.Add(new(player.PlayerId, player.Name) {
                     Color = data.CapturePlayerColors ? assigned[player.PlayerId] : null,
                     CanChooseColor = data.CapturePlayerColors
                 });
             _data = data;
             UpdatePositions();
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load manual session preparation.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load manual session preparation.");
             ErrorMessage = AppResources.ManualPreparationInvalid;
         }
-        finally { IsBusy = false; }
+        finally {
+            IsBusy = false;
+        }
     }
 
-    public void Move(ManualParticipantViewModel player, int direction)
-    {
+    public void Move(ManualParticipantViewModel player, int direction) {
         if (!CanInteract || !CapturePlayerOrder || !Players.Contains(player))
             return;
         int source = Players.IndexOf(player);
@@ -103,27 +127,22 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
             ReplacePlayers(StartingPlayerRotation.MovePlayer(Players.ToArray(), source, target));
     }
 
-    public void Rotate(int startIndex = 1)
-    {
+    public void Rotate(int startIndex = 1) {
         if (CanInteract && CapturePlayerOrder && Players.Count > 1)
             ReplacePlayers(StartingPlayerRotation.RotateToStart(Players.ToArray(), startIndex));
     }
-    public void RotateRandom(Random? random = null)
-    {
+    public void RotateRandom(Random? random = null) {
         if (Players.Count > 1)
             Rotate((random ?? Random.Shared).Next(Players.Count));
     }
-    private void ReplacePlayers(IReadOnlyList<ManualParticipantViewModel> players)
-    {
+    private void ReplacePlayers(IReadOnlyList<ManualParticipantViewModel> players) {
         Players.Clear();
         foreach (ManualParticipantViewModel player in players)
             Players.Add(player);
         UpdatePositions();
     }
-    private void UpdatePositions()
-    {
-        for (int index = 0; index < Players.Count; index++)
-        {
+    private void UpdatePositions() {
+        for (int index = 0; index < Players.Count; index++) {
             Players[index].Position = CapturePlayerOrder ? index + 1 : null;
             Players[index].CanMoveUp = CapturePlayerOrder && index > 0;
             Players[index].CanMoveDown = CapturePlayerOrder && index < Players.Count - 1;
@@ -131,8 +150,7 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
         OnPropertyChanged(nameof(CanStart));
     }
 
-    public void OpenColorPicker(ManualParticipantViewModel player)
-    {
+    public void OpenColorPicker(ManualParticipantViewModel player) {
         if (!CanInteract || !player.CanChooseColor || !Players.Contains(player))
             return;
         _colorTarget = player;
@@ -143,8 +161,7 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
                 PlayerColorPresentation.GetText(color), color == player.Color));
         IsChoosingColor = true;
     }
-    public void SelectColor(PlayerColor color)
-    {
+    public void SelectColor(PlayerColor color) {
         if (_colorTarget is null || !IsChoosingColor || !Enum.IsDefined(color))
             return;
         ManualParticipantViewModel? owner = Players.FirstOrDefault(player => player != _colorTarget && player.Color == color);
@@ -155,37 +172,34 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
         CloseColorPicker();
         OnPropertyChanged(nameof(CanStart));
     }
-    public void CloseColorPicker()
-    {
+    public void CloseColorPicker() {
         _colorTarget = null;
         IsChoosingColor = false;
     }
 
-    public async Task<Guid?> StartAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task<Guid?> StartAsync(CancellationToken cancellationToken = default) {
         if (!CanStart || _data is null)
             return null;
         if (_startedSessionId is not null)
             return _startedSessionId;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            _startedSessionId = await start.StartAsync(new(GameKey, _data.GroupId, DateTimeOffset.UtcNow,
+        try {
+            _startedSessionId = await _start.StartAsync(new(GameKey, _data.GroupId, DateTimeOffset.UtcNow,
                 Players.Select(player => new ManualStartingPlayer(player.PlayerId, player.Position, player.Color)).ToArray()), cancellationToken);
             return _startedSessionId;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not start manual session.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not start manual session.");
             ErrorMessage = AppResources.ManualPreparationInvalid;
             return null;
         }
-        finally { IsBusy = false; }
+        finally {
+            IsBusy = false;
+        }
     }
 
-    public static string FormatLastSession(ManualLastSession? session)
-    {
+    public static string FormatLastSession(ManualLastSession? session) {
         if (session is null)
             return AppResources.NoPreviousGameSession;
         string date = session.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
@@ -201,7 +215,8 @@ public partial class ManualPreparationViewModel(ManualPreparationQuery query, St
         return date;
     }
 
-    public static bool HasWinnerResult(ManualLastSession? session) => session is not null
+    public static bool HasWinnerResult(ManualLastSession? session)
+        => session is not null
         && session.Players.Any(player => player.Placement == 1)
         && !(session.Players.All(player => player.Placement.HasValue)
             && (session.CapturePlacements || session.Players.Any(player => player.Placement > 1)));

@@ -6,10 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.SpecialCards;
 
-public partial class ArkNovaSpecialCardsViewModel(ArkNovaSpecialCardUseCase useCase, ILogger<ArkNovaSpecialCardsViewModel> logger) : ObservableObject
-{
+public partial class ArkNovaSpecialCardsViewModel : ObservableObject {
+    private readonly ArkNovaSpecialCardUseCase _useCase;
+    private readonly ILogger<ArkNovaSpecialCardsViewModel> _logger;
+
+    public ArkNovaSpecialCardsViewModel(ArkNovaSpecialCardUseCase useCase, ILogger<ArkNovaSpecialCardsViewModel> logger) {
+        _useCase = useCase;
+        _logger = logger;
+    }
+
     public ObservableCollection<ArkNovaSpecialCardListItem> Cards { get; } = [];
-    [ObservableProperty] public partial bool ShowArchived { get; set; }
+    [ObservableProperty]
+    public partial bool ShowArchived { get; set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
     public partial bool IsBusy { get; private set; }
@@ -18,34 +26,30 @@ public partial class ArkNovaSpecialCardsViewModel(ArkNovaSpecialCardUseCase useC
     public partial string? ErrorMessage { get; private set; }
     public bool IsIdle => !IsBusy;
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-    partial void OnShowArchivedChanged(bool value) => _ = LoadAsync();
+    partial void OnShowArchivedChanged(bool value)
+        => _ = LoadAsync();
 
-    public async Task LoadAsync()
-    {
+    public async Task LoadAsync() {
         if (IsBusy)
             return;
-        try
-        {
+        try {
             IsBusy = true;
             ErrorMessage = null;
-            IReadOnlyList<ArkNovaSpecialCardData> cards = await useCase.ListAsync(ShowArchived);
+            IReadOnlyList<ArkNovaSpecialCardData> cards = await _useCase.ListAsync(ShowArchived);
             Cards.Clear();
             foreach (ArkNovaSpecialCardData card in cards)
                 Cards.Add(new(card));
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load special cards.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load special cards.");
             ErrorMessage = AppResources.SpecialCardOperationFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 }
 
-public sealed record ArkNovaSpecialCardListItem(ArkNovaSpecialCardData Card)
-{
+public sealed record ArkNovaSpecialCardListItem(ArkNovaSpecialCardData Card) {
     public bool IsArchived => Card.IsArchived;
 }

@@ -12,8 +12,7 @@ namespace BoardgameTracker.App;
 /// MAUI application bootstrap. It initializes the database before showing the Shell
 /// and restores the last explicit navigation context when possible.
 /// </summary>
-public partial class App : Microsoft.Maui.Controls.Application
-{
+public partial class App : Microsoft.Maui.Controls.Application {
     private readonly IServiceProvider _services;
     private readonly IAppNavigationSettingsStore _navigationSettingsStore;
     private readonly StartupNavigationQuery _startupNavigation;
@@ -28,8 +27,7 @@ public partial class App : Microsoft.Maui.Controls.Application
         BoardgameTracker.App.Theming.ThemeManager themes,
         IAppNavigationSettingsStore settings,
         IEnumerable<IGameSessionResumeHandler> resumeHandlers,
-        StartupNavigationQuery startupNavigation)
-    {
+        StartupNavigationQuery startupNavigation) {
         InitializeComponent();
         themes.Apply(settings.Get().Theme, persist: false);
         // AppShell is constructed after InitializeComponent and theme application.
@@ -42,12 +40,11 @@ public partial class App : Microsoft.Maui.Controls.Application
         _resumeHandlers = resumeHandlers;
     }
 
-    protected override Window CreateWindow(IActivationState? activationState)
-    {
+    /// <summary>MAUI requests a window at activation; show startup feedback and defer database/Shell initialization until it activates.</summary>
+    protected override Window CreateWindow(IActivationState? activationState) {
         Window window = new(CreateStartupPage());
 
-        async void OnActivated(object? sender, EventArgs args)
-        {
+        async void OnActivated(object? sender, EventArgs args) {
             window.Activated -= OnActivated;
             await InitializeApplicationAsync(window);
         }
@@ -56,11 +53,9 @@ public partial class App : Microsoft.Maui.Controls.Application
         return window;
     }
 
-    private async Task InitializeApplicationAsync(Window window)
-    {
+    private async Task InitializeApplicationAsync(Window window) {
         string stage = "database initialization";
-        try
-        {
+        try {
             await _databaseInitializer.InitializeAsync();
             stage = "Shell creation";
             AppShell shell = _services.GetRequiredService<AppShell>();
@@ -70,11 +65,9 @@ public partial class App : Microsoft.Maui.Controls.Application
             stage = "startup navigation resolution";
             StartupNavigation startup = await _startupNavigation.ResolveAsync(state);
             window.Page = shell;
-            if (startup.Resume is OpenGameSession rememberedGameSession)
-            {
+            if (startup.Resume is OpenGameSession rememberedGameSession) {
                 IGameSessionResumeHandler? handler = _resumeHandlers.FirstOrDefault(candidate => candidate.CanHandle(rememberedGameSession.GameKey));
-                if (handler is not null)
-                {
+                if (handler is not null) {
                     stage = "session restoration";
                     await handler.ResumeAsync(shell, rememberedGameSession);
                     shell.EnableNavigationMemory();
@@ -89,35 +82,27 @@ public partial class App : Microsoft.Maui.Controls.Application
             await shell.NavigateToMainSectionAsync(startup.Section, remember: false);
             shell.EnableNavigationMemory();
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogCritical(exception, "Application startup failed during {StartupStage}.", stage);
             window.Page = CreateStartupErrorPage(window, exception);
         }
     }
 
-    private static ContentPage CreateStartupPage() =>
-        new()
-        {
-            Content = new Grid
-            {
-                Children =
-                {
-                    new VerticalStackLayout
-                    {
+    private static ContentPage CreateStartupPage()
+        => new() {
+            Content = new Grid {
+                Children = {
+                    new VerticalStackLayout {
                         HorizontalOptions = LayoutOptions.Center,
                         VerticalOptions = LayoutOptions.Center,
                         Spacing = 16,
-                        Children =
-                        {
-                            new ActivityIndicator
-                            {
+                        Children = {
+                            new ActivityIndicator {
                                 IsRunning = true,
                                 WidthRequest = 32,
                                 HeightRequest = 32
                             },
-                            new Label
-                            {
+                            new Label {
                                 Text = AppResources.Initializing,
                                 HorizontalTextAlignment = TextAlignment.Center
                             }
@@ -127,16 +112,12 @@ public partial class App : Microsoft.Maui.Controls.Application
             }
         };
 
-    private ContentPage CreateStartupErrorPage(Window window, Exception exception)
-    {
-        VerticalStackLayout content = new()
-        {
+    private ContentPage CreateStartupErrorPage(Window window, Exception exception) {
+        VerticalStackLayout content = new() {
             VerticalOptions = LayoutOptions.Center,
             Spacing = 12,
-            Children =
-            {
-                new Label
-                {
+            Children = {
+                new Label {
                     Text = AppResources.StartupErrorTitle,
                     FontSize = 24,
                     FontAttributes = FontAttributes.Bold
@@ -145,13 +126,11 @@ public partial class App : Microsoft.Maui.Controls.Application
             }
         };
 
-        Button retryButton = new()
-        {
+        Button retryButton = new() {
             Text = AppResources.Retry,
             HorizontalOptions = LayoutOptions.Start
         };
-        retryButton.Clicked += async (_, _) =>
-        {
+        retryButton.Clicked += async (_, _) => {
             retryButton.IsEnabled = false;
             window.Page = CreateStartupPage();
             await InitializeApplicationAsync(window);
@@ -159,25 +138,21 @@ public partial class App : Microsoft.Maui.Controls.Application
         content.Children.Add(retryButton);
 
 #if DEBUG
-        content.Children.Add(new Label
-        {
+        content.Children.Add(new Label {
             Text = AppResources.TechnicalDetails,
             FontAttributes = FontAttributes.Bold,
             Margin = new Thickness(0, 12, 0, 0)
         });
-        content.Children.Add(new ScrollView
-        {
+        content.Children.Add(new ScrollView {
             MaximumHeightRequest = 260,
-            Content = new Label
-            {
+            Content = new Label {
                 Text = exception.ToString(),
                 FontSize = 11
             }
         });
 #endif
 
-        return new ContentPage
-        {
+        return new ContentPage {
             Padding = 24,
             Content = content
         };

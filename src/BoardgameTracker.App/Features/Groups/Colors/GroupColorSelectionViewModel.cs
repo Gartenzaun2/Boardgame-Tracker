@@ -9,25 +9,30 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BoardgameTracker.App.Features.Groups.Colors;
 
-public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog, IEnumerable<GameColorPresentation> games) : ObservableObject
-{
-    private readonly IReadOnlyDictionary<string, GameColorPresentation> _games = games.ToDictionary(game => game.GameKey);
+public partial class GroupColorSelectionViewModel : ObservableObject {
+    private readonly GamePlayerColorCatalog _catalog;
+    private readonly IReadOnlyDictionary<string, GameColorPresentation> _games;
+
+    public GroupColorSelectionViewModel(GamePlayerColorCatalog catalog, IEnumerable<GameColorPresentation> games) {
+        _catalog = catalog;
+        _games = games.ToDictionary(game => game.GameKey);
+    }
+
     private GroupPlayerItemViewModel? _target;
     private IReadOnlyList<GroupPlayerItemViewModel> _players = [];
     public string? GameKey { get; private set; }
-    public bool HasColors => catalog.Get(GameKey).AllowedColors.Count > 0;
+    public bool HasColors => _catalog.Get(GameKey).AllowedColors.Count > 0;
     public string Title => string.Format(AppResources.SetColorForGameFormat,
         GameKey is not null && _games.TryGetValue(GameKey, out GameColorPresentation? game) ? game.Name() : GameKey);
     public string PlayerName => _target?.Name ?? string.Empty;
     public ObservableCollection<GroupColorOption> Options { get; } = [];
-    [ObservableProperty] public partial bool IsVisible { get; private set; }
+    [ObservableProperty]
+    public partial bool IsVisible { get; private set; }
 
-    public bool Configure(string? gameKey)
-    {
+    /// <returns>True when the game context changed and any open selection was closed; false when the context was already configured.</returns>
+    public bool Configure(string? gameKey) {
         if (GameKey == gameKey)
-        {
             return false;
-        }
         Close();
         GameKey = gameKey;
         OnPropertyChanged(nameof(HasColors));
@@ -35,45 +40,42 @@ public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog
         return true;
     }
 
-    public void Open(GroupPlayerItemViewModel player, IReadOnlyList<GroupPlayerItemViewModel> players)
-    {
+    public void Open(GroupPlayerItemViewModel player, IReadOnlyList<GroupPlayerItemViewModel> players) {
         if (!HasColors || !players.Contains(player))
-        {
             return;
-        }
         _target = player;
         _players = players;
         Options.Clear();
         AddOption(null);
-        foreach (PlayerColor color in catalog.Get(GameKey).AllowedColors) AddOption(color);
+        foreach (PlayerColor color in _catalog.Get(GameKey).AllowedColors)
+            AddOption(color);
         OnPropertyChanged(nameof(PlayerName));
         IsVisible = true;
     }
 
-    private void AddOption(PlayerColor? color) => Options.Add(new(color,
+    private void AddOption(PlayerColor? color)
+        => Options.Add(new(color,
         color is { } value ? PlayerColorPresentation.GetName(value) : AppResources.NoPlayerColor,
         color is { } swatch ? PlayerColorPresentation.GetBackground(swatch) : Microsoft.Maui.Graphics.Colors.Transparent,
         _target?.DefaultColor == color, new Command(() => Select(color))));
 
-    private void Select(PlayerColor? color)
-    {
-        if (!IsVisible || _target is null || color is { } value && !catalog.Get(GameKey).Allows(value))
-        {
+    private void Select(PlayerColor? color) {
+        if (!IsVisible || _target is null)
             return;
-        }
+        bool isAllowedColor = color is not { } value || _catalog.Get(GameKey).Allows(value);
+        if (!isAllowedColor)
+            return;
         GroupPlayerItemViewModel? owner = color is null ? null : _players.FirstOrDefault(player => !ReferenceEquals(player, _target) && player.DefaultColor == color);
         PlayerColor? previous = _target.DefaultColor;
         _target.DefaultColor = color;
+        // Selecting an occupied color swaps defaults rather than leaving duplicate assignments.
         if (owner is not null)
-        {
             owner.DefaultColor = previous;
-        }
         Close();
     }
 
     [RelayCommand]
-    public void Close()
-    {
+    public void Close() {
         IsVisible = false;
         _target = null;
         _players = [];
@@ -81,8 +83,7 @@ public partial class GroupColorSelectionViewModel(GamePlayerColorCatalog catalog
     }
 }
 
-public sealed record GroupColorOption(PlayerColor? Color, string Name, Microsoft.Maui.Graphics.Color Swatch, bool IsSelected, ICommand ChooseCommand)
-{
+public sealed record GroupColorOption(PlayerColor? Color, string Name, Microsoft.Maui.Graphics.Color Swatch, bool IsSelected, ICommand ChooseCommand) {
     public bool HasSwatch => Color is not null;
 }
 

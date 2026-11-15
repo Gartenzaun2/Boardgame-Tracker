@@ -5,29 +5,28 @@
     Title="{Binding DisplayName}" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
-
-<VerticalStackLayout Spacing="8">
+            <VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
-                Title="{Binding DisplayName}"
-                Variant="Subpage"
-                BackClicked="OnBackClicked" />
+                    Title="{Binding DisplayName}"
+                    Variant="Subpage"
+                    BackClicked="OnBackClicked" />
             </VerticalStackLayout>
-<Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="12">
-<ScrollView Grid.Row="0">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="{Binding VersionText}" IsVisible="{Binding HasVersion}" FontSize="14" />
-                    <Label Text="{Binding LicenseDisplayName}" FontSize="17" FontAttributes="Bold" />
-                    <Label Text="{Binding SpdxText}" IsVisible="{Binding HasSpdx}" FontSize="12" />
-                    <Label Text="{Binding AttributionText}" IsVisible="{Binding HasAttribution}" FontSize="14" LineBreakMode="WordWrap" />
-                    <Label Text="{Binding LicenseText}" FontSize="14" LineHeight="1.2" LineBreakMode="WordWrap" />
-                    <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="8">
-                        <Label Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
-                        <Button Text="{x:Static res:AppResources.LicensesRetry}" Clicked="OnRetryClicked" Style="{StaticResource SecondaryActionButton}" />
+            <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*" RowSpacing="12">
+                <ScrollView Grid.Row="0">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{Binding VersionText}" IsVisible="{Binding HasVersion}" FontSize="14" />
+                        <Label Text="{Binding LicenseDisplayName}" FontSize="17" FontAttributes="Bold" />
+                        <Label Text="{Binding SpdxText}" IsVisible="{Binding HasSpdx}" FontSize="12" />
+                        <Label Text="{Binding AttributionText}" IsVisible="{Binding HasAttribution}" FontSize="14" LineBreakMode="WordWrap" />
+                        <Label Text="{Binding LicenseText}" FontSize="14" LineHeight="1.2" LineBreakMode="WordWrap" />
+                        <VerticalStackLayout IsVisible="{Binding HasError}" Spacing="8">
+                            <Label Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
+                            <Button Text="{x:Static res:AppResources.LicensesRetry}" Clicked="OnRetryClicked" Style="{StaticResource SecondaryActionButton}" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
-                </VerticalStackLayout>
-            </ScrollView>
-</Grid>
-</Grid>
+                </ScrollView>
+            </Grid>
+        </Grid>
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

@@ -8,7 +8,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.Settings;
 
 public partial class ArkNovaSettingsPage : ContentPage {
     private readonly ArkNovaSettingsViewModel _viewModel;
-    private bool _choosing;
+    private bool _isChoosingOrNavigating;
     private readonly MyGamesViewModel _visibility;
 
     public ArkNovaSettingsPage(ArkNovaSettingsViewModel viewModel, MyGamesViewModel visibility) {
@@ -20,7 +20,8 @@ public partial class ArkNovaSettingsPage : ContentPage {
 
     protected override async void OnAppearing() {
         base.OnAppearing();
-        if (AppDialogPage.IsOpen(this)) return;
+        if (AppDialogPage.IsOpen(this))
+            return;
         _viewModel.Load();
         VisibilityPanel.IsEnabled = false;
         await _visibility.LoadAsync();
@@ -30,9 +31,9 @@ public partial class ArkNovaSettingsPage : ContentPage {
         VisibilityError.IsVisible = _visibility.HasError;
     }
 
-    private async void OnGameVisibilityToggled(object? sender, ToggledEventArgs e)
-    {
-        if (sender is not Switch { BindingContext: GameActivationRow row } || _visibility.IsBusy) return;
+    private async void OnGameVisibilityToggled(object? sender, ToggledEventArgs e) {
+        if (sender is not Switch { BindingContext: GameActivationRow row } || _visibility.IsBusy)
+            return;
         VisibilityPanel.IsEnabled = false;
         await _visibility.SetEnabledAsync(row, e.Value);
         VisibilityPanel.IsEnabled = true;
@@ -40,23 +41,27 @@ public partial class ArkNovaSettingsPage : ContentPage {
         VisibilityError.IsVisible = _visibility.HasError;
     }
 
+    /// <summary>MAUI hides settings, including when opening a child page; persist the current choices before leaving.</summary>
     protected override void OnDisappearing() {
         _viewModel.Save();
         base.OnDisappearing();
     }
 
     private bool _openingCards;
-    private async void OnPhotoDatasetClicked(object? sender, EventArgs e)
-    {
-        if (_choosing)
+    private async void OnPhotoDatasetClicked(object? sender, EventArgs e) {
+        if (_isChoosingOrNavigating)
             return;
-        _choosing = true;
-        try { await Shell.Current.GoToAsync(nameof(ArkNovaPhotoDatasetPage), false); }
-        finally { _choosing = false; }
+        _isChoosingOrNavigating = true;
+        try {
+            await Shell.Current.GoToAsync(nameof(ArkNovaPhotoDatasetPage), false);
+        }
+        finally {
+            _isChoosingOrNavigating = false;
+        }
     }
 
     private async void OnSpecialCardsClicked(object? sender, EventArgs e) {
-        if(_openingCards)
+        if (_openingCards)
             return;
         _openingCards = true;
         try {
@@ -71,22 +76,21 @@ public partial class ArkNovaSettingsPage : ContentPage {
         await Shell.Current.GoToAsync("..", false);
     }
 
-    private async void OnCaptureReputationInfoClicked(object? sender, EventArgs e) =>
-        await AppDialogPage.ShowAsync(this, AppResources.CaptureReputation, AppResources.CaptureReputationHint, AppResources.Ok);
+    private async void OnCaptureReputationInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.CaptureReputation, AppResources.CaptureReputationHint, AppResources.Ok);
 
-    private async void OnOldScoringInfoClicked(object? sender, EventArgs e) =>
-        await AppDialogPage.ShowAsync(this, AppResources.OldScoringDisplay, AppResources.OldScoringDisplayHint, AppResources.Ok);
+    private async void OnOldScoringInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.OldScoringDisplay, AppResources.OldScoringDisplayHint, AppResources.Ok);
 
-    private async void OnMaterialInfoClicked(object? sender, EventArgs e)
-    {
+    private async void OnMaterialInfoClicked(object? sender, EventArgs e) {
         await AppDialogPage.ShowAsync(this, AppResources.GameMaterial, AppResources.GameMaterialHint, AppResources.Ok);
     }
 
     private async void OnContentLanguageClicked(object? sender, EventArgs e) {
-        if(_choosing)
+        if (_isChoosingOrNavigating)
             return;
 
-        _choosing = true;
+        _isChoosingOrNavigating = true;
         try {
             var options = _viewModel.ContentLanguages;
 
@@ -101,12 +105,12 @@ public partial class ArkNovaSettingsPage : ContentPage {
                 options.Select(option => option.Name).ToArray(),
                 selected);
 
-            if(choice < 0)
+            if (choice < 0)
                 return;
 
             _viewModel.SelectedContentLanguage = options[choice];
         } finally {
-            _choosing = false;
+            _isChoosingOrNavigating = false;
         }
     }
 }

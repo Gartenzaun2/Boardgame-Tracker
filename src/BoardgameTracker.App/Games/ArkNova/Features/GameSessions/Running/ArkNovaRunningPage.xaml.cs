@@ -12,8 +12,7 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Running;
 /// MAUI view for an active Ark Nova gameSession. It owns the visual duration timer and
 /// delegates lifecycle actions to the running GameSession view model.
 /// </summary>
-public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
-{
+public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable {
     private readonly ArkNovaRunningViewModel _viewModel;
     private readonly IDispatcherTimer _durationTimer;
     private readonly ILogger<ArkNovaRunningPage> _logger;
@@ -21,8 +20,7 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
     private bool _hasBegunScoring;
     private bool _isDiscarded;
 
-    public ArkNovaRunningPage(ArkNovaRunningViewModel viewModel, ILogger<ArkNovaRunningPage> logger)
-    {
+    public ArkNovaRunningPage(ArkNovaRunningViewModel viewModel, ILogger<ArkNovaRunningPage> logger) {
         InitializeComponent();
         _viewModel = viewModel;
         _logger = logger;
@@ -33,12 +31,10 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
         _durationTimer.Tick += (_, _) => _viewModel.RefreshDuration(DateTimeOffset.UtcNow);
     }
 
-    protected override async void OnAppearing()
-    {
+    protected override async void OnAppearing() {
         base.OnAppearing();
 
-        if (_gameSessionId != Guid.Empty && _viewModel.GameSessionId != _gameSessionId)
-        {
+        if (_gameSessionId != Guid.Empty && _viewModel.GameSessionId != _gameSessionId) {
             await _viewModel.LoadAsync(_gameSessionId);
         }
 
@@ -46,81 +42,68 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
         _durationTimer.Start();
     }
 
-    protected override void OnDisappearing()
-    {
+    /// <summary>MAUI hides the page; stop the visual duration timer until the page appears again.</summary>
+    protected override void OnDisappearing() {
         _durationTimer.Stop();
         base.OnDisappearing();
     }
 
+    private async void OnBackClicked(object? sender, EventArgs e)
+        => await ReturnAsync();
 
-    private async void OnBackClicked(object? sender, EventArgs e) =>
-        await ReturnAsync();
-
-    protected override bool OnBackButtonPressed()
-    {
+    /// <summary>Routes system back to the retained session caller rather than the previous session page.</summary>
+    protected override bool OnBackButtonPressed() {
+        // The synchronous back callback dispatches the asynchronous close/navigation flow.
         Dispatcher.Dispatch(async () => await ReturnAsync());
         return true;
     }
 
-    private async Task ReturnAsync()
-    {
+    private async Task ReturnAsync() {
         if (_isNavigating || _viewModel.IsBusy)
             return;
         _isNavigating = true;
-        try
-        {
+        try {
             await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not return from the running Ark Nova session.");
             await ShowNavigationErrorAsync(_isDiscarded ? AppResources.NavigationAfterDiscardFailed : AppResources.NavigationFailed);
         }
-        finally
-        {
+        finally {
             _isNavigating = false;
         }
     }
 
-    private async void OnEndClicked(object? sender, EventArgs e)
-    {
+    private async void OnEndClicked(object? sender, EventArgs e) {
         if (_isNavigating || _viewModel.IsBusy || _isDiscarded)
             return;
         _isNavigating = true;
-        try
-        {
-            if (!_hasBegunScoring)
-            {
+        try {
+            if (!_hasBegunScoring) {
                 if (!await _viewModel.BeginScoringAsync())
                     return;
                 _hasBegunScoring = true;
             }
 
-            await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), false, new ShellNavigationQueryParameters
-                {
+            await Shell.Current.GoToAsync(nameof(ArkNovaScoringPage), false, new ShellNavigationQueryParameters {
                     [NavigationParameters.GameSessionId] = _viewModel.GameSessionId
                 });
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not open Ark Nova scoring. Persistence completed: {Persisted}.", _hasBegunScoring);
             await ShowNavigationErrorAsync(_hasBegunScoring ? AppResources.NavigationAfterScoringStartedFailed : AppResources.EndGameFailed);
         }
-        finally
-        {
+        finally {
             _isNavigating = false;
         }
     }
 
-    private async void OnDiscardClicked(object? sender, EventArgs e)
-    {
+    private async void OnDiscardClicked(object? sender, EventArgs e) {
         if (_isNavigating || _viewModel.IsBusy || _hasBegunScoring)
             return;
         _isNavigating = true;
-        try
-        {
-            if (!_isDiscarded)
-            {
+        try {
+            if (!_isDiscarded) {
                 bool confirmed = await AppDialogPage.ShowAsync(this,
                     AppResources.DiscardGameTitle,
                     AppResources.DiscardGameMessage,
@@ -134,25 +117,20 @@ public partial class ArkNovaRunningPage : ContentPage, IQueryAttributable
 
             await ((AppShell)Shell.Current).ReturnToGameSessionCallerAsync();
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not leave discarded Ark Nova session. Persistence completed: {Persisted}.", _isDiscarded);
             await ShowNavigationErrorAsync(_isDiscarded ? AppResources.NavigationAfterDiscardFailed : AppResources.DiscardGameFailed);
         }
-        finally
-        {
+        finally {
             _isNavigating = false;
         }
     }
 
-    private async Task ShowNavigationErrorAsync(string message)
-    {
-        try
-        {
+    private async Task ShowNavigationErrorAsync(string message) {
+        try {
             await AppDialogPage.ShowAsync(this, AppResources.ArkNova, message, AppResources.Ok);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             _logger.LogError(exception, "Could not display the Ark Nova running navigation error.");
         }
     }

@@ -6,51 +6,54 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="Auto,*" RowSpacing="14">
-
-<VerticalStackLayout Spacing="8">
+        <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{x:Static res:AppResources.AppSettingsTitle}"
                 Variant="MainSection">
                 <header:AppPageHeader.Actions>
                     <ImageButton WidthRequest="48" HeightRequest="48" Clicked="OnInfoClicked" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
-                             SemanticProperties.Description="{x:Static res:AppResources.GameSettingsHint}"
-                             ToolTipProperties.Text="{x:Static res:AppResources.GameSettingsHint}" />
+                        SemanticProperties.Description="{x:Static res:AppResources.GameSettingsHint}"
+                        ToolTipProperties.Text="{x:Static res:AppResources.GameSettingsHint}" />
                 </header:AppPageHeader.Actions>
             </header:AppPageHeader>
         </VerticalStackLayout>
-<Grid Grid.Row="1" Style="{StaticResource SettingsPageBody}" RowDefinitions="*" RowSpacing="14">
-<ScrollView Grid.Row="0">
-        <VerticalStackLayout Style="{StaticResource SettingsContent}">
-            <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
-            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                <Label Text="{x:Static res:AppResources.AppLanguage}" Style="{StaticResource SettingsItemLabel}" />
-                <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
-                    <Border Style="{StaticResource SettingsLookupFrame}" />
-                    <Button Text="{x:Static res:AppResources.ContentLanguageGerman}" Clicked="OnLanguageClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppLanguage}" />
-                </Grid>
-            </Grid>
-            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                <Label Text="{x:Static res:AppResources.AppearanceTheme}" Style="{StaticResource SettingsItemLabel}" />
-                <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
-                    <Border Style="{StaticResource SettingsLookupFrame}" />
-                    <Button x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
-                </Grid>
-            </Grid>
-            <Label Text="{x:Static res:AppResources.GamesSection}" Style="{StaticResource SettingsSectionTitle}" />
-            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnMyGamesClicked" /></Grid.GestureRecognizers>
-                <Label Text="{x:Static res:AppResources.MyGames}" Style="{StaticResource SettingsItemLabel}" />
-                <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
-            </Grid>
-            <Label Text="{x:Static res:AppResources.AboutLegal}" Style="{StaticResource SettingsSectionTitle}" />
-            <Label x:Name="AppVersionLabel" Style="{StaticResource SettingsHintLabel}" />
-            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
-                <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnLicensesClicked" /></Grid.GestureRecognizers>
-                <Label Text="{x:Static res:AppResources.OpenSourceLicenses}" Style="{StaticResource SettingsItemLabel}" />
-                <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
-            </Grid>
-        </VerticalStackLayout>
-        </ScrollView>
-</Grid>
-</Grid>
+        <Grid Grid.Row="1" Style="{StaticResource SettingsPageBody}" RowDefinitions="*" RowSpacing="14">
+            <ScrollView Grid.Row="0">
+                <VerticalStackLayout Style="{StaticResource SettingsContent}">
+                    <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
+                    <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
+                        <Label Text="{x:Static res:AppResources.AppLanguage}" Style="{StaticResource SettingsItemLabel}" />
+                        <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
+                            <Border Style="{StaticResource SettingsLookupFrame}" />
+                            <Button Text="{x:Static res:AppResources.ContentLanguageGerman}" Clicked="OnLanguageClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppLanguage}" />
+                        </Grid>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
+                        <Label Text="{x:Static res:AppResources.AppearanceTheme}" Style="{StaticResource SettingsItemLabel}" />
+                        <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
+                            <Border Style="{StaticResource SettingsLookupFrame}" />
+                            <Button x:Name="ThemeChoice" Clicked="OnThemeClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.AppearanceTheme}" />
+                        </Grid>
+                    </Grid>
+                    <Label Text="{x:Static res:AppResources.GamesSection}" Style="{StaticResource SettingsSectionTitle}" />
+                    <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnMyGamesClicked" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="{x:Static res:AppResources.MyGames}" Style="{StaticResource SettingsItemLabel}" />
+                        <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                    </Grid>
+                    <Label Text="{x:Static res:AppResources.AboutLegal}" Style="{StaticResource SettingsSectionTitle}" />
+                    <Label x:Name="AppVersionLabel" Style="{StaticResource SettingsHintLabel}" />
+                    <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLicensesClicked" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="{x:Static res:AppResources.OpenSourceLicenses}" Style="{StaticResource SettingsItemLabel}" />
+                        <Image Grid.Column="1" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </Grid>
 </ContentPage>

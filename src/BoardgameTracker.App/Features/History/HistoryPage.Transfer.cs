@@ -6,48 +6,38 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.History;
 
-public partial class HistoryPage
-{
-    private bool StartTransfer()
-    {
+public partial class HistoryPage {
+    private bool StartTransfer() {
         if (_transferring || _loading || _navigating || _choosing)
             return false;
         _transferring = true;
         BusyOverlay.IsVisible = true;
         return true;
     }
-    private async void OnExportClicked(object? sender, EventArgs e)
-    {
+    private async void OnExportClicked(object? sender, EventArgs e) {
         if (!HistoryExportFlow.CanExport(_visibleIds) || !StartTransfer())
             return;
-        try
-        {
+        try {
             await _exportFlow.RunAsync(_visibleIds, AppInfo.Current.VersionString,
                 targets => AppDialogPage.ChooseAsync(this, AppResources.TransferExportTitle,
                     targets.Select(target => target.DisplayName).ToArray(), -1, AppResources.Cancel));
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             await ShowTransferErrorAsync(exception);
         }
-        finally
-        {
+        finally {
             _transferring = false;
             BusyOverlay.IsVisible = false;
         }
     }
-    private async void OnImportClicked(object? sender, EventArgs e)
-    {
+    private async void OnImportClicked(object? sender, EventArgs e) {
         if (!StartTransfer())
             return;
         bool committed = false;
-        try
-        {
-            FileResult? selected = await FilePicker.Default.PickAsync(new PickOptions
-            {
+        try {
+            FileResult? selected = await FilePicker.Default.PickAsync(new PickOptions {
                 PickerTitle = AppResources.TransferPickFile,
-                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-                {
+                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> {
                     [DevicePlatform.Android] = ["application/json", "application/octet-stream", "text/*"],
                     [DevicePlatform.iOS] = ["public.data"],
                     [DevicePlatform.WinUI] = [".bgt"]
@@ -58,11 +48,9 @@ public partial class HistoryPage
             await using Stream stream = await selected.OpenReadAsync();
             ImportPlan plan = await _transfer.AnalyzeAsync(stream);
             List<GroupResolution> resolutions = [];
-            while (plan.Conflicts.Length != 0)
-            {
+            while (plan.Conflicts.Length != 0) {
                 GroupConflict conflict = plan.Conflicts[0];
-                string mappingText = string.Join(Environment.NewLine, conflict.Imported.GroupPlayers.Select(player =>
-                {
+                string mappingText = string.Join(Environment.NewLine, conflict.Imported.GroupPlayers.Select(player => {
                     BgtPlayer imported = plan.Source.Players.Single(candidate => candidate.Id == player.PlayerId);
                     return conflict.FixedMappings.TryGetValue(player.PlayerId, out Guid localId)
                         ? $"{imported.Name} → {plan.Snapshot.Players.Single(candidate => candidate.Id == localId).Name}" : imported.Name;
@@ -73,11 +61,9 @@ public partial class HistoryPage
                 if (choice < 0)
                     return;
                 Dictionary<Guid, Guid> mappings = [];
-                if (choice == 0)
-                {
+                if (choice == 0) {
                     HashSet<Guid> used = conflict.FixedMappings.Values.ToHashSet();
-                    foreach (BgtGroupPlayer player in conflict.Imported.GroupPlayers.Where(player => !conflict.FixedMappings.ContainsKey(player.PlayerId)))
-                    {
+                    foreach (BgtGroupPlayer player in conflict.Imported.GroupPlayers.Where(player => !conflict.FixedMappings.ContainsKey(player.PlayerId))) {
                         LocalPlayer[] candidates = plan.Snapshot.Players.Where(candidate => conflict.Local.PlayerIds.Contains(candidate.Id) && !used.Contains(candidate.Id)).ToArray();
                         BgtPlayer imported = plan.Source.Players.Single(candidate => candidate.Id == player.PlayerId);
                         int picked = await AppDialogPage.ChooseAsync(this, string.Format(AppResources.TransferMapPlayer, imported.Name), candidates.Select(candidate => candidate.Name).ToArray(), -1);
@@ -91,8 +77,7 @@ public partial class HistoryPage
                 plan = _transfer.Resolve(plan, resolutions);
             }
             List<GameResolution> gameResolutions = [];
-            while (plan.GameConflicts.Length != 0)
-            {
+            while (plan.GameConflicts.Length != 0) {
                 GameConflict conflict = plan.GameConflicts[0];
                 string[] options = conflict.Candidates.Select(candidate => candidate.Name).Append(AppResources.TransferNewGame).ToArray();
                 int picked = await AppDialogPage.ChooseAsync(this, string.Format(AppResources.TransferResolveGame, conflict.Name), options, -1);
@@ -110,8 +95,7 @@ public partial class HistoryPage
             summary += Environment.NewLine + string.Join(Environment.NewLine, plan.Games.Select(game =>
                 string.Format(game.IsNew ? AppResources.TransferGameCreated : AppResources.TransferGameMatched,
                     game.SourceName, game.Name)));
-            if (plan.GameSessions.Length == 0)
-            {
+            if (plan.GameSessions.Length == 0) {
                 await AppDialogPage.ShowAsync(this, AppResources.TransferPreview, summary, AppResources.Ok);
                 return;
             }
@@ -121,24 +105,23 @@ public partial class HistoryPage
             committed = true;
             await AppDialogPage.ShowAsync(this, AppResources.TransferImport, AppResources.TransferSuccess, AppResources.Ok);
         }
-        catch (Exception exception)
-        {
+        catch (Exception exception) {
             await ShowTransferErrorAsync(exception);
         }
-        finally
-        {
+        finally {
             _transferring = false;
             BusyOverlay.IsVisible = false;
             if (committed)
                 await ReloadAsync();
         }
     }
-    private async Task ShowTransferErrorAsync(Exception exception)
-    {
+    private async Task ShowTransferErrorAsync(Exception exception) {
         _logger.LogError(exception, "History transfer failed.");
         string message = exception is InvalidDataException { Message: "UpdateRequired" }
             ? AppResources.TransferUpdateRequired : AppResources.TransferFailed;
         await AppDialogPage.ShowAsync(this, AppResources.History, message, AppResources.Ok);
     }
-    protected override bool OnBackButtonPressed() => _transferring || base.OnBackButtonPressed();
+    /// <summary>Prevents system back from interrupting a transfer or its conflict-resolution dialogs.</summary>
+    protected override bool OnBackButtonPressed()
+        => _transferring || base.OnBackButtonPressed();
 }

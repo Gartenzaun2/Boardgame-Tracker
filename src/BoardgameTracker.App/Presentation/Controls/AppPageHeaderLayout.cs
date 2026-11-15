@@ -3,27 +3,27 @@ using Microsoft.Maui.Layouts;
 namespace BoardgameTracker.App.Presentation.Controls;
 
 /// <summary>Measures the existing header's visual row independently of its touch targets.</summary>
-public sealed class AppPageHeaderLayout : Layout
-{
+public sealed class AppPageHeaderLayout : Layout {
     public static readonly BindableProperty VariantProperty = BindableProperty.Create(nameof(Variant),
         typeof(AppPageHeaderVariant), typeof(AppPageHeaderLayout), AppPageHeaderVariant.Subpage,
         propertyChanged: (view, _, _) => ((AppPageHeaderLayout)view).InvalidateMeasure());
-    public AppPageHeaderVariant Variant
-    {
+    public AppPageHeaderVariant Variant {
         get => (AppPageHeaderVariant)GetValue(VariantProperty);
         set => SetValue(VariantProperty, value);
     }
-    protected override ILayoutManager CreateLayoutManager() => new HeaderLayoutManager(this);
+    /// <summary>MAUI requests the layout manager; use the shared header geometry so title anchors do not depend on touch-target bounds.</summary>
+    protected override ILayoutManager CreateLayoutManager()
+        => new HeaderLayoutManager(this);
 
     // XAML slots: back, title, actions, context, metadata, divider. All touch
     // controls are direct children so their complete bounds participate in hit testing.
-    private sealed class HeaderLayoutManager(AppPageHeaderLayout owner) : LayoutManager(owner)
-    {
+    private sealed class HeaderLayoutManager(AppPageHeaderLayout owner) : LayoutManager(owner) {
         private HeaderFrame? _frame;
         private double _measuredWidth;
-        public override Size Measure(double widthConstraint, double heightConstraint)
-        {
-            if (owner.Children.Count != 6) return Size.Zero;
+        /// <summary>MAUI measures the header; cache geometry using visual rows while retaining full touch-target bounds.</summary>
+        public override Size Measure(double widthConstraint, double heightConstraint) {
+            if (owner.Children.Count != 6)
+                return Size.Zero;
             bool subpage = owner.Variant == AppPageHeaderVariant.Subpage;
             Size actions = owner.Children[2].Measure(widthConstraint, double.PositiveInfinity);
             Size title = owner.Children[1].Measure(
@@ -41,21 +41,22 @@ public sealed class AppPageHeaderLayout : Layout
             return new(_measuredWidth, _frame.Height);
         }
 
-        public override Size ArrangeChildren(Rect bounds)
-        {
-            if (owner.Children.Count != 6) return bounds.Size;
+        /// <summary>MAUI assigns final bounds; refresh cached geometry if the measured width no longer matches.</summary>
+        public override Size ArrangeChildren(Rect bounds) {
+            if (owner.Children.Count != 6)
+                return bounds.Size;
             if (_frame is null || Math.Abs(_measuredWidth - bounds.Width) > 0.1)
                 Measure(bounds.Width, double.PositiveInfinity);
             HeaderFrame frame = _frame!;
             HeaderBox[] boxes = [frame.Back, frame.Title, frame.Actions, frame.Context, frame.Metadata, frame.Divider];
-            for (int index = 0; index < boxes.Length; index++)
-            {
+            for (int index = 0; index < boxes.Length; index++) {
                 HeaderBox box = boxes[index];
                 owner.Children[index].Arrange(new Rect(bounds.X + box.X, bounds.Y + box.Y, box.Width, box.Height));
             }
             return new(bounds.Width, frame.Height);
         }
-        private static Size MeasureVisible(IView view, double width) => view.Visibility == Visibility.Collapsed
+        private static Size MeasureVisible(IView view, double width)
+            => view.Visibility == Visibility.Collapsed
             ? Size.Zero : view.Measure(width, double.PositiveInfinity);
     }
 }

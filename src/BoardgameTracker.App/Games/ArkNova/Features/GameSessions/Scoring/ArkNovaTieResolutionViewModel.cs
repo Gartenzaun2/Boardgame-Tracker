@@ -11,10 +11,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BoardgameTracker.App.Games.ArkNova.Features.GameSessions.Scoring;
 
-public partial class ArkNovaTieResolutionViewModel(
-    ArkNovaScoringUseCase scoringUseCase,
-    ArkNovaHistoryCorrectionUseCase correction) : ObservableObject
-{
+public partial class ArkNovaTieResolutionViewModel : ObservableObject {
+    private readonly ArkNovaScoringUseCase _scoringUseCase;
+    private readonly ArkNovaHistoryCorrectionUseCase _correction;
+
+    public ArkNovaTieResolutionViewModel(ArkNovaScoringUseCase scoringUseCase, ArkNovaHistoryCorrectionUseCase correction) {
+        _scoringUseCase = scoringUseCase;
+        _correction = correction;
+    }
+
     public ArkNovaHistoryCorrectionDraft? Draft { get; set; }
     private readonly Dictionary<Guid, int> _scores = [];
     private readonly Dictionary<Guid, int> _placements = [];
@@ -24,10 +29,13 @@ public partial class ArkNovaTieResolutionViewModel(
     private bool _loaded;
     private bool _completed;
 
-    [ObservableProperty] public partial string GroupName { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string GroupName { get; private set; } = string.Empty;
+
     public ObservableCollection<ArkNovaPlacementPlayerViewModel> Players { get; } = [];
     public ObservableCollection<ArkNovaPlacementGroupViewModel> PlacementGroups { get; } = [];
-    [ObservableProperty] public partial Guid GameSessionId { get; private set; }
+    [ObservableProperty]
+    public partial Guid GameSessionId { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanFinish))]
     public partial bool IsBusy { get; private set; }
@@ -38,26 +46,23 @@ public partial class ArkNovaTieResolutionViewModel(
     public bool HasValidationMessage => ValidationMessage is not null;
     public bool CanFinish => !IsBusy && !_completed && Players.Count > 0 && !HasValidationMessage;
 
-    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(Guid gameSessionId, CancellationToken cancellationToken = default) {
         if (IsBusy || (_loaded && GameSessionId == gameSessionId))
             return;
 
         IsBusy = true;
-        try
-        {
-            ArkNovaGameSessionResultData gameSession = Draft?.Data ?? await scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
+        try {
+            ArkNovaGameSessionResultData gameSession = Draft?.Data ?? await _scoringUseCase.LoadGameSessionResultAsync(gameSessionId, cancellationToken)
                 ?? throw new InvalidOperationException("The scoring GameSession does not exist.");
-            if (Draft is null && gameSession.Status == GameSessionStatus.Completed)
-            {
-                Draft = await correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
+            if (Draft is null && gameSession.Status == GameSessionStatus.Completed) {
+                Draft = await _correction.LoadCorrectionDraftAsync(gameSessionId, cancellationToken);
                 gameSession = Draft.Data;
             }
             ArkNovaGameSessionCompletionPlan plan;
             if (Draft is not null)
-                plan = correction.CreateCorrectionCompletionPlan(Draft);
+                plan = _correction.CreateCorrectionCompletionPlan(Draft);
             else
-                plan = await scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
+                plan = await _scoringUseCase.PrepareCompletionAsync(gameSessionId, cancellationToken);
 
             GroupName = gameSession.GroupName;
             GameSessionId = gameSessionId;
@@ -65,8 +70,7 @@ public partial class ArkNovaTieResolutionViewModel(
             _placements.Clear();
             _names.Clear();
             _colors.Clear();
-            foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players)
-            {
+            foreach (ArkNovaGameSessionResultPlayerData player in gameSession.Players) {
                 _scores[player.PlayerId] = plan.Scores[player.PlayerId];
                 _placements[player.PlayerId] = plan.DefaultPlacements[player.PlayerId];
                 _names[player.PlayerId] = player.Name;
@@ -81,14 +85,12 @@ public partial class ArkNovaTieResolutionViewModel(
             RefreshPlayers();
             _loaded = true;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public void SelectPlacement(Guid playerId, int placement)
-    {
+    public void SelectPlacement(Guid playerId, int placement) {
         if (IsBusy || _completed)
             return;
 
@@ -101,39 +103,33 @@ public partial class ArkNovaTieResolutionViewModel(
         RefreshPlayers();
     }
 
-    public async Task CompleteAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task CompleteAsync(CancellationToken cancellationToken = default) {
         if (!CanFinish)
             return;
 
         IsBusy = true;
-        try
-        {
+        try {
             ArkNovaPlacementRules.ValidateResolution(_scores, _placements);
             if (Draft is not null)
-                await correction.SaveCorrectionAsync(Draft, _placements, cancellationToken);
+                await _correction.SaveCorrectionAsync(Draft, _placements, cancellationToken);
             else
-                await scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
+                await _scoringUseCase.CompleteAsync(GameSessionId, _placements, DateTimeOffset.UtcNow, cancellationToken);
 
             _completed = true;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    private void CopyPlacements(ArkNovaTieBlock block)
-    {
+    private void CopyPlacements(ArkNovaTieBlock block) {
         foreach (KeyValuePair<Guid, int> player in block.Placements)
             _placements[player.Key] = player.Value;
     }
 
-    private void RefreshPlayers()
-    {
+    private void RefreshPlayers() {
         Players.Clear();
-        foreach (Guid playerId in _scores.Keys.OrderByDescending(id => _scores[id]))
-        {
+        foreach (Guid playerId in _scores.Keys.OrderByDescending(id => _scores[id])) {
             ArkNovaTieBlock? block = _tieBlocks.FirstOrDefault(candidate => candidate.PlayerIds.Contains(playerId));
             ArkNovaPlacementOptionViewModel[] options = block is null ? [] : block.AvailablePlacements
                 .Select(placement => new ArkNovaPlacementOptionViewModel(playerId, placement, placement == _placements[playerId])).ToArray();
@@ -142,13 +138,11 @@ public partial class ArkNovaTieResolutionViewModel(
         PlacementGroups.Clear();
         for (int placement = 1; placement <= Players.Count; placement++)
             PlacementGroups.Add(new(placement, Players.Where(player => player.Placement == placement).ToArray()));
-        try
-        {
+        try {
             ArkNovaPlacementRules.ValidateResolution(_scores, _placements);
             ValidationMessage = null;
         }
-        catch (ArgumentException)
-        {
+        catch (ArgumentException) {
             ValidationMessage = AppResources.TieInvalid;
         }
         OnPropertyChanged(nameof(CanFinish));
@@ -156,21 +150,18 @@ public partial class ArkNovaTieResolutionViewModel(
 }
 
 public sealed record ArkNovaPlacementPlayerViewModel(
-    Guid PlayerId, string Name, int Score, int Placement, IReadOnlyList<ArkNovaPlacementOptionViewModel> PlacementOptions, PlayerColor? Color)
-{
+    Guid PlayerId, string Name, int Score, int Placement, IReadOnlyList<ArkNovaPlacementOptionViewModel> PlacementOptions, PlayerColor? Color) {
     public bool HasColor => Color is not null;
     public PlayerColorStyle? ColorStyle => Color is PlayerColor color ? PlayerColorPalette.Get(color) : null;
     public string ScoreText => string.Format(AppResources.PointsFormat, Score);
     public bool HasPlacementOptions => PlacementOptions.Count > 0;
 }
 
-public sealed record ArkNovaPlacementGroupViewModel(int Placement, IReadOnlyList<ArkNovaPlacementPlayerViewModel> Players)
-{
+public sealed record ArkNovaPlacementGroupViewModel(int Placement, IReadOnlyList<ArkNovaPlacementPlayerViewModel> Players) {
     public string Title => string.Format(AppResources.PlaceFormat, Placement);
 }
 
-public sealed record ArkNovaPlacementOptionViewModel(Guid PlayerId, int Placement, bool IsSelected)
-{
+public sealed record ArkNovaPlacementOptionViewModel(Guid PlayerId, int Placement, bool IsSelected) {
     public string Text => Placement.ToString();
     public string Description => string.Format(AppResources.PlaceFormat, Placement);
 }

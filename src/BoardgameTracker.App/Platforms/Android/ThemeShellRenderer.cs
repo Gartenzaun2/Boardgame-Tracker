@@ -10,35 +10,27 @@ using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
 namespace BoardgameTracker.App.Platforms.Android;
 
-public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context)
-{
+public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context) {
     protected override IShellItemRenderer CreateShellItemRenderer(ShellItem shellItem)
         => new MainTabRenderer(this);
 
-    private sealed class MainTabRenderer(IShellContext context) : ShellItemRenderer(context)
-    {
-        protected override bool OnItemSelected(global::Android.Views.IMenuItem item)
-        {
+    private sealed class MainTabRenderer(IShellContext context) : ShellItemRenderer(context) {
+        /// <summary>Android reports a tab tap, including reselection; let Shell reset the target stack instead of native selection alone.</summary>
+        protected override bool OnItemSelected(global::Android.Views.IMenuItem item) {
             var tabs = ((IShellItemController)ShellItem).GetItems();
-            if (context.Shell is AppShell shell && item.ItemId >= 0 && item.ItemId < tabs.Count)
-            {
+            if (context.Shell is AppShell shell && item.ItemId >= 0 && item.ItemId < tabs.Count) {
                 ShellSection tab = tabs[item.ItemId];
                 ILogger<ThemeShellRenderer> logger = shell.Handler!.MauiContext!.Services.GetRequiredService<ILogger<ThemeShellRenderer>>();
-                shell.Dispatcher.Dispatch(async () =>
-                {
-                    try
-                    {
+                shell.Dispatcher.Dispatch(async () => {
+                    try {
                         await shell.NavigateFromMainTabTapAsync(tab);
                     }
-                    catch (Exception exception)
-                    {
+                    catch (Exception exception) {
                         logger.LogError(exception, "Could not navigate from an Android main tab tap.");
-                        try
-                        {
+                        try {
                             await AppDialogPage.ShowAsync(shell.CurrentPage, AppResources.NavigationErrorTitle, AppResources.NavigationFailed, AppResources.Ok);
                         }
-                        catch (Exception dialogException)
-                        {
+                        catch (Exception dialogException) {
                             logger.LogError(dialogException, "Could not display the main tab navigation error.");
                         }
                     }
@@ -53,10 +45,8 @@ public sealed class ThemeShellRenderer(Context context) : ShellRenderer(context)
         => new ThemeBottomBarTracker(this, shellItem);
 
     private sealed class ThemeBottomBarTracker(IShellContext context, ShellItem item)
-        : ShellBottomNavViewAppearanceTracker(context, item)
-    {
-        public override void SetAppearance(BottomNavigationView bottomView, IShellAppearanceElement appearance)
-        {
+        : ShellBottomNavViewAppearanceTracker(context, item) {
+        public override void SetAppearance(BottomNavigationView bottomView, IShellAppearanceElement appearance) {
             base.SetAppearance(bottomView, appearance);
             var resources = Microsoft.Maui.Controls.Application.Current!.Resources;
             Color Token(string key) => (Color)resources[key];

@@ -7,9 +7,17 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.MyGames;
 
-public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable<IGameSettingsNavigation> settings,
-    ILogger<MyGamesViewModel> logger) : ObservableObject
-{
+public partial class MyGamesViewModel : ObservableObject {
+    private readonly GameActivationUseCase _useCase;
+    private readonly IEnumerable<IGameSettingsNavigation> _settings;
+    private readonly ILogger<MyGamesViewModel> _logger;
+
+    public MyGamesViewModel(GameActivationUseCase useCase, IEnumerable<IGameSettingsNavigation> settings, ILogger<MyGamesViewModel> logger) {
+        _useCase = useCase;
+        _settings = settings;
+        _logger = logger;
+    }
+
     public ObservableCollection<GameActivationRow> Games { get; } = [];
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsIdle))]
@@ -20,67 +28,55 @@ public partial class MyGamesViewModel(GameActivationUseCase useCase, IEnumerable
     public bool IsIdle => !IsBusy;
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
-    public async Task LoadAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task LoadAsync(CancellationToken cancellationToken = default) {
         if (IsBusy)
             return;
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            IReadOnlyList<GameActivationState> states = await useCase.GetGamesAsync(cancellationToken);
+        try {
+            IReadOnlyList<GameActivationState> states = await _useCase.GetGamesAsync(cancellationToken);
             Games.Clear();
-            foreach (GameActivationState state in states)
-            {
-                Games.Add(new(state.Name, state, settings.SingleOrDefault(entry => entry.CanHandle(state.GameKey))?.KindText));
+            foreach (GameActivationState state in states) {
+                Games.Add(new(state.Name, state, _settings.SingleOrDefault(entry => entry.CanHandle(state.GameKey))?.KindText));
             }
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not load game activation settings.");
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not load game activation settings.");
             ErrorMessage = AppResources.MyGamesLoadFailed;
         }
-        finally
-        {
+        finally {
             IsBusy = false;
         }
     }
 
-    public async Task SetEnabledAsync(GameActivationRow row, bool enabled, CancellationToken cancellationToken = default)
-    {
+    public async Task SetEnabledAsync(GameActivationRow row, bool enabled, CancellationToken cancellationToken = default) {
         if (row.IsEnabled == enabled)
             return;
-        if (IsBusy || !Games.Contains(row) || !row.CanToggle)
-        {
+        if (IsBusy || !Games.Contains(row) || !row.CanToggle) {
             row.RefreshBindings();
             return;
         }
         IsBusy = true;
         ErrorMessage = null;
-        try
-        {
-            row.Apply(await useCase.SetEnabledAsync(row.GameKey, enabled, cancellationToken));
+        try {
+            row.Apply(await _useCase.SetEnabledAsync(row.GameKey, enabled, cancellationToken));
         }
-        catch (GameActivationBlockedException)
-        {
+        catch (GameActivationBlockedException) {
             row.Apply(new(row.GameKey, true, true, row.Name));
             ErrorMessage = AppResources.GameDisableBlocked;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Could not change activation for game {GameKey}.", row.GameKey);
+        catch (Exception exception) {
+            _logger.LogError(exception, "Could not change activation for game {GameKey}.", row.GameKey);
             ErrorMessage = AppResources.GameActivationSaveFailed;
         }
-        finally
-        {
+        finally {
             row.RefreshBindings();
             IsBusy = false;
         }
     }
 }
 
-public sealed class GameActivationRow(string name, GameActivationState state, string? kindText = null) : ObservableObject
-{
+public sealed class GameActivationRow(string name, GameActivationState state, string? kindText = null) : ObservableObject {
     private GameActivationState _state = state;
     public string? KindText { get; } = kindText;
     public bool HasKind => !string.IsNullOrWhiteSpace(KindText);
@@ -90,13 +86,11 @@ public sealed class GameActivationRow(string name, GameActivationState state, st
     public bool IsLocked => _state.HasOpenSessions;
     public bool CanToggle => !IsLocked;
     public string StateText => IsEnabled ? AppResources.GameEnabled : AppResources.GameDisabled;
-    public void Apply(GameActivationState state)
-    {
+    public void Apply(GameActivationState state) {
         _state = state;
         RefreshBindings();
     }
-    public void RefreshBindings()
-    {
+    public void RefreshBindings() {
         OnPropertyChanged(nameof(IsEnabled));
         OnPropertyChanged(nameof(IsLocked));
         OnPropertyChanged(nameof(CanToggle));
