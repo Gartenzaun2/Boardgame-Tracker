@@ -41,10 +41,17 @@ ausgeführt wird – möglichst ohne die Implementierung öffnen zu müssen.
 - Bei mehreren DI-Abhängigkeiten Rolle und Typ erkennen lassen, z. B.
   `_editGroupUseCase`, `_gamesQuery`, `_navigationService`, nicht `_activation`
   oder ein mehrdeutiges `_useCase`.
-- Technische Dialogzustände (`IsBusy`, `IsSaveCompleted`) von fachlichen Daten
-  (`GroupName`, `IsGroupArchived`) begrifflich unterscheiden. Das `Is`-Präfix
-  allein ist **keine** fachliche Gruppierung. Fachliche Präfixe verwenden, wenn
-  der Gegenstand sonst unklar bleibt; nicht alle Members reflexartig präfixieren.
+- Technische Dialog- und Formularzustände (`IsBusy`, `IsSaveCompleted`,
+  `IsCreateMode`) klar von fachlichen Daten (`PlayerId`, `PlayerName`,
+  `IsPlayerGuest`, `IsPlayerArchived`, `GroupName`, `IsGroupArchived`)
+  unterscheiden. `IsNew` ist beispielsweise unklar, wenn eigentlich der
+  **Erstellmodus des Editors** gemeint ist, nicht eine Eigenschaft des Spielers.
+- Fachliche Properties benennen ihren Gegenstand, wenn sie sonst mehrdeutig
+  wären; dies **konsistent in vergleichbaren Dialogen** anwenden. `IsArchived`
+  lässt offen, *was* archiviert ist; `IsPlayerArchived` bzw.
+  `IsGroupArchived` machen es deutlich. Das `Is`-Präfix allein ist keine
+  fachliche Gruppierung. Nicht blind jedem Member ein Präfix geben, sondern
+  dessen Verantwortung erkennbar machen.
 - `IsBusy` bezeichnet allgemein einen gerade laufenden Vorgang; keine
   künstlichen tätigkeitsbezogenen Busy-Namen pro Dialog verlangen.
   `IsSaveCompleted` bezeichnet dagegen einen erfolgreich abgeschlossenen Write,
@@ -182,11 +189,15 @@ C#-Bezeichner und Code-/XML-Kommentare sind **Englisch**; Projektdokumentation i
 
 **Klassen:** Bevorzugte Lesereihenfolge in ViewModels: explizite `readonly`-
 DI-Felder, Konstruktor, eigener Zustand/Properties, anschließend Methoden entlang
-des fachlichen Ablaufs. Technischen Dialogzustand, fachliche Daten, abgeleitete
-Bedingungen und Collections **erkennbar nach Verantwortung** gruppieren.
-`CanEdit` oder `CanSave` können direkt bei verwandten Prozessproperties stehen;
-keine starre Sortierung nach Sichtbarkeit, Typ oder Alphabet. Zusammengehörige
-Hilfsmethoden nahe beim zugehörigen Ablauf lassen.
+des fachlichen Ablaufs. Technischen Dialogzustand und Formularmodus (etwa
+`IsBusy`, `IsSaveCompleted`, `IsCreateMode`) von fachlichen Spielerdaten
+(`PlayerId`, `PlayerName`, `IsPlayerGuest`, `IsPlayerArchived`) trennen;
+abgeleitete Bedingungen und Collections **erkennbar nach Verantwortung**
+gruppieren. Eine rein berechnete, unmittelbar zugehörige Negation
+`IsNotBusy => !IsBusy` steht **direkt unter `IsBusy`, ohne Leerzeile**.
+`CanEdit` oder ein fachlich eigenständiges `CanSave` stehen bei verwandtem
+Prozesszustand; keine starre Sortierung nach Sichtbarkeit, Typ oder Alphabet.
+Zusammengehörige Hilfsmethoden nahe beim zugehörigen Ablauf lassen.
 
 **Methoden:** Auch **innerhalb** einer Methode die Schritte in logischer,
 fachlicher und zeitlicher Reihenfolge anordnen: Vorbedingungen → Daten laden →
@@ -195,7 +206,12 @@ aufbauen → erfolgreich abschließen. Unabhängige Phasen mit Leerzeilen trenne
 ohne Überschriftenkommentare für Selbstverständliches. Die Reihenfolge niemals
 allein kosmetisch ändern, wenn Fehler-, Nebenläufigkeits- oder Zustandssemantik
 betroffen ist. Beispielsweise eine Kennung, die "bereits geladen" signalisiert,
-erst nach **vollständig erfolgreichem** Laden setzen.
+erst nach **vollständig erfolgreichem** Laden setzen. Bei Lademethoden
+beispielsweise `IsBusy = true;` und `ErrorMessage = null;` als Prozessbeginn
+zusammenhalten, dann eine Leerzeile vor dem **zusammenhängenden** Laden und
+Übernehmen der fachlichen Werte. Zwischen der geladenen `Player`-Variablen
+und der anschließenden Zuweisung von `PlayerName` ohne sachlichen Grund
+keine Leerzeile setzen.
 
 Kleine Hilfsmethoden bei ihrem zugehörigen Ablauf halten. Methoden mit mehreren
 zusammengehörigen Nebenwirkungen entsprechend benennen; beispielsweise ist
@@ -219,8 +235,10 @@ oder verschachtelten Typen nur für einfache UI-Texte anlegen.
 Die maschinenprüfbaren Formatierungs- und Naming-Optionen stehen in
 `.editorconfig`. Es gelten **vier Leerzeichen**, keine Tab-Zeichen, und
 öffnende geschweifte Klammern bei Typen, Methoden und Kontrollstrukturen auf
-derselben Zeile (**K&R**); schließende Klammern auf einer eigenen Zeile,
-ausgenommen kompakte Property-Accessors. Die folgenden Beispiele legen zudem
+derselben Zeile (**K&R**). Schließende Klammern stehen normalerweise allein;
+direkt zusammengehörige Fortsetzungen stehen jedoch **auf derselben Zeile**:
+`} else`, `} catch` und `} finally`. Kompakte Property-Accessors sind eine
+weitere Ausnahme. Die folgenden Beispiele legen zudem
 fest, wie wir die Regeln anwenden, wenn technische Editoroptionen nicht alle
 Lesbarkeitsfälle ausdrücken können.
 
@@ -237,9 +255,18 @@ Lesbarkeitsfälle ausdrücken können.
   Anweisung nach `if` oder `foreach` folgt **auf der nächsten eingerückten
   Zeile**, nicht direkt hinter der Bedingung.
 - **Early Returns** für erwartete Abbruchbedingungen bevorzugen, wenn sie den
-  Ablauf abflachen. Unerwartete Fehler nicht stillschweigend als erfolgreichen
-  No-op behandeln. Eine existierende Vertrags-/Fehlergrenze nutzen, statt
-  Validierung in jeder Schicht zu duplizieren.
+  Ablauf abflachen. Unabhängige Validierungs-Guards mit Rückgabe nicht künstlich
+  zu `else if`-Ketten verbinden; `if`/`else` ist für echte gegenseitig
+  ausschließende Alternativen (etwa Erstellen oder Aktualisieren) sinnvoll.
+  Unerwartete Fehler nicht stillschweigend als erfolgreichen No-op behandeln.
+  Ein lesbares einzeiliges `?? throw` ist für einen unerwarteten fehlenden
+  Pflichtwert erlaubt; keine Pflicht, dafür einen künstlichen Mehrzeilenblock
+  zu bauen. Eine existierende Vertrags-/Fehlergrenze nutzen, statt Validierung
+  in jeder Schicht zu duplizieren.
+- `else`, `catch` und `finally` folgen direkt der schließenden Klammer des
+  vorherigen Blocks (`} else`, `} catch`, `} finally`). Bei je **einer einfachen
+  Anweisung** im `if`- und `else`-Zweig bleiben beide Zweige dagegen ohne
+  Klammern; `try`, `catch` und `finally` benötigen immer ihre Blöcke.
 - Gemeinsame Abschlussschritte nicht unnötig in mehreren Branches duplizieren.
   Beispiel: Bei bereits erfolgreichem Save nur den Write überspringen, danach
   denselben Navigationsaufruf verwenden.
@@ -263,7 +290,31 @@ foreach (Player player in Players) {
     player.RefreshRank();
 }
 
-// Braces clarify the nested if/else structure.
+// One statement per branch: no braces for if/else.
+if (IsCreateMode)
+    await CreatePlayerAsync();
+else
+    await UpdatePlayerAsync();
+
+// Multiple statements per branch: else follows the closing brace.
+if (IsCreateMode) {
+    ResetDraft();
+    ShowCreateFields();
+} else {
+    LoadExistingData();
+    ShowEditFields();
+}
+
+// try/catch/finally always use blocks, with adjacent keywords on the same line.
+try {
+    await SavePlayerAsync();
+} catch (Exception exception) {
+    _logger.LogError(exception, "Could not save player.");
+} finally {
+    IsBusy = false;
+}
+
+// Braces also clarify a nested if/else structure.
 if (IsHistorical) {
     if (CanSave)
         await SaveCorrectionAsync();
@@ -310,9 +361,12 @@ private void RefreshScores() {
 }
 ```
 
-Parameterlisten grundsätzlich auf einer Zeile, sofern ein sinnvoller Umbruch
-nicht lesbarer ist; **keine starre Zeilenlänge** oder Pflicht "ein Parameter pro
-Zeile". Projekt-Typen über `using` einbinden, außer bei Namenskonflikten.
+Parameterlisten – auch **DI-Konstruktoren** – grundsätzlich auf einer Zeile
+schreiben. Nur umbrechen, wenn ein Umbruch die Lesbarkeit tatsächlich verbessert;
+**keine starre oder versteckte maximale Zeilenlänge**, kein willkürlicher
+Umbruch nach dem zweiten Parameter und keine Pflicht "ein Parameter pro Zeile".
+Ein längerer, aber noch übersichtlicher Konstruktor darf vollständig auf einer
+Zeile stehen. Projekt-Typen über `using` einbinden, außer bei Namenskonflikten.
 
 Auto-Properties verwenden, wenn kein explizites Backing-Field nötig ist,
 z. B. `public Guid PlayerId { get; private set; }` statt einer privaten
@@ -334,19 +388,59 @@ keine Modernisierung unberührter Stellen allein wegen neuer Syntax.
 `IsBusy` beschreibt allgemein, dass gerade gearbeitet wird und keine
 konkurrierende Aktion beginnen soll. Die Guards und `finally`-Blöcke müssen
 alle tatsächlich geschützten Schritte abdecken; für jeden Dialogschritt einen
-eigenen Busy-Namen zu erfinden ist nicht nötig. Für einfache **Negationen** im XAML
-den vorhandenen `BoolNegationConverter` verwenden, nicht separate `IsIdle`-
-Properties. Fachlich eigenständige Bedingungen wie
-`CanEdit => !IsBusy && !IsSaveCompleted` bleiben berechnete Properties.
+eigenen Busy-Namen zu erfinden ist nicht nötig.
 
-Parameterlose `CanExecute`-Bedingungen dürfen als berechnete `bool`-Properties
-neben verwandtem Dialogzustand stehen, statt weit unten als Methode versteckt
-zu sein. `[RelayCommand(CanExecute = nameof(CanSave))]` ruft die Bedingung ab,
+Brauchen mehrere Commands dieselbe Voraussetzung `!IsBusy`, reicht **eine**
+private berechnete Property `IsNotBusy`, unmittelbar unter `IsBusy` **ohne
+Leerzeile**. Nicht für jeden Command bedeutungsgleiche Aliase (`CanSave`,
+`CanGoBack`) schaffen. Es entsteht keine zweite Zustandsquelle. Fachlich
+zusätzliche Voraussetzungen erhalten eine eigenständige berechnete Bedingung,
+z. B. `CanEdit => IsNotBusy && !IsSaveCompleted` oder
+`CanSaveAndAddAnother => IsNotBusy && IsCreateMode`.
+
+Das `CanExecute`-Attribut und der **interne Guard desselben Commands** müssen
+die **identische Bedingung** verwenden: bei `nameof(IsNotBusy)` den Guard
+`if (!IsNotBusy)` (mit `return` in der Folgezeile), nicht `if (IsBusy)`;
+bei `nameof(CanSaveAndAddAnother)` entsprechend `if (!CanSaveAndAddAnother)`.
+Ein interner Guard bleibt sinnvoll, weil Methoden auch außerhalb der UI
+aufgerufen werden können. Bei unterschiedlichem Schutzbedarf müssen die
+Bedingungen bewusst begründet werden, nicht unbemerkt auseinanderlaufen.
+
+```csharp
+[ObservableProperty]
+[NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(GoBackCommand), nameof(SaveAndAddAnotherCommand))]
+[NotifyPropertyChangedFor(nameof(CanEdit))]
+public partial bool IsBusy { get; private set; }
+private bool IsNotBusy => !IsBusy;
+
+public bool CanEdit => IsNotBusy && !IsSaveCompleted;
+
+[RelayCommand(CanExecute = nameof(IsNotBusy))]
+private async Task GoBackAsync() {
+    if (!IsNotBusy)
+        return;
+
+    await _navigationService.GoBackAsync();
+}
+```
+
+Dieses Beispiel veranschaulicht ausschließlich **gemeinsame Command-Sperre
+und Guard**; die fachliche Zurück-Navigation eines konkreten Editors kann
+abweichen (z. B. nach einem abgeschlossenen Anlegen).
+
+Für einfache Negationen in **XAML** weiterhin `IsBusy` mit dem vorhandenen
+`BoolNegationConverter` binden, keine öffentliche `IsNotBusy`-Property samt
+zusätzlicher PropertyChanged-Benachrichtigung schaffen. Fachlich eigenständige
+Zustände wie `CanEdit` bleiben separat gebunden.
+
+`[RelayCommand(CanExecute = nameof(IsNotBusy))]` ruft die Bedingung ab,
 **beobachtet ihre Abhängigkeiten aber nicht automatisch**. Die verursachenden
 Observable-Properties müssen den Command mittels
 `[NotifyCanExecuteChangedFor(nameof(SaveCommand))]` benachrichtigen;
-`[NotifyPropertyChangedFor(nameof(CanSave))]` allein ist **kein Ersatz**.
-Bei Collection-basierten Bedingungen (z. B. `Players.Count`) die erforderliche
+`[NotifyPropertyChangedFor(nameof(CanEdit))]` allein ist **kein Ersatz**.
+Zusätzliche Abhängigkeiten ebenfalls melden: `IsCreateMode` muss bei Änderungen
+`SaveAndAddAnotherCommand` benachrichtigen, `IsSaveCompleted` die berechnete
+Property `CanEdit`. Bei Collection-basierten Bedingungen (z. B. `Players.Count`) die erforderliche
 Benachrichtigung bei den tatsächlichen Collection-Änderungen sicherstellen.
 Manuelle `SaveCommand.NotifyCanExecuteChanged()`-Aufrufe nicht duplizieren,
 wenn ein garantierter `IsBusy`-Wechsel die Prüfung bereits anstößt.
@@ -369,6 +463,13 @@ Navigation fehl, bleibt der Write abgeschlossen und ein erneuter Navigationsvers
 führt **keinen** weiteren Write aus. Busy-/CanExecute-Schutz, Fehlerbehandlung
 und `finally` decken den gesamten jeweiligen Ablauf ab; keinen zweiten
 konkurrierenden Sperrzustand in der Page einführen, wenn er sich vermeiden lässt.
+
+**Methodenname und tatsächliche Aufgabe müssen zusammenpassen:** Ein
+`GoBackAsync()` sollte nicht `SaveAsync()` erneut aufrufen, **nur** um dessen
+Navigationsanteil wiederzuverwenden. Den gemeinsamen Navigations-/Abschlussweg
+bei Bedarf klar benennen und auslagern, ohne doppelte Navigation oder künstliche
+Hilfsmethoden zu erzeugen. Ein Save-Retry darf weiterhin keinen weiteren Write
+verursachen.
 
 MAUI-Lifecycle, systemseitiges Zurück sowie konkrete Dialog- und View-Mechanik
 bleiben in `.xaml.cs`. Framework-Ereignisse dürfen einen ViewModel-Command
@@ -444,6 +545,13 @@ typisierte `ViewModel`-Property):
     </CollectionView.ItemTemplate>
 </CollectionView>
 ```
+
+Eine korrekt an `Command` gebundene MAUI-Schaltfläche übernimmt dessen
+`CanExecute`-Zustand und wird bei `false` deaktiviert. Die gemeinsamen
+Button-Styles stellen den Disabled-Zustand dar; eine zusätzliche `IsEnabled`-
+Bindung nur zur Wiederholung derselben Command-Bedingung ist unnötig.
+Eine übergeordnete Busy-Sperre darf in XAML weiterhin direkt `IsBusy` mit
+`BoolNegationConverter` verwenden – nicht eine öffentliche `IsNotBusy`-Kopie.
 
 Neue/geänderte Bindings als **compiled bindings** mit passendem `x:DataType`
 für Page, Template und jeden BindingContext-Wechsel schreiben. `x:Reference`
