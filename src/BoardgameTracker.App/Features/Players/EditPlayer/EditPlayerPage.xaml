@@ -8,13 +8,14 @@
     x:Class="BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerPage"
     x:DataType="local:EditPlayerViewModel"
     Shell.NavBarIsVisible="False">
-    <Grid x:Name="EditorContent" RowDefinitions="Auto,*" RowSpacing="12">
+    <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
         <VerticalStackLayout Spacing="8">
             <header:AppPageHeader x:Name="PageHeader"
                 Title="{Binding Title}"
                 Variant="Subpage"
-                BackClicked="OnBackClicked" />
+                BackCommand="{Binding GoBackCommand}" />
             <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" Margin="18,0" />
+            <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" Margin="18,0" />
         </VerticalStackLayout>
 
         <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
@@ -30,15 +31,14 @@
                         <Label Text="{x:Static res:AppResources.Guest}" VerticalOptions="Center" />
                         <Switch IsToggled="{Binding IsGuest}" />
                     </HorizontalStackLayout>
-                    <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 </VerticalStackLayout>
             </ScrollView>
 
             <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsNew}">
-                <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Clicked="OnAddAnotherClicked" Style="{StaticResource SecondaryActionButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
-                <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
+                <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Command="{Binding SaveAndAddAnotherCommand}" Style="{StaticResource SecondaryActionButton}" />
+                <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" />
             </Grid>
-            <Button Grid.Row="1" IsVisible="{Binding IsNew, Converter={StaticResource NegateBool}}" Text="{Binding SaveText}" Clicked="OnSaveClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
+            <Button Grid.Row="1" IsVisible="{Binding IsNew, Converter={StaticResource NegateBool}}" Text="{Binding SaveText}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" />
         </Grid>
     </Grid>
 </ContentPage>

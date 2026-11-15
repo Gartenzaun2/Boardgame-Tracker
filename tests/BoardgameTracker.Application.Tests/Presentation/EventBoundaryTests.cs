@@ -233,8 +233,8 @@ public sealed partial class EventBoundaryTests
             "GamesPage.xaml.cs" => ["OnGameTapped"],
             "GroupListPage.xaml.cs" => ["OnCreateGroupClicked"],
             "App.xaml.cs" => ["InitializeApplicationAsync"],
-            "EditPlayerPage.xaml.cs" => ["OnSaveClicked", "OnAddAnotherClicked", "SaveAsync", "OnBackClicked", "OnBackButtonPressed"],
-            "EditGroupPage.xaml.cs" => ["OnSavedAsync", "OnBackClicked", "OnBackButtonPressed"],
+            "EditPlayerPage.xaml.cs" => ["OnBackButtonPressed"],
+            "EditGroupPage.xaml.cs" => ["OnBackButtonPressed"],
             _ => ["OnMyGamesClicked", "OnLicensesClicked", "ShowNavigationErrorAsync"]
         };
         IEnumerable<string> fields = root.DescendantNodes().OfType<FieldDeclarationSyntax>()

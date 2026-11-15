@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.4 – 2026-11-15
+
+- Gruppen- und Spielereditor auf direkte ViewModel-Commands und den gemeinsamen Navigationsservice umgestellt. Speichern und Navigation teilen einen Busy-Schutz; nach Navigationsfehlern bleiben gespeicherte Eingaben gesperrt und erneute Versuche schreiben nicht erneut. Navigationsfehler in beiden Dialogen einheitlich inline angezeigt; Spielauswahl-Benachrichtigungen vereinfacht und bestehende Sonderaktionen erhalten.
+
 ## 0.22.8.3 – 2026-11-15
 
 - Gemeinsamen, absichtsorientierten Navigationsvertrag für ViewModels mit dokumentierter Testgrenze und einmalig registriertem Shell-Adapter ergänzt. Bestehende Pages und ViewModels bleiben unverändert.

@@ -5,6 +5,7 @@
     x:Class="BoardgameTracker.App.Presentation.Controls.AppPageHeader" x:Name="Header" x:DataType="controls:AppPageHeader">
     <controls:AppPageHeaderLayout Variant="{Binding Variant, Source={x:Reference Header}}">
         <ImageButton Source="icon_back.png" Style="{StaticResource HeaderIconButton}"
+            Command="{Binding BackCommand, Source={x:Reference Header}}"
             IsVisible="{Binding IsBackVisible, Source={x:Reference Header}}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
         <Label Text="{Binding Title, Source={x:Reference Header}}" FontSize="24" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation"
             SemanticProperties.Description="{Binding Title, Source={x:Reference Header}}" VerticalOptions="Center" VerticalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />

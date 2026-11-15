@@ -1,3 +1,5 @@
+using System.Windows.Input;
+
 namespace BoardgameTracker.App.Presentation.Controls;
 
 public enum AppPageHeaderVariant { MainSection, Subpage }
@@ -19,6 +21,7 @@ public partial class AppPageHeader : ContentView {
 
     public static readonly BindableProperty VariantProperty = BindableProperty.Create(nameof(Variant), typeof(AppPageHeaderVariant), typeof(AppPageHeader), AppPageHeaderVariant.Subpage, propertyChanged: HeaderChanged);
     public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string), typeof(AppPageHeader), string.Empty);
+    public static readonly BindableProperty BackCommandProperty = BindableProperty.Create(nameof(BackCommand), typeof(ICommand), typeof(AppPageHeader));
     public static readonly BindableProperty ShowBackProperty = BindableProperty.Create(nameof(ShowBack), typeof(bool), typeof(AppPageHeader), true, propertyChanged: HeaderChanged);
     public static readonly BindableProperty BadgeTextProperty = BindableProperty.Create(nameof(BadgeText), typeof(string), typeof(AppPageHeader), string.Empty, propertyChanged: HeaderChanged);
     public static readonly BindableProperty GameNameProperty = BindableProperty.Create(nameof(GameName), typeof(string), typeof(AppPageHeader), string.Empty);
@@ -27,6 +30,7 @@ public partial class AppPageHeader : ContentView {
 
     public AppPageHeaderVariant Variant { get => (AppPageHeaderVariant)GetValue(VariantProperty); set => SetValue(VariantProperty, value); }
     public string Title { get => (string)GetValue(TitleProperty); set => SetValue(TitleProperty, value); }
+    public ICommand? BackCommand { get => (ICommand?)GetValue(BackCommandProperty); set => SetValue(BackCommandProperty, value); }
     public bool ShowBack { get => (bool)GetValue(ShowBackProperty); set => SetValue(ShowBackProperty, value); }
     public string BadgeText { get => (string)GetValue(BadgeTextProperty); set => SetValue(BadgeTextProperty, value); }
     public string GameName { get => (string)GetValue(GameNameProperty); set => SetValue(GameNameProperty, value); }
@@ -39,8 +43,10 @@ public partial class AppPageHeader : ContentView {
     // Metadata is measured separately; an absent context row consumes no height.
     public bool HasContextRow => HasBadge || !string.IsNullOrWhiteSpace(Subtitle);
     public event EventHandler? BackClicked;
-    private void OnBackClicked(object? sender, EventArgs e)
-        => BackClicked?.Invoke(this, e);
+    private void OnBackClicked(object? sender, EventArgs e) {
+        if (BackCommand is null)
+            BackClicked?.Invoke(this, e);
+    }
 
     private static void HeaderChanged(BindableObject bindable, object oldValue, object newValue) {
         var header = (AppPageHeader)bindable;

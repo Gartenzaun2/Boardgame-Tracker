@@ -72,7 +72,7 @@ namespace BoardgameTracker.Application.Tests.Presentation {
             using Stream groupStream = typeof(SharedPresentationTests).Assembly.GetManifestResourceStream("GeneralGroupFeature.EditGroupPage.xaml")!;
             XDocument group = XDocument.Load(groupStream);
             XElement archiveHint = Assert.Single(group.Descendants(), element => (string?)element.Attribute("Text") == "{x:Static res:AppResources.GroupArchiveLocked}");
-            Assert.Equal("{Binding CanArchive, Converter={StaticResource NegateBool}}", (string?)archiveHint.Attribute("IsVisible"));
+            Assert.Equal("{Binding CanArchiveGroup, Converter={StaticResource NegateBool}}", (string?)archiveHint.Attribute("IsVisible"));
         }
     }
 }

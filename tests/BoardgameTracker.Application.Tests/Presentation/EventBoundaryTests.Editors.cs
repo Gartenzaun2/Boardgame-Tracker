@@ -3,6 +3,7 @@ using BoardgameTracker.App.Features.Groups.EditGroup;
 using BoardgameTracker.App.Features.Players.EditPlayer;
 using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Persistence;
+using BoardgameTracker.Application.Settings.Navigation;
 using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,8 @@ public sealed partial class EventBoundaryTests
     public async Task PlayerSave_WithoutExistingPlayerIdShowsAndLogsFailure() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorLogger<EditPlayerViewModel> logger = new();
-        EditPlayerViewModel editor = new(new(db), new(db), logger);
+        EditorNavigationFake navigation = new();
+        EditPlayerViewModel editor = new(new(db), new(db), navigation, logger);
         editor.Name = "Unloaded player";
 
         Assert.False(await editor.SaveAsync(EditorToken));
@@ -27,6 +29,7 @@ public sealed partial class EventBoundaryTests
         Assert.True(editor.HasError);
         Assert.False(editor.IsBusy);
         Assert.False(editor.IsSaveCompleted);
+        Assert.Empty(navigation.Calls);
         Assert.Equal("Unloaded player", editor.Name);
         Assert.Contains("no player ID", Assert.Single(logger.ErrorMessages));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
@@ -38,17 +41,14 @@ public sealed partial class EventBoundaryTests
     [Fact]
     public async Task PlayerAddAnother_SavesAndResetsWithoutNavigating() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditorNavigationFake navigation = new();
+        EditPlayerViewModel editor = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         editor.InitializeNew();
         editor.Name = "Another guest";
         editor.IsGuest = true;
-        EventBoundaryTestHost page = Create("EditPlayerPage.xaml.cs", editor);
+        await editor.SaveAndAddAnotherCommand.ExecuteAsync(null);
 
-        await page.InvokeAsync("OnAddAnotherClicked");
-
-        Assert.Empty(page.Navigation.Calls);
-        Assert.Empty(page.Messages);
-        Assert.True(page.EditorContent.IsEnabled);
+        Assert.Empty(navigation.Calls);
         Assert.True(editor.CanEdit);
         Assert.True(editor.IsNew);
         Assert.False(editor.IsSaveCompleted);
@@ -62,28 +62,28 @@ public sealed partial class EventBoundaryTests
 
     [Theory]
     [InlineData("save")]
-    [InlineData("OnBackClicked")]
+    [InlineData("back")]
     [InlineData("OnBackButtonPressed")]
     public async Task GroupCompletion_AwaitsNavigationAndRetriesWithoutWritingAgain(string retryAction)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorLogger<EditGroupViewModel> logger = new();
-        EditGroupViewModel editor = new(new(db), new(db, new TestGameActivationStore()), logger);
+        EditorNavigationFake navigation = new();
+        EditGroupViewModel editor = new(new(db), new(db, new TestGameActivationStore()), navigation, logger);
         await editor.LoadAsync(db.Group.Id, EditorToken);
         editor.GroupName = "Updated group";
         editor.MovePlayerDownCommand.Execute(editor.Players[0]);
         EventBoundaryTestHost page = Create("EditGroupPage.xaml.cs", groupEditor: editor);
         TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        page.Navigation.NavigationGate = release.Task;
-        page.Navigation.FailNavigation = true;
-        editor.SavedAsync = () => page.InvokeAsync("OnSavedAsync");
+        navigation.NavigationGate = release.Task;
+        navigation.FailNavigation = true;
         Task pending = editor.SaveCommand.ExecuteAsync(null);
-        await page.Navigation.NavigationStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), EditorToken);
+        await navigation.NavigationStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), EditorToken);
         try
         {
             Assert.False(pending.IsCompleted);
             Assert.True(editor.IsBusy);
-            Assert.True(editor.IsSaved);
+            Assert.True(editor.IsSaveCompleted);
             Assert.False(editor.CanEdit);
             Assert.False(editor.SaveCommand.CanExecute(null));
             await using BoardgameTrackerDbContext saved = db.CreateDbContext();
@@ -91,7 +91,9 @@ public sealed partial class EventBoundaryTests
             Assert.Equal(db.Second.Id, (await saved.GroupPlayers.SingleAsync(player => player.DefaultOrder == 1, EditorToken)).PlayerId);
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedGroupWrite BEFORE UPDATE ON GroupPlayers BEGIN SELECT RAISE(ABORT, 'unexpected repeated write'); END;", EditorToken);
             await editor.SaveCommand.ExecuteAsync(null);
-            Assert.Single(page.Navigation.Calls);
+            await editor.GoBackCommand.ExecuteAsync(null);
+            await page.InvokeAsync("OnBackButtonPressed");
+            Assert.Single(navigation.Calls);
         }
         finally { release.TrySetResult(); }
         await pending;
@@ -100,15 +102,24 @@ public sealed partial class EventBoundaryTests
         Assert.True(editor.SaveCommand.CanExecute(null));
         Assert.Equal(AppResources.Done, editor.SaveText);
         Assert.Equal(AppResources.GroupEditorNavigationFailed, editor.ErrorMessage);
-        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(logger.Errors));
-        page.Navigation.FailNavigation = false;
+        Assert.Same(navigation.NavigationFailure, Assert.Single(logger.Errors));
+        editor.GroupName = "";
+        editor.Players.Clear();
+        Assert.True(editor.SaveCommand.CanExecute(null));
+        navigation.FailNavigation = false;
+        navigation.OnNavigating = () => Assert.Null(editor.ErrorMessage);
         if (retryAction == "save")
             await editor.SaveCommand.ExecuteAsync(null);
+        else if (retryAction == "back")
+            await editor.GoBackCommand.ExecuteAsync(null);
         else
+        {
             await page.InvokeAsync(retryAction);
+            await editor.GoBackCommand.ExecutionTask!;
+        }
         Assert.Null(editor.ErrorMessage);
-        Assert.Equal(2, page.Navigation.Calls.Count);
-        Assert.All(page.Navigation.Calls, call => Assert.Equal("..", call.Route));
+        Assert.Equal(2, navigation.Calls.Count);
+        Assert.All(navigation.Calls, call => Assert.Equal("..", call.Route));
         Assert.Single(logger.Errors);
         await using BoardgameTrackerDbContext retried = db.CreateDbContext();
         Assert.Equal(db.Group.Id, (await retried.Groups.SingleAsync(EditorToken)).Id);
@@ -116,16 +127,18 @@ public sealed partial class EventBoundaryTests
     }
 
     [Theory]
-    [InlineData(true, "OnSaveClicked")]
-    [InlineData(false, "OnSaveClicked")]
-    [InlineData(true, "OnBackClicked")]
-    [InlineData(false, "OnBackClicked")]
+    [InlineData(true, "save")]
+    [InlineData(false, "save")]
+    [InlineData(true, "back")]
+    [InlineData(false, "back")]
     [InlineData(true, "OnBackButtonPressed")]
     [InlineData(false, "OnBackButtonPressed")]
     public async Task PlayerCompletion_FreezesSavedInputsAndRetriesSameIdentity(bool create, string retryAction)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditorNavigationFake navigation = new();
+        EditorLogger<EditPlayerViewModel> logger = new();
+        EditPlayerViewModel editor = new(new(db), new(db), navigation, logger);
         Assert.Equal(AppResources.Save, editor.SaveText);
         if (create)
             editor.InitializeNew();
@@ -136,27 +149,37 @@ public sealed partial class EventBoundaryTests
         editor.IsArchived = !create;
         EventBoundaryTestHost page = Create("EditPlayerPage.xaml.cs", editor);
         TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        page.Navigation.NavigationGate = release.Task;
-        page.Navigation.FailNavigation = true;
-        Task pending = page.InvokeAsync("OnSaveClicked");
-        await page.Navigation.NavigationStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), EditorToken);
+        navigation.NavigationGate = release.Task;
+        navigation.FailNavigation = true;
+        Task pending = editor.SaveCommand.ExecuteAsync(null);
+        await navigation.NavigationStarted.Task.WaitAsync(TimeSpan.FromSeconds(5), EditorToken);
         Guid savedId = editor.PlayerId;
         try
         {
             Assert.False(pending.IsCompleted);
             Assert.True(editor.IsSaveCompleted);
             Assert.False(editor.CanEdit);
-            Assert.False(page.EditorContent.IsEnabled);
-            await page.InvokeAsync("OnSaveClicked");
-            Assert.Single(page.Navigation.Calls);
+            Assert.True(editor.IsBusy);
+            Assert.False(editor.SaveCommand.CanExecute(null));
+            Assert.False(editor.GoBackCommand.CanExecute(null));
+            Assert.False(editor.SaveAndAddAnotherCommand.CanExecute(null));
+            await editor.SaveCommand.ExecuteAsync(null);
+            await editor.GoBackCommand.ExecuteAsync(null);
+            Assert.False(await editor.SaveAndAddAnotherAsync(EditorToken));
+            await page.InvokeAsync("OnBackButtonPressed");
+            editor.InitializeNew();
+            Assert.Equal(savedId, editor.PlayerId);
+            Assert.Single(navigation.Calls);
         }
         finally { release.TrySetResult(); }
         await pending;
-        Assert.True(page.EditorContent.IsEnabled);
+        Assert.False(editor.IsBusy);
         Assert.False(editor.CanEdit);
         Assert.Equal(AppResources.Done, editor.SaveText);
-        Assert.Equal(AppResources.PlayerEditorNavigationFailed, Assert.Single(page.Messages));
-        Assert.Same(page.Navigation.NavigationFailure, Assert.Single(page.Logger.Errors));
+        Assert.True(editor.HasError);
+        Assert.Equal(AppResources.PlayerEditorNavigationFailed, editor.ErrorMessage);
+        Assert.Empty(page.Messages);
+        Assert.Same(navigation.NavigationFailure, Assert.Single(logger.Errors));
         await using (BoardgameTrackerDbContext saved = db.CreateDbContext())
         {
             Player player = await saved.Players.SingleAsync(player => player.Id == savedId, EditorToken);
@@ -166,14 +189,27 @@ public sealed partial class EventBoundaryTests
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedPlayerInsert BEFORE INSERT ON Players BEGIN SELECT RAISE(ABORT, 'unexpected repeated insert'); END;", EditorToken);
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedPlayerUpdate BEFORE UPDATE ON Players BEGIN SELECT RAISE(ABORT, 'unexpected repeated update'); END;", EditorToken);
         }
-        page.Navigation.FailNavigation = false;
-        await page.InvokeAsync(retryAction);
+        editor.Name = "";
+        navigation.FailNavigation = false;
+        navigation.OnNavigating = () => Assert.Null(editor.ErrorMessage);
+        if (retryAction == "save")
+            await editor.SaveCommand.ExecuteAsync(null);
+        else if (retryAction == "back")
+            await editor.GoBackCommand.ExecuteAsync(null);
+        else {
+            await page.InvokeAsync(retryAction);
+            await editor.GoBackCommand.ExecutionTask!;
+        }
         Assert.Equal(savedId, editor.PlayerId);
         Assert.True(create || savedId == db.First.Id);
-        Assert.Equal(2, page.Navigation.Calls.Count);
-        Assert.All(page.Navigation.Calls, call => Assert.Equal(create ? "main" : "..", call.Route));
-        Assert.Single(page.Messages);
-        Assert.Single(page.Logger.Errors);
+        Assert.Equal(2, navigation.Calls.Count);
+        Assert.All(navigation.Calls, call => {
+            Assert.Equal(create ? "main" : "..", call.Route);
+            Assert.Equal(create ? AppMainSection.Participants : (AppMainSection?)null, call.Section);
+        });
+        Assert.Null(editor.ErrorMessage);
+        Assert.Empty(page.Messages);
+        Assert.Single(logger.Errors);
         await using BoardgameTrackerDbContext retried = db.CreateDbContext();
         Assert.Equal(create ? 3 : 2, await retried.Players.CountAsync(EditorToken));
         Assert.Equal("Saved player", (await retried.Players.SingleAsync(player => player.Id == savedId, EditorToken)).Name);
@@ -195,7 +231,7 @@ public sealed partial class EventBoundaryTests
     public async Task PlayerNameValidation_UsesTrimmedLengthWithoutChangingRejectedData(bool create, int length, int padding, bool valid)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel editor = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         if (create)
             editor.InitializeNew();
         else
@@ -226,7 +262,7 @@ public sealed partial class EventBoundaryTests
 
     [Theory]
     [InlineData("PlayerFeature.EditPlayerPage.xaml", "IsSaveCompleted")]
-    [InlineData("GeneralGroupFeature.EditGroupPage.xaml", "IsSaved")]
+    [InlineData("GeneralGroupFeature.EditGroupPage.xaml", "IsSaveCompleted")]
     public void SavedEditor_BindsInputLockAndVisibleCompletionHint(string resource, string savedProperty)
     {
         using Stream stream = typeof(EventBoundaryTests).Assembly.GetManifestResourceStream(resource)!;
@@ -245,7 +281,7 @@ public sealed partial class EventBoundaryTests
     public async Task PlayerNameValidation_DuplicateDoesNotChangeSavedPlayers(bool create)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel editor = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         if (create)
             editor.InitializeNew();
         else
@@ -265,7 +301,7 @@ public sealed partial class EventBoundaryTests
     [Fact]
     public async Task PlayerStateChanges_NotifyBindingsAndRejectConcurrentSave() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditPlayerViewModel editor = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel editor = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         List<string?> changed = [];
         List<bool> editingStates = [];
         List<Task<bool>> concurrentSaves = [];
@@ -285,6 +321,8 @@ public sealed partial class EventBoundaryTests
         Assert.True(editor.HasError);
 
         changed.Clear();
+        concurrentSaves.Clear();
+        editingStates.Clear();
         editor.Name = "New guest";
         editor.IsGuest = true;
         Assert.True(await editor.SaveAsync(EditorToken));
@@ -328,7 +366,11 @@ public sealed partial class EventBoundaryTests
         Assert.DoesNotContain(page.Descendants(), element => element.Name.LocalName == "ContentPage.Resources");
         XElement[] buttons = page.Descendants().Where(element => element.Name.LocalName == "Button").ToArray();
         Assert.Equal(3, buttons.Length);
-        Assert.All(buttons, button => Assert.Equal("{Binding IsBusy, Converter={StaticResource NegateBool}}", (string?)button.Attribute("IsEnabled")));
+        Assert.Equal(new[] { "{Binding SaveAndAddAnotherCommand}", "{Binding SaveCommand}", "{Binding SaveCommand}" },
+            buttons.Select(button => (string?)button.Attribute("Command")));
+        Assert.All(buttons, button => Assert.Null(button.Attribute("Clicked")));
+        XElement content = page.Root!.Elements().Single();
+        Assert.Equal("{Binding IsBusy, Converter={StaticResource NegateBool}}", (string?)content.Attribute("IsEnabled"));
         XElement archivedSwitch = Assert.Single(page.Descendants(), element => (string?)element.Attribute("IsToggled") == "{Binding IsArchived}");
         Assert.Equal("{Binding IsNew, Converter={StaticResource NegateBool}}", (string?)archivedSwitch.Parent!.Attribute("IsVisible"));
     }

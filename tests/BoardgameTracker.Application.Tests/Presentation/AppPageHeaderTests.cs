@@ -61,7 +61,12 @@ public sealed class AppPageHeaderTests
     {
         var header = Header(ReadPage(page));
         Assert.Equal("Subpage", (string?)header.Attribute("Variant"));
-        Assert.NotNull(header.Attribute("BackClicked"));
+        if (page is "EditGroupPage" or "EditPlayerPage") {
+            Assert.Equal("{Binding GoBackCommand}", (string?)header.Attribute("BackCommand"));
+            Assert.Null(header.Attribute("BackClicked"));
+        }
+        else
+            Assert.NotNull(header.Attribute("BackClicked"));
         Assert.Null(header.Attribute("BadgeText"));
         Assert.Null(header.Attribute("GameName"));
     }

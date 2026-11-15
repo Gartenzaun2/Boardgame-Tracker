@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Tests.Presentation;
 using BoardgameTracker.App.Persistence.SQLite;
 using BoardgameTracker.Application.Tests.Persistence;
 using BoardgameTracker.Application.History.Transfer;
@@ -101,7 +102,7 @@ public sealed class PlayerManagementTests
     {
         await using Database database = await Database.CreateAsync();
         Guid id = database.Players[0].Id;
-        EditPlayerViewModel editor = new(database.Edit, new(database), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel editor = new(database.Edit, new(database), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         await editor.LoadAsync(id, Token);
         editor.Name = "Changed";
         editor.IsArchived = true;

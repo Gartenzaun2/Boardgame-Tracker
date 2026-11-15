@@ -230,7 +230,7 @@ public sealed class PlayNavigationTests
         StartupNavigation startup = await query.ResolveAsync(AppNavigationSettings.Default with { LastMainSection = AppMainSection.History }, Token);
         Assert.Equal(AppMainSection.Participants, startup.Section);
         Assert.Null(startup.Resume);
-        EditPlayerViewModel first = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel first = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         first.InitializeNew();
         Assert.False(await first.SaveAsync(Token));
         Assert.True(first.IsNew);
@@ -238,7 +238,7 @@ public sealed class PlayNavigationTests
         Assert.True(await first.SaveAsync(Token));
         Assert.True(first.IsNew);
         Assert.Equal(AppMainSection.Play, (await query.ResolveAsync(AppNavigationSettings.Default, Token)).Section);
-        EditPlayerViewModel second = new(new(db), new(db), NullLogger<EditPlayerViewModel>.Instance);
+        EditPlayerViewModel second = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         second.InitializeNew();
         second.Name = "Second";
         Assert.True(await second.SaveAsync(Token));

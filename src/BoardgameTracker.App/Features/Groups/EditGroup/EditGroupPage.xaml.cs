@@ -9,16 +9,14 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 /// </summary>
 public partial class EditGroupPage : ContentPage, IQueryAttributable {
     private readonly EditGroupViewModel _viewModel;
+    private Guid _groupId;
 
     public EditGroupPage(EditGroupViewModel viewModel) {
         InitializeComponent();
 
         _viewModel = viewModel;
-        _viewModel.SavedAsync = OnSavedAsync;
         BindingContext = _viewModel;
     }
-
-    private Guid _groupId;
 
     public EditGroupViewModel ViewModel => _viewModel;
 
@@ -43,17 +41,6 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
             await _viewModel.LoadAsync(_groupId);
     }
 
-    private async void OnBackClicked(object? sender, EventArgs e) {
-        if (_viewModel.IsBusy)
-            return;
-        if (_viewModel.IsSaved) {
-            await _viewModel.SaveCommand.ExecuteAsync(null);
-            return;
-        }
-
-        await Shell.Current.GoToAsync("..", false);
-    }
-
     private async void OnInfoClicked(object? sender, EventArgs e) {
         await AppDialogPage.ShowAsync(this,
             AppResources.EditGroup,
@@ -68,39 +55,20 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
             AppResources.Ok);
     }
 
-    private void OnChooseGameClicked(object? sender, EventArgs e) {
-        if (_viewModel.CanEdit)
-            _viewModel.IsChoosingGame = true;
-    }
-
-    private void OnCloseGameClicked(object? sender, EventArgs e)
-        => _viewModel.IsChoosingGame = false;
-
-    private void OnGameTapped(object? sender, TappedEventArgs e) {
-        if (!_viewModel.IsChoosingGame)
-            return;
-        if (e.Parameter is not GroupGameSelection game)
-            return;
-
-        _viewModel.AddGameCommand.Execute(game);
-    }
-
     /// <summary>Handles system back by retrying a saved departure or closing game selection before leaving.</summary>
     protected override bool OnBackButtonPressed() {
         if (_viewModel.IsBusy)
             return true;
-        if (_viewModel.IsSaved) {
+        if (_viewModel.IsSaveCompleted) {
             // MAUI needs a synchronous result; the existing async command handles departure and errors.
-            _viewModel.SaveCommand.Execute(null);
+            _viewModel.GoBackCommand.Execute(null);
             return true;
         }
         if (_viewModel.IsChoosingGame) {
-            _viewModel.IsChoosingGame = false;
+            _viewModel.CloseGameSelectionCommand.Execute(null);
             return true;
         }
         return base.OnBackButtonPressed();
     }
 
-    private Task OnSavedAsync()
-        => Shell.Current.GoToAsync("..", false);
 }

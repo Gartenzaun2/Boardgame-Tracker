@@ -18,7 +18,7 @@
             </Grid.Triggers>
             <VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.EditGroup}"
-                    Variant="Subpage" BackClicked="OnBackClicked">
+                    Variant="Subpage" BackCommand="{Binding GoBackCommand}">
                     <header:AppPageHeader.Actions>
                         <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
                             Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}"
@@ -26,7 +26,7 @@
                         <Button Style="{StaticResource PrimaryCompactButton}" Text="{Binding SaveText}" Command="{Binding SaveCommand}" />
                     </header:AppPageHeader.Actions>
                 </header:AppPageHeader>
-                <Label Margin="20,0" Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
+                <Label Margin="20,0" Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" />
                 <Label Margin="20,0" TextColor="{DynamicResource Danger}" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" />
             </VerticalStackLayout>
 
@@ -39,10 +39,10 @@
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{x:Static res:AppResources.Archived}" VerticalOptions="Center" />
                             </VerticalStackLayout>
-                            <Switch Grid.Column="1" IsToggled="{Binding IsArchived}" IsEnabled="{Binding CanArchive}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsGroupArchived}" IsEnabled="{Binding CanArchiveGroup}" />
                         </Grid>
                         <Label FontSize="12" Text="{x:Static res:AppResources.GroupArchiveLocked}"
-                            IsVisible="{Binding CanArchive, Converter={StaticResource NegateBool}}" />
+                            IsVisible="{Binding CanArchiveGroup, Converter={StaticResource NegateBool}}" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="10">
@@ -82,7 +82,7 @@
 
                     <VerticalStackLayout Spacing="8">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GamesSection}" />
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedGames}">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedVisibleGames}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupGameSelection">
                                     <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
@@ -100,7 +100,7 @@
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
                         <Button HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddGame}"
-                            IsEnabled="{Binding HasAvailableGames}" Clicked="OnChooseGameClicked" />
+                            IsEnabled="{Binding HasGamesAvailableToAdd}" Command="{Binding ChooseGameCommand}" />
                     </VerticalStackLayout>
 
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
@@ -112,16 +112,17 @@
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
                     <Grid ColumnDefinitions="Auto,*">
-                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCloseGameClicked"
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Command="{Binding CloseGameSelectionCommand}"
                             SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" Text="{x:Static res:AppResources.AddGame}" />
                     </Grid>
-                    <CollectionView Grid.Row="1" HeightRequest="300" ItemsSource="{Binding AvailableGames}" SelectionMode="None">
+                    <CollectionView Grid.Row="1" HeightRequest="300" ItemsSource="{Binding GamesAvailableToAdd}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:GroupGameSelection">
                                 <Border Padding="12" Margin="0,4" Style="{StaticResource CardBorder}">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" />
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}"
+                                            CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
                                     <Label Text="{Binding Name}" />
                                 </Border>
