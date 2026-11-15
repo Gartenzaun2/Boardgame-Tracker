@@ -126,31 +126,29 @@ nicht bloß, dass `OnAppearing()` beim Anzeigen einer Seite aufgerufen wird.
 ### Bewusste Architekturabstraktionen für Einsteiger dokumentieren
 
 Bewusst eingeführte Abstraktionen an Schicht- und Framework-Grenzen (Interfaces,
-Ports, Adapter) müssen **direkt am zentralen Vertrag** so dokumentiert sein, dass
-auch Einsteiger die Entscheidung nachvollziehen können. Eine englischsprachige
-XML-Dokumentation beantwortet, soweit für das konkrete Konzept relevant:
+Ports, Adapter) **direkt am zentralen Vertrag** so erklären, dass Einsteiger
+Verantwortung und Entscheidung nachvollziehen können. Die Dokumentation soll
+das **Warum**, die beteiligten Rollen und den konkreten Nutzen vermitteln,
+ohne denselben Gedanken mehrfach auszuführen.
 
-1. **Warum** existiert die Abstraktion und welche Kopplung oder welches Problem
-   verhindert sie?
-2. **Wer** verwendet den Vertrag und **wer** übernimmt seine Implementierung?
-3. **Wie** sieht ein echter Aufruf oder ein Test ohne die konkrete Implementierung
-   aus? Ein kurzes `<example>` ist erwünscht, wenn es den Einstieg erleichtert.
-4. **Welchen Vorteil und welchen Preis** hat die Trennung? Die ausführliche
-   Alternativenabwägung gehört in `ARCHITECTURE.md`.
+- `<summary>` beschreibt kurz **warum** die Abstraktion existiert, **wer**
+  die technische Umsetzung übernimmt und **welchen Nutzen** die Trennung hat.
+- `<example>` zeigt bei Bedarf einen **echten Aufruf**, statt die Begründung zu
+  wiederholen. Bei trivialer Verwendung ist es nicht nötig.
+- `<remarks>` nur für **zusätzliche wichtige Informationen**, nicht als
+  längere Wiederholung der Summary. Alternativen, Kosten und ausführliche
+  Architekturentscheidungen gehören in `ARCHITECTURE.md`.
 
-Positives Beispiel für einen fachlich begründeten Navigationsvertrag:
+Positives Beispiel: **kurz, aber mit vollständiger Begründung**.
 
 ```csharp
 /// <summary>
 /// Lets ViewModels request navigation without depending on MAUI Shell.
-/// Pages and their code-behind handle MAUI-specific UI behavior, while
-/// a Shell adapter performs the navigation requested by a ViewModel.
-/// Tests can replace this interface with a fake, so a save workflow can
-/// be tested without creating a Page or starting a running Shell.
+/// A Shell adapter performs the navigation, while tests can replace
+/// this interface with a fake to verify navigation without a running UI.
 /// </summary>
 /// <example>
-/// After saving: <code>await _navigationService.GoBackAsync();</code>
-/// A test fake can record the call and verify that navigation was requested.
+/// After a successful save: <c>await _navigationService.GoBackAsync();</c>
 /// </example>
 public interface INavigationService {
     Task GoBackAsync();
@@ -158,13 +156,24 @@ public interface INavigationService {
 }
 ```
 
-Hier ist der **Grund der Entkopplung**, nicht bloß die technische Weiterleitung,
-dokumentiert. Die Schnittstelle hält ViewModels von **MAUI-Navigations-APIs**
-unabhängig; das garantiert nicht automatisch, dass alle anderen Abhängigkeiten
-eines ViewModels frameworkfrei sind. Eine kurze Notiz bei der DI-Registrierung
-kann die Wahl des Adapters erklären. Die Begründung nicht an jeder Aufrufstelle
-wiederholen; keine Interfaces allein zum Vorführen eines Architekturpatterns
-erschaffen.
+- **Summary, Satz 1 – Warum:** Keine direkte Kopplung des ViewModels an
+  MAUI Shell.
+- **Summary, Satz 2 – Zuständigkeit und Nutzen:** Der Adapter navigiert;
+  Tests können dieselbe Schnittstelle ohne laufende Oberfläche ersetzen.
+- **Example – Anwendung:** Ein konkreter Aufruf nach erfolgreichem Speichern,
+  ohne die Vorteile erneut zu erklären.
+
+`<example>` ist ein reguläres C#-XML-Dokumentationstag, **kein Teil der Summary**.
+Die Summary erscheint in der üblichen IntelliSense-Kurzinformation; ob ein
+separates Example dort zusätzlich angezeigt wird, hängt vom Editor ab.
+Wichtige Gründe gehören deshalb in `<summary>`, nicht ausschließlich in
+`<example>`.
+
+Die Trennung macht die **Navigation**, nicht automatisch sämtliche anderen
+ViewModel-Abhängigkeiten, unabhängig von MAUI-Navigations-APIs. Eine kurze
+Notiz bei der DI-Registrierung darf eine nicht offensichtliche Adapterwahl
+erklären. Die Begründung nicht an jeder Aufrufstelle wiederholen und keine
+Interfaces allein für ein Architekturbeispiel einführen.
 
 C#-Bezeichner und Code-/XML-Kommentare sind **Englisch**; Projektdokumentation ist
 **Deutsch**.
