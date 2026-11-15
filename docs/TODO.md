@@ -113,7 +113,33 @@ Wenn die spielabhängige Buildkonfiguration weiter wächst, soll sie in eine
 modul-eigene importierte Builddatei unter `Games/ArkNova/` ausgelagert werden,
 damit die allgemeine Projektdatei übersichtlich bleibt.
 
-## Spielereditor: zurückgestellte Prüfungen
+## Spielereditor: vereinbarte Lesbarkeitskorrekturen
+
+**Betroffen:** `EditPlayerViewModel.cs`, `EditPlayerPage.xaml.cs` und bei
+nachgewiesener Wiederverwendung der Bool-Converter aus `EditPlayerPage.xaml`.
+
+- `EditPlayerViewModel.SaveAsync()`: `IsBusy` und `!IsNew && PlayerId == Guid.Empty`
+  getrennt prüfen. Bei fehlender ID `ErrorMessage = AppResources.PlayerSaveFailed`
+  setzen, die ungültige Situation loggen und `false` zurückgeben; keine Exception
+  werfen. Busy-Verhalten, `IsSaveCompleted` und bestehende Fehleranzeige erhalten.
+- Für `SaveAsync()` die Bedeutung von `true` und `false` mit XML-`<returns>`
+  dokumentieren; eine zusätzliche triviale `<summary>` ist nicht nötig.
+- `EditPlayerPage.SaveAsync(bool addAnother)`: den ternären asynchronen
+  Methodenaufruf durch einen klaren `if (addAnother)`-Zweig mit Early Return
+  ersetzen. „Weiteren hinzufügen“ bleibt im Editor; normales Speichern navigiert.
+- Page-Zurückereignisse: gemeinsame Entscheidung nur einmal formulieren, ohne
+  Header- und System-Zurückverhalten zu verändern. `OnBackButtonPressed()` mit
+  kurzer XML-`<summary>` (Systemereignis, Zweck) erklären; die unterschiedlichen
+  Zustandszweige und den nötigen Dispatcher-Einsatz knapp begründen.
+- `_saving` präziser nach seinem tatsächlichen Geltungsbereich benennen
+  (Speichern **und** Navigation), ohne es mit `ViewModel.IsBusy` zu vermischen.
+- Vor einer Auslagerung des `PlayerEditorBoolNegationConverter` prüfen, ob ein
+  allgemeiner Converter bereits existiert oder mehrfache Verwendung vorliegt;
+  keine vorsorgliche neue globale Ressource einführen.
+
+**Grenze:** Keine neue Navigationsabstraktion, keine pauschale Command-/Gate-
+Migration, keine Änderung der Fehlerstrategie oder der direkten Page-UI-Steuerung
+allein aus Stilgründen. Offene Architekturfragen nicht stillschweigend entscheiden.
 
 ### MAUI-System-Zurücknavigation gezielt überprüfen
 
