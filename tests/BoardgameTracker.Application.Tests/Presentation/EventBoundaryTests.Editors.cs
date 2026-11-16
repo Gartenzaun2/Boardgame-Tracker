@@ -21,7 +21,7 @@ public sealed partial class EventBoundaryTests
         EditorLogger<EditPlayerViewModel> logger = new();
         EditorNavigationFake navigation = new();
         EditPlayerViewModel editor = new(new(db), new(db), navigation, logger);
-        editor.Name = "Unloaded player";
+        editor.PlayerName = "Unloaded player";
 
         Assert.False(await editor.SaveAsync(EditorToken));
 
@@ -30,7 +30,7 @@ public sealed partial class EventBoundaryTests
         Assert.False(editor.IsBusy);
         Assert.False(editor.IsSaveCompleted);
         Assert.Empty(navigation.Calls);
-        Assert.Equal("Unloaded player", editor.Name);
+        Assert.Equal("Unloaded player", editor.PlayerName);
         Assert.Contains("no player ID", Assert.Single(logger.ErrorMessages));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Equal(2, await verify.Players.CountAsync(EditorToken));
@@ -44,16 +44,16 @@ public sealed partial class EventBoundaryTests
         EditorNavigationFake navigation = new();
         EditPlayerViewModel editor = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         editor.InitializeNew();
-        editor.Name = "Another guest";
-        editor.IsGuest = true;
+        editor.PlayerName = "Another guest";
+        editor.IsPlayerGuest = true;
         await editor.SaveAndAddAnotherCommand.ExecuteAsync(null);
 
         Assert.Empty(navigation.Calls);
         Assert.True(editor.CanEdit);
-        Assert.True(editor.IsNew);
+        Assert.True(editor.IsCreateMode);
         Assert.False(editor.IsSaveCompleted);
-        Assert.Empty(editor.Name);
-        Assert.False(editor.IsGuest);
+        Assert.Empty(editor.PlayerName);
+        Assert.False(editor.IsPlayerGuest);
         Assert.Equal(Guid.Empty, editor.PlayerId);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Equal(3, await verify.Players.CountAsync(EditorToken));
@@ -144,9 +144,9 @@ public sealed partial class EventBoundaryTests
             editor.InitializeNew();
         else
             await editor.LoadAsync(db.First.Id, EditorToken);
-        editor.Name = "Saved player";
-        editor.IsGuest = create;
-        editor.IsArchived = !create;
+        editor.PlayerName = "Saved player";
+        editor.IsPlayerGuest = create;
+        editor.IsPlayerArchived = !create;
         EventBoundaryTestHost page = Create("EditPlayerPage.xaml.cs", editor);
         TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
         navigation.NavigationGate = release.Task;
@@ -189,7 +189,7 @@ public sealed partial class EventBoundaryTests
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedPlayerInsert BEFORE INSERT ON Players BEGIN SELECT RAISE(ABORT, 'unexpected repeated insert'); END;", EditorToken);
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectRepeatedPlayerUpdate BEFORE UPDATE ON Players BEGIN SELECT RAISE(ABORT, 'unexpected repeated update'); END;", EditorToken);
         }
-        editor.Name = "";
+        editor.PlayerName = "";
         navigation.FailNavigation = false;
         navigation.OnNavigating = () => Assert.Null(editor.ErrorMessage);
         if (retryAction == "save")
@@ -237,8 +237,8 @@ public sealed partial class EventBoundaryTests
         else
             await editor.LoadAsync(db.First.Id, EditorToken);
         string name = new('N', length);
-        editor.Name = new string(' ', padding) + name + new string(' ', padding);
-        editor.IsArchived = true;
+        editor.PlayerName = new string(' ', padding) + name + new string(' ', padding);
+        editor.IsPlayerArchived = true;
         Assert.Equal(valid, await editor.SaveAsync(EditorToken));
         Assert.Equal(valid, editor.IsSaveCompleted);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
@@ -286,8 +286,8 @@ public sealed partial class EventBoundaryTests
             editor.InitializeNew();
         else
             await editor.LoadAsync(db.First.Id, EditorToken);
-        editor.Name = "  Ben  ";
-        editor.IsArchived = true;
+        editor.PlayerName = "  Ben  ";
+        editor.IsPlayerArchived = true;
         Assert.False(await editor.SaveAsync(EditorToken));
         Assert.False(editor.IsSaveCompleted);
         Assert.True(editor.CanEdit);
@@ -315,6 +315,7 @@ public sealed partial class EventBoundaryTests
 
         editor.InitializeNew();
         Assert.Contains(nameof(editor.Title), changed);
+        Assert.Contains(nameof(editor.IsCreateMode), changed);
         Assert.Equal(AppResources.AddPlayer, editor.Title);
         Assert.False(await editor.SaveAsync(EditorToken));
         Assert.Contains(nameof(editor.HasError), changed);
@@ -323,8 +324,10 @@ public sealed partial class EventBoundaryTests
         changed.Clear();
         concurrentSaves.Clear();
         editingStates.Clear();
-        editor.Name = "New guest";
-        editor.IsGuest = true;
+        editor.PlayerName = "New guest";
+        editor.IsPlayerGuest = true;
+        Assert.Contains(nameof(editor.PlayerName), changed);
+        Assert.Contains(nameof(editor.IsPlayerGuest), changed);
         Assert.True(await editor.SaveAsync(EditorToken));
         Assert.False(await Assert.Single(concurrentSaves));
         Assert.False(editor.IsBusy);
@@ -345,8 +348,8 @@ public sealed partial class EventBoundaryTests
         Assert.Equal(Guid.Empty, editor.PlayerId);
         Assert.False(editor.IsSaveCompleted);
         Assert.True(editor.CanEdit);
-        Assert.Empty(editor.Name);
-        Assert.False(editor.IsGuest);
+        Assert.Empty(editor.PlayerName);
+        Assert.False(editor.IsPlayerGuest);
         Assert.Equal(AppResources.Save, editor.SaveText);
         Assert.Contains(nameof(editor.PlayerId), changed);
         Assert.Contains(nameof(editor.IsSaveCompleted), changed);
@@ -371,8 +374,8 @@ public sealed partial class EventBoundaryTests
         Assert.All(buttons, button => Assert.Null(button.Attribute("Clicked")));
         XElement content = page.Root!.Elements().Single();
         Assert.Equal("{Binding IsBusy, Converter={StaticResource NegateBool}}", (string?)content.Attribute("IsEnabled"));
-        XElement archivedSwitch = Assert.Single(page.Descendants(), element => (string?)element.Attribute("IsToggled") == "{Binding IsArchived}");
-        Assert.Equal("{Binding IsNew, Converter={StaticResource NegateBool}}", (string?)archivedSwitch.Parent!.Attribute("IsVisible"));
+        XElement archivedSwitch = Assert.Single(page.Descendants(), element => (string?)element.Attribute("IsToggled") == "{Binding IsPlayerArchived}");
+        Assert.Equal("{Binding IsCreateMode, Converter={StaticResource NegateBool}}", (string?)archivedSwitch.Parent!.Attribute("IsVisible"));
     }
 
     private sealed class EditorLogger<T> : ILogger<T>

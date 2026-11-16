@@ -13,7 +13,6 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
 
     public EditGroupPage(EditGroupViewModel viewModel) {
         InitializeComponent();
-
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
@@ -21,12 +20,8 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
     public EditGroupViewModel ViewModel => _viewModel;
 
     public void ApplyQueryAttributes(IDictionary<string, object> query) {
-        if (!query.TryGetValue(NavigationParameters.GroupId, out object? value)
-            || value is not Guid groupId
-            || groupId == Guid.Empty) {
-            throw new InvalidOperationException(
-                $"Required navigation parameter '{NavigationParameters.GroupId}' is missing or invalid.");
-        }
+        if (!query.TryGetValue(NavigationParameters.GroupId, out object? value) || value is not Guid groupId || groupId == Guid.Empty)
+            throw new InvalidOperationException($"Required navigation parameter '{NavigationParameters.GroupId}' is missing or invalid.");
 
         _groupId = groupId;
     }
@@ -70,5 +65,4 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
         }
         return base.OnBackButtonPressed();
     }
-
 }

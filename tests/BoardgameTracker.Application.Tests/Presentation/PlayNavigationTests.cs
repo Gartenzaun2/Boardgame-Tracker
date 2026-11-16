@@ -233,16 +233,16 @@ public sealed class PlayNavigationTests
         EditPlayerViewModel first = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         first.InitializeNew();
         Assert.False(await first.SaveAsync(Token));
-        Assert.True(first.IsNew);
-        first.Name = "First";
+        Assert.True(first.IsCreateMode);
+        first.PlayerName = "First";
         Assert.True(await first.SaveAsync(Token));
-        Assert.True(first.IsNew);
+        Assert.True(first.IsCreateMode);
         Assert.Equal(AppMainSection.Play, (await query.ResolveAsync(AppNavigationSettings.Default, Token)).Section);
         EditPlayerViewModel second = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         second.InitializeNew();
-        second.Name = "Second";
+        second.PlayerName = "Second";
         Assert.True(await second.SaveAsync(Token));
-        Assert.True(second.IsNew);
+        Assert.True(second.IsCreateMode);
         Assert.Equal(AppMainSection.History, (await query.ResolveAsync(AppNavigationSettings.Default with { LastMainSection = AppMainSection.History }, Token)).Section);
     }
 

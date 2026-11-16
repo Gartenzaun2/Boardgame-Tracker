@@ -26,7 +26,7 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
     /// <summary>Returning from a modal must not replace edits in the open player form.</summary>
     protected override async void OnAppearing() {
         base.OnAppearing();
-        if (!AppDialogPage.IsOpen(this) && !_viewModel.IsNew)
+        if (!AppDialogPage.IsOpen(this) && !_viewModel.IsCreateMode)
             await _viewModel.LoadAsync(_playerId);
     }
 
