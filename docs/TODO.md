@@ -10,32 +10,31 @@ Historie aufzubauen; Historie gehört in Git/CHANGELOG, wenn relevant.
 
 ## .NET 11 / MAUI 11: ausstehende Plattformabnahme
 
-**Status:** Projekt- und Paketumstellung erfolgt; Mac-/iPhone-Abnahme offen.
+**Status:** Mac-Toolchain und iOS-Builds geprüft; Runtime-/iPhone-Abnahme offen.
 SDK-/Workload-/Paketvorgaben stehen ausschließlich in `SETUP.md`.
 
-Das MacBook ist für dieses Arbeitspaket nicht verfügbar. Der Windows-iOS-Build
-belegt weder die native Verlinkung noch die Release-Runtime. Vor dem späteren
-Mac-Build die effektive lokale SDK-/Workload-Auswahl sowie Xcode prüfen; die
-lokale `.local/ios/global.json` wird nicht vom Windows-Auftrag angepasst.
+Die Mac-Toolchain ist eingerichtet; der lokale SDK-/Workload-Pin wurde auch in
+MSBuild nachgewiesen. Die nativen ARM64-Archive für Device und Simulator wurden
+mit der neuen Apple-Toolchain getrennt gebaut. Simulator-Debug- und signierter
+Device-Release-Build einschließlich nativer Verlinkung sind erfolgreich.
+Simulator-/iPhone-Runtime und die Updateinstallation sind noch nicht abgenommen.
 
 **Gezielte verbleibende Prüfungen:**
-1. Auf dem Mac nativen iOS-Build mit dem vorhandenen Ark-Nova-Archiv durchführen;
-   bei fehlendem oder inkompatiblem Archiv gemäß NativeVisionSpike-README bauen.
-2. Nach unmittelbar zuvor erteilter Entwicklerfreigabe auf dem iPhone 12 Pro mit
+1. Nach unmittelbar zuvor erteilter Entwicklerfreigabe auf dem iPhone 12 Pro mit
    iOS 26.2 App-Start, alle vier Haupttabs einschließlich Reselect, Rückkehr aus
    Unterseiten und Zurücknavigation prüfen; dabei das untenstehende M-04-Gate
    einbeziehen. Safe Areas, helles/dunkles Theme und Layout kontrollieren.
-3. ManualGames-Punkteeingabe einschließlich negativer Zahlen sowie NumberWheel,
+2. ManualGames-Punkteeingabe einschließlich negativer Zahlen sowie NumberWheel,
    Kamera, Fotobibliothek und native Ark-Nova-Fotoerkennung prüfen.
-4. SQLite-Laden/-Speichern und Updateinstallation über den vorhandenen Datenbestand
+3. SQLite-Laden/-Speichern und Updateinstallation über den vorhandenen Datenbestand
    ohne Verlust prüfen; Import-/Exportvertrag unverändert erhalten.
-5. iOS-Release-Runtime mit CoreCLR/ReadyToRun und EF-Reflexion/Trimming gezielt
+4. iOS-Release-Runtime mit CoreCLR/ReadyToRun und EF-Reflexion/Trimming gezielt
    abnehmen. Erst mit belegtem Ersatz weitere Shell-/Tastatur-/Trimming- oder
    Symbolstrip-Sonderkonfiguration entfernen.
 
 **Abbruchkriterien:** inkompatibler Toolchain-Satz, fehlerhafte native Verlinkung,
 Startup-/Release-Fehler, Datenverlust oder fehlerhafte Navigation/Interop.
-Keine dieser Runtime-Prüfungen ist durch den automatisierten Windows-Lauf erledigt.
+Keine dieser Runtime-Prüfungen ist durch die erfolgreichen Builds erledigt.
 Das native Android-ARM64-Geräte-Gate bleibt separat bestehen. Umfang/Freigaben
 richten sich nach `AGENTS.md`/`SETUP.md`; iPhone-Deployment ist zurückgestellt.
 
@@ -43,7 +42,7 @@ richten sich nach `AGENTS.md`/`SETUP.md`; iPhone-Deployment ist zurückgestellt.
 
 ### iOS M-04: Native Haupttabzuordnung zur Laufzeit verifizieren
 
-**Status:** zurückgestellt – MacBook derzeit nicht verfügbar; Runtime-Verifikation offen
+**Status:** Runtime-Verifikation offen
 
 **Ist:** Der iOS-`ThemeShellRenderer` ordnet einen Tap auf die native `UITabBar` über
 direkte `UIControl`-Subviews, deren Positionen (`Frame.X`) und eine RTL-Umkehr den
