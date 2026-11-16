@@ -14,14 +14,14 @@ namespace BoardgameTracker.App.Features.Groups.ListGroups;
 public partial class GroupListViewModel : ObservableObject {
     private readonly ListGroupsQuery _query;
     private readonly AddGroupGameUseCase _addAssignment;
-    private readonly PlayOverviewQuery _games;
+    private readonly GamesQuery _gamesQuery;
     private readonly ILogger<GroupListViewModel> _logger;
     private readonly IEnumerable<IGameSessionNavigationHandler> _handlers;
 
-    public GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCase addAssignment, PlayOverviewQuery games, ILogger<GroupListViewModel> logger, IEnumerable<IGameSessionNavigationHandler> handlers) {
+    public GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCase addAssignment, GamesQuery gamesQuery, ILogger<GroupListViewModel> logger, IEnumerable<IGameSessionNavigationHandler> handlers) {
         _query = query;
         _addAssignment = addAssignment;
-        _games = games;
+        _gamesQuery = gamesQuery;
         _logger = logger;
         _handlers = handlers;
     }
@@ -78,7 +78,7 @@ public partial class GroupListViewModel : ObservableObject {
         IsBusy = true;
         ErrorMessage = null;
         try {
-            GameDetails game = await _games.GetGameAsync(SelectedGameKey, cancellationToken);
+            GameInfo game = await _gamesQuery.GetAsync(SelectedGameKey, cancellationToken);
             SelectedGameName = game.Name;
             BadgeText = game.BadgeText;
             GroupPresence presence = await _query.GetPresenceAsync(cancellationToken);
@@ -131,7 +131,7 @@ public partial class GroupListViewModel : ObservableObject {
             return;
         ErrorMessage = null;
         try {
-            Guid gameId = (await _games.ListAsync()).Single(game => game.Key == SelectedGameKey).Id;
+            Guid gameId = (await _gamesQuery.GetEnabledAsync()).Single(game => game.Key == SelectedGameKey).Id;
             await _addAssignment.AddGroupGameAsync(group.Id, gameId);
             IsChoosingExisting = false;
             await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, null, null);

@@ -1,4 +1,4 @@
-using BoardgameTracker.Application.Settings;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
@@ -16,14 +16,14 @@ public partial class CreateGroupViewModel : ObservableObject {
     private readonly CreateGroupUseCase _createGroup;
     private readonly FindGroupDuplicatesQuery _duplicatesQuery;
     private readonly ReuseGroupUseCase _reuseGroup;
-    private readonly GameActivationUseCase _activation;
+    private readonly GamesQuery _gamesQuery;
     private readonly ILogger<CreateGroupViewModel> _logger;
 
-    public CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, GameActivationUseCase activation, ILogger<CreateGroupViewModel> logger) {
+    public CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, GamesQuery gamesQuery, ILogger<CreateGroupViewModel> logger) {
         _createGroup = createGroup;
         _duplicatesQuery = duplicatesQuery;
         _reuseGroup = reuseGroup;
-        _activation = activation;
+        _gamesQuery = gamesQuery;
         _logger = logger;
     }
 
@@ -149,11 +149,10 @@ public partial class CreateGroupViewModel : ObservableObject {
         try {
             IsBusy = true;
             ErrorMessage = null;
-            IReadOnlyList<SelectableGroupGame> availableGames = await _createGroup.GetSelectableGamesAsync(cancellationToken);
+            IReadOnlyList<GameInfo> games = await _gamesQuery.GetEnabledAsync(cancellationToken);
             string? selectedGameKey = _gameKey;
-            HashSet<string> visibleGames = (await _activation.GetGamesAsync(cancellationToken)).Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
             Games.Clear();
-            foreach (SelectableGroupGame game in availableGames.Where(game => visibleGames.Contains(game.Key)))
+            foreach (GameInfo game in games)
                 Games.Add(new(game.Id, game.Name, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers, minimumPlayers: game.MinimumPlayers));
             foreach (var game in Games)
                 game.PropertyChanged += (_, _) => GamesChanged();

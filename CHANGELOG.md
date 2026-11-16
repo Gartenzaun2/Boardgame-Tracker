@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.8.6 – 2026-11-16
+
+- Gemeinsamen `EnumEqualsConverter` für typisierte Enum-Vergleiche ergänzt. Allgemeine Spieleabfragen in `GamesQuery` und Preference-Änderungen in `SetGameEnabledUseCase` unter dem Games-Feature getrennt; Aufrufer und Enablement-Begriffe vereinheitlicht. Bestehende Preference-Schlüssel, Standardaktivierung, offene Sessions und spielspezifische Abläufe erhalten.
+
 ## 0.22.8.5 – 2026-11-16
 
 - Piloteditoren für Gruppen und Spieler nachgeschärft: fachliche Spielerdaten und Erstellmodus eindeutig benannt, gemeinsame Busy-Bedingung für Commands verwendet und den Navigationsweg von Speichern und Zurück klar getrennt. Bestehende Sonderaktionen und Navigation-Retry ohne weiteren Write erhalten.

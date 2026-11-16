@@ -16,7 +16,7 @@
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="local:GameActivationRow">
+                        <DataTemplate x:DataType="local:GameSettingsRow">
                             <Border Style="{StaticResource CardBorder}" Padding="12" MinimumHeightRequest="48">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" />

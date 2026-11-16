@@ -20,7 +20,7 @@ public sealed class EditorWorkflowTests {
     public async Task Save_PersistenceFailureKeepsDraftAndSkipsNavigation(string kind) {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorNavigationFake navigation = new();
-        EditGroupViewModel group = new(new(db), new(db, new TestGameActivationStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         EditPlayerViewModel player = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         if (kind == "group") {
             await group.LoadAsync(db.Group.Id, Token);
@@ -76,7 +76,7 @@ public sealed class EditorWorkflowTests {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         GatedContextFactory factory = new(db);
         EditorNavigationFake navigation = new();
-        EditGroupViewModel group = new(new(factory), new(db, new TestGameActivationStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(factory), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         EditPlayerViewModel player = new(new(factory), new(factory), navigation, NullLogger<EditPlayerViewModel>.Instance);
         if (kind == "group") {
             await group.LoadAsync(db.Group.Id, Token);
@@ -110,7 +110,7 @@ public sealed class EditorWorkflowTests {
                 group.AddGameCommand.Execute(group.GameSelections[0]);
                 group.ChooseGameCommand.Execute(null);
                 Assert.Same(first, group.Players[0]);
-                Assert.Empty(group.SelectedVisibleGames);
+                Assert.Empty(group.SelectedEnabledGames);
                 Assert.False(group.IsChoosingGame);
             }
             else {
@@ -147,7 +147,7 @@ public sealed class EditorWorkflowTests {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         GatedContextFactory factory = new(db) { IsGated = true };
         EditorNavigationFake navigation = new();
-        EditGroupViewModel group = new(new(factory), new(db, new TestGameActivationStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(factory), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         EditPlayerViewModel player = new(new(factory), new(factory), navigation, NullLogger<EditPlayerViewModel>.Instance);
         Task loading = editGroup ? group.LoadAsync(db.Group.Id, Token) : player.LoadAsync(db.First.Id, Token);
         await factory.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5), Token);
@@ -187,29 +187,29 @@ public sealed class EditorWorkflowTests {
     [Fact]
     public async Task GameSelection_NotifiesProjectionsOnlyAfterSuccessfulCommands() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditGroupViewModel group = new(new(db), new(db, new TestGameActivationStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         List<string?> changes = [];
         group.PropertyChanged += (_, args) => changes.Add(args.PropertyName);
         await group.LoadAsync(db.Group.Id, Token);
-        Assert.Equal(1, changes.Count(value => value == nameof(group.SelectedVisibleGames)));
+        Assert.Equal(1, changes.Count(value => value == nameof(group.SelectedEnabledGames)));
         GroupGameSelection game = Assert.Single(group.GamesAvailableToAdd);
         changes.Clear();
         group.ChooseGameCommand.Execute(null);
         group.AddGameCommand.Execute(game);
         Assert.False(group.IsChoosingGame);
-        Assert.Same(game, Assert.Single(group.SelectedVisibleGames));
+        Assert.Same(game, Assert.Single(group.SelectedEnabledGames));
         Assert.Empty(group.GamesAvailableToAdd);
         Assert.False(group.HasGamesAvailableToAdd);
-        Assert.Equal(1, changes.Count(value => value == nameof(group.SelectedVisibleGames)));
+        Assert.Equal(1, changes.Count(value => value == nameof(group.SelectedEnabledGames)));
         changes.Clear();
         group.AddGameCommand.Execute(game);
         group.RemoveGameCommand.Execute(new GroupGameSelection(game.Id, game.Name, true));
         Assert.Empty(changes);
         group.RemoveGameCommand.Execute(game);
-        Assert.Empty(group.SelectedVisibleGames);
+        Assert.Empty(group.SelectedEnabledGames);
         Assert.Same(game, Assert.Single(group.GamesAvailableToAdd));
         Assert.True(group.HasGamesAvailableToAdd);
-        Assert.Equal(new[] { nameof(group.SelectedVisibleGames), nameof(group.GamesAvailableToAdd), nameof(group.HasGamesAvailableToAdd) }, changes);
+        Assert.Equal(new[] { nameof(group.SelectedEnabledGames), nameof(group.GamesAvailableToAdd), nameof(group.HasGamesAvailableToAdd) }, changes);
         changes.Clear();
         group.RemoveGameCommand.Execute(game);
         Assert.Empty(changes);
@@ -218,7 +218,7 @@ public sealed class EditorWorkflowTests {
     [Fact]
     public async Task GroupCanExecute_NotifiesNameAndCountChangesWithoutRedundantLoadNotification() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        EditGroupViewModel group = new(new(db), new(db, new TestGameActivationStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         List<bool> saveStates = [];
         group.SaveCommand.CanExecuteChanged += (_, _) => saveStates.Add(group.SaveCommand.CanExecute(null));
         await group.LoadAsync(db.Group.Id, Token);
@@ -305,7 +305,7 @@ public sealed class EditorWorkflowTests {
     public async Task UnsavedBack_DoesNotWriteAndSystemBackRetainsFrameworkBehavior(string kind) {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorNavigationFake navigation = new();
-        EditGroupViewModel group = new(new(db), new(db, new TestGameActivationStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         EditPlayerViewModel player = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         EventBoundaryTestHost page;
         IAsyncRelayCommand back;

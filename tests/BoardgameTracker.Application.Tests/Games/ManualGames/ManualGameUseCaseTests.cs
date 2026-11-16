@@ -25,7 +25,7 @@ public sealed class ManualGameUseCaseTests
     public async Task BadgeInput_UsesTransferLimitAndRetainsInvalidDraft(int length)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        ManualGameEditorViewModel model = new(new(db, new TestGameActivationStore()), new(db, new TestGameActivationStore()), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel model = new(new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), NullLogger<ManualGameEditorViewModel>.Instance);
         await model.LoadAsync(null, Token);
         model.GameName = "Grenzfall";
         model.BadgeText = "  " + new string('X', length) + "  ";
@@ -47,7 +47,7 @@ public sealed class ManualGameUseCaseTests
     public async Task CreateAndEdit_PersistFullConfigurationAndStableIdentity()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
+        TestGameEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command("  Manual  "), Token);
         string key;
@@ -84,7 +84,7 @@ public sealed class ManualGameUseCaseTests
     public async Task InvalidInput_LeavesNoPartialGame(string name, string badge, int min, int max)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        await Assert.ThrowsAnyAsync<ArgumentException>(() => new ManualGameUseCase(db, new TestGameActivationStore())
+        await Assert.ThrowsAnyAsync<ArgumentException>(() => new ManualGameUseCase(db, new TestGameEnabledStore())
             .SaveAsync(Command(name, min, max) with { BadgeText = badge }, Token));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
@@ -95,7 +95,7 @@ public sealed class ManualGameUseCaseTests
     public async Task Names_AreUniqueAcrossHiddenManualGamesButMayMatchIntegratedGames()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
+        TestGameEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         string integratedName;
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
@@ -120,7 +120,7 @@ public sealed class ManualGameUseCaseTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
             await seed.Database.ExecuteSqlRawAsync("CREATE TRIGGER RejectManual BEFORE INSERT ON ManualGames BEGIN SELECT RAISE(ABORT, 'test'); END;", Token);
-        await Assert.ThrowsAsync<DbUpdateException>(() => new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(Command(), Token));
+        await Assert.ThrowsAsync<DbUpdateException>(() => new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(Command(), Token));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Single(await verify.Games.ToArrayAsync(Token));
         Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
@@ -130,7 +130,7 @@ public sealed class ManualGameUseCaseTests
     public async Task Limits_KeepMaximumFixedAndProtectActualAssignedMembership()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        ManualGameUseCase useCase = new(db, new TestGameActivationStore());
+        ManualGameUseCase useCase = new(db, new TestGameEnabledStore());
         Guid id = await useCase.SaveAsync(Command(max: 4), Token);
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
         ManualGameValidationException locked = await Assert.ThrowsAsync<ManualGameValidationException>(() =>
@@ -149,18 +149,18 @@ public sealed class ManualGameUseCaseTests
     public async Task Visibility_ReactivationAndDisabledPlayEntryUseSharedMetadata()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
+        TestGameEnabledStore store = new();
         Guid id = await new ManualGameUseCase(db, store).SaveAsync(Command(), Token);
-        GameActivationUseCase activation = new(db, store);
-        GameActivationState state = (await activation.GetGamesAsync(Token)).Single(game => game.Name == "Manual");
-        PlayOverviewQuery query = new(db, store);
+        SetGameEnabledUseCase setGameEnabledUseCase = new(db, store);
+        GameInfo state = (await new GamesQuery(db, store).GetAllAsync(Token)).Single(game => game.Name == "Manual");
+        PlayOverviewQuery query = new(db, new(db, store));
         GamesViewModel viewModel = new(query, [], NullLogger<GamesViewModel>.Instance);
         await viewModel.LoadAsync(Token);
-        Assert.False(viewModel.Games.Single(game => game.Key == state.GameKey).CanOpen);
-        await activation.SetEnabledAsync(state.GameKey, false, Token);
+        Assert.False(viewModel.Games.Single(game => game.Key == state.Key).CanOpen);
+        await setGameEnabledUseCase.SetEnabledAsync(state.Key, false, Token);
         Assert.DoesNotContain(await query.ListAsync(Token), game => game.Id == id);
-        Assert.False((await activation.GetGamesAsync(Token)).Single(game => game.GameKey == state.GameKey).IsEnabled);
-        await activation.SetEnabledAsync(state.GameKey, true, Token);
+        Assert.False((await new GamesQuery(db, store).GetAllAsync(Token)).Single(game => game.Key == state.Key).IsEnabled);
+        await setGameEnabledUseCase.SetEnabledAsync(state.Key, true, Token);
         Assert.Contains(await query.ListAsync(Token), game => game.Id == id);
     }
 
@@ -171,7 +171,7 @@ public sealed class ManualGameUseCaseTests
     public async Task Delete_RechecksEverySessionStatusAndLeavesAllData(GameSessionStatus status)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
+        TestGameEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command(), Token);
         string key;
@@ -189,11 +189,11 @@ public sealed class ManualGameUseCaseTests
         Assert.True((await useCase.GetAsync(key, Token))!.HasSessions);
         ManualGameValidationException blocked = await Assert.ThrowsAsync<ManualGameValidationException>(() => useCase.DeleteAsync(id, Token));
         Assert.Equal(ManualGameError.HasSessions, blocked.Error);
-        GameActivationUseCase activation = new(db, store);
+        SetGameEnabledUseCase setGameEnabledUseCase = new(db, store);
         if (status == GameSessionStatus.Completed)
-            await activation.SetEnabledAsync(key, false, Token);
+            await setGameEnabledUseCase.SetEnabledAsync(key, false, Token);
         else
-            await Assert.ThrowsAsync<GameActivationBlockedException>(() => activation.SetEnabledAsync(key, false, Token));
+            await Assert.ThrowsAsync<GameEnablementBlockedException>(() => setGameEnabledUseCase.SetEnabledAsync(key, false, Token));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Single(await verify.ManualGames.ToArrayAsync(Token));
         Assert.Equal(2, await verify.Players.CountAsync(Token));
@@ -203,13 +203,13 @@ public sealed class ManualGameUseCaseTests
     public async Task Editor_CancelCreatesNothingAndDependentOptionsSaveNormalized()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
-        ManualGameEditorViewModel canceled = new(new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        TestGameEnabledStore store = new();
+        ManualGameEditorViewModel canceled = new(new(db, store), new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
         await canceled.LoadAsync(null, Token);
         canceled.GameName = "Discarded";
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
-        ManualGameEditorViewModel editor = new(new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel editor = new(new(db, store), new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
         await editor.LoadAsync(null, Token);
         editor.GameName = "Editor";
         editor.BadgeText = "E";
@@ -227,7 +227,7 @@ public sealed class ManualGameUseCaseTests
     public async Task Delete_RemovesOnlyThisGamesConfigurationAssignmentsDefaultsAndPreference()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        TestGameActivationStore store = new();
+        TestGameEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command(), Token);
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
@@ -260,7 +260,7 @@ public sealed class ManualGameUseCaseTests
     public async Task DeleteFailure_RollsBackConfigurationAssignmentsAndDefaults(string failure)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        FailingVisibility store = new();
+        FailingEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command(), Token);
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
@@ -295,7 +295,7 @@ public sealed class ManualGameUseCaseTests
     public async Task PreferenceCleanup_RunsAfterCommitAndCannotUndoDeletion(bool cleanupFails)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        FailingVisibility store = new();
+        FailingEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command(), Token);
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
@@ -343,14 +343,14 @@ public sealed class ManualGameUseCaseTests
     public async Task Editor_PreferenceFailureReportsWarningAndTreatsDeletionAsSuccessful()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        FailingVisibility store = new();
+        FailingEnabledStore store = new();
         ManualGameUseCase useCase = new(db, store);
         Guid id = await useCase.SaveAsync(Command(), Token);
         string key;
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
             key = (await seed.Games.SingleAsync(game => game.Id == id, Token)).Key;
         store.SetEnabled(key, false);
-        ManualGameEditorViewModel editor = new(useCase, new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel editor = new(useCase, new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
         await editor.LoadAsync(key, Token);
         store.FailNextRemoval = true;
         Assert.True(await editor.DeleteAsync(Token));
@@ -362,9 +362,9 @@ public sealed class ManualGameUseCaseTests
         Assert.False(await verify.Games.AnyAsync(game => game.Id == id, Token));
     }
 
-    private sealed class FailingVisibility : IGameActivationStore
+    private sealed class FailingEnabledStore : IGameEnabledStore
     {
-        private readonly TestGameActivationStore _store = new();
+        private readonly TestGameEnabledStore _store = new();
         public bool FailNextRemoval { get; set; }
         public int RemovalAttempts { get; private set; }
         public Action? BeforeRemoval { get; set; }

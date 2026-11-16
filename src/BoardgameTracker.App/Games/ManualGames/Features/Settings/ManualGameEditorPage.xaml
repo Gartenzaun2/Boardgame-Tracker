@@ -14,10 +14,10 @@
                     <VerticalStackLayout Style="{StaticResource SettingsContent}" Padding="0,0,0,20">
                         <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding IsEditing}">
                             <Label Text="{x:Static res:AppResources.ShowGame}" Style="{StaticResource SettingsItemLabel}" />
-                            <Switch Grid.Column="1" IsToggled="{Binding IsVisibleGame, Mode=OneWay}" IsEnabled="{Binding CanChangeVisibility}"
-                                Toggled="OnVisibilityToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanSetEnabled}"
+                                Toggled="OnEnabledToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
                         </Grid>
-                        <Label Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding VisibilityLocked}" Style="{StaticResource SettingsHintLabel}" />
+                        <Label Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsEnablementLocked}" Style="{StaticResource SettingsHintLabel}" />
                         <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
                         <Label Text="{x:Static res:AppResources.ManualGameName}" Style="{StaticResource SettingsItemLabel}" />
                         <Entry Text="{Binding GameName}" SemanticProperties.Description="{x:Static res:AppResources.ManualGameName}" />

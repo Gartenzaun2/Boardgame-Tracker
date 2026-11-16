@@ -1,4 +1,4 @@
-using BoardgameTracker.Application.Settings;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -12,13 +12,13 @@ namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
 public partial class EditGroupViewModel : ObservableObject {
     private readonly EditGroupUseCase _editGroupUseCase;
-    private readonly GameActivationUseCase _gameActivationUseCase;
+    private readonly GamesQuery _gamesQuery;
     private readonly INavigationService _navigationService;
     private readonly ILogger<EditGroupViewModel> _logger;
 
-    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GameActivationUseCase gameActivationUseCase, INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
+    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GamesQuery gamesQuery, INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
         _editGroupUseCase = editGroupUseCase;
-        _gameActivationUseCase = gameActivationUseCase;
+        _gamesQuery = gamesQuery;
         _navigationService = navigationService;
         _logger = logger;
         Players.CollectionChanged += (_, args) => {
@@ -71,8 +71,8 @@ public partial class EditGroupViewModel : ObservableObject {
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
     public ObservableCollection<GroupGameSelection> GameSelections { get; } = [];
 
-    public IReadOnlyList<GroupGameSelection> SelectedVisibleGames => GameSelections.Where(game => game.IsSelected && game.IsVisible).ToArray();
-    public IReadOnlyList<GroupGameSelection> GamesAvailableToAdd => GameSelections.Where(game => !game.IsSelected && game.IsVisible).ToArray();
+    public IReadOnlyList<GroupGameSelection> SelectedEnabledGames => GameSelections.Where(game => game.IsSelected && game.IsEnabled).ToArray();
+    public IReadOnlyList<GroupGameSelection> GamesAvailableToAdd => GameSelections.Where(game => !game.IsSelected && game.IsEnabled).ToArray();
     public bool HasGamesAvailableToAdd => GamesAvailableToAdd.Count > 0;
 
     #region Localized UI Text
@@ -99,8 +99,7 @@ public partial class EditGroupViewModel : ObservableObject {
                 return;
             }
 
-            IReadOnlyList<GameActivationState> activationStates = await _gameActivationUseCase.GetGamesAsync(cancellationToken);
-            HashSet<string> enabledGameKeys = activationStates.Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
+            HashSet<string> enabledGameKeys = (await _gamesQuery.GetEnabledAsync(cancellationToken)).Select(game => game.Key).ToHashSet(StringComparer.Ordinal);
             GameSelections.Clear();
             foreach (EditGroupGame game in details.Games)
                 GameSelections.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
@@ -138,7 +137,7 @@ public partial class EditGroupViewModel : ObservableObject {
     private void AddGame(GroupGameSelection? game) {
         if (!CanEdit)
             return;
-        if (game is null || game.IsSelected || !game.IsVisible || !GameSelections.Contains(game))
+        if (game is null || game.IsSelected || !game.IsEnabled || !GameSelections.Contains(game))
             return;
 
         game.IsSelected = true;
@@ -158,7 +157,7 @@ public partial class EditGroupViewModel : ObservableObject {
     }
 
     private void RefreshGameSelectionBindings() {
-        OnPropertyChanged(nameof(SelectedVisibleGames));
+        OnPropertyChanged(nameof(SelectedEnabledGames));
         OnPropertyChanged(nameof(GamesAvailableToAdd));
         OnPropertyChanged(nameof(HasGamesAvailableToAdd));
     }

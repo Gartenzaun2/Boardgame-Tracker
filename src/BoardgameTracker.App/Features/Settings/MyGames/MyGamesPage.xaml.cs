@@ -20,7 +20,7 @@ public partial class MyGamesPage : ContentPage {
             await _viewModel.LoadAsync();
     }
     private async void OnGameTapped(object? sender, TappedEventArgs e) {
-        if (_opening || _viewModel.IsBusy || e.Parameter is not GameActivationRow row)
+        if (_opening || _viewModel.IsBusy || e.Parameter is not GameSettingsRow row)
             return;
         _opening = true;
         try {

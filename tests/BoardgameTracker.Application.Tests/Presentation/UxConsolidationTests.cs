@@ -159,7 +159,7 @@ public sealed class UxConsolidationTests
     {
         string source = Resource("HistoryPage.xaml.cs");
         Assert.Contains("_exportSessions = await _query.ListAsync();", source);
-        Assert.Contains("_all = _exportSessions.Where(session => visibleGames.Contains(session.GameKey)).ToArray();", source);
+        Assert.Contains("_all = _exportSessions.Where(session => enabledGameKeys.Contains(session.GameKey)).ToArray();", source);
         Assert.Contains("_visibleIds = _exportSessions.Where", source);
         Assert.Contains("_games = new string?[] { null }.Concat(_all", source);
         Assert.DoesNotContain("dd.MM.yy", source);

@@ -92,7 +92,7 @@ public sealed class ManualScoringTests
         var store = new MainSectionNavigationTests.SettingsStore();
         store.Value = store.Value with { SelectedGameKey = fixture.Key, LastGameSessionId = fixture.Id,
             LastMainSection = BoardgameTracker.Application.Settings.Navigation.AppMainSection.History };
-        AppShell shell = new(new(), new(), new(), new(), store, new(fixture.Database, new TestGameActivationStore()));
+        AppShell shell = new(new(), new(), new(), new(), store, new(fixture.Database, new(fixture.Database, new TestGameEnabledStore())));
         Shell.Current = shell;
         var startup = new BoardgameTracker.Application.Settings.Navigation.StartupNavigationQuery(fixture.Database, new(fixture.Database));
         var first = await startup.ResolveAsync(store.Value, Token);
@@ -122,7 +122,7 @@ public sealed class ManualScoringTests
         public static async Task<Fixture> CreateAsync(ManualGameOptions options, int count = 2)
         {
             SliceDatabase db = await SliceDatabase.CreateAsync();
-            Guid game = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, "Manual", "TAG", 1, 12, options), Token);
+            Guid game = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, "Manual", "TAG", 1, 12, options), Token);
             Guid group = await new CreateGroupUseCase(db).CreateGroupAsync(new("Scoring", Enumerable.Range(1, count)
                 .Select(index => new CreateGroupPlayerInput(null, "P" + index, false)).ToArray(), [game]), Token);
             await using BoardgameTrackerDbContext context = db.CreateDbContext();

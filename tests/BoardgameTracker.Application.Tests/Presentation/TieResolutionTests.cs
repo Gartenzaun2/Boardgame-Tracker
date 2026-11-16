@@ -80,7 +80,7 @@ public sealed class TieResolutionTests
         store.Value = store.Value with { LastGameSessionId = database.Session.Id,
             LastMainSection = BoardgameTracker.Application.Settings.Navigation.AppMainSection.History };
         // Startup has not enabled navigation memory yet.
-        BoardgameTracker.App.AppShell shell = new(new(), new(), new(), new(), store, new(database, new TestGameActivationStore()));
+        BoardgameTracker.App.AppShell shell = new(new(), new(), new(), new(), store, new(database, new(database, new TestGameEnabledStore())));
         Shell.Current = shell;
         var startup = new BoardgameTracker.Application.Settings.Navigation.StartupNavigationQuery(database, new(database));
         var handler = new BoardgameTracker.App.Games.ArkNova.Navigation.ArkNovaGameSessionNavigationHandler(new(database, database.Scoring));

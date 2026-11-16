@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.Games;
 using BoardgameTracker.Application.Settings;
 using BoardgameTracker.App.Features.Settings;
 using BoardgameTracker.App.Persistence.SQLite;
@@ -78,8 +79,9 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ListGroupsQuery>();
         builder.Services.AddSingleton<PlayOverviewQuery>();
-        builder.Services.AddSingleton<IGameActivationStore>(_ => new MauiGameActivationStore(Preferences.Default));
-        builder.Services.AddTransient<GameActivationUseCase>();
+        builder.Services.AddSingleton<GamesQuery>();
+        builder.Services.AddSingleton<IGameEnabledStore>(_ => new MauiGameEnabledStore(Preferences.Default));
+        builder.Services.AddTransient<SetGameEnabledUseCase>();
         builder.Services.AddTransient<MyGamesViewModel>();
         builder.Services.AddTransient<MyGamesPage>();
         builder.Services.AddSingleton<StartupNavigationQuery>();

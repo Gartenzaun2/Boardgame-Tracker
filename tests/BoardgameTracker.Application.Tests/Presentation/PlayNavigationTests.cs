@@ -131,7 +131,7 @@ public sealed class PlayNavigationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         Handler handler = new("ark-nova");
-        GroupListViewModel vm = new(new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<GroupListViewModel>.Instance, [handler]);
+        GroupListViewModel vm = new(new(db), new(db), new(db, new TestGameEnabledStore()), NullLogger<GroupListViewModel>.Instance, [handler]);
         vm.SetGameContext(handler.GameKey);
         await vm.LoadAsync(Token);
         Assert.Empty(vm.Groups);
@@ -156,7 +156,7 @@ public sealed class PlayNavigationTests
         foreach (bool playOrigin in new[] { false, true })
         {
             await using SliceDatabase db = await SliceDatabase.CreateAsync(archived: action == 2);
-            CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+            CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), NullLogger<CreateGroupViewModel>.Instance);
             if (playOrigin) vm.SetGameContext("ark-nova");
             else vm.SetManagementOrigin();
             await vm.LoadAsync(Token);
@@ -192,7 +192,7 @@ public sealed class PlayNavigationTests
     public async Task NavigationFailureAfterSave_RetriesSameIdentityWithoutWritingAgain()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), NullLogger<CreateGroupViewModel>.Instance);
         vm.SetGameContext("ark-nova");
         await vm.LoadAsync(Token);
         vm.GroupName = "One save only";

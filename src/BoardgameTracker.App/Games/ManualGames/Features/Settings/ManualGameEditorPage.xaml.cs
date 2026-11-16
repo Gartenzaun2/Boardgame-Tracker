@@ -33,8 +33,8 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
             await GoBackAsync();
     }
 
-    private async void OnVisibilityToggled(object? sender, ToggledEventArgs e)
-        => await _viewModel.SetVisibilityAsync(e.Value);
+    private async void OnEnabledToggled(object? sender, ToggledEventArgs e)
+        => await _viewModel.SetEnabledAsync(e.Value);
 
     private async void OnResultModeClicked(object? sender, EventArgs e) {
         if (!_viewModel.CanInteract)

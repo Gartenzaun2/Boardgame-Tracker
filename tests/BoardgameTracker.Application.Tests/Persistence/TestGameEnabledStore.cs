@@ -1,8 +1,9 @@
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Settings;
 
 namespace BoardgameTracker.Application.Tests.Persistence;
 
-internal sealed class TestGameActivationStore : IGameActivationStore
+internal sealed class TestGameEnabledStore : IGameEnabledStore
 {
     private readonly HashSet<string> _disabled = new(StringComparer.Ordinal);
     public bool IsEnabled(string gameKey) => !_disabled.Contains(gameKey);

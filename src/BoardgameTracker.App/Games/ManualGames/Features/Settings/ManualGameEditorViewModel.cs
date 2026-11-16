@@ -1,5 +1,5 @@
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Games.ManualGames;
-using BoardgameTracker.Application.Settings;
 using BoardgameTracker.Core.Games.ManualGames;
 using BoardgameTracker.App.Resources.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,12 +9,14 @@ namespace BoardgameTracker.App.Games.ManualGames.Features.Settings;
 
 public partial class ManualGameEditorViewModel : ObservableObject {
     private readonly ManualGameUseCase _useCase;
-    private readonly GameActivationUseCase _activation;
+    private readonly GamesQuery _gamesQuery;
+    private readonly SetGameEnabledUseCase _setGameEnabledUseCase;
     private readonly ILogger<ManualGameEditorViewModel> _logger;
 
-    public ManualGameEditorViewModel(ManualGameUseCase useCase, GameActivationUseCase activation, ILogger<ManualGameEditorViewModel> logger) {
+    public ManualGameEditorViewModel(ManualGameUseCase useCase, GamesQuery gamesQuery, SetGameEnabledUseCase setGameEnabledUseCase, ILogger<ManualGameEditorViewModel> logger) {
         _useCase = useCase;
-        _activation = activation;
+        _gamesQuery = gamesQuery;
+        _setGameEnabledUseCase = setGameEnabledUseCase;
         _logger = logger;
     }
 
@@ -73,13 +75,13 @@ public partial class ManualGameEditorViewModel : ObservableObject {
     public string ResultModeText => ResultChoices[Math.Clamp(ResultMode, 0, 2)];
     public IReadOnlyList<string> ResultChoices => [AppResources.ManualResult, AppResources.HighestPointsWin, AppResources.LowestPointsWin];
     [ObservableProperty]
-    public partial bool IsVisibleGame { get; private set; } = true;
+    public partial bool IsEnabled { get; private set; } = true;
 
     [ObservableProperty]
-    public partial bool VisibilityLocked { get; private set; }
-    public bool CanChangeVisibility => !VisibilityLocked;
-    partial void OnVisibilityLockedChanged(bool value)
-        => OnPropertyChanged(nameof(CanChangeVisibility));
+    public partial bool IsEnablementLocked { get; private set; }
+    public bool CanSetEnabled => !IsEnablementLocked;
+    partial void OnIsEnablementLockedChanged(bool value)
+        => OnPropertyChanged(nameof(CanSetEnabled));
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDelete))]
     public partial bool HasSessions { get; private set; }
@@ -121,9 +123,9 @@ public partial class ManualGameEditorViewModel : ObservableObject {
             else
                 ResultMode = details.Options.PointsDirection == PointsDirection.Highest ? 1 : 2;
             HasSessions = details.HasSessions;
-            GameActivationState visibility = (await _activation.GetGamesAsync(cancellationToken)).Single(game => game.GameKey == gameKey);
-            IsVisibleGame = visibility.IsEnabled;
-            VisibilityLocked = visibility.HasOpenSessions;
+            GameInfo game = await _gamesQuery.GetAsync(gameKey, cancellationToken);
+            IsEnabled = game.IsEnabled;
+            IsEnablementLocked = game.HasOpenSessions;
             _loaded = true;
         }
         catch (Exception exception) {
@@ -173,27 +175,27 @@ public partial class ManualGameEditorViewModel : ObservableObject {
         }
     }
 
-    public async Task SetVisibilityAsync(bool visible, CancellationToken cancellationToken = default) {
-        if (!CanInteract || _gameKey is null || IsVisibleGame == visible)
+    public async Task SetEnabledAsync(bool isEnabled, CancellationToken cancellationToken = default) {
+        if (!CanInteract || _gameKey is null || IsEnabled == isEnabled)
             return;
         IsBusy = true;
         ErrorMessage = null;
         try {
-            GameActivationState state = await _activation.SetEnabledAsync(_gameKey, visible, cancellationToken);
-            IsVisibleGame = state.IsEnabled;
-            VisibilityLocked = state.HasOpenSessions;
+            GameEnabledState state = await _setGameEnabledUseCase.SetEnabledAsync(_gameKey, isEnabled, cancellationToken);
+            IsEnabled = state.IsEnabled;
+            IsEnablementLocked = state.HasOpenSessions;
         }
-        catch (GameActivationBlockedException) {
-            IsVisibleGame = true;
-            VisibilityLocked = true;
+        catch (GameEnablementBlockedException) {
+            IsEnabled = true;
+            IsEnablementLocked = true;
             ErrorMessage = AppResources.GameDisableBlocked;
         }
         catch (Exception exception) {
-            _logger.LogError(exception, "Could not change manual game visibility.");
+            _logger.LogError(exception, "Could not change manual game enablement.");
             ErrorMessage = AppResources.GameActivationSaveFailed;
         }
         finally {
-            OnPropertyChanged(nameof(IsVisibleGame));
+            OnPropertyChanged(nameof(IsEnabled));
             IsBusy = false;
         }
     }

@@ -9,12 +9,12 @@ namespace BoardgameTracker.App.Games.ArkNova.Features.Settings;
 public partial class ArkNovaSettingsPage : ContentPage {
     private readonly ArkNovaSettingsViewModel _viewModel;
     private bool _isChoosingOrNavigating;
-    private readonly MyGamesViewModel _visibility;
+    private readonly MyGamesViewModel _gamesSettingsViewModel;
 
-    public ArkNovaSettingsPage(ArkNovaSettingsViewModel viewModel, MyGamesViewModel visibility) {
+    public ArkNovaSettingsPage(ArkNovaSettingsViewModel viewModel, MyGamesViewModel gamesSettingsViewModel) {
         InitializeComponent();
         _viewModel = viewModel;
-        _visibility = visibility;
+        _gamesSettingsViewModel = gamesSettingsViewModel;
         BindingContext = viewModel;
     }
 
@@ -23,22 +23,22 @@ public partial class ArkNovaSettingsPage : ContentPage {
         if (AppDialogPage.IsOpen(this))
             return;
         _viewModel.Load();
-        VisibilityPanel.IsEnabled = false;
-        await _visibility.LoadAsync();
-        VisibilityPanel.BindingContext = _visibility.Games.SingleOrDefault(game => game.GameKey == ArkNovaGame.Key);
-        VisibilityPanel.IsEnabled = !_visibility.HasError && VisibilityPanel.BindingContext is not null;
-        VisibilityError.Text = _visibility.ErrorMessage;
-        VisibilityError.IsVisible = _visibility.HasError;
+        EnablementPanel.IsEnabled = false;
+        await _gamesSettingsViewModel.LoadAsync();
+        EnablementPanel.BindingContext = _gamesSettingsViewModel.Games.SingleOrDefault(game => game.GameKey == ArkNovaGame.Key);
+        EnablementPanel.IsEnabled = !_gamesSettingsViewModel.HasError && EnablementPanel.BindingContext is not null;
+        EnablementError.Text = _gamesSettingsViewModel.ErrorMessage;
+        EnablementError.IsVisible = _gamesSettingsViewModel.HasError;
     }
 
-    private async void OnGameVisibilityToggled(object? sender, ToggledEventArgs e) {
-        if (sender is not Switch { BindingContext: GameActivationRow row } || _visibility.IsBusy)
+    private async void OnGameEnabledToggled(object? sender, ToggledEventArgs e) {
+        if (sender is not Switch { BindingContext: GameSettingsRow row } || _gamesSettingsViewModel.IsBusy)
             return;
-        VisibilityPanel.IsEnabled = false;
-        await _visibility.SetEnabledAsync(row, e.Value);
-        VisibilityPanel.IsEnabled = true;
-        VisibilityError.Text = _visibility.ErrorMessage;
-        VisibilityError.IsVisible = _visibility.HasError;
+        EnablementPanel.IsEnabled = false;
+        await _gamesSettingsViewModel.SetEnabledAsync(row, e.Value);
+        EnablementPanel.IsEnabled = true;
+        EnablementError.Text = _gamesSettingsViewModel.ErrorMessage;
+        EnablementError.IsVisible = _gamesSettingsViewModel.HasError;
     }
 
     /// <summary>MAUI hides settings, including when opening a child page; persist the current choices before leaving.</summary>

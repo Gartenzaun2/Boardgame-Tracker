@@ -1,13 +1,13 @@
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Persistence;
 using BoardgameTracker.Application.History.Transfer;
-using BoardgameTracker.Application.Settings;
 using BoardgameTracker.Core.Games;
 using BoardgameTracker.Core.Games.ManualGames;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoardgameTracker.Application.Games.ManualGames;
 
-public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> factory, IGameActivationStore visibility)
+public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContext> factory, IGameEnabledStore enabledStore)
 {
     public async Task<Guid> SaveAsync(ManualGameCommand command, CancellationToken cancellationToken = default)
     {
@@ -84,7 +84,7 @@ public sealed class ManualGameUseCase(IDbContextFactory<BoardgameTrackerDbContex
         // It must not affect the committed deletion or trigger a visibility rollback.
         try
         {
-            visibility.SetEnabled(gameKey, true);
+            enabledStore.SetEnabled(gameKey, true);
         }
         catch (Exception exception)
         {

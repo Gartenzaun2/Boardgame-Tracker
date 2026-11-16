@@ -11,6 +11,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:BoolNegationConverter x:Key="NegateBool" />
+            <converters:EnumEqualsConverter x:Key="EnumEquals" />
 
             <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
                 <Setter Property="BackgroundColor" Value="{DynamicResource AppBackground}" />

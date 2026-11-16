@@ -117,48 +117,12 @@ jeweils anhand ihrer tatsächlichen Verantwortung prüfen; Spielnavigation und
 Sonderaktionen dabei erhalten. Die abgeschlossene Pilotumstellung ist keine
 Freigabe für ein projektweites Refactoring.
 
-### Nächstes Codex-Arbeitspaket: Enum-Converter und Games-Feature
+### CreateGroup: gegenseitig ausschließende Unterdialoge
 
-Die beiden Teilaufträge **gemeinsam** auf Grundlage des aktuellen gepushten
-Stands und der Code-Guidelines umsetzen und zusammen sinnvoll verifizieren.
-Dieses Paket bereitet die spätere `CreateGroup`-Überarbeitung vor, ist aber
-**keine Freigabe**, `CreateGroup`, seine Overlays, die allgemeinen Dialoge oder
-die Navigation jetzt bereits umfassend umzubauen. Keine pauschale
-Projektkonsolidierung in diesem Paket.
-
-#### 1. Allgemeiner Enum-Vergleichsconverter
-
-**Ist:** `App.xaml` registriert bereits den `BoolNegationConverter` aus
-`App/Presentation/Converters`; ein gemeinsam verwendbarer Enum-Vergleichs-
-Converter ist dort noch nicht vorhanden.
-
-**Ziel:** Einen kleinen, für unterschiedliche Enum-Typen wiederverwendbaren
-`EnumEqualsConverter` als `IValueConverter` in
-`App/Presentation/Converters` bereitstellen und in `App.xaml` unter dem
-Schlüssel `EnumEquals` registrieren. `Convert` ergibt nur `true`, wenn
-Binding-Wert und `ConverterParameter` **Enum-Werte desselben Typs mit demselben
-Member** sind; fehlende, fremde oder ungültige Werte ergeben `false`.
-Der Parameter wird in XAML typisiert über `x:Static` übergeben, nicht aus
-einem beliebigen Namenstext interpretiert. Nur OneWay-Anwendung ist nötig;
-keine weitere NuGet-Abhängigkeit für diesen Vergleich einführen.
-
-Die Resource-Registrierung und die boolesche Vergleichssemantik gezielt
-verifizieren, einschließlich gleicher/verschiedener Member, unterschiedlicher
-Enum-Typen und `null`. **Noch keine** Umstellung der `CreateGroup`-Overlays auf
-das spätere `ActiveSubdialog`-Enum; die Nutzung erfolgt im separaten
-Dialog-Refactoring.
-
-#### 2. Allgemeine Games-Abfrage und Enablement-Use-Case
-
-**Ist:** `GameActivationUseCase` unter `Application/Settings` mischt Lesen und Schreiben und verwendet uneinheitliche Begriffe; weitere allgemeine Spieleabfragen sind auf `PlayOverviewQuery` und den Gruppeneditor verteilt.
-
-**Ziel:**
-
-1. Feature-Ownership unter `Application/Games` vereinheitlichen: lesende `GamesQuery` und separaten schreibenden Use Case, beispielsweise `SetGameEnabledUseCase`. `GetAllAsync`, `GetEnabledAsync`, `GetByKeyAsync` sind **Vorschläge**, keine ohne Aufruferprüfung verbindlich festgelegten Methoden.
-2. Alle Aufrufer / benötigten Read Models gegenüber `PlayOverviewQuery` und Gruppenauswahl prüfen; tatsächlich gemeinsame Abfragen konsolidieren, sessionbezogene Navigation nicht ohne guten Grund in `GamesQuery` verschieben.
-3. Einheitlich `Games`, `IsEnabled`, `SetEnabled` nennen; nicht für denselben Zustand wechselweise `Activation`, `Visible`, `Active`, `GameCatalog`. UI-Modellnamen nur nach Prüfung ihrer übrigen Bedeutung ändern.
-4. **MAUI Preferences als persönlichen Speicher unverändert lassen**, Schlüssel nach `Game.Key`. Keine zusätzliche Entity-Spalte oder Datenmigration. Standardzustand und Schutz bei offenen Sessions erhalten; bisherige effektive Enabled-Berechnung beachten.
-5. Views, ViewModels, DI und passende Tests nach finaler Aufteilung einheitlich anpassen. Keine reinen Rename-Aliase einführen.
+Die vorhandenen Unterdialogzustände in einem separaten Dialog-Refactoring auf
+einen Enum-Zustand mit `None` umstellen und den gemeinsamen `EnumEqualsConverter`
+für die XAML-Vergleiche verwenden. Die Games-Konsolidierung nimmt diese Umstellung
+nicht vorweg.
 
 ### Weitere bereits angesprochene Aufräumarbeiten
 

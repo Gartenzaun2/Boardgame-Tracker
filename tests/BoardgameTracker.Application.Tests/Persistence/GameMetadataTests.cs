@@ -50,10 +50,11 @@ public sealed class GameMetadataTests
         Assert.Equal(database.GameId, (await verify.GroupGames.SingleAsync(Token)).GameId);
         Assert.Equal(2, await verify.Players.CountAsync(Token));
         Assert.Single(await verify.Groups.ToArrayAsync(Token));
-        PlayOverviewQuery query = new(database, new TestGameActivationStore());
-        Assert.Equal("Registered name", (await query.GetGameAsync(ArkNovaGame.Key, Token)).Name);
+        GamesQuery gamesQuery = new(database, new TestGameEnabledStore());
+        PlayOverviewQuery query = new(database, gamesQuery);
+        Assert.Equal("Registered name", (await gamesQuery.GetAsync(ArkNovaGame.Key, Token)).Name);
         Assert.Equal("Badge", Assert.Single(await query.ListAsync(Token)).BadgeText);
-        Assert.Equal("Registered name", Assert.Single(await new GameActivationUseCase(database, new TestGameActivationStore()).GetGamesAsync(Token)).Name);
+        Assert.Equal("Registered name", Assert.Single(await gamesQuery.GetAllAsync(Token)).Name);
     }
 
     [Theory]

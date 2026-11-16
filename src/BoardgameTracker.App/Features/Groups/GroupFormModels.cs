@@ -23,7 +23,7 @@ public sealed partial class GroupMemberDraft(Guid? playerId, string name, bool i
     }
 }
 
-public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true, bool isVisible = true, int maximumPlayers = int.MaxValue, int minimumPlayers = 1) : ObservableObject {
+public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bool canRemove = true, bool isEnabled = true, int maximumPlayers = int.MaxValue, int minimumPlayers = 1) : ObservableObject {
     private bool _isSelected = isSelected;
     public int MaximumPlayers { get; } = maximumPlayers;
     public int MinimumPlayers { get; } = minimumPlayers;
@@ -31,7 +31,7 @@ public sealed class GroupGameSelection(Guid id, string name, bool isSelected, bo
         => count >= MinimumPlayers && count <= MaximumPlayers;
     public Guid Id { get; } = id;
     public string Name { get; } = name;
-    public bool IsVisible { get; } = isVisible;
+    public bool IsEnabled { get; } = isEnabled;
     public bool CanChange { get; } = !isSelected || canRemove;
     public bool IsLocked => !CanChange;
     public string LockReason => AppResources.GroupGameLocked;

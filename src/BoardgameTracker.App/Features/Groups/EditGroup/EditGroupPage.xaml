@@ -82,7 +82,7 @@
 
                     <VerticalStackLayout Spacing="8">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GamesSection}" />
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedVisibleGames}">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedEnabledGames}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupGameSelection">
                                     <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">

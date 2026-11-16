@@ -30,7 +30,7 @@ public sealed class GroupManagementTests
         Assert.Equal(3, await verify.Players.CountAsync(Token));
         Assert.Equal(withGames ? 2 : 0, await verify.GroupGames.CountAsync(assignment => assignment.GroupId == id, Token));
         Assert.Empty(await verify.GroupGamePlayerColors.ToArrayAsync(Token));
-        Assert.Contains(await useCase.GetSelectableGamesAsync(Token), game => game.Id == other.Id && game.Key == other.Key);
+        Assert.Contains(await new BoardgameTracker.Application.Games.GamesQuery(database, new TestGameEnabledStore()).GetAllAsync(Token), game => game.Id == other.Id && game.Key == other.Key);
     }
 
     [Fact]

@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.Games;
 using BoardgameTracker.Core.Groups;
 using BoardgameTracker.App;
 using BoardgameTracker.App.Features.Games.ListGames;
@@ -17,11 +18,58 @@ using BoardgameTracker.Core.Players;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace BoardgameTracker.Application.Tests.Settings;
+namespace BoardgameTracker.Application.Tests.Games;
 
-public sealed class GameActivationTests
+public sealed class GameEnablementTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
+
+    [Fact]
+    public void Adapter_ReadsExistingDisabledKeyAndEnablingRemovesIt() {
+        TestPreferences preferences = new();
+        preferences.Set("Games.Disabled.ark-nova", true);
+        preferences.Set("Games.Disabled.manual:existing", true);
+        MauiGameEnabledStore store = new(preferences);
+        Assert.False(store.IsEnabled("ark-nova"));
+        Assert.False(store.IsEnabled("manual:existing"));
+        Assert.True(store.IsEnabled("new-game"));
+
+        store.SetEnabled("ark-nova", true);
+
+        Assert.False(preferences.Get("Games.Disabled.ark-nova", false));
+        Assert.True(preferences.Get("Games.Disabled.manual:existing", false));
+        Assert.Single(preferences.Values);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task GamesQuery_SharesMetadataAndEffectiveEnablementWithoutChangingOptOut(bool scoring) {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        MauiGameEnabledStore store = new(new TestPreferences());
+        store.SetEnabled("ark-nova", false);
+        GamesQuery query = new(db, store);
+        GameInfo hidden = await query.GetAsync("ark-nova", Token);
+        Assert.Equal(db.GameId, hidden.Id);
+        Assert.Equal(BoardgameTracker.Core.Games.ArkNova.ArkNovaGame.Name, hidden.Name);
+        Assert.False(hidden.IsEnabled);
+        Assert.False(hidden.HasOpenSessions);
+        Assert.Equal(hidden, Assert.Single(await query.GetAllAsync(Token)));
+        Assert.Empty(await query.GetEnabledAsync(Token));
+
+        await db.AddSessionAsync(scoring);
+
+        GameInfo enabled = Assert.Single(await query.GetEnabledAsync(Token));
+        Assert.True(enabled.IsEnabled);
+        Assert.True(enabled.HasOpenSessions);
+        Assert.Equal(hidden.Id, enabled.Id);
+        Assert.Equal(hidden.BadgeText, enabled.BadgeText);
+        Assert.Equal(hidden.MinimumPlayers, enabled.MinimumPlayers);
+        Assert.Equal(hidden.MaximumPlayers, enabled.MaximumPlayers);
+        Assert.Equal(enabled, await query.GetAsync("ark-nova", Token));
+        Assert.False(store.IsEnabled("ark-nova"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => query.GetAsync("missing", Token));
+    }
     private sealed class Handler(string key, string name) : IGameSessionNavigationHandler
     {
         public string GameKey => key;
@@ -37,11 +85,11 @@ public sealed class GameActivationTests
     {
         TestPreferences preferences = new();
         preferences.Set("UnrelatedSetting", "kept");
-        MauiGameActivationStore first = new(preferences);
+        MauiGameEnabledStore first = new(preferences);
         Assert.True(first.IsEnabled("first"));
         Assert.True(first.IsEnabled("second"));
         first.SetEnabled("first", false);
-        MauiGameActivationStore reopened = new(preferences);
+        MauiGameEnabledStore reopened = new(preferences);
         Assert.False(reopened.IsEnabled("first"));
         Assert.True(reopened.IsEnabled("second"));
         reopened.SetEnabled("second", false);
@@ -59,9 +107,9 @@ public sealed class GameActivationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
-        GameActivationUseCase useCase = new(db, store);
-        Assert.True(Assert.Single(await useCase.GetGamesAsync(Token)).IsEnabled);
+        MauiGameEnabledStore store = new(preferences);
+        SetGameEnabledUseCase useCase = new(db, store);
+        Assert.True(Assert.Single(await new GamesQuery(db, store).GetAllAsync(Token)).IsEnabled);
         await useCase.SetEnabledAsync("ark-nova", false, Token);
         Game other = new("new-game", "new-game", "new-game", 1, 8);
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
@@ -69,11 +117,11 @@ public sealed class GameActivationTests
             seed.Games.Add(other);
             await seed.SaveChangesAsync(Token);
         }
-        IReadOnlyList<GameActivationState> states = await new GameActivationUseCase(db, new MauiGameActivationStore(preferences)).GetGamesAsync(Token);
-        Assert.False(states.Single(game => game.GameKey == "ark-nova").IsEnabled);
-        Assert.True(states.Single(game => game.GameKey == other.Key).IsEnabled);
+        IReadOnlyList<GameInfo> states = await new GamesQuery(db, new MauiGameEnabledStore(preferences)).GetAllAsync(Token);
+        Assert.False(states.Single(game => game.Key == "ark-nova").IsEnabled);
+        Assert.True(states.Single(game => game.Key == other.Key).IsEnabled);
         await useCase.SetEnabledAsync("ark-nova", true, Token);
-        Assert.All(await useCase.GetGamesAsync(Token), game => Assert.True(game.IsEnabled));
+        Assert.All(await new GamesQuery(db, store).GetAllAsync(Token), game => Assert.True(game.IsEnabled));
     }
 
     [Theory]
@@ -85,8 +133,8 @@ public sealed class GameActivationTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await AddSessionAsync(db, status);
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
-        GameActivationUseCase useCase = new(db, store);
+        MauiGameEnabledStore store = new(preferences);
+        SetGameEnabledUseCase useCase = new(db, store);
         if (status == GameSessionStatus.Completed)
         {
             Assert.False((await useCase.SetEnabledAsync("ark-nova", false, Token)).IsEnabled);
@@ -94,7 +142,7 @@ public sealed class GameActivationTests
         }
         else
         {
-            await Assert.ThrowsAsync<GameActivationBlockedException>(() => useCase.SetEnabledAsync("ark-nova", false, Token));
+            await Assert.ThrowsAsync<GameEnablementBlockedException>(() => useCase.SetEnabledAsync("ark-nova", false, Token));
             Assert.True(store.IsEnabled("ark-nova"));
             Assert.Empty(preferences.Values);
         }
@@ -107,10 +155,10 @@ public sealed class GameActivationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
+        MauiGameEnabledStore store = new(preferences);
         MyGamesViewModel vm = CreateViewModel(db, store);
         await vm.LoadAsync(Token);
-        GameActivationRow row = Assert.Single(vm.Games);
+        GameSettingsRow row = Assert.Single(vm.Games);
         Assert.Equal(BoardgameTracker.Core.Games.ArkNova.ArkNovaGame.Name, row.Name);
         Assert.True(row.IsEnabled);
         Assert.True(row.CanToggle);
@@ -131,12 +179,12 @@ public sealed class GameActivationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
+        MauiGameEnabledStore store = new(preferences);
         if (initiallyDisabled)
             store.SetEnabled("ark-nova", false);
         MyGamesViewModel vm = CreateViewModel(db, store);
         await vm.LoadAsync(Token);
-        GameActivationRow row = Assert.Single(vm.Games);
+        GameSettingsRow row = Assert.Single(vm.Games);
         preferences.FailWrites = true;
         await vm.SetEnabledAsync(row, initiallyDisabled, Token);
         Assert.True(vm.HasError);
@@ -157,11 +205,11 @@ public sealed class GameActivationTests
             await seed.SaveChangesAsync(Token);
         }
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
-        PlayOverviewQuery query = new(db, store);
+        MauiGameEnabledStore store = new(preferences);
+        PlayOverviewQuery query = new(db, new(db, store));
         string[] before = (await query.ListAsync(Token)).Select(game => game.Key).ToArray();
         Assert.Equal(new[] { "ark-nova", other.Key }, before);
-        GameActivationUseCase useCase = new(db, store);
+        SetGameEnabledUseCase useCase = new(db, store);
         await useCase.SetEnabledAsync("ark-nova", false, Token);
         Assert.Equal(other.Key, Assert.Single(await query.ListAsync(Token)).Key);
         GamesViewModel vm = new(query, [new Handler("ark-nova", "Game one"), new Handler(other.Key, "Game two")], NullLogger<GamesViewModel>.Instance);
@@ -187,8 +235,8 @@ public sealed class GameActivationTests
         }
         CompletedGameSessionsQuery history = new(db);
         HistoryGameSession before = Assert.Single(await history.ListAsync(cancellationToken: Token));
-        MauiGameActivationStore store = new(new TestPreferences());
-        GameActivationUseCase useCase = new(db, store);
+        MauiGameEnabledStore store = new(new TestPreferences());
+        SetGameEnabledUseCase useCase = new(db, store);
         await useCase.SetEnabledAsync("ark-nova", false, Token);
         HistoryGameSession after = Assert.Single(await history.ListAsync(cancellationToken: Token));
         Assert.Equal(before.GameSessionId, after.GameSessionId);
@@ -209,7 +257,7 @@ public sealed class GameActivationTests
             Assert.Equal(2, persisted.Players.Count);
         }
         await useCase.SetEnabledAsync("ark-nova", true, Token);
-        Assert.Equal(db.GameId, Assert.Single(await new PlayOverviewQuery(db, store).ListAsync(Token)).Id);
+        Assert.Equal(db.GameId, Assert.Single(await new PlayOverviewQuery(db, new(db, store)).ListAsync(Token)).Id);
         Assert.Equal(db.Group.Id, Assert.Single(await new BoardgameTracker.Application.Groups.ListGroupsQuery(db).ListGroupsAsync("ark-nova", Token)).Id);
     }
 
@@ -217,21 +265,21 @@ public sealed class GameActivationTests
     public async Task PlayRoot_IgnoresDisabledRememberedGameAndOpenSessionsRemainReachable()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        MauiGameActivationStore store = new(new TestPreferences());
-        await new GameActivationUseCase(db, store).SetEnabledAsync("ark-nova", false, Token);
+        MauiGameEnabledStore store = new(new TestPreferences());
+        await new SetGameEnabledUseCase(db, store).SetEnabledAsync("ark-nova", false, Token);
         var settings = new Presentation.MainSectionNavigationTests.SettingsStore();
-        AppShell shell = new(new(), new(), new(), new(), settings, new(db, store));
+        AppShell shell = new(new(), new(), new(), new(), settings, new(db, new(db, store)));
         shell.EnableNavigationMemory();
         await shell.NavigateToMainSectionAsync(AppMainSection.Play);
         Assert.Single(shell.CurrentItem.CurrentItem.Navigation.NavigationStack);
-        Assert.Empty(await new PlayOverviewQuery(db, store).ListAsync(Token));
+        Assert.Empty(await new PlayOverviewQuery(db, new(db, store)).ListAsync(Token));
         // A session started from a preparation already on the stack must never disappear.
         GameSession session = await db.AddSessionAsync(scoring: true);
         await shell.NavigateFromMainTabTapAsync(shell.CurrentItem.Items[0]);
         Assert.Equal("//GamesPage/GroupListPage", shell.Calls[^1].Route);
-        Assert.True(Assert.Single(await new PlayOverviewQuery(db, store).ListAsync(Token)).HasOpenSession);
+        Assert.True(Assert.Single(await new PlayOverviewQuery(db, new(db, store)).ListAsync(Token)).HasOpenSession);
         Assert.Equal(session.Id, (await new OpenGameSessionQuery(db).GetAsync(session.Id, Token))!.GameSessionId);
-        GameActivationState state = Assert.Single(await new GameActivationUseCase(db, store).GetGamesAsync(Token));
+        GameInfo state = Assert.Single(await new GamesQuery(db, store).GetAllAsync(Token));
         Assert.True(state.IsEnabled);
         Assert.True(state.HasOpenSessions);
     }
@@ -241,14 +289,14 @@ public sealed class GameActivationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         TestPreferences preferences = new();
-        MauiGameActivationStore store = new(preferences);
+        MauiGameEnabledStore store = new(preferences);
         MyGamesViewModel vm = CreateViewModel(db, store);
         await vm.LoadAsync(Token);
-        GameActivationRow row = Assert.Single(vm.Games);
+        GameSettingsRow row = Assert.Single(vm.Games);
         await vm.SetEnabledAsync(row, false, Token);
         Assert.False(vm.HasError);
         Assert.False(row.IsEnabled);
-        MyGamesViewModel reopened = CreateViewModel(db, new MauiGameActivationStore(preferences));
+        MyGamesViewModel reopened = CreateViewModel(db, new MauiGameEnabledStore(preferences));
         await reopened.LoadAsync(Token);
         Assert.False(Assert.Single(reopened.Games).IsEnabled);
         await reopened.SetEnabledAsync(reopened.Games[0], true, Token);
@@ -256,8 +304,8 @@ public sealed class GameActivationTests
         Assert.Empty(preferences.Values);
     }
 
-    private static MyGamesViewModel CreateViewModel(SliceDatabase db, IGameActivationStore store) =>
-        new(new(db, store), [], NullLogger<MyGamesViewModel>.Instance);
+    private static MyGamesViewModel CreateViewModel(SliceDatabase db, IGameEnabledStore store) =>
+        new(new(db, store), new(db, store), [], NullLogger<MyGamesViewModel>.Instance);
 
     private static async Task<GameSession> AddSessionAsync(SliceDatabase db, GameSessionStatus status)
     {
