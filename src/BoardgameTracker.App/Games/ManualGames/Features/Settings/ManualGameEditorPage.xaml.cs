@@ -19,6 +19,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
             _gameKey = key as string;
     }
 
+    /// <summary>Modal dismissal must preserve the settings draft already initialized by the ViewModel.</summary>
     protected override async void OnAppearing() {
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this))
@@ -31,6 +32,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
     private async void OnResultModeClicked(object? sender, EventArgs e) {
         if (!_viewModel.CanEdit)
             return;
+
         _viewModel.IsChoosing = true;
         try {
             int selected = await AppDialogPage.ChooseAsync(this, AppResources.ResultFromPoints,
@@ -47,6 +49,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
     private async void OnDeleteClicked(object? sender, EventArgs e) {
         if (!await _viewModel.RefreshDeleteEligibilityAsync())
             return;
+
         bool confirmed;
         _viewModel.IsChoosing = true;
         try {
@@ -58,6 +61,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
         } finally {
             _viewModel.IsChoosing = false;
         }
+
         if (!confirmed || !await _viewModel.DeleteAsync())
             return;
 

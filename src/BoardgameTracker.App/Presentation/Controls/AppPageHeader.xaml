@@ -4,25 +4,28 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Presentation.Controls.AppPageHeader" x:Name="Header" x:DataType="controls:AppPageHeader">
     <controls:AppPageHeaderLayout Variant="{Binding Variant, Source={x:Reference Header}}">
-        <ImageButton Source="icon_back.png" Style="{StaticResource HeaderIconButton}"
-            Command="{Binding BackCommand, Source={x:Reference Header}}"
-            IsVisible="{Binding IsBackVisible, Source={x:Reference Header}}" Clicked="OnBackClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
-        <Label Text="{Binding Title, Source={x:Reference Header}}" FontSize="24" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation"
-            SemanticProperties.Description="{Binding Title, Source={x:Reference Header}}" VerticalOptions="Center" VerticalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
+
+        <!-- Primary header row: return, title and right-aligned actions. -->
+        <ImageButton Source="icon_back.png" Style="{StaticResource HeaderIconButton}" IsVisible="{Binding IsBackVisible, Source={x:Reference Header}}"
+            Command="{Binding BackCommand, Source={x:Reference Header}}" Clicked="OnBackClicked"
+            SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+        <Label Text="{Binding Title, Source={x:Reference Header}}" FontSize="24" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation" SemanticProperties.Description="{Binding Title, Source={x:Reference Header}}" VerticalOptions="Center" VerticalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
         <HorizontalStackLayout x:Name="ActionItems" Spacing="0" HorizontalOptions="End" VerticalOptions="Center" />
+
+        <!-- Optional game context row: badge and subtitle. -->
         <Grid IsVisible="{Binding HasContextRow, Source={x:Reference Header}}" ColumnDefinitions="Auto,*" ColumnSpacing="6">
             <Grid.Triggers>
                 <DataTrigger TargetType="Grid" Binding="{Binding HasBadge, Source={x:Reference Header}}" Value="False">
                     <Setter Property="ColumnSpacing" Value="0" />
                 </DataTrigger>
             </Grid.Triggers>
-                <Border IsVisible="{Binding HasBadge, Source={x:Reference Header}}" BackgroundColor="Transparent" Stroke="{DynamicResource GameContextBorder}" StrokeThickness="2"
-                    StrokeShape="RoundRectangle 12" HeightRequest="24" MinimumHeightRequest="24" MaximumHeightRequest="24" Padding="8,0" HorizontalOptions="Start" VerticalOptions="Center"
-                    SemanticProperties.Description="{Binding GameName, Source={x:Reference Header}}">
-                    <Label Text="{Binding BadgeText, Source={x:Reference Header}}" FontSize="13" FontAttributes="Bold" FontAutoScalingEnabled="False" TextColor="{DynamicResource GameContextText}" VerticalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" LineBreakMode="WordWrap" />
-                </Border>
-                <Label Grid.Column="1" Text="{Binding Subtitle, Source={x:Reference Header}}" FontSize="14" LineBreakMode="WordWrap" VerticalOptions="Center" />
+            <Border IsVisible="{Binding HasBadge, Source={x:Reference Header}}" BackgroundColor="Transparent" Stroke="{DynamicResource GameContextBorder}" StrokeThickness="2" StrokeShape="RoundRectangle 12" HeightRequest="24" MinimumHeightRequest="24" MaximumHeightRequest="24" Padding="8,0" HorizontalOptions="Start" VerticalOptions="Center" SemanticProperties.Description="{Binding GameName, Source={x:Reference Header}}">
+                <Label Text="{Binding BadgeText, Source={x:Reference Header}}" FontSize="13" FontAttributes="Bold" FontAutoScalingEnabled="False" TextColor="{DynamicResource GameContextText}" VerticalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" LineBreakMode="WordWrap" />
+            </Border>
+            <Label Grid.Column="1" Text="{Binding Subtitle, Source={x:Reference Header}}" FontSize="14" LineBreakMode="WordWrap" VerticalOptions="Center" />
         </Grid>
+
+        <!-- Optional metadata row. -->
         <Grid IsVisible="{Binding HasMetadata, Source={x:Reference Header}}">
             <Label Text="{Binding Metadata, Source={x:Reference Header}}" FontSize="12" TextColor="{DynamicResource TextSecondary}" LineBreakMode="WordWrap" />
         </Grid>

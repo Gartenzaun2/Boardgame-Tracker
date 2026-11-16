@@ -1,13 +1,13 @@
-using System.Collections.Specialized;
-using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Application.Games;
-using BoardgameTracker.App.Diagnostics;
-using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
@@ -24,27 +24,26 @@ public partial class CreateGroupViewModel : ObservableObject {
     private readonly FindGroupDuplicatesQuery _duplicatesQuery;
     private readonly ReuseGroupUseCase _reuseGroupUseCase;
     private readonly GamesQuery _gamesQuery;
-    private readonly ILogger<CreateGroupViewModel> _logger;
     private readonly INavigationService _navigationService;
+    private readonly ILogger<CreateGroupViewModel> _logger;
 
     public CreateGroupViewModel(CreateGroupUseCase createGroupUseCase, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroupUseCase, GamesQuery gamesQuery, INavigationService navigationService, ILogger<CreateGroupViewModel> logger) {
         _createGroupUseCase = createGroupUseCase;
         _duplicatesQuery = duplicatesQuery;
         _reuseGroupUseCase = reuseGroupUseCase;
         _gamesQuery = gamesQuery;
-        _logger = logger;
         _navigationService = navigationService;
+        _logger = logger;
         Players.CollectionChanged += (_, args) => {
-            GroupMemberDraft.UpdatePositions(Players);
+            GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
             if (args.Action != NotifyCollectionChangedAction.Move) {
                 OnPropertyChanged(nameof(HasNoPlayers));
                 SaveCommand.NotifyCanExecuteChanged();
             }
         };
         AvailablePlayers.CollectionChanged += (_, args) => {
-            if (args.Action != NotifyCollectionChangedAction.Move) {
+            if (args.Action != NotifyCollectionChangedAction.Move)
                 OnPropertyChanged(nameof(HasAvailablePlayers));
-            }
         };
     }
 
@@ -76,19 +75,16 @@ public partial class CreateGroupViewModel : ObservableObject {
     public partial bool IsBusy { get; private set; }
     private bool IsNotBusy => !IsBusy;
 
+    public bool IsSaveCompleted => _savedOutcome is not null;
+    public bool CanEdit => IsNotBusy && !IsSaveCompleted;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-
-    public bool IsSaveCompleted => _savedOutcome is not null;
-    public bool CanEdit => IsNotBusy && !IsSaveCompleted;
-    public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
     public partial GroupCreationSubdialog ActiveSubdialog { get; private set; }
-
-    public ObservableCollection<DuplicateGroupRow> Duplicates { get; } = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -96,6 +92,7 @@ public partial class CreateGroupViewModel : ObservableObject {
 
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
     public bool HasNoPlayers => Players.Count == 0;
+
     public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
     public bool HasAvailablePlayers => AvailablePlayers.Count > 0;
 
@@ -110,66 +107,19 @@ public partial class CreateGroupViewModel : ObservableObject {
     public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.SupportsPlayerCount(Players.Count)).ToArray();
     public bool HasAvailableGames => AvailableGames.Count > 0;
 
-    private void GamesChanged() {
-        OnPropertyChanged(nameof(SelectedGames));
-        OnPropertyChanged(nameof(AvailableGames));
-        OnPropertyChanged(nameof(HasAvailableGames));
-    }
+    public ObservableCollection<DuplicateGroupRow> Duplicates { get; } = [];
 
-    [RelayCommand]
-    private void AddGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || game.IsSelected || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count))
-            return;
-        game.IsSelected = true;
-        RefreshGameSelectionsAndValidation();
-        ActiveSubdialog = GroupCreationSubdialog.None;
-    }
+    #region Localized UI Text
 
-    [RelayCommand]
-    private void RemoveGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || !game.IsSelected || !Games.Contains(game) || !game.CanChange)
-            return;
-        game.IsSelected = false;
-        RefreshGameSelectionsAndValidation();
-    }
+    public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
+
+    #endregion
 
     public void SetManagementOrigin()
         => _gameKey = null;
 
     public void SetGameContext(string gameKey)
         => _gameKey = gameKey;
-
-    [RelayCommand]
-    private void ChooseExistingPlayer() {
-        if (CanEdit && HasAvailablePlayers)
-            ActiveSubdialog = GroupCreationSubdialog.SelectExistingPlayer;
-    }
-
-    [RelayCommand]
-    private void ChooseGame() {
-        if (CanEdit && HasAvailableGames)
-            ActiveSubdialog = GroupCreationSubdialog.SelectGame;
-    }
-
-    [RelayCommand]
-    public void BeginNewPlayer() {
-        if (!CanEdit)
-            return;
-        NewPlayerName = string.Empty;
-        NewPlayerIsGuest = false;
-        ActiveSubdialog = GroupCreationSubdialog.CreatePlayer;
-    }
-
-    [RelayCommand]
-    public void CloseSubdialog() {
-        if (!IsNotBusy)
-            return;
-        if (ActiveSubdialog == GroupCreationSubdialog.CreatePlayer) {
-            NewPlayerName = string.Empty;
-            NewPlayerIsGuest = false;
-        }
-        ActiveSubdialog = GroupCreationSubdialog.None;
-    }
 
     public async Task LoadAsync(CancellationToken cancellationToken = default) {
         if (!IsNotBusy || _isInitialLoadCompleted)
@@ -178,17 +128,17 @@ public partial class CreateGroupViewModel : ObservableObject {
         try {
             IsBusy = true;
             ErrorMessage = null;
+
             IReadOnlyList<GameInfo> games = await _gamesQuery.GetEnabledAsync(cancellationToken);
             string? selectedGameKey = _gameKey;
             Games.Clear();
             foreach (GameInfo game in games)
                 Games.Add(new(game.Id, game.Name, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers, minimumPlayers: game.MinimumPlayers));
-            GamesChanged();
-            IReadOnlyList<SelectablePlayer> players =
-                await _createGroupUseCase.GetSelectablePlayersAsync(cancellationToken);
+            RefreshGameSelectionBindings();
+
+            IReadOnlyList<SelectablePlayer> players = await _createGroupUseCase.GetSelectablePlayersAsync(cancellationToken);
 
             AvailablePlayers.Clear();
-
             foreach (SelectablePlayer player in players) {
                 if (Players.All(candidate => candidate.PlayerId != player.Id))
                     AvailablePlayers.Add(player);
@@ -204,6 +154,12 @@ public partial class CreateGroupViewModel : ObservableObject {
     }
 
     [RelayCommand]
+    private void ChooseExistingPlayer() {
+        if (CanEdit && HasAvailablePlayers)
+            ActiveSubdialog = GroupCreationSubdialog.SelectExistingPlayer;
+    }
+
+    [RelayCommand]
     private void AddExistingPlayer(SelectablePlayer? player) {
         if (!CanEdit || player is null || !AvailablePlayers.Contains(player) || Players.Any(candidate => candidate.PlayerId == player.Id))
             return;
@@ -212,6 +168,24 @@ public partial class CreateGroupViewModel : ObservableObject {
         AvailablePlayers.Remove(player);
         ActiveSubdialog = GroupCreationSubdialog.None;
         RefreshGameSelectionsAndValidation();
+    }
+
+    private void SortAvailablePlayers() {
+        IReadOnlyList<SelectablePlayer> ordered = [.. AvailablePlayers.OrderBy(player => player.Name, StringComparer.CurrentCultureIgnoreCase)];
+
+        AvailablePlayers.Clear();
+        foreach (SelectablePlayer player in ordered)
+            AvailablePlayers.Add(player);
+    }
+
+    [RelayCommand]
+    public void BeginNewPlayer() {
+        if (!CanEdit)
+            return;
+
+        NewPlayerName = string.Empty;
+        NewPlayerIsGuest = false;
+        ActiveSubdialog = GroupCreationSubdialog.CreatePlayer;
     }
 
     [RelayCommand]
@@ -240,10 +214,7 @@ public partial class CreateGroupViewModel : ObservableObject {
             return;
 
         if (player.PlayerId is Guid playerId) {
-            AvailablePlayers.Add(new SelectablePlayer(
-                playerId,
-                player.Name,
-                player.IsGuest));
+            AvailablePlayers.Add(new SelectablePlayer(playerId, player.Name, player.IsGuest));
 
             SortAvailablePlayers();
         }
@@ -271,9 +242,57 @@ public partial class CreateGroupViewModel : ObservableObject {
             Players.Move(index, index + 1);
     }
 
+    [RelayCommand]
+    private void ChooseGame() {
+        if (CanEdit && HasAvailableGames)
+            ActiveSubdialog = GroupCreationSubdialog.SelectGame;
+    }
+
+    [RelayCommand]
+    private void AddGame(GroupGameSelection? game) {
+        if (!CanEdit || game is null || game.IsSelected || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count))
+            return;
+
+        game.IsSelected = true;
+        RefreshGameSelectionsAndValidation();
+        ActiveSubdialog = GroupCreationSubdialog.None;
+    }
+
+    [RelayCommand]
+    private void RemoveGame(GroupGameSelection? game) {
+        if (!CanEdit || game is null || !game.IsSelected || !Games.Contains(game) || !game.CanChange)
+            return;
+        game.IsSelected = false;
+        RefreshGameSelectionsAndValidation();
+    }
+
+    private void RefreshGameSelectionBindings() {
+        OnPropertyChanged(nameof(SelectedGames));
+        OnPropertyChanged(nameof(AvailableGames));
+        OnPropertyChanged(nameof(HasAvailableGames));
+    }
+
+    private void RefreshGameSelectionsAndValidation() {
+        RefreshGameSelectionBindings();
+        ErrorMessage = Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count))
+            ? AppResources.GroupPlayerLimitExceeded : null;
+    }
+
+    [RelayCommand]
+    public void CloseSubdialog() {
+        if (!IsNotBusy)
+            return;
+
+        if (ActiveSubdialog == GroupCreationSubdialog.CreatePlayer) {
+            NewPlayerName = string.Empty;
+            NewPlayerIsGuest = false;
+        }
+
+        ActiveSubdialog = GroupCreationSubdialog.None;
+    }
+
     private bool CanSave()
-        => IsNotBusy
-        && (IsSaveCompleted || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
+        => IsNotBusy && (IsSaveCompleted || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync() {
@@ -283,6 +302,7 @@ public partial class CreateGroupViewModel : ObservableObject {
         try {
             IsBusy = true;
             ErrorMessage = null;
+
             if (_savedOutcome is not null) {
                 await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
                 return;
@@ -319,13 +339,16 @@ public partial class CreateGroupViewModel : ObservableObject {
     private async Task ReuseDuplicateAsync(DuplicateGroupRow? row) {
         if (IsBusy || _pendingCommand is null || row is null || !Duplicates.Contains(row))
             return;
+
         IsBusy = true;
         ErrorMessage = null;
+
         try {
             if (_savedOutcome is not null) {
                 await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
                 return;
             }
+
             Guid groupId = await _reuseGroupUseCase.ReuseGroupAsync(new(row.Id,
                 _pendingCommand.Players.Select(player => player.ExistingPlayerId!.Value).ToArray(), _pendingCommand.GameIds,
                 row.IsArchived ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting));
@@ -342,13 +365,16 @@ public partial class CreateGroupViewModel : ObservableObject {
     private async Task CreateAdditionalGroupAsync() {
         if (IsBusy || _pendingCommand is null)
             return;
+
         IsBusy = true;
         ErrorMessage = null;
+
         try {
             if (_savedOutcome is not null) {
                 await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
                 return;
             }
+
             Guid groupId = await _createGroupUseCase.CreateGroupAsync(_pendingCommand);
             await CompleteSaveAsync(groupId, true);
         } catch (Exception exception) {
@@ -367,12 +393,6 @@ public partial class CreateGroupViewModel : ObservableObject {
         await _navigationService.CompleteGroupCreationAsync(this, _savedOutcome);
     }
 
-    private void RefreshGameSelectionsAndValidation() {
-        GamesChanged();
-        ErrorMessage = Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count))
-            ? AppResources.GroupPlayerLimitExceeded : null;
-    }
-
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
     private async Task GoBackAsync() {
         if (!IsNotBusy)
@@ -381,6 +401,7 @@ public partial class CreateGroupViewModel : ObservableObject {
             CloseSubdialog();
             return;
         }
+
         await LeaveCreationAsync(false);
     }
 
@@ -394,6 +415,7 @@ public partial class CreateGroupViewModel : ObservableObject {
     private async Task LeaveCreationAsync(bool cancelDuplicates) {
         IsBusy = true;
         ErrorMessage = null;
+
         try {
             if (_savedOutcome is not null)
                 await _navigationService.CompleteGroupCreationAsync(this, _savedOutcome);
@@ -413,15 +435,6 @@ public partial class CreateGroupViewModel : ObservableObject {
         }
     }
 
-    private void SortAvailablePlayers() {
-        IReadOnlyList<SelectablePlayer> ordered =
-            [.. AvailablePlayers.OrderBy(player => player.Name, StringComparer.CurrentCultureIgnoreCase)];
-
-        AvailablePlayers.Clear();
-        foreach (SelectablePlayer player in ordered) {
-            AvailablePlayers.Add(player);
-        }
-    }
 }
 
 public sealed record GroupSaveOutcome(Guid GroupId, string? GameKey, bool FromDuplicates);

@@ -5,14 +5,13 @@
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding CanInteract}">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.Groups}"
-                    Variant="Subpage"
-                    BackCommand="{Binding GoBackCommand}"
-                    GameName="{Binding SelectedGameName}"
-                    BadgeText="{Binding BadgeText}" />
+
+                <!-- Page header: return and selected game context. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.Groups}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" GameName="{Binding SelectedGameName}" BadgeText="{Binding BadgeText}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto,Auto" RowSpacing="12">
+
+                <!-- Assigned groups: resume an open game session or open preparation. -->
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Groups}" SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
@@ -38,6 +37,8 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Status and group-creation or assignment actions. -->
                 <VerticalStackLayout Grid.Row="1" Spacing="8">
                     <Label Text="{Binding EmptyMessage}" IsVisible="{Binding IsEmpty}" />
                     <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
@@ -48,11 +49,15 @@
                 </Grid>
             </Grid>
         </Grid>
+
+        <!-- Existing group selection overlay: assign an eligible group to this game. -->
         <Grid IsVisible="{Binding IsChoosingExisting}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="450">
                     <Grid ColumnDefinitions="Auto,*">
-                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Command="{Binding CloseSelectionCommand}" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}"
+                            Command="{Binding CloseSelectionCommand}"
+                            SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" Text="{x:Static res:AppResources.ChooseExistingGroup}" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding AvailableGroups}" SelectionMode="None">
@@ -76,6 +81,8 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <!-- Busy overlay: cover page and selection while loading or navigating. -->
         <Grid IsVisible="{Binding IsWorking}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsWorking}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

@@ -40,16 +40,19 @@ public partial class AppPageHeader : ContentView {
     public bool IsBackVisible => Variant == AppPageHeaderVariant.Subpage && ShowBack;
     public bool HasBadge => !string.IsNullOrWhiteSpace(BadgeText);
     public bool HasMetadata => !string.IsNullOrWhiteSpace(Metadata);
+
     // Metadata is measured separately; an absent context row consumes no height.
     public bool HasContextRow => HasBadge || !string.IsNullOrWhiteSpace(Subtitle);
+
     public event EventHandler? BackClicked;
+
     private void OnBackClicked(object? sender, EventArgs e) {
         if (BackCommand is null)
             BackClicked?.Invoke(this, e);
     }
 
     private static void HeaderChanged(BindableObject bindable, object oldValue, object newValue) {
-        var header = (AppPageHeader)bindable;
+        AppPageHeader header = (AppPageHeader)bindable;
         // Visibility changes never alter the subpage title anchor.
         header.OnPropertyChanged(nameof(IsBackVisible));
         header.OnPropertyChanged(nameof(HasBadge));

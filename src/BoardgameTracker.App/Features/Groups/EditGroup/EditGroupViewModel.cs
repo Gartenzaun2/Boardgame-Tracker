@@ -1,12 +1,12 @@
-using BoardgameTracker.Application.Games;
-using BoardgameTracker.App.Navigation;
-using BoardgameTracker.App.Diagnostics;
-using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
@@ -48,12 +48,8 @@ public partial class EditGroupViewModel : ObservableObject {
     public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName)));
 
     [ObservableProperty]
-    public partial bool IsChoosingGame { get; private set; }
-
-    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
@@ -71,6 +67,10 @@ public partial class EditGroupViewModel : ObservableObject {
     public partial bool CanArchiveGroup { get; private set; }
 
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
+
+    [ObservableProperty]
+    public partial bool IsChoosingGame { get; private set; }
+
     public ObservableCollection<GroupGameSelection> GameSelections { get; } = [];
 
     public IReadOnlyList<GroupGameSelection> SelectedEnabledGames => GameSelections.Where(game => game.IsSelected && game.IsEnabled).ToArray();
@@ -106,6 +106,7 @@ public partial class EditGroupViewModel : ObservableObject {
             foreach (EditGroupGame game in details.Games)
                 GameSelections.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
             RefreshGameSelectionBindings();
+
             CanArchiveGroup = details.CanArchive;
             GroupName = details.Name;
             IsGroupArchived = details.IsArchived;
@@ -114,7 +115,7 @@ public partial class EditGroupViewModel : ObservableObject {
             foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
                 Players.Add(new GroupMemberDraft(player.PlayerId, player.Name, player.IsGuest));
 
-            GroupMemberDraft.UpdatePositions(Players);
+            GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
             IsSaveCompleted = false;
             GroupId = details.Id;
         } catch (Exception exception) {
@@ -174,7 +175,7 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         Players.Move(index, index - 1);
-        GroupMemberDraft.UpdatePositions(Players);
+        GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
     }
 
     [RelayCommand]
@@ -187,7 +188,7 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         Players.Move(index, index + 1);
-        GroupMemberDraft.UpdatePositions(Players);
+        GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]

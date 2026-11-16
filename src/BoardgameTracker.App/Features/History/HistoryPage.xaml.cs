@@ -1,13 +1,13 @@
-using BoardgameTracker.Application.Games;
-using BoardgameTracker.App.Features.History.Export;
-using BoardgameTracker.Application.History.Transfer;
-using BoardgameTracker.App.Presentation.Controls;
 using System.Globalization;
-using Microsoft.Extensions.Logging;
-using BoardgameTracker.Application.History;
-using BoardgameTracker.Application.Settings.Navigation;
-using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.App.Features.History.Export;
 using BoardgameTracker.App.Navigation;
+using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games;
+using BoardgameTracker.Application.History;
+using BoardgameTracker.Application.History.Transfer;
+using BoardgameTracker.Application.Settings.Navigation;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.History;
 
@@ -20,25 +20,11 @@ namespace BoardgameTracker.App.Features.History;
 public partial class HistoryPage : ContentPage {
     private readonly CompletedGameSessionsQuery _query;
     private readonly GamesQuery _gamesQuery;
-    private IReadOnlyList<HistoryGameSession> _exportSessions = [];
     private readonly HistoryTransferUseCase _transfer;
     private readonly HistoryExportFlow _exportFlow;
-    private Guid[] _visibleIds = [];
-    private bool _isTransferring;
     private readonly ILogger<HistoryPage> _logger;
     private readonly IAppNavigationSettingsStore _settings;
     private readonly IEnumerable<IGameSessionNavigationHandler> _navigationHandlers;
-    /// <summary>The visible history excludes disabled games; export deliberately retains its separate complete source.</summary>
-    private IReadOnlyList<HistoryGameSession> _visibleSessions = [];
-    private string?[] _gameFilterKeys = [];
-    private Guid?[] _groupFilterIds = [];
-    private bool _isLoading;
-    private bool _isNavigating;
-    /// <summary>Apply the remembered game only once; later reloads preserve the user's filter selection.</summary>
-    private bool _isInitialFilterSelectionApplied;
-    private bool _isFilterSelectionOpen;
-    private int _selectedGameIndex;
-    private int _selectedGroupIndex;
 
     public HistoryPage(CompletedGameSessionsQuery query, IAppNavigationSettingsStore settings, ILogger<HistoryPage> logger, IEnumerable<IGameSessionNavigationHandler> navigationHandlers, HistoryTransferUseCase transfer, HistoryExportFlow exportFlow, GamesQuery gamesQuery) {
         InitializeComponent();
@@ -52,6 +38,25 @@ public partial class HistoryPage : ContentPage {
         _navigationHandlers = navigationHandlers;
     }
 
+    private bool _isLoading;
+    private bool _isNavigating;
+    private bool _isTransferring;
+    private bool _isFilterSelectionOpen;
+
+    /// <summary>Apply the remembered game only once; later reloads preserve the user's filter selection.</summary>
+    private bool _isInitialFilterSelectionApplied;
+
+    /// <summary>The visible history excludes disabled games; export deliberately retains its separate complete source.</summary>
+    private IReadOnlyList<HistoryGameSession> _visibleSessions = [];
+    private IReadOnlyList<HistoryGameSession> _exportSessions = [];
+    private Guid[] _visibleIds = [];
+
+    private string?[] _gameFilterKeys = [];
+    private int _selectedGameIndex;
+    private Guid?[] _groupFilterIds = [];
+    private int _selectedGroupIndex;
+
+    /// <summary>Returning from a modal or native transfer must retain the active filter and transfer state.</summary>
     protected override async void OnAppearing() {
         base.OnAppearing();
         await ReloadAsync();
@@ -62,6 +67,7 @@ public partial class HistoryPage : ContentPage {
             return;
         if (_isLoading)
             return;
+
         _isLoading = true;
         BusyOverlay.IsVisible = true;
         ErrorLabel.IsVisible = false;
@@ -74,13 +80,14 @@ public partial class HistoryPage : ContentPage {
             _visibleSessions = _exportSessions.Where(session => enabledGameKeys.Contains(session.GameKey)).ToArray();
             _gameFilterKeys = new string?[] { null }.Concat(_visibleSessions.Select(s => s.GameKey).Distinct().OrderBy(k => k)).ToArray();
             _groupFilterIds = new Guid?[] { null }.Concat(_visibleSessions.Select(s => (Guid?)s.GroupId).Distinct()).ToArray();
-            if (!_isInitialFilterSelectionApplied) {
+
+            if (!_isInitialFilterSelectionApplied)
                 game = _settings.Get().SelectedGameKey;
-            }
 
             _selectedGameIndex = Math.Max(0, Array.IndexOf(_gameFilterKeys, game));
             _selectedGroupIndex = Math.Max(0, Array.IndexOf(_groupFilterIds, group));
             _isInitialFilterSelectionApplied = true;
+
             Refresh();
         } catch (Exception exception) {
             _logger.LogError(exception, "Could not load completed game sessions.");
@@ -105,12 +112,14 @@ public partial class HistoryPage : ContentPage {
             return;
 
         _isFilterSelectionOpen = true;
+
         try {
             string[] names;
             if (gameFilter)
                 names = _gameFilterKeys.Select(key => key is null ? AppResources.HistoryAllGames : GameName(key)).ToArray();
             else
                 names = _groupFilterIds.Select(id => id is null ? AppResources.HistoryAllGroups : _visibleSessions.First(session => session.GroupId == id).GroupName).ToArray();
+
             int choice = await AppDialogPage.ChooseAsync(this,
                 gameFilter ? AppResources.HistoryGameFilter : AppResources.HistoryGroupFilter,
                 names, gameFilter ? _selectedGameIndex : _selectedGroupIndex);
@@ -121,6 +130,7 @@ public partial class HistoryPage : ContentPage {
                 _selectedGameIndex = choice;
             else
                 _selectedGroupIndex = choice;
+
             Refresh();
         } catch (Exception exception) {
             _logger.LogError(exception, "Could not choose a history filter.");
@@ -130,6 +140,7 @@ public partial class HistoryPage : ContentPage {
             _isFilterSelectionOpen = false;
         }
     }
+
     private static void UpdateChip(Button chip, string name, bool selected) {
         chip.Text = string.Format(selected ? AppResources.HistoryFilterSelectedFormat : AppResources.HistoryFilterFormat, name);
         chip.SetDynamicResource(Button.BackgroundColorProperty, selected ? "SelectedSurface" : "Surface");
@@ -162,6 +173,7 @@ public partial class HistoryPage : ContentPage {
     private async void OnSessionSelected(object? sender, SelectionChangedEventArgs e) {
         if (_isTransferring || _isLoading || _isFilterSelectionOpen || _isNavigating || e.CurrentSelection.FirstOrDefault() is not HistoryCard card)
             return;
+
         _isNavigating = true;
         Sessions.SelectedItem = null;
         BusyOverlay.IsVisible = true;
@@ -183,18 +195,25 @@ public partial class HistoryPage : ContentPage {
 
 public sealed record HistoryCard(HistoryGameSession Data, string GameName) {
     public string GroupName => Data.GroupName;
+    #region Localized UI Text
+
     public string Header => string.Format(AppResources.HistoryHeaderFormat, GameName,
         Duration, Data.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
+
     public string Duration {
         get {
             if (Data.EndedAt is null)
                 return "–";
+
             int minutes = Math.Max(0, (int)(Data.EndedAt.Value - Data.StartedAt).TotalMinutes);
             return string.Format(AppResources.HistoryDurationFormat, minutes / 60, minutes % 60);
         }
     }
+
     public string Placements => string.Join(" · ", Data.Players.Select(p =>
         p.Placement is int rank ? $"{rank}. {p.Name}" : p.Name));
+
+    #endregion
 }
 
 public sealed class HistoryMonth(string title, IEnumerable<HistoryCard> cards) : List<HistoryCard>(cards) {

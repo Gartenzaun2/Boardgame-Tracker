@@ -1,6 +1,6 @@
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
@@ -33,19 +33,11 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
             await _viewModel.LoadAsync(_groupId);
     }
 
-    private async void OnInfoClicked(object? sender, EventArgs e) {
-        await AppDialogPage.ShowAsync(this,
-            AppResources.EditGroup,
-            AppResources.EditGroupHint + "\n\n" + AppResources.ArchiveHint,
-            AppResources.Ok);
-    }
+    private async void OnInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.EditGroup, AppResources.EditGroupHint + "\n\n" + AppResources.ArchiveHint, AppResources.Ok);
 
-    private async void OnPlayersInfoClicked(object? sender, EventArgs e) {
-        await AppDialogPage.ShowAsync(this,
-            AppResources.GroupPlayers,
-            AppResources.EditGroupPlayersHint,
-            AppResources.Ok);
-    }
+    private async void OnPlayersInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.GroupPlayers, AppResources.EditGroupPlayersHint, AppResources.Ok);
 
     /// <summary>Routes system back through the header command, including cancellation, busy guards and navigation errors.</summary>
     protected override bool OnBackButtonPressed() {

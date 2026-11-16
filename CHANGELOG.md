@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.0.1 – 2026-11-16
+
+- Codegestaltung der allgemeinen App-Dialoge konsolidiert: technische Zustände, Formularbereiche und UI-Texte geordnet, Benachrichtigungsattribute zusammengefasst und reine Darstellungsnegationen durch den vorhandenen Converter ersetzt. Methoden, C#-Formatierung und XAML-Abschnitte vereinheitlicht; bestehende Speicher-, Abbruch-, Navigations- und Retry-Abläufe erhalten.
+
 ## 0.23.0.0 – 2026-11-16
 
 - Allgemeine App-Dialoge konsolidiert: Gruppenanlage verwendet gegenseitig ausschließende Auswahlzustände und direkte Commands; Duplikatauswahl und Speicherabschluss nutzen den gemeinsamen Navigationsvertrag einschließlich Spielvorbereitung.

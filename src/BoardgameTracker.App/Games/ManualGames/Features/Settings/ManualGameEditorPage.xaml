@@ -7,20 +7,29 @@
     x:DataType="local:ManualGameEditorViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding CanInteract}">
-            <controls:AppPageHeader Title="{Binding Title}" BadgeText="{Binding HeaderBadge}" GameName="{Binding GameName}"
-                Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
+
+            <!-- Page header: title, game context and return command. -->
+            <controls:AppPageHeader Title="{Binding Title}" BadgeText="{Binding HeaderBadge}" GameName="{Binding GameName}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
             <Grid Grid.Row="1" Style="{StaticResource SettingsPageBody}">
                 <ScrollView>
                     <VerticalStackLayout Style="{StaticResource SettingsContent}" Padding="0,0,0,20">
+
                         <!-- Persisted completion keeps departure available while all settings stay frozen. -->
                         <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" />
+
+                        <!-- Editable configuration: immediate enablement, metadata and capture options. -->
                         <VerticalStackLayout Style="{StaticResource SettingsContent}" IsEnabled="{Binding CanEdit}">
+
+                            <!-- Enablement: an immediate preference write, independent of saving the configuration. -->
                             <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding IsEditing}">
                                 <Label Text="{x:Static res:AppResources.ShowGame}" Style="{StaticResource SettingsItemLabel}" />
-                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanSetEnabled}"
-                                    Toggled="OnEnabledToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding IsEnablementLocked, Converter={StaticResource NegateBool}}"
+                                    Toggled="OnEnabledToggled"
+                                    SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
                             </Grid>
                             <Label Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsEnablementLocked}" Style="{StaticResource SettingsHintLabel}" />
+
+                            <!-- Game metadata: name, badge and player limits. -->
                             <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
                             <Label Text="{x:Static res:AppResources.ManualGameName}" Style="{StaticResource SettingsItemLabel}" />
                             <Entry Text="{Binding GameName}" SemanticProperties.Description="{x:Static res:AppResources.ManualGameName}" />
@@ -35,8 +44,10 @@
                                 <Entry Grid.Column="1" Text="{Binding MaximumPlayers}" Keyboard="Numeric" IsReadOnly="{Binding IsEditing}" SemanticProperties.Description="{x:Static res:AppResources.ManualMaxPlayers}" />
                             </Grid>
                             <Label Text="{x:Static res:AppResources.ManualMaximumLocked}" IsVisible="{Binding IsEditing}" Style="{StaticResource SettingsHintLabel}" />
+
+                            <!-- Scoring: points, winner capture, ties and result derivation. -->
                             <Label Text="{x:Static res:AppResources.Scoring}" Style="{StaticResource SettingsSectionTitle}" />
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" >
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                                 <Label Text="{x:Static res:AppResources.CapturePoints}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CapturePoints}" SemanticProperties.Description="{x:Static res:AppResources.CapturePoints}" />
                             </Grid>
@@ -44,7 +55,7 @@
                                 <Label Text="{x:Static res:AppResources.AllowNegativePoints}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding AllowNegativePoints}" SemanticProperties.Description="{x:Static res:AppResources.AllowNegativePoints}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" >
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                                 <Label Text="{x:Static res:AppResources.CaptureWinner}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CaptureWinner}" SemanticProperties.Description="{x:Static res:AppResources.CaptureWinner}" />
                             </Grid>
@@ -60,27 +71,34 @@
                                 <Label Text="{x:Static res:AppResources.ResultFromPoints}" Style="{StaticResource SettingsItemLabel}" />
                                 <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
                                     <Border Style="{StaticResource SettingsLookupFrame}" />
-                                    <Button Text="{Binding ResultModeText}" Clicked="OnResultModeClicked" Style="{StaticResource SettingsLookup}" SemanticProperties.Description="{x:Static res:AppResources.ResultFromPoints}" />
+                                    <Button Text="{Binding ResultModeText}" Style="{StaticResource SettingsLookup}"
+                                        Clicked="OnResultModeClicked"
+                                        SemanticProperties.Description="{x:Static res:AppResources.ResultFromPoints}" />
                                 </Grid>
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" >
+
+                            <!-- Preparation options: capture player order and colors. -->
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                                 <Label Text="{x:Static res:AppResources.CapturePlayerOrder}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CapturePlayerOrder}" SemanticProperties.Description="{x:Static res:AppResources.CapturePlayerOrder}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" >
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                                 <Label Text="{x:Static res:AppResources.CapturePlayerColors}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CapturePlayerColors}" SemanticProperties.Description="{x:Static res:AppResources.CapturePlayerColors}" />
                             </Grid>
                         </VerticalStackLayout>
+
+                        <!-- Completion: save or delete, with inline errors and session locks. -->
                         <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                         <Button Text="{Binding SaveText}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" />
-                        <Button Text="{x:Static res:AppResources.DeleteManualGame}" Clicked="OnDeleteClicked" Style="{StaticResource DangerButton}"
-                            IsVisible="{Binding IsEditing}" IsEnabled="{Binding CanDelete}" />
+                        <Button Text="{x:Static res:AppResources.DeleteManualGame}" Clicked="OnDeleteClicked" Style="{StaticResource DangerButton}" IsVisible="{Binding IsEditing}" IsEnabled="{Binding CanDelete}" />
                         <Label Text="{x:Static res:AppResources.ManualDeleteBlocked}" IsVisible="{Binding HasSessions}" Style="{StaticResource SettingsHintLabel}" />
                     </VerticalStackLayout>
                 </ScrollView>
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: cover the page while a load, write or departure is pending. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

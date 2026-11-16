@@ -13,21 +13,24 @@ public partial class LicenseDetailViewModel : ObservableObject {
         _logger = logger;
     }
 
-    private string? _loadedId;
+    /// <summary>Remember only a successfully loaded component so failed or cancelled reads can be retried without losing the displayed identity.</summary>
+    private string? _loadedComponentId;
+
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
     public partial bool IsBusy { get; private set; }
-    public bool IsIdle => !IsBusy;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => ErrorMessage is not null;
+
     [ObservableProperty]
     public partial string DisplayName { get; private set; } = AppResources.OpenSourceLicenses;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasVersion))]
     public partial string VersionText { get; private set; } = string.Empty;
+    public bool HasVersion => VersionText.Length > 0;
 
     [ObservableProperty]
     public partial string LicenseDisplayName { get; private set; } = string.Empty;
@@ -35,30 +38,30 @@ public partial class LicenseDetailViewModel : ObservableObject {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSpdx))]
     public partial string SpdxText { get; private set; } = string.Empty;
+    public bool HasSpdx => SpdxText.Length > 0;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasAttribution))]
     public partial string AttributionText { get; private set; } = string.Empty;
+    public bool HasAttribution => AttributionText.Length > 0;
 
     [ObservableProperty]
     public partial string LicenseText { get; private set; } = string.Empty;
 
-    public bool HasVersion => VersionText.Length > 0;
-    public bool HasSpdx => SpdxText.Length > 0;
-    public bool HasAttribution => AttributionText.Length > 0;
-
     public async Task LoadAsync(string componentId, CancellationToken cancellationToken = default) {
-        if (IsBusy || _loadedId == componentId)
+        if (IsBusy || _loadedComponentId == componentId)
             return;
+
         IsBusy = true;
         ErrorMessage = null;
         LicenseText = string.Empty;
-        _loadedId = null;
+        _loadedComponentId = null;
         DisplayName = AppResources.OpenSourceLicenses;
         VersionText = string.Empty;
         LicenseDisplayName = string.Empty;
         SpdxText = string.Empty;
         AttributionText = string.Empty;
+
         try {
             LicenseContent content = await _licenses.LoadLicenseAsync(componentId, cancellationToken);
             DisplayName = content.Component.DisplayName;
@@ -69,16 +72,13 @@ public partial class LicenseDetailViewModel : ObservableObject {
                 : string.Format(AppResources.LicenseSpdxFormat, content.Component.SpdxIdentifier);
             AttributionText = content.Component.AttributionText ?? string.Empty;
             LicenseText = content.Text;
-            _loadedId = componentId;
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
+            _loadedComponentId = componentId;
+        } catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
             // A cancelled read has not published a loaded ID, so the next appearance may retry.
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load packaged license text for {ComponentId}.", componentId);
             ErrorMessage = AppResources.LicensesLoadFailed;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }

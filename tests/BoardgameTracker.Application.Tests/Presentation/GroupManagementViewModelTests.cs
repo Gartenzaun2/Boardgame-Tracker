@@ -342,7 +342,7 @@ public sealed class GroupManagementViewModelTests
         vm.RemoveGameCommand.Execute(Assert.Single(vm.SelectedEnabledGames));
         Assert.Single(vm.SelectedEnabledGames);
         GroupGameSelection game = Assert.Single(vm.GameSelections);
-        Assert.True(game.IsLocked);
+        Assert.False(game.CanChange);
         Assert.NotEmpty(game.LockReason);
         game.IsSelected = false;
         Assert.True(game.IsSelected);
@@ -411,7 +411,7 @@ public sealed class GroupManagementViewModelTests
         Assert.True(list.ShowGroups);
         Assert.Single(list.Groups);
         list.SelectPlayers();
-        Assert.True(list.ShowPlayers);
+        Assert.False(list.ShowGroups);
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Equal(2, await verify.Players.CountAsync(Token));
         Assert.True(await editor.SaveAsync(Token));

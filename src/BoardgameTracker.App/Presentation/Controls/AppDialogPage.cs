@@ -1,6 +1,6 @@
+using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App.Presentation.Controls;
 
@@ -8,12 +8,12 @@ namespace BoardgameTracker.App.Presentation.Controls;
 public sealed class AppDialogPage : ContentPage {
     private static readonly HashSet<Page> Owners = [];
     private readonly TaskCompletionSource<int> _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-    /// <summary>Prevents concurrent modal pops; a failed pop releases this guard so dismissal can be retried.</summary>
-    private bool _closing;
     private readonly Label _navigationError = new() { IsVisible = false };
 
-    private AppDialogPage(string title, string? message, string closeText,
-        string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex) {
+    /// <summary>Prevents concurrent modal pops; a failed pop releases this guard so dismissal can be retried.</summary>
+    private bool _closing;
+
+    private AppDialogPage(string title, string? message, string closeText, string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex) {
         Shell.SetNavBarIsVisible(this, false);
         SetDynamicResource(BackgroundColorProperty, "ModalOverlay");
         Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page.SetModalPresentationStyle(
@@ -106,13 +106,12 @@ public sealed class AppDialogPage : ContentPage {
         Content = backdrop;
     }
 
-    // Modal dismissal must not reload an owner's unsaved form or correction draft.
+    /// <summary>Lets owners skip reloads during modal dismissal so unsaved form and correction drafts survive.</summary>
     public static bool IsOpen(Page owner)
         => Owners.Contains(owner);
 
     /// <returns>True only for the explicit accept action in a confirmation; false for dismissal, cancellation, a message-only dialog, or an already open dialog.</returns>
-    public static async Task<bool> ShowAsync(Page owner, string title, string message,
-        string accept, string? cancel = null, bool destructive = false) {
+    public static async Task<bool> ShowAsync(Page owner, string title, string message, string accept, string? cancel = null, bool destructive = false) {
         AppDialogPage dialog = new(title, message, cancel ?? accept,
             cancel is null ? null : accept, destructive, null, -1);
         return await PresentAsync(owner, dialog) == 0;

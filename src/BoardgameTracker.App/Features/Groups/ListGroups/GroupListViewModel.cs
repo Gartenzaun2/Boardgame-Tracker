@@ -1,13 +1,13 @@
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
-using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.Application.Groups;
+using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.Application.Games;
+using BoardgameTracker.Application.Groups;
 using BoardgameTracker.Core.GameSessions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
@@ -43,64 +43,94 @@ public partial class GroupListViewModel : ObservableObject {
         };
     }
 
-    public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
-    public ObservableCollection<AvailablePlayGroup> AvailableGroups { get; } = [];
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract), nameof(IsWorking))]
+    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
+    public partial bool IsBusy { get; private set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract), nameof(IsWorking))]
+    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
+    public partial bool IsNavigating { get; private set; }
+
+    public bool IsWorking => IsBusy || IsNavigating;
+    private bool IsNotWorking => !IsWorking;
+    public bool CanInteract => !IsBusy && !IsNavigating && !IsChoosingExisting;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    public partial string? ErrorMessage { get; private set; }
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    public string SelectedGameKey { get; private set; } = string.Empty;
+
     [ObservableProperty]
     public partial string SelectedGameName { get; private set; } = string.Empty;
 
     [ObservableProperty]
     public partial string BadgeText { get; private set; } = string.Empty;
 
-    public string SelectedGameKey { get; private set; } = string.Empty;
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanInteract))]
-    [NotifyPropertyChangedFor(nameof(IsWorking))]
-    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
-    public partial bool IsBusy { get; private set; }
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanInteract))]
-    [NotifyPropertyChangedFor(nameof(IsWorking))]
-    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
-    public partial bool IsNavigating { get; private set; }
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanInteract))]
-    public partial bool IsChoosingExisting { get; private set; }
+    public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
+    public bool IsEmpty => Groups.Count == 0;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanChoose))]
     public partial bool CanCreate { get; private set; }
+
+    public ObservableCollection<AvailablePlayGroup> AvailableGroups { get; } = [];
     public bool CanChoose => CanCreate && AvailableGroups.Count > 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanInteract))]
+    public partial bool IsChoosingExisting { get; private set; }
+
+    #region Localized UI Text
+
     [ObservableProperty]
     public partial string EmptyMessage { get; private set; } = string.Empty;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
-    public partial string? ErrorMessage { get; private set; }
-    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-    public bool IsWorking => IsBusy || IsNavigating;
-    private bool IsNotWorking => !IsWorking;
-    public bool CanInteract => !IsBusy && !IsNavigating && !IsChoosingExisting;
-    public bool IsEmpty => Groups.Count == 0;
+    #endregion
+
     public void SetGameContext(string key)
         => SelectedGameKey = key;
 
-    [RelayCommand(CanExecute = nameof(IsNotWorking))]
-    private async Task GoBackAsync() {
-        if (!IsNotWorking)
+    public async Task LoadAsync(CancellationToken cancellationToken = default) {
+        if (IsBusy || string.IsNullOrWhiteSpace(SelectedGameKey))
             return;
-        if (IsChoosingExisting) {
-            CloseSelection();
-            return;
-        }
-        if (!TryBeginNavigation())
-            return;
+
+        IsBusy = true;
         ErrorMessage = null;
+
         try {
-            await _navigationService.GoBackAsync();
+            GameInfo game = await _gamesQuery.GetAsync(SelectedGameKey, cancellationToken);
+            SelectedGameName = game.Name;
+            BadgeText = game.BadgeText;
+
+            GroupPresence presence = await _query.GetPresenceAsync(cancellationToken);
+            CanCreate = presence.HasPlayers;
+            if (!presence.HasPlayers)
+                EmptyMessage = AppResources.FirstPlayerHint;
+            else if (!presence.HasGroups)
+                EmptyMessage = AppResources.FirstGroupHint;
+            else
+                EmptyMessage = AppResources.NoGroupsForGame;
+
+            IReadOnlyList<GroupListItem> rows = await _query.ListGroupsAsync(SelectedGameKey, cancellationToken);
+            Groups.Clear();
+            foreach (GroupListItem row in rows) {
+                string lastPlayed = row.LastPlayedAt is DateTimeOffset date ? string.Format(CultureInfo.CurrentCulture,
+                    AppResources.LastPlayedFormat, date.ToLocalTime().ToString("g", CultureInfo.CurrentCulture)) : string.Empty;
+                Groups.Add(new(row.Id, row.Name, string.Join(" · ", row.PlayerNames), lastPlayed, row.OpenGameSessionId, row.OpenGameSessionStatus));
+            }
+
+            AvailableGroups.Clear();
+            foreach (ManagedGroup group in await _query.GetAvailableGroupsAsync(SelectedGameKey, cancellationToken))
+                AvailableGroups.Add(new(group.Id, group.Name, string.Join(" · ", group.PlayerNames)));
         } catch (Exception exception) {
-            _logger.LogError(exception, "Could not leave group selection.");
-            ErrorMessage = AppResources.NavigationFailed;
+            _logger.LogError(exception, "Could not load groups for game.");
+            ErrorMessage = AppResources.LoadGroupsFailed;
         } finally {
-            EndNavigation();
+            IsBusy = false;
         }
     }
 
@@ -108,7 +138,9 @@ public partial class GroupListViewModel : ObservableObject {
     private async Task CreateGroupAsync() {
         if (!CanCreate || !CanInteract || !TryBeginNavigation())
             return;
+
         ErrorMessage = null;
+
         try {
             await _navigationService.OpenGroupCreationAsync(SelectedGameKey);
         } catch (Exception exception) {
@@ -126,73 +158,12 @@ public partial class GroupListViewModel : ObservableObject {
     }
 
     [RelayCommand]
-    private void CloseSelection() {
-        if (!IsWorking)
-            IsChoosingExisting = false;
-    }
-    /// <returns>True when navigation acquired the existing busy guard; false while loading or another navigation is pending.</returns>
-    public bool TryBeginNavigation() {
-        if (IsBusy || IsNavigating)
-            return false;
-        IsNavigating = true;
-        return true;
-    }
-    public void EndNavigation()
-        => IsNavigating = false;
-    public async Task LoadAsync(CancellationToken cancellationToken = default) {
-        if (IsBusy || string.IsNullOrWhiteSpace(SelectedGameKey))
-            return;
-        IsBusy = true;
-        ErrorMessage = null;
-        try {
-            GameInfo game = await _gamesQuery.GetAsync(SelectedGameKey, cancellationToken);
-            SelectedGameName = game.Name;
-            BadgeText = game.BadgeText;
-            GroupPresence presence = await _query.GetPresenceAsync(cancellationToken);
-            CanCreate = presence.HasPlayers;
-            if (!presence.HasPlayers)
-                EmptyMessage = AppResources.FirstPlayerHint;
-            else if (!presence.HasGroups)
-                EmptyMessage = AppResources.FirstGroupHint;
-            else
-                EmptyMessage = AppResources.NoGroupsForGame;
-            IReadOnlyList<GroupListItem> rows = await _query.ListGroupsAsync(SelectedGameKey, cancellationToken);
-            Groups.Clear();
-            foreach (GroupListItem row in rows) {
-                string lastPlayed = row.LastPlayedAt is DateTimeOffset date ? string.Format(CultureInfo.CurrentCulture,
-                    AppResources.LastPlayedFormat, date.ToLocalTime().ToString("g", CultureInfo.CurrentCulture)) : string.Empty;
-                Groups.Add(new(row.Id, row.Name, string.Join(" · ", row.PlayerNames), lastPlayed, row.OpenGameSessionId, row.OpenGameSessionStatus));
-            }
-            AvailableGroups.Clear();
-            foreach (ManagedGroup group in await _query.GetAvailableGroupsAsync(SelectedGameKey, cancellationToken))
-                AvailableGroups.Add(new(group.Id, group.Name, string.Join(" · ", group.PlayerNames)));
-        } catch (Exception exception) {
-            _logger.LogError(exception, "Could not load groups for game.");
-            ErrorMessage = AppResources.LoadGroupsFailed;
-        } finally {
-            IsBusy = false;
-        }
-    }
-    [RelayCommand]
-    public async Task OpenGroupAsync(Guid groupId) {
-        if (!TryBeginNavigation())
-            return;
-        ErrorMessage = null;
-        try {
-            GroupListItem group = (await _query.ListGroupsAsync(SelectedGameKey)).Single(group => group.Id == groupId);
-            await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
-        } catch (Exception exception) {
-            _logger.LogError(exception, "Could not open game group.");
-            ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
-        } finally {
-            EndNavigation();
-        }
-    }
-    [RelayCommand]
     public async Task SelectExistingAsync(AvailablePlayGroup group) {
         if (!AvailableGroups.Contains(group) || !TryBeginNavigation())
             return;
+
         ErrorMessage = null;
+
         try {
             Guid gameId = (await _gamesQuery.GetEnabledAsync()).Single(game => game.Key == SelectedGameKey).Id;
             await _addAssignment.AddGroupGameAsync(group.Id, gameId);
@@ -209,10 +180,70 @@ public partial class GroupListViewModel : ObservableObject {
             EndNavigation();
         }
     }
+
+    [RelayCommand]
+    private void CloseSelection() {
+        if (!IsWorking)
+            IsChoosingExisting = false;
+    }
+
+    [RelayCommand]
+    public async Task OpenGroupAsync(Guid groupId) {
+        if (!TryBeginNavigation())
+            return;
+
+        ErrorMessage = null;
+
+        try {
+            GroupListItem group = (await _query.ListGroupsAsync(SelectedGameKey)).Single(group => group.Id == groupId);
+            await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not open game group.");
+            ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
+        } finally {
+            EndNavigation();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsNotWorking))]
+    private async Task GoBackAsync() {
+        if (!IsNotWorking)
+            return;
+        if (IsChoosingExisting) {
+            CloseSelection();
+            return;
+        }
+        if (!TryBeginNavigation())
+            return;
+
+        ErrorMessage = null;
+
+        try {
+            await _navigationService.GoBackAsync();
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not leave group selection.");
+            ErrorMessage = AppResources.NavigationFailed;
+        } finally {
+            EndNavigation();
+        }
+    }
+
+    /// <returns>True when navigation acquired the existing busy guard; false while loading or another navigation is pending.</returns>
+    public bool TryBeginNavigation() {
+        if (IsBusy || IsNavigating)
+            return false;
+
+        IsNavigating = true;
+        return true;
+    }
+
+    public void EndNavigation()
+        => IsNavigating = false;
+
 }
+
 public sealed record AvailablePlayGroup(Guid Id, string Name, string Members);
-public sealed record GroupListItemViewModel(Guid Id, string Name, string PlayerNames, string LastPlayedText,
-    Guid? OpenGameSessionId, GameSessionStatus? OpenGameSessionStatus) {
+public sealed record GroupListItemViewModel(Guid Id, string Name, string PlayerNames, string LastPlayedText, Guid? OpenGameSessionId, GameSessionStatus? OpenGameSessionStatus) {
     public bool HasOpenGameSession => OpenGameSessionId.HasValue;
     public bool HasLastPlayed => !string.IsNullOrWhiteSpace(LastPlayedText);
 }

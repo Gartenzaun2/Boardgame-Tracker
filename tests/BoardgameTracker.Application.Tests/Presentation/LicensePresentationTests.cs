@@ -77,7 +77,7 @@ public sealed class LicensePresentationTests
         Assert.True(detail.HasError);
         Assert.Equal(AppResources.LicensesLoadFailed, detail.ErrorMessage);
         Assert.Empty(detail.LicenseText);
-        Assert.True(detail.IsIdle);
+        Assert.False(detail.IsBusy);
         Assert.IsType<FileNotFoundException>(Assert.Single(logger.Errors));
         Assert.DoesNotContain("OpenCV.txt", detail.ErrorMessage);
         assets.Missing = null;
@@ -148,7 +148,7 @@ public sealed class LicensePresentationTests
             Assert.DoesNotContain("WebView", text);
             Assert.Contains("header:AppPageHeader", text);
             Assert.Contains("{StaticResource HeaderDivider}", AppPageHeaderTests.ReadHeaderText());
-            Assert.Contains("{Binding IsIdle}", text);
+            Assert.Contains("{Binding IsBusy, Converter={StaticResource NegateBool}}", text);
             Assert.Contains("{DynamicResource BusyOverlay}", text);
             Assert.Contains("BackClicked=\"OnBackClicked\"", text);
             Assert.Contains("icon_back.png", AppPageHeaderTests.ReadHeaderText());

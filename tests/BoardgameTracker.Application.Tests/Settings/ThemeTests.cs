@@ -144,8 +144,8 @@ public sealed class ThemeTests
         Assert.DoesNotContain("base.ChangeVisualState()", source);
         var page = Presentation.AppPageHeaderTests.ReadPage("PlayerListPage");
         var segments = page.Descendants().Where(element => element.Name.LocalName == "SegmentButton").ToArray();
-        Assert.Equal(new[] { "{Binding ShowPlayers}", "{Binding ShowGroups}" }, segments.Select(element => (string?)element.Attribute("IsSelected")));
-        Assert.Contains(page.Descendants(), element => (string?)element.Attribute("IsEnabled") == "{Binding IsIdle}");
+        Assert.Equal(new[] { "{Binding ShowGroups, Converter={StaticResource NegateBool}}", "{Binding ShowGroups}" }, segments.Select(element => (string?)element.Attribute("IsSelected")));
+        Assert.Contains(page.Descendants(), element => (string?)element.Attribute("IsEnabled") == "{Binding IsBusy, Converter={StaticResource NegateBool}}");
     }
 
     [Theory]

@@ -5,12 +5,13 @@
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.MyGames}"
-                    Variant="Subpage"
-                    BackCommand="{Binding GoBackCommand}" />
+
+                <!-- Page header: return from administrative game selection. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.MyGames}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+
+                <!-- Administrative game list: settings remain reachable for disabled games. -->
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Games}" SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
@@ -36,6 +37,8 @@
                 <Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: protect loading, preference writes and settings navigation. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

@@ -6,12 +6,13 @@
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="16" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.DuplicateGroupTitle}"
-                    Variant="Subpage"
-                    BackCommand="{Binding ReturnToDraftCommand}" />
+
+                <!-- Page header: return to the draft without committing a duplicate decision. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.DuplicateGroupTitle}" Variant="Subpage" BackCommand="{Binding ReturnToDraftCommand}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto,Auto" RowSpacing="16">
+
+                <!-- Duplicate candidates: direct reuse or reactivation of the chosen identity. -->
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Duplicates}" SelectionMode="None" IsEnabled="{Binding CanEdit}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
@@ -31,6 +32,8 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
                 <Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
+
+                <!-- Completion and deliberate creation of another group. -->
                 <VerticalStackLayout Grid.Row="2" Spacing="16">
                     <BoxView Style="{StaticResource HeaderDivider}" />
                     <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" />
@@ -39,6 +42,8 @@
                 </VerticalStackLayout>
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: protect the duplicate decision and its completion. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

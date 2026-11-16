@@ -1,7 +1,7 @@
 using BoardgameTracker.App.Features.History.Export;
-using BoardgameTracker.Application.History.Transfer;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.History.Transfer;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.History;
@@ -10,13 +10,16 @@ public partial class HistoryPage {
     private bool StartTransfer() {
         if (_isTransferring || _isLoading || _isNavigating || _isFilterSelectionOpen)
             return false;
+
         _isTransferring = true;
         BusyOverlay.IsVisible = true;
         return true;
     }
+
     private async void OnExportClicked(object? sender, EventArgs e) {
         if (!HistoryExportFlow.CanExport(_visibleIds) || !StartTransfer())
             return;
+
         try {
             await _exportFlow.RunAsync(_visibleIds, AppInfo.Current.VersionString,
                 targets => AppDialogPage.ChooseAsync(this, AppResources.TransferExportTitle,
@@ -28,10 +31,13 @@ public partial class HistoryPage {
             BusyOverlay.IsVisible = false;
         }
     }
+
     private async void OnImportClicked(object? sender, EventArgs e) {
         if (!StartTransfer())
             return;
+
         bool committed = false;
+
         try {
             FileResult? selected = await FilePicker.Default.PickAsync(new PickOptions {
                 PickerTitle = AppResources.TransferPickFile,
@@ -43,6 +49,7 @@ public partial class HistoryPage {
             });
             if (selected is null)
                 return;
+
             await using Stream stream = await selected.OpenReadAsync();
             ImportPlan plan = await _transfer.AnalyzeAsync(stream);
             List<GroupResolution> resolutions = [];
@@ -58,6 +65,7 @@ public partial class HistoryPage {
                     [AppResources.TransferMerge, AppResources.TransferSplit], -1);
                 if (choice < 0)
                     return;
+
                 Dictionary<Guid, Guid> mappings = [];
                 if (choice == 0) {
                     HashSet<Guid> used = conflict.FixedMappings.Values.ToHashSet();
@@ -71,9 +79,11 @@ public partial class HistoryPage {
                         used.Add(candidates[picked].Id);
                     }
                 }
+
                 resolutions.Add(new(conflict.Imported.Id, choice == 1, mappings));
                 plan = _transfer.Resolve(plan, resolutions);
             }
+
             List<GameResolution> gameResolutions = [];
             while (plan.GameConflicts.Length != 0) {
                 GameConflict conflict = plan.GameConflicts[0];
@@ -84,6 +94,7 @@ public partial class HistoryPage {
                 gameResolutions.Add(new(conflict.SourceId, picked < conflict.Candidates.Length ? conflict.Candidates[picked].Id : null));
                 plan = _transfer.Resolve(plan, games: gameResolutions);
             }
+
             TransferPreview preview = await _transfer.PreviewAsync(plan);
             string summary = string.Format(AppResources.TransferPreviewFormat,
                 plan.GameSessions.Length, plan.Skipped, preview.GamesExisting,
@@ -97,8 +108,10 @@ public partial class HistoryPage {
                 await AppDialogPage.ShowAsync(this, AppResources.TransferPreview, summary, AppResources.Ok);
                 return;
             }
+
             if (!await AppDialogPage.ShowAsync(this, AppResources.TransferPreview, summary, AppResources.TransferCommit, AppResources.Cancel))
                 return;
+
             await _transfer.CommitAsync(plan);
             committed = true;
             await AppDialogPage.ShowAsync(this, AppResources.TransferImport, AppResources.TransferSuccess, AppResources.Ok);
@@ -111,12 +124,14 @@ public partial class HistoryPage {
                 await ReloadAsync();
         }
     }
+
     private async Task ShowTransferErrorAsync(Exception exception) {
         _logger.LogError(exception, "History transfer failed.");
         string message = exception is InvalidDataException { Message: "UpdateRequired" }
             ? AppResources.TransferUpdateRequired : AppResources.TransferFailed;
         await AppDialogPage.ShowAsync(this, AppResources.History, message, AppResources.Ok);
     }
+
     /// <summary>Prevents system back from interrupting a transfer or its conflict-resolution dialogs.</summary>
     protected override bool OnBackButtonPressed()
         => _isTransferring || _isLoading || _isNavigating || _isFilterSelectionOpen || base.OnBackButtonPressed();
