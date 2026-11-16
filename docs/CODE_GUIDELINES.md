@@ -21,12 +21,32 @@ Orientierung verwenden. Ein altes Beispiel ersetzt keine heutige Regel. Gleiche
 Probleme möglichst gleich lösen; unterschiedliche Anforderungen nicht in eine
 künstlich einheitliche Schablone zwingen.
 
-**Beispiele veranschaulichen Regeln, keine verbindlichen Member-Namen oder
-Refactoring-Aufträge.** Namen wie `RefreshPositionsAndMoveAvailability()`,
-`GamesAvailableToAdd` und `OpenGameSelectionCommand` sind Beispiele, keine
-Behauptung über bereits vorhandenen Code. Sie nur übernehmen, wenn sie zur
-konkreten Verantwortung und den bestehenden Verträgen passen; nicht allein
-wegen eines Beispiels projektweit umbenennen.
+### Leseschlüssel: verbindliche Regeln und illustrative Beispiele
+
+**Verbindliche Regeln** stehen im erklärenden Text der jeweiligen Abschnitte.
+„Muss“ und „nicht“ benennen verbindliche Vorgaben; „bevorzugt“ beschreibt eine
+Regel mit begründbaren Ausnahmen, „darf“ eine erlaubte Möglichkeit. Fachliches
+Verhalten und Architekturverträge werden nicht durch Stilbeispiele festgelegt,
+sondern durch ihre jeweils zuständigen kanonischen Dokumente.
+
+**Beispiele (nicht als Implementierungsauftrag verstehen):** C#- und XAML-
+Codeblöcke in diesem Dokument veranschaulichen die unmittelbar erläuterten
+Stil-, Struktur- oder Verhaltensregeln. Sie sind weder vollständig zu kopierende
+Implementierungen noch eine Liste verpflichtender Typen, Properties, Commands
+oder Methodennamen. Sie behaupten insbesondere **nicht**, dass die gezeigten
+APIs bereits im Repository existieren oder überall neu anzulegen sind.
+Beispielnamen wie `RefreshPositionsAndMoveAvailability()`,
+`GamesAvailableToAdd` und `OpenGameSelectionCommand` nur verwenden, wenn
+sie zur tatsächlichen Verantwortung, den Aufrufern und vorhandenen Verträgen
+passen. Ein Beispiel kann bewusst nur einen relevanten Ausschnitt zeigen;
+nicht dargestellte Fälle sind dadurch nicht automatisch verboten oder erledigt.
+
+**Lesereihenfolge:** Zuerst die Regel und ihren Geltungsbereich verstehen, dann
+am gekennzeichneten Beispiel das gemeinte Muster erkennen, zuletzt im
+tatsächlichen Code die benötigten Varianten und Randfälle prüfen. Wenn ein
+Beispiel scheinbar mehr fordert als die Regel, gilt die ausdrücklich formulierte
+Regel. Bei Widersprüchen zu einem kanonischen Fach-/Architekturvertrag die
+zuständige Spezifikation beachten, nicht das Beispiel verallgemeinern.
 
 ## 2. Namen und Verantwortlichkeiten
 
@@ -77,8 +97,9 @@ Kommentar ist besser als ein kurzer Kommentar, der die entscheidende
 Information weglässt. Offensichtliche Getter und selbsterklärende Anweisungen
 brauchen dagegen keine Kommentare.
 
-Beispiel für einen **notwendigen Warum-Kommentar** an einem Dialogzustand
-(nicht als Kommentarpflicht für jeden Speichervorgang verstehen):
+**Beispiel (nur für einen Dialog mit Save-/Navigations-Retry):** Ein
+notwendiger Warum-Kommentar an einem nicht offensichtlichen Zustand; keine
+generelle Kommentarpflicht für jeden Speichervorgang:
 
 ```csharp
 /// <summary>
@@ -109,7 +130,9 @@ dem Methodennamen hervorgehen (z. B. `OnBackButtonPressed()` für System-Zurück
 unabhängig vom Header-Button). Auch ungewöhnliche Guards und Early Returns
 kommentieren, sofern ihr Grund ohne Kommentar unverständlich wäre.
 
-Beispiel für einen **Warum-Kommentar** an einem MAUI-Lifecycle-Override:
+**Beispiel (nur bei entsprechender Lifecycle-Gefahr):** Ein Warum-Kommentar
+an einem MAUI-Override, dessen erneuter Aufruf ungespeicherte Eingaben
+überschreiben könnte:
 
 ```csharp
 /// <summary>
@@ -146,7 +169,9 @@ ohne denselben Gedanken mehrfach auszuführen.
   längere Wiederholung der Summary. Alternativen, Kosten und ausführliche
   Architekturentscheidungen gehören in `ARCHITECTURE.md`.
 
-Positives Beispiel: **kurz, aber mit vollständiger Begründung**.
+**Beispiel (illustrativer Navigationsvertrag):** Kurz, aber mit vollständiger
+Begründung. Verbindliche Operationen und deren Verantwortung legt
+`ARCHITECTURE.md` fest, nicht dieser Stilcode.
 
 ```csharp
 /// <summary>
@@ -276,8 +301,10 @@ Lesbarkeitsfälle ausdrücken können.
 - Boolesche Parameter, die wesentlich unterschiedliche Abläufe steuern,
   kritisch prüfen; keine zusätzlichen Methoden/Delegates ohne Lesbarkeitsgewinn.
 
-Diese Beispiele zeigen **beide** zulässigen Formen sowie einen verschachtelten
-Fall, bei dem Klammern die Lesbarkeit verbessern:
+**Beispiele (nur C#-Form und Kontrollfluss):** Sie zeigen zulässige
+Klammerformen und einen verschachtelten Fall, in dem Klammern die Lesbarkeit
+verbessern. Die genannten Methoden, Zustände und Abläufe sind keine
+Implementierungsvorgaben:
 
 ```csharp
 // One simple statement: no braces.
@@ -497,15 +524,21 @@ nicht automatisch Änderungen der **Eigenschaften ihrer Elemente**.
 `INotifyPropertyChanged` eines Items signalisiert nur dessen Zustand; gefilterte
 `IReadOnlyList`-Projections aktualisieren sich nicht selbst.
 
-Abonnements und Count-abhängige `CanExecute`-Prüfungen nicht vorsorglich
-anlegen. Wenn ein Editor vorhandene Gruppenmitglieder ausschließlich umsortiert
-und die Domain mindestens ein Mitglied garantiert, sind ein
-`Players.CollectionChanged`-Abonnement nur für `SaveCommand` und eine Prüfung
-`Players.Count > 0` in `CanSave` unnötig. Ein unerwartet leerer Ladezustand
-kann bei Bedarf **an der Ladegrenze** verständlich als Fehler behandelt werden,
-statt ihn als regulären, bearbeitbaren Formularzustand zu modellieren. Echte
-fachliche Spielerzahlgrenzen, etwa bei der Spielzuordnung, bleiben davon
-unberührt.
+**Regel:** Collection-Abonnements und Count-abhängige `CanExecute`-
+Prüfungen nur einrichten, wenn sich die betreffende Collection im tatsächlichen
+Ablauf auf relevante Weise verändern kann. Bereits an einer verantwortlichen
+Fach- oder Vertragsgrenze garantierte Invarianten nicht vorsorglich als
+veränderbaren Formularzustand modellieren. Einen unerwartet ungültigen
+Ladezustand gegebenenfalls **an der Ladegrenze** sichtbar behandeln.
+
+**Beispiel (nur ein Editor mit feststehenden Gruppenmitgliedern):** Werden
+vorhandene Mitglieder ausschließlich umsortiert und garantiert die Domain
+mindestens ein Mitglied, braucht `SaveCommand` kein
+`Players.CollectionChanged`-Abonnement für Hinzufügen/Entfernen und `CanSave`
+keine Prüfung `Players.Count > 0`. Bei einem Editor, der Mitglieder tatsächlich
+hinzufügt oder entfernt, ist die Lage anders; dort können beide Mechanismen
+nötig sein. Fachliche Spielerzahlgrenzen, etwa bei der Spielzuordnung,
+bleiben unabhängig davon bestehen.
 
 Wenn Änderungen ausschließlich durch bekannte Commands erfolgen, die
 abgeleiteten Ansichten **direkt nach einer tatsächlich erfolgreichen Mutation**
@@ -525,10 +558,79 @@ unbemerkt als Synonyme mischen. Fachvokabular und Persistenz liegen in
 
 ## 7. XAML und compiled Bindings
 
-Einfache Elemente auf einer Zeile, umfangreiche auf **wenige semantisch
-gruppierte Attributzeilen** verteilen (Layout/Darstellung, Binding/Zustand,
-Interaktion, Accessibility). Kein pauschales "ein Attribut pro Zeile", keine
-starre maximale Länge und kein zusätzlicher XAML-Formatter ohne Bedarf.
+### Attributreihenfolge und Zeilenumbrüche
+
+**Regel:** XAML-Elemente mit übersichtlichen Attributen bevorzugt vollständig
+auf **einer Zeile** lassen. Es gibt **keine feste oder versteckte Obergrenze
+für die Zeilenlänge** – auch nicht 120, 160 oder 200 Zeichen. Erst umbrechen,
+wenn das Element durch Zahl oder Zusammenspiel seiner Attribute tatsächlich
+schlechter lesbar wird; Editorbreite und automatische Anzeigeumbrüche sind
+keine Begründung für feste Quelltextumbrüche.
+
+Bei Bedarf in **wenige semantische Gruppen** gliedern: Grundkonfiguration
+und Zustand (`x:Name`, `Grid.Row`, `IsEnabled`, `Style`), Inhalt (`Text`,
+`Title`, `Source`), Interaktion (`Command` und `CommandParameter` oder
+`Clicked`) sowie zusammengehörige Hilfetexte (`ToolTipProperties.Text`
+und `SemanticProperties.Description`). Zusammengehöriges möglichst auf
+derselben Attributzeile halten; insbesondere `Command` und
+`CommandParameter` nicht ohne Lesbarkeitsgrund trennen. Das ist eine
+**Orientierung, keine starre Reihenfolge oder Pflicht zum Umbruch**.
+Kein Formatierer nur zur Erzwingung kosmetischer Zeilenlängen.
+
+**Beispiele (nur Attributgliederung, keine vorgegebenen Controls/Commands):**
+
+```xml
+<header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.EditGroup}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
+
+<ImageButton Style="{StaticResource HeaderIconButton}" WidthRequest="48" HeightRequest="48" Source="icon_info.png"
+    Clicked="OnInfoClicked"
+    ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" />
+
+<TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" />
+```
+
+### XAML-Abschnitte als Navigationshilfe gliedern
+
+**Regel:** Größere verschachtelte XAML-Ansichten durch **aussagekräftige
+Abschnittskommentare** gliedern. Anders als C#-Methoden lässt sich diese
+Struktur nicht einfach in kleine benannte Funktionen zerlegen. Kommentare
+dürfen ausreichend ausführlich sein, um Zweck und Inhalt des Bereichs
+auf einen Blick zu erklären. Über- und Unterbereiche sollen in Anordnung
+und Einrückung als Hierarchie erkennbar sein. Nicht jedes Grid oder Control
+kommentieren und keine technisch nicht vorhandene Hierarchie suggerieren.
+
+**Beispiel (nur schematische Gliederung, kein vollständiges Seitenlayout):**
+
+```xml
+<Grid>
+    <!-- Page header: navigation, information and save action -->
+    <header:AppPageHeader Title="{x:Static res:AppResources.EditGroup}" BackCommand="{Binding GoBackCommand}" />
+
+    <!-- Editable group content: metadata, player order and game assignments -->
+    <VerticalStackLayout>
+        <!-- Group settings: edit name and archive state -->
+        <Entry Text="{Binding GroupName}" />
+
+        <!-- Players: display fixed members and adjust their default order -->
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}" />
+
+        <!-- Games: review assignments and choose additional games -->
+        <Button Command="{Binding ChooseGameCommand}" />
+    </VerticalStackLayout>
+
+    <!-- Game selection overlay: choose an additional game -->
+    <Grid IsVisible="{Binding IsChoosingGame}" />
+
+    <!-- Busy overlay: block interaction during an operation -->
+    <Grid IsVisible="{Binding IsBusy}" />
+</Grid>
+```
+
+**Strukturkommentare** dienen als Navigationshilfe und müssen kein besonderes
+Warum erklären. Kommentare zu ungewöhnlichen Framework-Grenzen, Guards oder
+anderen nicht offensichtlichen Entscheidungen erläutern weiterhin die
+Begründung. Gezeigte Abschnittsnamen sind Beispiele, keine verpflichtenden
+Bezeichner oder Layoutvorgaben.
 
 Den **tatsächlichen BindingContext** beachten:
 
@@ -544,8 +646,9 @@ Den **tatsächlichen BindingContext** beachten:
   Collection-Mitgliedschaft, Zugriffsrechte und Nebenläufigkeit prüfen.
   IDs bleiben an Navigations- und Persistenzgrenzen sinnvoll.
 
-Konkretes Beispiel (die Page hat `x:Name="Page"` und eine öffentliche,
-typisierte `ViewModel`-Property):
+**Beispiel (nur BindingContext-Wechsel):** Die hier illustrative Page
+besitzt `x:Name="Page"` und eine öffentliche, typisierte `ViewModel`-
+Property. Namen sind weder vorgegeben noch als bereits implementiert anzusehen:
 
 ```xml
 <!-- Outside an item template: EditGroupViewModel is the BindingContext. -->
@@ -557,9 +660,7 @@ typisierte `ViewModel`-Property):
         <DataTemplate x:DataType="models:GroupGameSelection">
             <Border>
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer
-                        Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}"
-                        CommandParameter="{Binding .}" />
+                    <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" />
                 </Border.GestureRecognizers>
                 <Label Text="{Binding Name}" />
             </Border>

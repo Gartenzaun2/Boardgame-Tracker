@@ -11,8 +11,6 @@ indent_style = space
 indent_size = 4
 csharp_style_namespace_declarations = file_scoped:suggestion
 
-# Keep C# formatting consistent with the documented K&R style.
-# This does not change the preferred separate lines for else/catch/finally.
 csharp_new_line_before_open_brace = none
 csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
