@@ -16,8 +16,12 @@ SDK-/Workload-/Paketvorgaben stehen ausschließlich in `SETUP.md`.
 Die Mac-Toolchain ist eingerichtet; der lokale SDK-/Workload-Pin wurde auch in
 MSBuild nachgewiesen. Die nativen ARM64-Archive für Device und Simulator wurden
 mit der neuen Apple-Toolchain getrennt gebaut. Simulator-Debug- und signierter
-Device-Release-Build einschließlich nativer Verlinkung sind erfolgreich.
-Simulator-/iPhone-Runtime und die Updateinstallation sind noch nicht abgenommen.
+Device-Release-Build einschließlich nativer Verlinkung sind für App-Version
+`0.22.8.4` (Build `139`) erfolgreich. Spätere Codeänderungen sind durch diese
+Buildnachweise nicht abgedeckt. Die Updateinstallation dieser Version war
+erfolgreich; iOS blockierte den anschließenden Start trotz gültiger Signatur und
+passendem eingebettetem Profil mit einer Security-/Trust-Meldung.
+Simulator-/iPhone-Runtime ist noch nicht abgenommen.
 
 **Gezielte verbleibende Prüfungen:**
 1. Nach unmittelbar zuvor erteilter Entwicklerfreigabe auf dem iPhone 12 Pro mit
@@ -36,7 +40,7 @@ Simulator-/iPhone-Runtime und die Updateinstallation sind noch nicht abgenommen.
 Startup-/Release-Fehler, Datenverlust oder fehlerhafte Navigation/Interop.
 Keine dieser Runtime-Prüfungen ist durch die erfolgreichen Builds erledigt.
 Das native Android-ARM64-Geräte-Gate bleibt separat bestehen. Umfang/Freigaben
-richten sich nach `AGENTS.md`/`SETUP.md`; iPhone-Deployment ist zurückgestellt.
+richten sich nach `AGENTS.md`/`SETUP.md`; erfolgreicher iPhone-App-Start steht noch aus.
 
 ## Plattformnachweise
 
