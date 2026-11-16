@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Tests.Presentation;
 using BoardgameTracker.App.Features.Games.ListGames;
 using BoardgameTracker.App.Games.ManualGames.Features.Settings;
 using BoardgameTracker.Application.Games;
@@ -25,7 +26,7 @@ public sealed class ManualGameUseCaseTests
     public async Task BadgeInput_UsesTransferLimitAndRetainsInvalidDraft(int length)
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        ManualGameEditorViewModel model = new(new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel model = new(new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<ManualGameEditorViewModel>.Instance);
         await model.LoadAsync(null, Token);
         model.GameName = "Grenzfall";
         model.BadgeText = "  " + new string('X', length) + "  ";
@@ -204,12 +205,12 @@ public sealed class ManualGameUseCaseTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         TestGameEnabledStore store = new();
-        ManualGameEditorViewModel canceled = new(new(db, store), new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel canceled = new(new(db, store), new(db, store), new(db, store), new EditorNavigationFake(), NullLogger<ManualGameEditorViewModel>.Instance);
         await canceled.LoadAsync(null, Token);
         canceled.GameName = "Discarded";
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
-        ManualGameEditorViewModel editor = new(new(db, store), new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel editor = new(new(db, store), new(db, store), new(db, store), new EditorNavigationFake(), NullLogger<ManualGameEditorViewModel>.Instance);
         await editor.LoadAsync(null, Token);
         editor.GameName = "Editor";
         editor.BadgeText = "E";
@@ -350,7 +351,7 @@ public sealed class ManualGameUseCaseTests
         await using (BoardgameTrackerDbContext seed = db.CreateDbContext())
             key = (await seed.Games.SingleAsync(game => game.Id == id, Token)).Key;
         store.SetEnabled(key, false);
-        ManualGameEditorViewModel editor = new(useCase, new(db, store), new(db, store), NullLogger<ManualGameEditorViewModel>.Instance);
+        ManualGameEditorViewModel editor = new(useCase, new(db, store), new(db, store), new EditorNavigationFake(), NullLogger<ManualGameEditorViewModel>.Instance);
         await editor.LoadAsync(key, Token);
         store.FailNextRemoval = true;
         Assert.True(await editor.DeleteAsync(Token));

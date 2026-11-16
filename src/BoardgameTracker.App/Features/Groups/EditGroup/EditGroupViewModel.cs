@@ -10,6 +10,12 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
+/// <summary>
+/// 1. Load metadata, fixed membership and game-assignment locks once per group.
+/// 2. Edit the name, archive state, member order and enabled game assignments in memory.
+/// 3. Save through the Application use case, which rechecks session locks; retry departure
+///    after navigation failure without repeating the completed write.
+/// </summary>
 public partial class EditGroupViewModel : ObservableObject {
     private readonly EditGroupUseCase _editGroupUseCase;
     private readonly GamesQuery _gamesQuery;
@@ -21,10 +27,6 @@ public partial class EditGroupViewModel : ObservableObject {
         _gamesQuery = gamesQuery;
         _navigationService = navigationService;
         _logger = logger;
-        Players.CollectionChanged += (_, args) => {
-            if (IsNotBusy && args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
-                SaveCommand.NotifyCanExecuteChanged();
-        };
     }
 
     [ObservableProperty]
@@ -43,7 +45,7 @@ public partial class EditGroupViewModel : ObservableObject {
     public partial bool IsSaveCompleted { get; private set; }
 
     public bool CanEdit => IsNotBusy && !IsSaveCompleted;
-    public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0));
+    public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName)));
 
     [ObservableProperty]
     public partial bool IsChoosingGame { get; private set; }
@@ -218,6 +220,11 @@ public partial class EditGroupViewModel : ObservableObject {
     private async Task GoBackAsync() {
         if (!IsNotBusy)
             return;
+
+        if (IsChoosingGame) {
+            CloseGameSelection();
+            return;
+        }
 
         try {
             IsBusy = true;

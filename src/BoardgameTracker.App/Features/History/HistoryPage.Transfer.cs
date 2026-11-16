@@ -8,9 +8,9 @@ namespace BoardgameTracker.App.Features.History;
 
 public partial class HistoryPage {
     private bool StartTransfer() {
-        if (_transferring || _loading || _navigating || _choosing)
+        if (_isTransferring || _isLoading || _isNavigating || _isFilterSelectionOpen)
             return false;
-        _transferring = true;
+        _isTransferring = true;
         BusyOverlay.IsVisible = true;
         return true;
     }
@@ -21,12 +21,10 @@ public partial class HistoryPage {
             await _exportFlow.RunAsync(_visibleIds, AppInfo.Current.VersionString,
                 targets => AppDialogPage.ChooseAsync(this, AppResources.TransferExportTitle,
                     targets.Select(target => target.DisplayName).ToArray(), -1, AppResources.Cancel));
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             await ShowTransferErrorAsync(exception);
-        }
-        finally {
-            _transferring = false;
+        } finally {
+            _isTransferring = false;
             BusyOverlay.IsVisible = false;
         }
     }
@@ -104,12 +102,10 @@ public partial class HistoryPage {
             await _transfer.CommitAsync(plan);
             committed = true;
             await AppDialogPage.ShowAsync(this, AppResources.TransferImport, AppResources.TransferSuccess, AppResources.Ok);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             await ShowTransferErrorAsync(exception);
-        }
-        finally {
-            _transferring = false;
+        } finally {
+            _isTransferring = false;
             BusyOverlay.IsVisible = false;
             if (committed)
                 await ReloadAsync();
@@ -123,5 +119,5 @@ public partial class HistoryPage {
     }
     /// <summary>Prevents system back from interrupting a transfer or its conflict-resolution dialogs.</summary>
     protected override bool OnBackButtonPressed()
-        => _transferring || base.OnBackButtonPressed();
+        => _isTransferring || _isLoading || _isNavigating || _isFilterSelectionOpen || base.OnBackButtonPressed();
 }

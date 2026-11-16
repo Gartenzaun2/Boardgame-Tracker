@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using BoardgameTracker.App.Resources.Localization;
 
 namespace BoardgameTracker.App.Presentation.Controls;
@@ -6,7 +8,9 @@ namespace BoardgameTracker.App.Presentation.Controls;
 public sealed class AppDialogPage : ContentPage {
     private static readonly HashSet<Page> Owners = [];
     private readonly TaskCompletionSource<int> _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    /// <summary>Prevents concurrent modal pops; a failed pop releases this guard so dismissal can be retried.</summary>
     private bool _closing;
+    private readonly Label _navigationError = new() { IsVisible = false };
 
     private AppDialogPage(string title, string? message, string closeText,
         string? acceptText, bool destructive, IReadOnlyList<string>? options, int selectedIndex) {
@@ -21,6 +25,8 @@ public sealed class AppDialogPage : ContentPage {
         VerticalStackLayout body = new() { Spacing = 8 };
         if (message is not null)
             body.Children.Add(new Label { Text = message });
+        _navigationError.SetDynamicResource(Label.TextColorProperty, "Danger");
+        body.Children.Add(_navigationError);
 
         if (options is not null) {
             for (int index = 0; index < options.Count; index++) {
@@ -68,8 +74,7 @@ public sealed class AppDialogPage : ContentPage {
             selectionHeader.Add(heading, 1, 0);
             heading.VerticalOptions = LayoutOptions.Center;
             header = selectionHeader;
-        }
-        else {
+        } else {
             Button close = new() {
                 Text = closeText,
                 Style = Resource<Style>("TextActionButton"),
@@ -123,8 +128,7 @@ public sealed class AppDialogPage : ContentPage {
         try {
             await owner.Navigation.PushModalAsync(dialog, animated: false);
             return await dialog._completion.Task;
-        }
-        finally {
+        } finally {
             Owners.Remove(owner);
         }
     }
@@ -137,9 +141,11 @@ public sealed class AppDialogPage : ContentPage {
         try {
             await Navigation.PopModalAsync(animated: false);
             _completion.TrySetResult(result);
-        }
-        catch (Exception exception) {
-            _completion.TrySetException(exception);
+        } catch (Exception exception) {
+            Handler?.MauiContext?.Services.GetService<ILogger<AppDialogPage>>()?.LogError(exception, "Could not dismiss app dialog.");
+            _navigationError.Text = AppResources.NavigationFailed;
+            _navigationError.IsVisible = true;
+            _closing = false;
         }
     }
 

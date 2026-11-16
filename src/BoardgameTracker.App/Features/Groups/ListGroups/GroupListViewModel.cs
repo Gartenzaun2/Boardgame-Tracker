@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using BoardgameTracker.App.Diagnostics;
@@ -11,19 +12,35 @@ using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.ListGroups;
 
+/// <summary>
+/// 1. Load groups assigned to the selected game and eligible groups available for assignment.
+/// 2. Select an existing group or create a draft, preserving the selected game's context.
+/// 3. Keep successful assignments across preparation-navigation failures so retrying only
+///    opens preparation; returning later reloads the filtered lists from persisted data.
+/// </summary>
 public partial class GroupListViewModel : ObservableObject {
+    private readonly INavigationService _navigationService;
     private readonly ListGroupsQuery _query;
     private readonly AddGroupGameUseCase _addAssignment;
     private readonly GamesQuery _gamesQuery;
     private readonly ILogger<GroupListViewModel> _logger;
     private readonly IEnumerable<IGameSessionNavigationHandler> _handlers;
 
-    public GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCase addAssignment, GamesQuery gamesQuery, ILogger<GroupListViewModel> logger, IEnumerable<IGameSessionNavigationHandler> handlers) {
+    public GroupListViewModel(ListGroupsQuery query, AddGroupGameUseCase addAssignment, GamesQuery gamesQuery, ILogger<GroupListViewModel> logger, IEnumerable<IGameSessionNavigationHandler> handlers, INavigationService navigationService) {
         _query = query;
         _addAssignment = addAssignment;
         _gamesQuery = gamesQuery;
         _logger = logger;
         _handlers = handlers;
+        _navigationService = navigationService;
+        AvailableGroups.CollectionChanged += (_, args) => {
+            if (args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
+                OnPropertyChanged(nameof(CanChoose));
+        };
+        Groups.CollectionChanged += (_, args) => {
+            if (args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
+                OnPropertyChanged(nameof(IsEmpty));
+        };
     }
 
     public ObservableCollection<GroupListItemViewModel> Groups { get; } = [];
@@ -38,19 +55,20 @@ public partial class GroupListViewModel : ObservableObject {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
+    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
     public partial bool IsBusy { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
+    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
     public partial bool IsNavigating { get; private set; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
-    [NotifyPropertyChangedFor(nameof(IsWorking))]
-    public partial bool IsChoosingExisting { get; set; }
+    public partial bool IsChoosingExisting { get; private set; }
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChoose))]
     public partial bool CanCreate { get; private set; }
-    [ObservableProperty]
-    public partial bool CanChoose { get; private set; }
+    public bool CanChoose => CanCreate && AvailableGroups.Count > 0;
     [ObservableProperty]
     public partial string EmptyMessage { get; private set; } = string.Empty;
 
@@ -59,10 +77,59 @@ public partial class GroupListViewModel : ObservableObject {
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool IsWorking => IsBusy || IsNavigating;
+    private bool IsNotWorking => !IsWorking;
     public bool CanInteract => !IsBusy && !IsNavigating && !IsChoosingExisting;
     public bool IsEmpty => Groups.Count == 0;
     public void SetGameContext(string key)
         => SelectedGameKey = key;
+
+    [RelayCommand(CanExecute = nameof(IsNotWorking))]
+    private async Task GoBackAsync() {
+        if (!IsNotWorking)
+            return;
+        if (IsChoosingExisting) {
+            CloseSelection();
+            return;
+        }
+        if (!TryBeginNavigation())
+            return;
+        ErrorMessage = null;
+        try {
+            await _navigationService.GoBackAsync();
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not leave group selection.");
+            ErrorMessage = AppResources.NavigationFailed;
+        } finally {
+            EndNavigation();
+        }
+    }
+
+    [RelayCommand]
+    private async Task CreateGroupAsync() {
+        if (!CanCreate || !CanInteract || !TryBeginNavigation())
+            return;
+        ErrorMessage = null;
+        try {
+            await _navigationService.OpenGroupCreationAsync(SelectedGameKey);
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not open group creation.");
+            ErrorMessage = AppResources.NavigationFailed;
+        } finally {
+            EndNavigation();
+        }
+    }
+
+    [RelayCommand]
+    private void ChooseExisting() {
+        if (CanChoose && CanInteract)
+            IsChoosingExisting = true;
+    }
+
+    [RelayCommand]
+    private void CloseSelection() {
+        if (!IsWorking)
+            IsChoosingExisting = false;
+    }
     /// <returns>True when navigation acquired the existing busy guard; false while loading or another navigation is pending.</returns>
     public bool TryBeginNavigation() {
         if (IsBusy || IsNavigating)
@@ -99,17 +166,14 @@ public partial class GroupListViewModel : ObservableObject {
             AvailableGroups.Clear();
             foreach (ManagedGroup group in await _query.GetAvailableGroupsAsync(SelectedGameKey, cancellationToken))
                 AvailableGroups.Add(new(group.Id, group.Name, string.Join(" · ", group.PlayerNames)));
-            CanChoose = presence.HasPlayers && AvailableGroups.Count > 0;
-            OnPropertyChanged(nameof(IsEmpty));
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load groups for game.");
             ErrorMessage = AppResources.LoadGroupsFailed;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
+    [RelayCommand]
     public async Task OpenGroupAsync(Guid groupId) {
         if (!TryBeginNavigation())
             return;
@@ -117,15 +181,14 @@ public partial class GroupListViewModel : ObservableObject {
         try {
             GroupListItem group = (await _query.ListGroupsAsync(SelectedGameKey)).Single(group => group.Id == groupId);
             await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, group.OpenGameSessionId, group.OpenGameSessionStatus);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not open game group.");
             ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
-        }
-        finally {
+        } finally {
             EndNavigation();
         }
     }
+    [RelayCommand]
     public async Task SelectExistingAsync(AvailablePlayGroup group) {
         if (!AvailableGroups.Contains(group) || !TryBeginNavigation())
             return;
@@ -133,14 +196,16 @@ public partial class GroupListViewModel : ObservableObject {
         try {
             Guid gameId = (await _gamesQuery.GetEnabledAsync()).Single(game => game.Key == SelectedGameKey).Id;
             await _addAssignment.AddGroupGameAsync(group.Id, gameId);
+            // The assignment is complete even if preparation cannot open. Retry from the
+            // assigned list rather than offering an already assigned group for another write.
+            AvailableGroups.Remove(group);
+            await LoadAsync();
             IsChoosingExisting = false;
             await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, null, null);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not assign and open game group.");
             ErrorMessage = UserErrorMessage.Create(AppResources.OpenGroupFailed, exception);
-        }
-        finally {
+        } finally {
             EndNavigation();
         }
     }

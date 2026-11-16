@@ -30,6 +30,7 @@
                 <Label Margin="20,0" TextColor="{DynamicResource Danger}" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" />
             </VerticalStackLayout>
 
+            <!-- Draft sections: metadata, ordered membership, game assignments. -->
             <ScrollView Grid.Row="1" IsEnabled="{Binding CanEdit}">
                 <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
                     <VerticalStackLayout Spacing="16">
@@ -45,6 +46,7 @@
                             IsVisible="{Binding CanArchiveGroup, Converter={StaticResource NegateBool}}" />
                     </VerticalStackLayout>
 
+                    <!-- Membership and default order. -->
                     <VerticalStackLayout Spacing="10">
                         <HorizontalStackLayout Spacing="2">
                             <Label FontAttributes="Bold" FontSize="18" VerticalOptions="Center" Text="{x:Static res:AppResources.GroupPlayers}" />
@@ -57,7 +59,8 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupMemberDraft">
                                     <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
-                                        <VerticalStackLayout Spacing="8">
+                                        <!-- Game assignments; locked or incompatible choices stay visible. -->
+                    <VerticalStackLayout Spacing="8">
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                                                 <VerticalStackLayout Spacing="2">
                                                     <HorizontalStackLayout Spacing="8">

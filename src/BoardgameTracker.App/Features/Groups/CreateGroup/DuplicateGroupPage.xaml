@@ -4,12 +4,12 @@
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization" x:Class="BoardgameTracker.App.Features.Groups.CreateGroup.DuplicateGroupPage"
     x:Name="Page" x:DataType="local:CreateGroupViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid RowDefinitions="Auto,*" RowSpacing="16" IsEnabled="{Binding IsIdle}">
+        <Grid RowDefinitions="Auto,*" RowSpacing="16" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
             <VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                     Title="{x:Static res:AppResources.DuplicateGroupTitle}"
                     Variant="Subpage"
-                    BackClicked="OnBackClicked" />
+                    BackCommand="{Binding ReturnToDraftCommand}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto,Auto" RowSpacing="16">
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Duplicates}" SelectionMode="None" IsEnabled="{Binding CanEdit}">
@@ -33,8 +33,8 @@
                 <Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 <VerticalStackLayout Grid.Row="2" Spacing="16">
                     <BoxView Style="{StaticResource HeaderDivider}" />
-                    <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaved}" />
-                    <Button Text="{Binding SaveText}" Command="{Binding SaveCommand}" IsVisible="{Binding IsSaved}" Style="{StaticResource PrimaryCompactButton}" />
+                    <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" />
+                    <Button Text="{Binding SaveText}" Command="{Binding SaveCommand}" IsVisible="{Binding IsSaveCompleted}" Style="{StaticResource PrimaryCompactButton}" />
                     <Button Text="{x:Static res:AppResources.CreateAdditionalGroup}" Command="{Binding CreateAdditionalGroupCommand}" IsVisible="{Binding CanEdit}" Style="{StaticResource SecondaryActionButton}" />
                 </VerticalStackLayout>
             </Grid>

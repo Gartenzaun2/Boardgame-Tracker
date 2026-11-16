@@ -1,3 +1,5 @@
+using System.Collections.Specialized;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Games;
 using BoardgameTracker.App.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -10,52 +12,92 @@ using CommunityToolkit.Mvvm.Input;
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
 /// <summary>
-/// Owns create-group screen state and translates UI input into the create-group Application command.
+/// 1. Build an unsaved group draft from existing players and new player inputs.
+/// 2. Assign enabled games that support the membership; the play origin preselects its game.
+/// 3. Find groups with the same player identities and offer reuse, reactivation or deliberate
+///    creation of another group. Keep the complete checked draft until that decision succeeds.
+/// 4. Persist the chosen action atomically, then return to management or open game preparation.
+///    Retain the saved identity if navigation fails so departure never repeats the write.
 /// </summary>
 public partial class CreateGroupViewModel : ObservableObject {
-    private readonly CreateGroupUseCase _createGroup;
+    private readonly CreateGroupUseCase _createGroupUseCase;
     private readonly FindGroupDuplicatesQuery _duplicatesQuery;
-    private readonly ReuseGroupUseCase _reuseGroup;
+    private readonly ReuseGroupUseCase _reuseGroupUseCase;
     private readonly GamesQuery _gamesQuery;
     private readonly ILogger<CreateGroupViewModel> _logger;
+    private readonly INavigationService _navigationService;
 
-    public CreateGroupViewModel(CreateGroupUseCase createGroup, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroup, GamesQuery gamesQuery, ILogger<CreateGroupViewModel> logger) {
-        _createGroup = createGroup;
+    public CreateGroupViewModel(CreateGroupUseCase createGroupUseCase, FindGroupDuplicatesQuery duplicatesQuery, ReuseGroupUseCase reuseGroupUseCase, GamesQuery gamesQuery, INavigationService navigationService, ILogger<CreateGroupViewModel> logger) {
+        _createGroupUseCase = createGroupUseCase;
         _duplicatesQuery = duplicatesQuery;
-        _reuseGroup = reuseGroup;
+        _reuseGroupUseCase = reuseGroupUseCase;
         _gamesQuery = gamesQuery;
         _logger = logger;
+        _navigationService = navigationService;
+        Players.CollectionChanged += (_, args) => {
+            GroupMemberDraft.UpdatePositions(Players);
+            if (args.Action != NotifyCollectionChangedAction.Move) {
+                OnPropertyChanged(nameof(HasNoPlayers));
+                SaveCommand.NotifyCanExecuteChanged();
+            }
+        };
+        AvailablePlayers.CollectionChanged += (_, args) => {
+            if (args.Action != NotifyCollectionChangedAction.Move) {
+                OnPropertyChanged(nameof(HasAvailablePlayers));
+            }
+        };
     }
 
-    private bool _loaded;
+    /// <summary>
+    /// A later OnAppearing occurs after overlays or duplicate selection. Busy only protects
+    /// concurrent loads; remembering a successful initial load prevents replacing the draft later.
+    /// </summary>
+    private bool _isInitialLoadCompleted;
     private string? _gameKey;
-    // Keep the persisted identity until navigation succeeds; retrying departure must not create another group.
+
+    /// <summary>
+    /// Retains the persisted identity and origin across navigation failures. Retrying departure
+    /// must open the same group and remove the correct form pages without another write.
+    /// </summary>
     private GroupSaveOutcome? _savedOutcome;
+
+    /// <summary>
+    /// Freezes the complete unsaved input while duplicate selection is open, so reuse,
+    /// reactivation and deliberate creation act on the exact draft that was checked.
+    /// </summary>
     private CreateGroupCommand? _pendingCommand;
-    public ObservableCollection<GroupGameSelection> Games { get; } = [];
-    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
-    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.SupportsPlayerCount(Players.Count)).ToArray();
-    public bool HasAvailableGames => AvailableGames.Count > 0;
+
+    /// <summary>Remembers successful duplicate navigation so completion removes both form pages.</summary>
+    private bool _isDuplicateSelectionOpen;
+
     [ObservableProperty]
-    public partial bool IsChoosingGame { get; set; }
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(GoBackCommand), nameof(ReturnToDraftCommand))]
+    [NotifyPropertyChangedFor(nameof(CanEdit))]
+    public partial bool IsBusy { get; private set; }
+    private bool IsNotBusy => !IsBusy;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasError))]
+    public partial string? ErrorMessage { get; private set; }
+
+    public bool IsSaveCompleted => _savedOutcome is not null;
+    public bool CanEdit => IsNotBusy && !IsSaveCompleted;
+    public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
+    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    [ObservableProperty]
+    public partial GroupCreationSubdialog ActiveSubdialog { get; private set; }
 
     public ObservableCollection<DuplicateGroupRow> Duplicates { get; } = [];
-    public Func<Task>? ShowDuplicatesAsync { get; set; }
-    public Func<GroupSaveOutcome, Task>? SavedAsync { get; set; }
-
-    public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
-    public ObservableCollection<GroupMemberDraft> Players { get; } = [];
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial string GroupName { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
-    public partial SelectablePlayer? SelectedExistingPlayer { get; set; }
-
-    [ObservableProperty]
-    public partial bool IsAddingNewPlayer { get; set; }
+    public ObservableCollection<GroupMemberDraft> Players { get; } = [];
+    public bool HasNoPlayers => Players.Count == 0;
+    public ObservableCollection<SelectablePlayer> AvailablePlayers { get; } = [];
+    public bool HasAvailablePlayers => AvailablePlayers.Count > 0;
 
     [ObservableProperty]
     public partial string NewPlayerName { get; set; } = string.Empty;
@@ -63,34 +105,10 @@ public partial class CreateGroupViewModel : ObservableObject {
     [ObservableProperty]
     public partial bool NewPlayerIsGuest { get; set; }
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddSelectedPlayerCommand))]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
-    [NotifyPropertyChangedFor(nameof(CanEdit))]
-    public partial bool IsBusy { get; private set; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
-    public partial string? ErrorMessage { get; private set; }
-
-    public bool IsIdle => !IsBusy;
-    public bool CanEdit => IsIdle && !IsSaved;
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyPropertyChangedFor(nameof(CanEdit))]
-    [NotifyPropertyChangedFor(nameof(SaveText))]
-    public partial bool IsSaved { get; private set; }
-    public string SaveText => IsSaved ? AppResources.Done : AppResources.Save;
-    public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
-
-    [ObservableProperty]
-    public partial bool HasNoPlayers { get; private set; } = true;
-
-    [ObservableProperty]
-    public partial bool HasNoAvailablePlayers { get; private set; } = true;
-
-    public bool HasAvailablePlayers => !HasNoAvailablePlayers;
+    public ObservableCollection<GroupGameSelection> Games { get; } = [];
+    public IReadOnlyList<GroupGameSelection> SelectedGames => Games.Where(game => game.IsSelected).ToArray();
+    public IReadOnlyList<GroupGameSelection> AvailableGames => Games.Where(game => !game.IsSelected && game.SupportsPlayerCount(Players.Count)).ToArray();
+    public bool HasAvailableGames => AvailableGames.Count > 0;
 
     private void GamesChanged() {
         OnPropertyChanged(nameof(SelectedGames));
@@ -100,17 +118,19 @@ public partial class CreateGroupViewModel : ObservableObject {
 
     [RelayCommand]
     private void AddGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count))
+        if (!CanEdit || game is null || game.IsSelected || !Games.Contains(game) || !game.SupportsPlayerCount(Players.Count))
             return;
         game.IsSelected = true;
-        IsChoosingGame = false;
+        RefreshGameSelectionsAndValidation();
+        ActiveSubdialog = GroupCreationSubdialog.None;
     }
 
     [RelayCommand]
     private void RemoveGame(GroupGameSelection? game) {
-        if (!CanEdit || game is null || !Games.Contains(game) || !game.CanChange)
+        if (!CanEdit || game is null || !game.IsSelected || !Games.Contains(game) || !game.CanChange)
             return;
         game.IsSelected = false;
+        RefreshGameSelectionsAndValidation();
     }
 
     public void SetManagementOrigin()
@@ -119,31 +139,40 @@ public partial class CreateGroupViewModel : ObservableObject {
     public void SetGameContext(string gameKey)
         => _gameKey = gameKey;
 
-    public void CancelDuplicates() {
-        if (IsSaved)
-            return;
-        _pendingCommand = null;
-        Duplicates.Clear();
+    [RelayCommand]
+    private void ChooseExistingPlayer() {
+        if (CanEdit && HasAvailablePlayers)
+            ActiveSubdialog = GroupCreationSubdialog.SelectExistingPlayer;
     }
 
+    [RelayCommand]
+    private void ChooseGame() {
+        if (CanEdit && HasAvailableGames)
+            ActiveSubdialog = GroupCreationSubdialog.SelectGame;
+    }
+
+    [RelayCommand]
     public void BeginNewPlayer() {
         if (!CanEdit)
             return;
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
-        IsAddingNewPlayer = true;
+        ActiveSubdialog = GroupCreationSubdialog.CreatePlayer;
     }
 
-    public void CancelNewPlayer() {
-        if (IsSaved)
+    [RelayCommand]
+    public void CloseSubdialog() {
+        if (!IsNotBusy)
             return;
-        NewPlayerName = string.Empty;
-        NewPlayerIsGuest = false;
-        IsAddingNewPlayer = false;
+        if (ActiveSubdialog == GroupCreationSubdialog.CreatePlayer) {
+            NewPlayerName = string.Empty;
+            NewPlayerIsGuest = false;
+        }
+        ActiveSubdialog = GroupCreationSubdialog.None;
     }
 
     public async Task LoadAsync(CancellationToken cancellationToken = default) {
-        if (IsBusy || _loaded)
+        if (!IsNotBusy || _isInitialLoadCompleted)
             return;
 
         try {
@@ -154,48 +183,35 @@ public partial class CreateGroupViewModel : ObservableObject {
             Games.Clear();
             foreach (GameInfo game in games)
                 Games.Add(new(game.Id, game.Name, game.Key == selectedGameKey, maximumPlayers: game.MaximumPlayers, minimumPlayers: game.MinimumPlayers));
-            foreach (var game in Games)
-                game.PropertyChanged += (_, _) => GamesChanged();
             GamesChanged();
             IReadOnlyList<SelectablePlayer> players =
-                await _createGroup.GetSelectablePlayersAsync(cancellationToken);
+                await _createGroupUseCase.GetSelectablePlayersAsync(cancellationToken);
 
             AvailablePlayers.Clear();
 
             foreach (SelectablePlayer player in players) {
-                if (Players.All(candidate => candidate.PlayerId != player.Id)) {
+                if (Players.All(candidate => candidate.PlayerId != player.Id))
                     AvailablePlayers.Add(player);
-                }
             }
 
-            SelectedExistingPlayer = null;
-            UpdateCollectionStates();
-            _loaded = true;
-        }
-        catch (Exception exception) {
+            _isInitialLoadCompleted = true;
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load selectable players for group creation.");
             ErrorMessage = UserErrorMessage.Create(AppResources.LoadPlayersFailed, exception);
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
 
-    private bool CanAddSelectedPlayer()
-        => CanEdit && SelectedExistingPlayer is not null;
-
-    [RelayCommand(CanExecute = nameof(CanAddSelectedPlayer))]
-    private void AddSelectedPlayer() {
-        SelectablePlayer? player = SelectedExistingPlayer;
-
-        if (!CanEdit || player is null || Players.Any(candidate => candidate.PlayerId == player.Id))
+    [RelayCommand]
+    private void AddExistingPlayer(SelectablePlayer? player) {
+        if (!CanEdit || player is null || !AvailablePlayers.Contains(player) || Players.Any(candidate => candidate.PlayerId == player.Id))
             return;
 
         Players.Add(new GroupMemberDraft(player.Id, player.Name, player.IsGuest));
         AvailablePlayers.Remove(player);
-        SelectedExistingPlayer = null;
-        ErrorMessage = null;
-        PlayersChanged();
+        ActiveSubdialog = GroupCreationSubdialog.None;
+        RefreshGameSelectionsAndValidation();
     }
 
     [RelayCommand]
@@ -211,11 +227,11 @@ public partial class CreateGroupViewModel : ObservableObject {
         }
 
         Players.Add(new GroupMemberDraft(null, name, NewPlayerIsGuest));
-        IsAddingNewPlayer = false;
+        ActiveSubdialog = GroupCreationSubdialog.None;
         NewPlayerName = string.Empty;
         NewPlayerIsGuest = false;
         ErrorMessage = null;
-        PlayersChanged();
+        RefreshGameSelectionsAndValidation();
     }
 
     [RelayCommand]
@@ -232,7 +248,7 @@ public partial class CreateGroupViewModel : ObservableObject {
             SortAvailablePlayers();
         }
 
-        PlayersChanged();
+        RefreshGameSelectionsAndValidation();
     }
 
     [RelayCommand]
@@ -241,10 +257,8 @@ public partial class CreateGroupViewModel : ObservableObject {
             return;
 
         int index = Players.IndexOf(player);
-        if (index > 0) {
+        if (index > 0)
             Players.Move(index, index - 1);
-            GroupMemberDraft.UpdatePositions(Players);
-        }
     }
 
     [RelayCommand]
@@ -253,19 +267,17 @@ public partial class CreateGroupViewModel : ObservableObject {
             return;
 
         int index = Players.IndexOf(player);
-        if (index >= 0 && index < Players.Count - 1) {
+        if (index >= 0 && index < Players.Count - 1)
             Players.Move(index, index + 1);
-            GroupMemberDraft.UpdatePositions(Players);
-        }
     }
 
     private bool CanSave()
-        => !IsBusy
-        && (IsSaved || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
+        => IsNotBusy
+        && (IsSaveCompleted || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync() {
-        if (IsBusy)
+        if (!CanSave())
             return;
 
         try {
@@ -288,19 +300,17 @@ public partial class CreateGroupViewModel : ObservableObject {
             foreach (GroupDuplicate match in matches)
                 Duplicates.Add(new(match.Id, match.Name, string.Join(" · ", match.PlayerNames), match.IsArchived));
             if (Duplicates.Count > 0) {
-                if (ShowDuplicatesAsync is not null)
-                    await ShowDuplicatesAsync();
+                await _navigationService.ShowGroupDuplicatesAsync(this);
+                _isDuplicateSelectionOpen = true;
                 return;
             }
 
-            Guid groupId = await _createGroup.CreateGroupAsync(_pendingCommand);
+            Guid groupId = await _createGroupUseCase.CreateGroupAsync(_pendingCommand);
             await CompleteSaveAsync(groupId, false);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not create group.");
             ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
@@ -316,16 +326,14 @@ public partial class CreateGroupViewModel : ObservableObject {
                 await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
                 return;
             }
-            Guid groupId = await _reuseGroup.ReuseGroupAsync(new(row.Id,
+            Guid groupId = await _reuseGroupUseCase.ReuseGroupAsync(new(row.Id,
                 _pendingCommand.Players.Select(player => player.ExistingPlayerId!.Value).ToArray(), _pendingCommand.GameIds,
                 row.IsArchived ? GroupReuseAction.Reactivate : GroupReuseAction.UseExisting));
             await CompleteSaveAsync(groupId, true);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not reuse selected group.");
             ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
@@ -341,38 +349,68 @@ public partial class CreateGroupViewModel : ObservableObject {
                 await CompleteSaveAsync(_savedOutcome.GroupId, _savedOutcome.FromDuplicates);
                 return;
             }
-            Guid groupId = await _createGroup.CreateGroupAsync(_pendingCommand);
+            Guid groupId = await _createGroupUseCase.CreateGroupAsync(_pendingCommand);
             await CompleteSaveAsync(groupId, true);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not create additional group.");
             ErrorMessage = UserErrorMessage.Create(_savedOutcome is null ? AppResources.SaveGroupFailed : AppResources.GroupNavigationFailed, exception);
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
 
     private async Task CompleteSaveAsync(Guid groupId, bool fromDuplicates) {
-        _savedOutcome ??= new(groupId, _gameKey, fromDuplicates);
-        IsSaved = true;
-        if (SavedAsync is not null)
-            await SavedAsync(_savedOutcome);
+        _savedOutcome ??= new(groupId, _gameKey, fromDuplicates && _isDuplicateSelectionOpen);
+        OnPropertyChanged(nameof(IsSaveCompleted));
+        OnPropertyChanged(nameof(CanEdit));
+        OnPropertyChanged(nameof(SaveText));
+        await _navigationService.CompleteGroupCreationAsync(this, _savedOutcome);
     }
 
-    private void PlayersChanged() {
-        GroupMemberDraft.UpdatePositions(Players);
+    private void RefreshGameSelectionsAndValidation() {
         GamesChanged();
         ErrorMessage = Games.Any(game => game.IsSelected && !game.SupportsPlayerCount(Players.Count))
             ? AppResources.GroupPlayerLimitExceeded : null;
-        SaveCommand.NotifyCanExecuteChanged();
-        UpdateCollectionStates();
     }
 
-    private void UpdateCollectionStates() {
-        HasNoPlayers = Players.Count == 0;
-        HasNoAvailablePlayers = AvailablePlayers.Count == 0;
-        OnPropertyChanged(nameof(HasAvailablePlayers));
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
+    private async Task GoBackAsync() {
+        if (!IsNotBusy)
+            return;
+        if (ActiveSubdialog != GroupCreationSubdialog.None) {
+            CloseSubdialog();
+            return;
+        }
+        await LeaveCreationAsync(false);
+    }
+
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
+    private async Task ReturnToDraftAsync() {
+        if (!IsNotBusy)
+            return;
+        await LeaveCreationAsync(true);
+    }
+
+    private async Task LeaveCreationAsync(bool cancelDuplicates) {
+        IsBusy = true;
+        ErrorMessage = null;
+        try {
+            if (_savedOutcome is not null)
+                await _navigationService.CompleteGroupCreationAsync(this, _savedOutcome);
+            else {
+                await _navigationService.GoBackAsync();
+                if (cancelDuplicates) {
+                    _pendingCommand = null;
+                    Duplicates.Clear();
+                    _isDuplicateSelectionOpen = false;
+                }
+            }
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not leave group creation.");
+            ErrorMessage = UserErrorMessage.Create(IsSaveCompleted ? AppResources.GroupNavigationFailed : AppResources.NavigationFailed, exception);
+        } finally {
+            IsBusy = false;
+        }
     }
 
     private void SortAvailablePlayers() {
@@ -387,3 +425,10 @@ public partial class CreateGroupViewModel : ObservableObject {
 }
 
 public sealed record GroupSaveOutcome(Guid GroupId, string? GameKey, bool FromDuplicates);
+
+public enum GroupCreationSubdialog {
+    None,
+    SelectExistingPlayer,
+    CreatePlayer,
+    SelectGame
+}

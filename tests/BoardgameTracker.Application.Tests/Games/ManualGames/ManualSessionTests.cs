@@ -411,7 +411,7 @@ public sealed class ManualSessionTests
         AppShell shell = MainSectionNavigationTests.CreateShell(settings, fixture.Database);
         Shell.Current = shell;
         GroupListViewModel groups = new(new(fixture.Database), new(fixture.Database), new(fixture.Database, new TestGameEnabledStore()),
-            NullLogger<GroupListViewModel>.Instance, [handler]);
+            NullLogger<GroupListViewModel>.Instance, [handler], new Presentation.EditorNavigationFake());
         groups.SetGameContext(fixture.Key);
         await groups.LoadAsync(Token);
         Assert.Equal("TAG", groups.BadgeText);

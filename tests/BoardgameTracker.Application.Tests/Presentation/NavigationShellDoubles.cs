@@ -97,7 +97,7 @@ namespace Microsoft.Maui.Controls
 
 namespace BoardgameTracker.App { public partial class AppShell { private void InitializeComponent() { } } }
 namespace BoardgameTracker.App.Features.Games.ListGames { public sealed class GamesPage : Page; }
-namespace BoardgameTracker.App.Features.Groups.CreateGroup { public sealed class CreateGroupPage : Page; public sealed class DuplicateGroupPage : Page; }
+namespace BoardgameTracker.App.Features.Groups.CreateGroup { public sealed class CreateGroupPage : Page { public CreateGroupViewModel ViewModel { get; set; } = null!; } public sealed class DuplicateGroupPage : Page { public CreateGroupViewModel ViewModel { get; set; } = null!; } }
 namespace BoardgameTracker.App.Features.Groups.EditGroup { public sealed class EditGroupPage : Page; }
 namespace BoardgameTracker.App.Features.Groups.ListGroups { public sealed class GroupListPage : Page { public string GameKey { get; set; } = ""; } }
 namespace BoardgameTracker.App.Features.History { public sealed class HistoryPage : Page; }

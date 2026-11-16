@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.0.0 – 2026-11-16
+
+- Allgemeine App-Dialoge konsolidiert: Gruppenanlage verwendet gegenseitig ausschließende Auswahlzustände und direkte Commands; Duplikatauswahl und Speicherabschluss nutzen den gemeinsamen Navigationsvertrag einschließlich Spielvorbereitung.
+- Zurück, Abbruch und Navigation-Retry in Editoren und Gruppenauswahl vereinheitlicht. Erfolgreiche Gruppen-, Spiel- und Zuordnungswrites bleiben bei fehlgeschlagener Navigation erhalten und werden beim erneuten Abschluss nicht wiederholt; App-Dialoge erlauben erneutes Schließen nach Navigationsfehlern.
+
 ## 0.22.8.6 – 2026-11-16
 
 - Gemeinsamen `EnumEqualsConverter` für typisierte Enum-Vergleiche ergänzt. Allgemeine Spieleabfragen in `GamesQuery` und Preference-Änderungen in `SetGameEnabledUseCase` unter dem Games-Feature getrennt; Aufrufer und Enablement-Begriffe vereinheitlicht. Bestehende Preference-Schlüssel, Standardaktivierung, offene Sessions und spielspezifische Abläufe erhalten.

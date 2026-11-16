@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation" xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Groups.ListGroups" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    x:Class="BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage" x:DataType="local:GroupListViewModel" Shell.NavBarIsVisible="False">
+    x:Name="Page" x:Class="BoardgameTracker.App.Features.Groups.ListGroups.GroupListPage" x:DataType="local:GroupListViewModel" Shell.NavBarIsVisible="False">
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding CanInteract}">
             <VerticalStackLayout Spacing="8">
                 <header:AppPageHeader x:Name="PageHeader"
                     Title="{x:Static res:AppResources.Groups}"
                     Variant="Subpage"
-                    BackClicked="OnBackClicked"
+                    BackCommand="{Binding GoBackCommand}"
                     GameName="{Binding SelectedGameName}"
                     BadgeText="{Binding BadgeText}" />
             </VerticalStackLayout>
@@ -21,7 +21,7 @@
                         <DataTemplate x:DataType="local:GroupListItemViewModel">
                             <Border Style="{StaticResource CardBorder}" Padding="12">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnGroupTapped" CommandParameter="{Binding Id}" />
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenGroupCommand, x:DataType=local:GroupListPage}" CommandParameter="{Binding Id}" />
                                 </Border.GestureRecognizers>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" MinimumHeightRequest="44">
                                     <VerticalStackLayout Spacing="4">
@@ -43,8 +43,8 @@
                     <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
                 </VerticalStackLayout>
                 <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
-                    <Button Text="{x:Static res:AppResources.NewGroup}" Clicked="OnCreateGroupClicked" IsEnabled="{Binding CanCreate}" Style="{StaticResource SecondaryActionButton}" />
-                    <Button Grid.Column="1" Text="{x:Static res:AppResources.ChooseExistingGroup}" Clicked="OnChooseExistingClicked" IsEnabled="{Binding CanChoose}" Style="{StaticResource PrimaryCompactButton}" />
+                    <Button Text="{x:Static res:AppResources.NewGroup}" Command="{Binding CreateGroupCommand}" IsEnabled="{Binding CanCreate}" Style="{StaticResource SecondaryActionButton}" />
+                    <Button Grid.Column="1" Text="{x:Static res:AppResources.ChooseExistingGroup}" Command="{Binding ChooseExistingCommand}" IsEnabled="{Binding CanChoose}" Style="{StaticResource PrimaryCompactButton}" />
                 </Grid>
             </Grid>
         </Grid>
@@ -52,7 +52,7 @@
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="450">
                     <Grid ColumnDefinitions="Auto,*">
-                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Clicked="OnCloseSelectionClicked" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Command="{Binding CloseSelectionCommand}" SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" Text="{x:Static res:AppResources.ChooseExistingGroup}" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" />
                     </Grid>
                     <CollectionView Grid.Row="1" ItemsSource="{Binding AvailableGroups}" SelectionMode="None">
@@ -63,7 +63,7 @@
                             <DataTemplate x:DataType="local:AvailablePlayGroup">
                                 <Border Style="{StaticResource CardBorder}" Padding="12">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnExistingTapped" CommandParameter="{Binding .}" />
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.SelectExistingCommand, x:DataType=local:GroupListPage}" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
                                     <VerticalStackLayout Spacing="4">
                                         <Label Text="{Binding Name}" FontAttributes="Bold" />

@@ -20,6 +20,25 @@ public sealed partial class EventBoundaryTests
     [InlineData("iOSThemeShellRenderer.cs", "IosTapAsync", "tab")]
     public async Task RemainingNavigationBoundary_LogsOneTechnicalErrorAndAllowsRetry(string source, string action, string route)
     {
+        if (source == "GroupListPage.xaml.cs") {
+            await using SliceDatabase db = await SliceDatabase.CreateAsync();
+            EditorNavigationFake navigation = new() { FailNavigation = true };
+            EditorLogger<BoardgameTracker.App.Features.Groups.ListGroups.GroupListViewModel> logger = new();
+            BoardgameTracker.App.Features.Groups.ListGroups.GroupListViewModel model = new(new(db), new(db), new(db, new TestGameEnabledStore()), logger, [], navigation);
+            model.SetGameContext("ark-nova");
+            await model.LoadAsync(EditorToken);
+            await model.CreateGroupCommand.ExecuteAsync(null);
+            Assert.Same(navigation.NavigationFailure, Assert.Single(logger.Errors));
+            Assert.Equal(AppResources.NavigationFailed, model.ErrorMessage);
+            Assert.False(model.IsWorking);
+            navigation.FailNavigation = false;
+            await model.CreateGroupCommand.ExecuteAsync(null);
+            Assert.Equal(2, navigation.Calls.Count);
+            Assert.All(navigation.Calls, call => Assert.Equal("create-group:ark-nova", call.Route));
+            Assert.Single(logger.Errors);
+            Assert.Null(model.ErrorMessage);
+            return;
+        }
         EventBoundaryTestHost page = Create(source);
         page.Navigation.FailNavigation = true;
         await page.InvokeAsync(action);

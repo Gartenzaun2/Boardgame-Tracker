@@ -305,7 +305,7 @@ public sealed class GameEnablementTests
     }
 
     private static MyGamesViewModel CreateViewModel(SliceDatabase db, IGameEnabledStore store) =>
-        new(new(db, store), new(db, store), [], NullLogger<MyGamesViewModel>.Instance);
+        new(new(db, store), new(db, store), [], new Presentation.EditorNavigationFake(), NullLogger<MyGamesViewModel>.Instance);
 
     private static async Task<GameSession> AddSessionAsync(SliceDatabase db, GameSessionStatus status)
     {

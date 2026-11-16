@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using BoardgameTracker.Application.Games;
 using System.Collections.ObjectModel;
 using BoardgameTracker.App.Navigation;
@@ -12,23 +13,61 @@ public partial class MyGamesViewModel : ObservableObject {
     private readonly SetGameEnabledUseCase _setGameEnabledUseCase;
     private readonly IEnumerable<IGameSettingsNavigation> _settings;
     private readonly ILogger<MyGamesViewModel> _logger;
+    private readonly INavigationService _navigationService;
 
-    public MyGamesViewModel(GamesQuery gamesQuery, SetGameEnabledUseCase setGameEnabledUseCase, IEnumerable<IGameSettingsNavigation> settings, ILogger<MyGamesViewModel> logger) {
+    public MyGamesViewModel(GamesQuery gamesQuery, SetGameEnabledUseCase setGameEnabledUseCase, IEnumerable<IGameSettingsNavigation> settings, INavigationService navigationService, ILogger<MyGamesViewModel> logger) {
         _gamesQuery = gamesQuery;
         _setGameEnabledUseCase = setGameEnabledUseCase;
         _settings = settings;
         _logger = logger;
+        _navigationService = navigationService;
     }
 
     public ObservableCollection<GameSettingsRow> Games { get; } = [];
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
+    [NotifyCanExecuteChangedFor(nameof(GoBackCommand))]
     public partial bool IsBusy { get; private set; }
+    private bool IsNotBusy => !IsBusy;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-    public bool IsIdle => !IsBusy;
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+    [RelayCommand]
+    private async Task OpenSettingsAsync(GameSettingsRow? row) {
+        if (!IsNotBusy || row is null || !Games.Contains(row))
+            return;
+        IsBusy = true;
+        ErrorMessage = null;
+        try {
+            IGameSettingsNavigation? settings = _settings.SingleOrDefault(entry => entry.CanHandle(row.GameKey));
+            if (settings is null)
+                ErrorMessage = AppResources.GameSettingsUnavailable;
+            else
+                await settings.OpenAsync(row.GameKey);
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not open game settings.");
+            ErrorMessage = AppResources.NavigationFailed;
+        } finally {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
+    private async Task GoBackAsync() {
+        if (!IsNotBusy)
+            return;
+        IsBusy = true;
+        ErrorMessage = null;
+        try {
+            await _navigationService.GoBackAsync();
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not leave game management.");
+            ErrorMessage = AppResources.NavigationFailed;
+        } finally {
+            IsBusy = false;
+        }
+    }
 
     public async Task LoadAsync(CancellationToken cancellationToken = default) {
         if (IsBusy)

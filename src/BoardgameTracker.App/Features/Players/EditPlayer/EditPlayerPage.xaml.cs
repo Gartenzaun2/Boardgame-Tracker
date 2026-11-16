@@ -30,15 +30,9 @@ public partial class EditPlayerPage : ContentPage, IQueryAttributable {
             await _viewModel.LoadAsync(_playerId);
     }
 
-    /// <summary>Protects the active workflow and retries departure after a completed save.</summary>
+    /// <summary>Routes system back through the header command, including cancellation, busy guards and navigation errors.</summary>
     protected override bool OnBackButtonPressed() {
-        if (_viewModel.IsBusy)
-            return true;
-        if (_viewModel.IsSaveCompleted) {
-            // MAUI requires a synchronous result; the command owns async navigation and errors.
-            _viewModel.GoBackCommand.Execute(null);
-            return true;
-        }
-        return base.OnBackButtonPressed();
+        _viewModel.GoBackCommand.Execute(null);
+        return true;
     }
 }

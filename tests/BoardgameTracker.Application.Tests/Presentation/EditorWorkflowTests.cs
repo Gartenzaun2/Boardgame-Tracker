@@ -216,7 +216,7 @@ public sealed class EditorWorkflowTests {
     }
 
     [Fact]
-    public async Task GroupCanExecute_NotifiesNameAndCountChangesWithoutRedundantLoadNotification() {
+    public async Task GroupCanExecute_NotifiesNameChangesAndIgnoresFixedMembershipReordering() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         List<bool> saveStates = [];
@@ -227,11 +227,7 @@ public sealed class EditorWorkflowTests {
         group.GroupName = "";
         group.GroupName = "Valid";
         GroupMemberDraft first = group.Players[0];
-        group.Players.Clear();
-        group.Players.Add(first);
-        Assert.Equal(new[] { false, true, false, true }, saveStates);
-        saveStates.Clear();
-        group.Players.Add(new(db.Second.Id, "Ben", false));
+        Assert.Equal(new[] { false, true }, saveStates);
         saveStates.Clear();
         group.MovePlayerDownCommand.Execute(first);
         Assert.Empty(saveStates);
@@ -302,7 +298,7 @@ public sealed class EditorWorkflowTests {
     [InlineData("group")]
     [InlineData("existing-player")]
     [InlineData("new-player")]
-    public async Task UnsavedBack_DoesNotWriteAndSystemBackRetainsFrameworkBehavior(string kind) {
+    public async Task UnsavedBack_DoesNotWriteAndSystemBackUsesHeaderNavigation(string kind) {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorNavigationFake navigation = new();
         EditGroupViewModel group = new(new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
@@ -328,9 +324,10 @@ public sealed class EditorWorkflowTests {
             back = player.GoBackCommand;
         }
         var systemBack = page.GetType().GetMethod("OnBackButtonPressed", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
-        Assert.False((bool)systemBack.Invoke(page, null)!);
         navigation.FailNavigation = true;
-        await back.ExecuteAsync(null);
+        Assert.True((bool)systemBack.Invoke(page, null)!);
+        if (back.ExecutionTask is Task departure)
+            await departure;
         Assert.Equal("..", Assert.Single(navigation.Calls).Route);
         Assert.Equal(AppResources.NavigationFailed, kind == "group" ? group.ErrorMessage : player.ErrorMessage);
         Assert.False(kind == "group" ? group.IsSaveCompleted : player.IsSaveCompleted);

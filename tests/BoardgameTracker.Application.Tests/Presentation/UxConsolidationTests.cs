@@ -46,7 +46,8 @@ public sealed class UxConsolidationTests
         Assert.Contains(page.Descendants(), element => (string?)element.Attribute("Tapped") == "OnLicensesClicked");
         var games = AppPageHeaderTests.ReadPage("MyGamesPage");
         Assert.DoesNotContain(games.Descendants(), element => element.Name.LocalName == "Switch");
-        Assert.Contains(games.Descendants(), element => (string?)element.Attribute("Tapped") == "OnGameTapped");
+        Assert.Contains(games.Descendants(), element => (string?)element.Attribute("Command") == "{Binding Source={x:Reference Page}, Path=ViewModel.OpenSettingsCommand, x:DataType=local:MyGamesPage}"
+            && (string?)element.Attribute("CommandParameter") == "{Binding .}");
     }
 
     [Fact]
@@ -159,9 +160,9 @@ public sealed class UxConsolidationTests
     {
         string source = Resource("HistoryPage.xaml.cs");
         Assert.Contains("_exportSessions = await _query.ListAsync();", source);
-        Assert.Contains("_all = _exportSessions.Where(session => enabledGameKeys.Contains(session.GameKey)).ToArray();", source);
+        Assert.Contains("_visibleSessions = _exportSessions.Where(session => enabledGameKeys.Contains(session.GameKey)).ToArray();", source);
         Assert.Contains("_visibleIds = _exportSessions.Where", source);
-        Assert.Contains("_games = new string?[] { null }.Concat(_all", source);
+        Assert.Contains("_gameFilterKeys = new string?[] { null }.Concat(_visibleSessions", source);
         Assert.DoesNotContain("dd.MM.yy", source);
     }
 }

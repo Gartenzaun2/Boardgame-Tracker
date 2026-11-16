@@ -45,8 +45,10 @@ public partial class AppSettingsPage : ContentPage {
         _isHandlingSettingsAction = true;
         try {
             await AppDialogPage.ChooseAsync(this, AppResources.AppLanguage, [AppResources.ContentLanguageGerman], 0);
-        }
-        finally {
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not complete app settings choice.");
+            await ShowNavigationErrorAsync();
+        } finally {
             _isHandlingSettingsAction = false;
         }
     }
@@ -57,12 +59,10 @@ public partial class AppSettingsPage : ContentPage {
         _isHandlingSettingsAction = true;
         try {
             await Shell.Current.GoToAsync(nameof(MyGamesPage), false);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not open game management.");
             await ShowNavigationErrorAsync();
-        }
-        finally {
+        } finally {
             _isHandlingSettingsAction = false;
         }
     }
@@ -73,12 +73,10 @@ public partial class AppSettingsPage : ContentPage {
         _isHandlingSettingsAction = true;
         try {
             await Shell.Current.GoToAsync(nameof(LicenseListPage), false);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not open third-party licenses.");
             await ShowNavigationErrorAsync();
-        }
-        finally {
+        } finally {
             _isHandlingSettingsAction = false;
         }
     }
@@ -86,8 +84,7 @@ public partial class AppSettingsPage : ContentPage {
     private async Task ShowNavigationErrorAsync() {
         try {
             await AppDialogPage.ShowAsync(this, AppResources.AppSettingsTitle, AppResources.NavigationFailed, AppResources.Ok);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not display the settings navigation error.");
         }
     }
@@ -105,8 +102,10 @@ public partial class AppSettingsPage : ContentPage {
 
             _themes.Apply(AppThemeSelection.FromStoredValue(choice));
             RefreshSelections();
-        }
-        finally {
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not apply app theme selection.");
+            await ShowNavigationErrorAsync();
+        } finally {
             _isHandlingSettingsAction = false;
         }
     }

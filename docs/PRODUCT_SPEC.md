@@ -84,7 +84,7 @@ Das Gruppenformular enthält in dieser Reihenfolge: **Name → feste Mitglieder 
 
 Aus **Spielen → Spiel → Neue Gruppe** ist das aktuelle Spiel vorausgewählt. Nach Speichern oder Übernehmen einer vorhandenen Gruppe öffnet direkt die Vorbereitung dieses Spiels. Aus **Mitspieler → Gruppen** ist keine Spielzuordnung vorausgewählt und eine Gruppe ohne Zuordnung zulässig; nach Speichern/Übernehmen erfolgt die Rückkehr zur Gruppenverwaltung.
 
-Bei Dublette gibt es eine eigene, abbrechbare Auswahl: **Gruppe übernehmen**, bei archivierter Gruppe **Gruppe reaktivieren**, jeweils Primary, oder **Neue Gruppe anlegen** als Secondary. Die Übernahme verwirft den neuen Entwurfsnamen und behält die bereits gespeicherte globale Reihenfolge.
+Bei Dublette gibt es eine eigene, abbrechbare Auswahl: **Gruppe übernehmen**, bei archivierter Gruppe **Gruppe reaktivieren**, jeweils als gleichwertige Secondary-Aktion, oder **Neue Gruppe anlegen** als Secondary. Die Übernahme verwirft den neuen Entwurfsnamen und behält die bereits gespeicherte globale Reihenfolge.
 
 Bei bestehenden Gruppen sind **Name, Archivstatus, globale Default-Reihenfolge und Spielzuordnungen** bearbeitbar; die Mitgliedermenge bleibt unveränderlich. Spielabhängige Farben werden hier nicht editiert.
 
