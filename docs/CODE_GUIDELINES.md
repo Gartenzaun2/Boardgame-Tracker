@@ -406,6 +406,18 @@ Ein interner Guard bleibt sinnvoll, weil Methoden auch außerhalb der UI
 aufgerufen werden können. Bei unterschiedlichem Schutzbedarf müssen die
 Bedingungen bewusst begründet werden, nicht unbemerkt auseinanderlaufen.
 
+`CanExecute` ist **nicht für jeden** `[RelayCommand]` verpflichtend. Ist eine
+Aktion ausschließlich in einem bereits durch `CanEdit` gesperrten XAML-Bereich
+verfügbar, können zusätzliche Command-Bedingungen dieselbe UI-Sperre nur
+duplizieren. Item-spezifische Bedingungen wie `CanMoveUp`, `CanMoveDown` oder
+`CanChange` dürfen am jeweiligen Steuerelement gebunden sein. Mutierende
+Commands behalten ihre erforderlichen internen Guards, weil ein XAML-`IsEnabled`
+keine programmgesteuerten Aufrufe absichert. Ein harmloser Schließen-Command,
+der keine Fachdaten ändert, braucht nicht allein aus Symmetrie einen Busy-Guard.
+`CanExecute` verwenden, wenn der **Command selbst** unabhängig von seiner
+aktuellen View-Verwendung deaktivierbar sein muss; ist es gesetzt, müssen
+Command-Bedingung und interner Guard übereinstimmen.
+
 ```csharp
 [ObservableProperty]
 [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(GoBackCommand), nameof(SaveAndAddAnotherCommand))]
@@ -440,8 +452,8 @@ Observable-Properties müssen den Command mittels
 `[NotifyPropertyChangedFor(nameof(CanEdit))]` allein ist **kein Ersatz**.
 Zusätzliche Abhängigkeiten ebenfalls melden: `IsCreateMode` muss bei Änderungen
 `SaveAndAddAnotherCommand` benachrichtigen, `IsSaveCompleted` die berechnete
-Property `CanEdit`. Bei Collection-basierten Bedingungen (z. B. `Players.Count`) die erforderliche
-Benachrichtigung bei den tatsächlichen Collection-Änderungen sicherstellen.
+Property `CanEdit`. Bei Collection-basierten Bedingungen Benachrichtigungen
+nur für **tatsächlich mögliche und relevante** Collection-Änderungen einrichten.
 Manuelle `SaveCommand.NotifyCanExecuteChanged()`-Aufrufe nicht duplizieren,
 wenn ein garantierter `IsBusy`-Wechsel die Prüfung bereits anstößt.
 
@@ -484,6 +496,16 @@ asynchronen Folgeablauf beachten.
 nicht automatisch Änderungen der **Eigenschaften ihrer Elemente**.
 `INotifyPropertyChanged` eines Items signalisiert nur dessen Zustand; gefilterte
 `IReadOnlyList`-Projections aktualisieren sich nicht selbst.
+
+Abonnements und Count-abhängige `CanExecute`-Prüfungen nicht vorsorglich
+anlegen. Wenn ein Editor vorhandene Gruppenmitglieder ausschließlich umsortiert
+und die Domain mindestens ein Mitglied garantiert, sind ein
+`Players.CollectionChanged`-Abonnement nur für `SaveCommand` und eine Prüfung
+`Players.Count > 0` in `CanSave` unnötig. Ein unerwartet leerer Ladezustand
+kann bei Bedarf **an der Ladegrenze** verständlich als Fehler behandelt werden,
+statt ihn als regulären, bearbeitbaren Formularzustand zu modellieren. Echte
+fachliche Spielerzahlgrenzen, etwa bei der Spielzuordnung, bleiben davon
+unberührt.
 
 Wenn Änderungen ausschließlich durch bekannte Commands erfolgen, die
 abgeleiteten Ansichten **direkt nach einer tatsächlich erfolgreichen Mutation**

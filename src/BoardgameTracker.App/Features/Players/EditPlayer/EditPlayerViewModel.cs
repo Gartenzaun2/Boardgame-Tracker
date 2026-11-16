@@ -15,8 +15,7 @@ public partial class EditPlayerViewModel : ObservableObject {
     private readonly INavigationService _navigationService;
     private readonly ILogger<EditPlayerViewModel> _logger;
 
-    public EditPlayerViewModel(EditPlayerUseCase editPlayerUseCase, CreatePlayerUseCase createPlayerUseCase,
-        INavigationService navigationService, ILogger<EditPlayerViewModel> logger) {
+    public EditPlayerViewModel(EditPlayerUseCase editPlayerUseCase, CreatePlayerUseCase createPlayerUseCase, INavigationService navigationService, ILogger<EditPlayerViewModel> logger) {
         _editPlayerUseCase = editPlayerUseCase;
         _createPlayerUseCase = createPlayerUseCase;
         _navigationService = navigationService;
@@ -27,6 +26,7 @@ public partial class EditPlayerViewModel : ObservableObject {
     [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(SaveAndAddAnotherCommand), nameof(GoBackCommand))]
     [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
+    private bool IsNotBusy => !IsBusy;
 
     /// <summary>
     /// Set to true after a successful save to preserve the completed state if navigation fails.
@@ -37,10 +37,13 @@ public partial class EditPlayerViewModel : ObservableObject {
     [NotifyPropertyChangedFor(nameof(CanEdit), nameof(SaveText))]
     public partial bool IsSaveCompleted { get; private set; }
 
-    public bool CanEdit => !IsBusy && !IsSaveCompleted;
-    public bool CanSave => !IsBusy;
-    public bool CanSaveAndAddAnother => !IsBusy && IsNew;
-    public bool CanGoBack => !IsBusy;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Title))]
+    [NotifyCanExecuteChangedFor(nameof(SaveAndAddAnotherCommand))]
+    public partial bool IsCreateMode { get; private set; }
+
+    public bool CanEdit => IsNotBusy && !IsSaveCompleted;
+    public bool CanSaveAndAddAnother => IsNotBusy && IsCreateMode;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -52,28 +55,23 @@ public partial class EditPlayerViewModel : ObservableObject {
     public partial Guid PlayerId { get; private set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Title))]
-    [NotifyCanExecuteChangedFor(nameof(SaveAndAddAnotherCommand))]
-    public partial bool IsNew { get; private set; }
+    public partial string PlayerName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string Name { get; set; } = string.Empty;
+    public partial bool IsPlayerGuest { get; set; }
 
     [ObservableProperty]
-    public partial bool IsGuest { get; set; }
-
-    [ObservableProperty]
-    public partial bool IsArchived { get; set; }
+    public partial bool IsPlayerArchived { get; set; }
 
     #region Localized UI Text
 
-    public string Title => IsNew ? AppResources.AddPlayer : AppResources.EditPlayer;
+    public string Title => IsCreateMode ? AppResources.AddPlayer : AppResources.EditPlayer;
     public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
 
     #endregion
 
     public void InitializeNew() {
-        if (IsBusy)
+        if (!IsNotBusy)
             return;
 
         ResetNewPlayer();
@@ -82,34 +80,31 @@ public partial class EditPlayerViewModel : ObservableObject {
     private void ResetNewPlayer() {
         PlayerId = Guid.Empty;
         IsSaveCompleted = false;
-        Name = string.Empty;
-        IsGuest = false;
-        IsArchived = false;
+        PlayerName = string.Empty;
+        IsPlayerGuest = false;
+        IsPlayerArchived = false;
         ErrorMessage = null;
-        IsNew = true;
+        IsCreateMode = true;
     }
 
     public async Task LoadAsync(Guid playerId, CancellationToken cancellationToken = default) {
-        if (IsBusy || PlayerId == playerId)
+        if (!IsNotBusy || PlayerId == playerId)
             return;
 
         try {
             IsBusy = true;
             ErrorMessage = null;
-            Player player = await _editPlayerUseCase.GetAsync(playerId, cancellationToken)
-                ?? throw new InvalidOperationException("The player does not exist.");
 
-            Name = player.Name;
-            IsArchived = player.IsArchived;
-            IsNew = false;
+            Player player = await _editPlayerUseCase.GetAsync(playerId, cancellationToken) ?? throw new InvalidOperationException("The player does not exist.");
+            PlayerName = player.Name;
+            IsPlayerArchived = player.IsArchived;
+            IsCreateMode = false;
             IsSaveCompleted = false;
             PlayerId = playerId;
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load player for editing.");
             ErrorMessage = AppResources.PlayersLoadFailed;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
@@ -123,13 +118,13 @@ public partial class EditPlayerViewModel : ObservableObject {
         try {
             IsBusy = true;
             ErrorMessage = null;
+
             if (!IsSaveCompleted && !await SavePlayerAsync(cancellationToken))
                 return false;
 
             ResetNewPlayer();
             return true;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
@@ -138,88 +133,87 @@ public partial class EditPlayerViewModel : ObservableObject {
     /// True after saving and navigation succeed; false when busy, validation,
     /// persistence or navigation fails. A navigation retry skips the completed write.
     /// </returns>
-    [RelayCommand(CanExecute = nameof(CanSave))]
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default) {
-        if (IsBusy)
+        if (!IsNotBusy)
             return false;
 
         try {
             IsBusy = true;
             ErrorMessage = null;
+
             if (!IsSaveCompleted && !await SavePlayerAsync(cancellationToken))
                 return false;
 
-            if (IsNew)
-                await _navigationService.NavigateToMainSectionAsync(AppMainSection.Participants);
-            else
-                await _navigationService.GoBackAsync();
-
-            return true;
-        }
-        catch (Exception exception) when (IsSaveCompleted) {
-            _logger.LogError(exception, "Could not leave player editor after saving.");
-            ErrorMessage = AppResources.PlayerEditorNavigationFailed;
-            return false;
-        }
-        finally {
+            return await NavigateFromEditorAsync();
+        } finally {
             IsBusy = false;
         }
     }
 
     /// <returns>True only after persistence succeeds; false for invalid input, invalid editor state or a failed write.</returns>
     private async Task<bool> SavePlayerAsync(CancellationToken cancellationToken) {
-        if (!IsNew && PlayerId == Guid.Empty) {
+        if (!IsCreateMode && PlayerId == Guid.Empty) {
             ErrorMessage = AppResources.PlayerSaveFailed;
             _logger.LogError("Could not save an existing player because the editor has no player ID.");
             return false;
         }
-        if (string.IsNullOrWhiteSpace(Name)) {
+        if (string.IsNullOrWhiteSpace(PlayerName)) {
             ErrorMessage = AppResources.PlayerNameRequired;
             return false;
         }
-        if (Name.Trim().Length > 100) {
+        if (PlayerName.Trim().Length > 100) {
             ErrorMessage = AppResources.PlayerNameTooLong;
             return false;
         }
 
         try {
-            if (IsNew) {
-                CreatePlayerResult result = await _createPlayerUseCase.CreatePlayerAsync(Name, IsGuest, cancellationToken);
+            if (IsCreateMode) {
+                CreatePlayerResult result = await _createPlayerUseCase.CreatePlayerAsync(PlayerName, IsPlayerGuest, cancellationToken);
                 PlayerId = result.Id;
-            }
-            else
-                await _editPlayerUseCase.UpdatePlayerAsync(PlayerId, Name, IsArchived, cancellationToken);
+            } else
+                await _editPlayerUseCase.UpdatePlayerAsync(PlayerId, PlayerName, IsPlayerArchived, cancellationToken);
 
             IsSaveCompleted = true;
             return true;
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not save player.");
             ErrorMessage = AppResources.PlayerSaveFailed;
             return false;
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanGoBack))]
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
     private async Task GoBackAsync() {
-        if (IsBusy)
+        if (!IsNotBusy)
             return;
-        if (IsSaveCompleted) {
-            await SaveAsync();
-            return;
-        }
 
         try {
             IsBusy = true;
             ErrorMessage = null;
-            await _navigationService.GoBackAsync();
+
+            await NavigateFromEditorAsync();
+        } finally {
+            IsBusy = false;
         }
-        catch (Exception exception) {
+    }
+
+    /// <returns>True when navigation succeeds; otherwise false with an inline error.</returns>
+    private async Task<bool> NavigateFromEditorAsync() {
+        try {
+            if (IsSaveCompleted && IsCreateMode)
+                await _navigationService.NavigateToMainSectionAsync(AppMainSection.Participants);
+            else
+                await _navigationService.GoBackAsync();
+
+            return true;
+        } catch (Exception exception) when (IsSaveCompleted) {
+            _logger.LogError(exception, "Could not leave player editor after saving.");
+            ErrorMessage = AppResources.PlayerEditorNavigationFailed;
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not leave player editor.");
             ErrorMessage = AppResources.NavigationFailed;
         }
-        finally {
-            IsBusy = false;
-        }
+        return false;
     }
 }

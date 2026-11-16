@@ -397,8 +397,8 @@ public sealed class GroupManagementViewModelTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditPlayerViewModel editor = new(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         editor.InitializeNew();
-        editor.Name = "Guest";
-        editor.IsGuest = true;
+        editor.PlayerName = "Guest";
+        editor.IsPlayerGuest = true;
         PlayerListViewModel list = new(new(db), new(db), NullLogger<PlayerListViewModel>.Instance);
         await list.LoadAsync(Token);
         list.SelectGroups();
@@ -464,22 +464,22 @@ public sealed class GroupManagementViewModelTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         var vm = new EditPlayerViewModel(new(db), new(db), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         vm.InitializeNew();
-        vm.Name = "First new";
-        vm.IsGuest = true;
+        vm.PlayerName = "First new";
+        vm.IsPlayerGuest = true;
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
-        Assert.Empty(vm.Name);
-        Assert.False(vm.IsGuest);
+        Assert.Empty(vm.PlayerName);
+        Assert.False(vm.IsPlayerGuest);
         Assert.False(vm.IsSaveCompleted);
         Assert.True(vm.CanEdit);
-        vm.Name = "Second new";
+        vm.PlayerName = "Second new";
         Assert.True(await vm.SaveAndAddAnotherAsync(Token));
         await using (var failing = db.CreateDbContext())
             await failing.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_player BEFORE INSERT ON Players BEGIN SELECT RAISE(ABORT, 'test player failure'); END", Token);
-        vm.Name = "Kept input";
-        vm.IsGuest = true;
+        vm.PlayerName = "Kept input";
+        vm.IsPlayerGuest = true;
         Assert.False(await vm.SaveAndAddAnotherAsync(Token));
-        Assert.Equal("Kept input", vm.Name);
-        Assert.True(vm.IsGuest);
+        Assert.Equal("Kept input", vm.PlayerName);
+        Assert.True(vm.IsPlayerGuest);
         Assert.True(vm.HasError);
         await using (var restore = db.CreateDbContext())
             await restore.Database.ExecuteSqlRawAsync("DROP TRIGGER reject_player", Token);
@@ -528,8 +528,8 @@ public sealed class GroupManagementViewModelTests
         using StreamReader reader = new(typeof(GroupManagementViewModelTests).Assembly.GetManifestResourceStream("UxContract.EditPlayerPage.xaml")!);
         var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
         var add = Assert.Single(document.Descendants(), element => (string?)element.Attribute("Command") == "{Binding SaveAndAddAnotherCommand}");
-        Assert.Contains(add.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew}");
-        var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsNew, Converter={StaticResource NegateBool}}" && element.Name.LocalName == "Button");
+        Assert.Contains(add.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsCreateMode}");
+        var editorSave = Assert.Single(document.Descendants(), element => (string?)element.Attribute("IsVisible") == "{Binding IsCreateMode, Converter={StaticResource NegateBool}}" && element.Name.LocalName == "Button");
         Assert.Equal("{Binding SaveText}", (string?)editorSave.Attribute("Text"));
     }
 }

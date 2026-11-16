@@ -31,8 +31,8 @@ public sealed class EditorWorkflowTests {
                 player.InitializeNew();
             else
                 await player.LoadAsync(db.First.Id, Token);
-            player.Name = "Kept player";
-            player.IsGuest = true;
+            player.PlayerName = "Kept player";
+            player.IsPlayerGuest = true;
         }
         await using (BoardgameTrackerDbContext reject = db.CreateDbContext()) {
             string trigger = kind switch {
@@ -58,8 +58,8 @@ public sealed class EditorWorkflowTests {
             Assert.False(player.IsBusy);
             Assert.True(player.CanEdit);
             Assert.Equal(AppResources.PlayerSaveFailed, player.ErrorMessage);
-            Assert.Equal("Kept player", player.Name);
-            Assert.True(player.IsGuest);
+            Assert.Equal("Kept player", player.PlayerName);
+            Assert.True(player.IsPlayerGuest);
         }
         Assert.Empty(navigation.Calls);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
@@ -87,7 +87,7 @@ public sealed class EditorWorkflowTests {
                 player.InitializeNew();
             else
                 await player.LoadAsync(db.First.Id, Token);
-            player.Name = "Saved player";
+            player.PlayerName = "Saved player";
         }
         factory.IsGated = true;
         IAsyncRelayCommand save = kind == "group" ? group.SaveCommand : player.SaveCommand;
@@ -116,7 +116,7 @@ public sealed class EditorWorkflowTests {
             else {
                 Assert.False(await player.SaveAndAddAnotherAsync(Token).WaitAsync(TimeSpan.FromSeconds(5), Token));
                 player.InitializeNew();
-                Assert.Equal("Saved player", player.Name);
+                Assert.Equal("Saved player", player.PlayerName);
             }
             Assert.Empty(navigation.Calls);
         }
@@ -162,7 +162,7 @@ public sealed class EditorWorkflowTests {
                 Assert.False(await player.SaveAndAddAnotherAsync(Token));
                 await player.GoBackCommand.ExecuteAsync(null);
                 player.InitializeNew();
-                Assert.False(player.IsNew);
+                Assert.False(player.IsCreateMode);
             }
             Assert.Empty(navigation.Calls);
         }
@@ -177,9 +177,9 @@ public sealed class EditorWorkflowTests {
             Assert.True(group.SaveCommand.CanExecute(null));
         }
         else {
-            player.Name = "Kept edit";
+            player.PlayerName = "Kept edit";
             await player.LoadAsync(db.First.Id, Token);
-            Assert.Equal("Kept edit", player.Name);
+            Assert.Equal("Kept edit", player.PlayerName);
             Assert.True(player.SaveCommand.CanExecute(null));
         }
     }
@@ -265,7 +265,7 @@ public sealed class EditorWorkflowTests {
         Assert.Empty(saveStates);
         Assert.Empty(backStates);
         addStates.Clear();
-        player.Name = "Next player";
+        player.PlayerName = "Next player";
         Assert.True(await player.SaveAndAddAnotherAsync(Token));
         Assert.Equal(new[] { false, true }, saveStates);
         Assert.Equal(new[] { false, true }, addStates);
@@ -278,19 +278,19 @@ public sealed class EditorWorkflowTests {
         EditorNavigationFake navigation = new() { FailNavigation = true };
         EditPlayerViewModel player = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         player.InitializeNew();
-        player.Name = "Saved guest";
-        player.IsGuest = true;
+        player.PlayerName = "Saved guest";
+        player.IsPlayerGuest = true;
         Assert.False(await player.SaveAsync(Token));
         Guid savedId = player.PlayerId;
         await using (BoardgameTrackerDbContext saved = db.CreateDbContext())
             await saved.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_insert BEFORE INSERT ON Players BEGIN SELECT RAISE(ABORT, 'unexpected insert'); END", Token);
         await player.SaveAndAddAnotherCommand.ExecuteAsync(null);
-        Assert.True(player.IsNew);
+        Assert.True(player.IsCreateMode);
         Assert.False(player.IsBusy);
         Assert.False(player.IsSaveCompleted);
         Assert.Equal(Guid.Empty, player.PlayerId);
-        Assert.Empty(player.Name);
-        Assert.False(player.IsGuest);
+        Assert.Empty(player.PlayerName);
+        Assert.False(player.IsPlayerGuest);
         Assert.Null(player.ErrorMessage);
         Assert.Single(navigation.Calls);
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
@@ -299,16 +299,17 @@ public sealed class EditorWorkflowTests {
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task UnsavedBack_DoesNotWriteAndSystemBackRetainsFrameworkBehavior(bool editGroup) {
+    [InlineData("group")]
+    [InlineData("existing-player")]
+    [InlineData("new-player")]
+    public async Task UnsavedBack_DoesNotWriteAndSystemBackRetainsFrameworkBehavior(string kind) {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorNavigationFake navigation = new();
         EditGroupViewModel group = new(new(db), new(db, new TestGameActivationStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         EditPlayerViewModel player = new(new(db), new(db), navigation, NullLogger<EditPlayerViewModel>.Instance);
         EventBoundaryTestHost page;
         IAsyncRelayCommand back;
-        if (editGroup) {
+        if (kind == "group") {
             await group.LoadAsync(db.Group.Id, Token);
             group.GroupName = "Unsaved";
             group.ChooseGameCommand.Execute(null);
@@ -317,20 +318,32 @@ public sealed class EditorWorkflowTests {
             Assert.False(group.IsChoosingGame);
             Assert.Empty(navigation.Calls);
             back = group.GoBackCommand;
-        }
-        else {
-            await player.LoadAsync(db.First.Id, Token);
-            player.Name = "Unsaved";
+        } else {
+            if (kind == "new-player")
+                player.InitializeNew();
+            else
+                await player.LoadAsync(db.First.Id, Token);
+            player.PlayerName = "Unsaved";
             page = EventBoundaryTests.Create("EditPlayerPage.xaml.cs", player);
             back = player.GoBackCommand;
         }
         var systemBack = page.GetType().GetMethod("OnBackButtonPressed", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
         Assert.False((bool)systemBack.Invoke(page, null)!);
+        navigation.FailNavigation = true;
         await back.ExecuteAsync(null);
         Assert.Equal("..", Assert.Single(navigation.Calls).Route);
+        Assert.Equal(AppResources.NavigationFailed, kind == "group" ? group.ErrorMessage : player.ErrorMessage);
+        Assert.False(kind == "group" ? group.IsSaveCompleted : player.IsSaveCompleted);
+        Assert.True(kind == "group" ? group.CanEdit : player.CanEdit);
+        navigation.FailNavigation = false;
+        navigation.OnNavigating = () => Assert.Null(kind == "group" ? group.ErrorMessage : player.ErrorMessage);
+        await back.ExecuteAsync(null);
+        Assert.Equal(2, navigation.Calls.Count);
+        Assert.All(navigation.Calls, call => Assert.Equal("..", call.Route));
         await using BoardgameTrackerDbContext verify = db.CreateDbContext();
         Assert.Equal(db.Group.Name, (await verify.Groups.SingleAsync(Token)).Name);
         Assert.Equal("Anna", (await verify.Players.SingleAsync(value => value.Id == db.First.Id, Token)).Name);
+        Assert.Equal(2, await verify.Players.CountAsync(Token));
     }
 
     private sealed class GatedContextFactory(IDbContextFactory<BoardgameTrackerDbContext> inner) : IDbContextFactory<BoardgameTrackerDbContext> {

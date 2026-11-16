@@ -16,14 +16,13 @@ public partial class EditGroupViewModel : ObservableObject {
     private readonly INavigationService _navigationService;
     private readonly ILogger<EditGroupViewModel> _logger;
 
-    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GameActivationUseCase gameActivationUseCase,
-        INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
+    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GameActivationUseCase gameActivationUseCase, INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
         _editGroupUseCase = editGroupUseCase;
         _gameActivationUseCase = gameActivationUseCase;
         _navigationService = navigationService;
         _logger = logger;
         Players.CollectionChanged += (_, args) => {
-            if (!IsBusy && args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
+            if (IsNotBusy && args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
                 SaveCommand.NotifyCanExecuteChanged();
         };
     }
@@ -32,6 +31,7 @@ public partial class EditGroupViewModel : ObservableObject {
     [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(GoBackCommand))]
     [NotifyPropertyChangedFor(nameof(CanEdit))]
     public partial bool IsBusy { get; private set; }
+    private bool IsNotBusy => !IsBusy;
 
     /// <summary>
     /// Keeps saved inputs frozen if navigation fails after a successful write.
@@ -42,10 +42,8 @@ public partial class EditGroupViewModel : ObservableObject {
     [NotifyPropertyChangedFor(nameof(CanEdit), nameof(SaveText))]
     public partial bool IsSaveCompleted { get; private set; }
 
-    public bool CanEdit => !IsBusy && !IsSaveCompleted;
-    public bool CanSave => !IsBusy && (IsSaveCompleted
-        || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0));
-    public bool CanGoBack => !IsBusy;
+    public bool CanEdit => IsNotBusy && !IsSaveCompleted;
+    public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0));
 
     [ObservableProperty]
     public partial bool IsChoosingGame { get; private set; }
@@ -57,9 +55,6 @@ public partial class EditGroupViewModel : ObservableObject {
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
-    public partial bool CanArchiveGroup { get; private set; }
-
-    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial Guid GroupId { get; private set; }
 
@@ -69,6 +64,9 @@ public partial class EditGroupViewModel : ObservableObject {
 
     [ObservableProperty]
     public partial bool IsGroupArchived { get; set; }
+
+    [ObservableProperty]
+    public partial bool CanArchiveGroup { get; private set; }
 
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
     public ObservableCollection<GroupGameSelection> GameSelections { get; } = [];
@@ -82,6 +80,49 @@ public partial class EditGroupViewModel : ObservableObject {
     public string SaveText => IsSaveCompleted ? AppResources.Done : AppResources.Save;
 
     #endregion
+
+    public async Task LoadAsync(Guid groupId, CancellationToken cancellationToken = default) {
+        if (!IsNotBusy)
+            return;
+        // Returning from an overlay must not replace edits to an already loaded group.
+        if (groupId == Guid.Empty || GroupId == groupId)
+            return;
+
+        try {
+            IsBusy = true;
+            ErrorMessage = null;
+
+            EditGroupDetails? details = await _editGroupUseCase.GetAsync(groupId, cancellationToken);
+
+            if (details is null) {
+                ErrorMessage = AppResources.GroupNotFound;
+                return;
+            }
+
+            IReadOnlyList<GameActivationState> activationStates = await _gameActivationUseCase.GetGamesAsync(cancellationToken);
+            HashSet<string> enabledGameKeys = activationStates.Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
+            GameSelections.Clear();
+            foreach (EditGroupGame game in details.Games)
+                GameSelections.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
+            RefreshGameSelectionBindings();
+            CanArchiveGroup = details.CanArchive;
+            GroupName = details.Name;
+            IsGroupArchived = details.IsArchived;
+
+            Players.Clear();
+            foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
+                Players.Add(new GroupMemberDraft(player.PlayerId, player.Name, player.IsGuest));
+
+            GroupMemberDraft.UpdatePositions(Players);
+            IsSaveCompleted = false;
+            GroupId = details.Id;
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not load group {GroupId}.", groupId);
+            ErrorMessage = UserErrorMessage.Create(AppResources.LoadGroupFailed, exception);
+        } finally {
+            IsBusy = false;
+        }
+    }
 
     [RelayCommand]
     private void ChooseGame() {
@@ -116,55 +157,10 @@ public partial class EditGroupViewModel : ObservableObject {
         RefreshGameSelectionBindings();
     }
 
-    public async Task LoadAsync(Guid groupId, CancellationToken cancellationToken = default) {
-        if (IsBusy)
-            return;
-        // Returning from an overlay must not replace edits to an already loaded group.
-        if (groupId == Guid.Empty || GroupId == groupId)
-            return;
-
-        try {
-            IsBusy = true;
-            ErrorMessage = null;
-
-            EditGroupDetails? details =
-                await _editGroupUseCase.GetAsync(groupId, cancellationToken);
-
-            if (details is null) {
-                ErrorMessage = AppResources.GroupNotFound;
-                return;
-            }
-
-            IReadOnlyList<GameActivationState> activationStates = await _gameActivationUseCase.GetGamesAsync(cancellationToken);
-            HashSet<string> enabledGameKeys = activationStates.Where(game => game.IsEnabled)
-                .Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
-            GameSelections.Clear();
-            foreach (EditGroupGame game in details.Games)
-                GameSelections.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
-            RefreshGameSelectionBindings();
-            CanArchiveGroup = details.CanArchive;
-            GroupName = details.Name;
-            IsGroupArchived = details.IsArchived;
-
-            Players.Clear();
-            foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder)) {
-                Players.Add(new GroupMemberDraft(
-                    player.PlayerId,
-                    player.Name,
-                    player.IsGuest));
-            }
-
-            GroupMemberDraft.UpdatePositions(Players);
-            IsSaveCompleted = false;
-            GroupId = details.Id;
-        }
-        catch (Exception exception) {
-            _logger.LogError(exception, "Could not load group {GroupId}.", groupId);
-            ErrorMessage = UserErrorMessage.Create(AppResources.LoadGroupFailed, exception);
-        }
-        finally {
-            IsBusy = false;
-        }
+    private void RefreshGameSelectionBindings() {
+        OnPropertyChanged(nameof(SelectedVisibleGames));
+        OnPropertyChanged(nameof(GamesAvailableToAdd));
+        OnPropertyChanged(nameof(HasGamesAvailableToAdd));
     }
 
     [RelayCommand]
@@ -203,59 +199,46 @@ public partial class EditGroupViewModel : ObservableObject {
             ErrorMessage = null;
 
             if (!IsSaveCompleted) {
-                IReadOnlyList<Guid> orderedPlayerIds =
-                    [.. Players.Select(player => player.PlayerId!.Value)];
-
-                await _editGroupUseCase.UpdateGroupAsync(new EditGroupCommand(
-                    GroupId,
-                    GroupName,
-                    IsGroupArchived,
-                    orderedPlayerIds,
-                    GameSelections.Where(game => game.IsSelected).Select(game => game.Id).ToArray()));
+                IReadOnlyList<Guid> orderedPlayerIds = [.. Players.Select(player => player.PlayerId!.Value)];
+                Guid[] selectedGameIds = GameSelections.Where(game => game.IsSelected).Select(game => game.Id).ToArray();
+                EditGroupCommand command = new(GroupId, GroupName, IsGroupArchived, orderedPlayerIds, selectedGameIds);
+                await _editGroupUseCase.UpdateGroupAsync(command);
                 IsSaveCompleted = true;
             }
 
-            await _navigationService.GoBackAsync();
-        }
-        catch (Exception exception) when (IsSaveCompleted) {
-            _logger.LogError(exception, "Could not leave group editor after saving group {GroupId}.", GroupId);
-            ErrorMessage = AppResources.GroupEditorNavigationFailed;
-        }
-        catch (Exception exception) {
+            await NavigateFromEditorAsync();
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not save group {GroupId}.", GroupId);
             ErrorMessage = UserErrorMessage.Create(AppResources.SaveGroupFailed, exception);
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanGoBack))]
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
     private async Task GoBackAsync() {
-        if (IsBusy)
+        if (!IsNotBusy)
             return;
-        if (IsSaveCompleted) {
-            await SaveAsync();
-            return;
-        }
 
         try {
             IsBusy = true;
             ErrorMessage = null;
-            await _navigationService.GoBackAsync();
-        }
-        catch (Exception exception) {
-            _logger.LogError(exception, "Could not leave group editor.");
-            ErrorMessage = AppResources.NavigationFailed;
-        }
-        finally {
+
+            await NavigateFromEditorAsync();
+        } finally {
             IsBusy = false;
         }
     }
 
-    private void RefreshGameSelectionBindings() {
-        OnPropertyChanged(nameof(SelectedVisibleGames));
-        OnPropertyChanged(nameof(GamesAvailableToAdd));
-        OnPropertyChanged(nameof(HasGamesAvailableToAdd));
+    private async Task NavigateFromEditorAsync() {
+        try {
+            await _navigationService.GoBackAsync();
+        } catch (Exception exception) when (IsSaveCompleted) {
+            _logger.LogError(exception, "Could not leave group editor after saving group {GroupId}.", GroupId);
+            ErrorMessage = AppResources.GroupEditorNavigationFailed;
+        } catch (Exception exception) {
+            _logger.LogError(exception, "Could not leave group editor.");
+            ErrorMessage = AppResources.NavigationFailed;
+        }
     }
 }

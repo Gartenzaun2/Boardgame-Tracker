@@ -104,8 +104,8 @@ public sealed class PlayerManagementTests
         Guid id = database.Players[0].Id;
         EditPlayerViewModel editor = new(database.Edit, new(database), new EditorNavigationFake(), NullLogger<EditPlayerViewModel>.Instance);
         await editor.LoadAsync(id, Token);
-        editor.Name = "Changed";
-        editor.IsArchived = true;
+        editor.PlayerName = "Changed";
+        editor.IsPlayerArchived = true;
         Assert.False((await database.Edit.GetAsync(id, Token))!.IsArchived);
         Assert.Equal("Anna", (await database.Edit.GetAsync(id, Token))!.Name);
         Assert.True(await editor.SaveAsync(Token));
