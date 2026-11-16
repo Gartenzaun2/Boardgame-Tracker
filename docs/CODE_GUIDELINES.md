@@ -207,6 +207,20 @@ Notiz bei der DI-Registrierung darf eine nicht offensichtliche Adapterwahl
 erklären. Die Begründung nicht an jeder Aufrufstelle wiederholen und keine
 Interfaces allein für ein Architekturbeispiel einführen.
 
+Bei **komplexen ViewModels mit mehreren fachlichen Schritten** darf die XML-
+`<summary>` am Typ den tatsächlichen Ablauf mit nummerierten Schritten und
+Unterpunkten erläutern, etwa Gruppendaten erfassen, Mitglieder auswählen oder
+im Entwurf neu anlegen, optionale Spiele zuordnen, Duplikate behandeln und
+den Abschlussweg unterscheiden. Der Kommentar erklärt den Zusammenhang und
+wichtige Grenzen wie „Entwurf noch nicht gespeichert“, statt den Klassennamen
+in anderen Worten zu wiederholen. Bei einfachen Typen ist eine solche
+Ablaufbeschreibung nicht nötig. Nicht offensichtliche private Ablaufzustände
+(z. B. einmaliges Laden trotz erneutem `OnAppearing`, ein während der
+Duplikatentscheidung gesicherter Entwurf oder ein Navigation-Retry nach
+bereits erfolgreichem Write) direkt am Feld mit einer eigenen XML-`<summary>`
+und ihrem **Warum** erklären. Keinen inhaltsgleichen zusätzlichen `//`-
+Kommentar daneben anlegen.
+
 C#-Bezeichner und Code-/XML-Kommentare sind **Englisch**; Projektdokumentation ist
 **Deutsch**.
 
@@ -223,6 +237,17 @@ gruppieren. Eine rein berechnete, unmittelbar zugehörige Negation
 `CanEdit` oder ein fachlich eigenständiges `CanSave` stehen bei verwandtem
 Prozesszustand; keine starre Sortierung nach Sichtbarkeit, Typ oder Alphabet.
 Zusammengehörige Hilfsmethoden nahe beim zugehörigen Ablauf lassen.
+
+Bei größeren Dialogen die Properties **nach zusammengehörigen Teilabläufen**
+ordnen, nicht alle Collections, alle Booleans oder alle Observable-Properties
+jeweils unabhängig von ihrer Bedeutung zusammenstellen. Beispielsweise
+gehören die Auswahl vorhandener Mitglieder, der Entwurf für neue Mitglieder,
+die Spielzuordnung und die Duplikatentscheidung jeweils zu ihrem eigenen
+Bereich. Berechnete Properties bei ihrer Datenquelle halten; technische
+übergreifende Zustände wie `IsBusy` und `IsSaveCompleted` bleiben als eigener
+Prozessbereich erkennbar. Abschnittstrennung vorzugsweise durch Leerzeilen,
+bei längeren Blöcken durch hilfreiche Gliederung; keine zusätzlichen Klassen,
+Regionen oder Wrapper ohne eigenen Nutzen erzwingen.
 
 **Methoden:** Auch **innerhalb** einer Methode die Schritte in logischer,
 fachlicher und zeitlicher Reihenfolge anordnen: Vorbedingungen → Daten laden →
@@ -489,6 +514,46 @@ können**, auch wenn ursprüngliche Formularbedingungen nicht mehr erfüllt sind
 Eine berechnete `CanSave`-Bedingung kann das ausdrücklich abbilden, ohne eine
 zweite Speicherung zu erlauben.
 
+### Gegenseitig ausschließende Unterdialoge
+
+Beschreiben mehrere Booleans ausschließlich, **welcher von mehreren
+Unterdialogen gerade geöffnet ist**, bevorzugt **einen Enum-Zustand mit einem
+expliziten `None`-Wert** verwenden. So kann nicht versehentlich gleichzeitig
+z. B. eine Spieler- und eine Spieleauswahl aktiv sein. Das Enum bezeichnet
+nur diese gegenseitig ausschließenden UI-Teilabläufe; unabhängige Bedingungen
+wie `IsBusy`, `CanEdit`, Validierungsfehler oder abgeschlossene Speicherung
+bleiben davon getrennt. Kein universelles Zustands-Enum für den gesamten
+Dialog und kein State-Machine-Framework allein für einfache Overlays einführen.
+
+**Beispiel (illustrativer Unterdialog; keine festgelegten Typ- oder Membernamen):**
+
+```csharp
+public enum GroupCreationSubdialog {
+    None,
+    SelectExistingPlayer,
+    CreatePlayer,
+    SelectGame
+}
+
+[ObservableProperty]
+public partial GroupCreationSubdialog ActiveSubdialog { get; private set; }
+```
+
+Beim Öffnen den passenden Enum-Wert setzen, beim Schließen auf `None`
+zurücksetzen und beim System-Zurück zuerst den aktiven Unterdialog behandeln.
+Für XAML-Sichtbarkeit kann ein gemeinsam bereitgestellter Vergleichs-Converter
+den Enum-Wert **gegen den als Parameter übergebenen Enum-Member** prüfen;
+die fachliche Zustandsquelle bleibt `ActiveSubdialog`. Ein solcher Converter
+ist keine zweite Zustandsquelle und erfordert nicht für jedes Enum eine eigene
+Klasse. Ein zusätzlicher Paketverweis allein dafür ist nicht nötig.
+
+**XAML-Beispiel (nur Bindungsidee; `EnumEquals` ist ein illustrativer
+Ressourcenschlüssel, keine Behauptung über bereits vorhandenen Code):**
+
+```xml
+<Grid IsVisible="{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:GroupCreationSubdialog.SelectGame}}" />
+```
+
 ### Ein Konzept für gleichartige Dialoge
 
 Vergleichbare Editierdialoge verwenden einen verständlichen Ablauf:
@@ -539,6 +604,18 @@ keine Prüfung `Players.Count > 0`. Bei einem Editor, der Mitglieder tatsächlic
 hinzufügt oder entfernt, ist die Lage anders; dort können beide Mechanismen
 nötig sein. Fachliche Spielerzahlgrenzen, etwa bei der Spielzuordnung,
 bleiben unabhängig davon bestehen.
+
+Rein aus Collections berechenbare UI-Zustände (`HasNoPlayers`,
+`HasAvailablePlayers` usw.) bevorzugt als **Getter ohne eigenen veränderlichen
+Backing-State** modellieren. Bei tatsächlich möglichen Änderungen an der
+Collection die betroffenen berechneten Properties gezielt per
+`OnPropertyChanged(nameof(...))` benachrichtigen. `CollectionChanged`
+nicht für unbeeinflusste Werte auswerten: Ein `Move` ändert z. B. keine
+Anzahl; ein `Reset` dagegen kann sie ändern. Relevante `CanExecute`-
+Abhängigkeiten ebenfalls benachrichtigen. Werden bei einer Benutzeraktion
+mehrere Collections nacheinander geändert, fachliche Folgeprüfungen erst
+**nach Abschluss der zusammengehörigen Mutation** ausführen, nicht blind
+bei jedem Zwischenereignis.
 
 Wenn Änderungen ausschließlich durch bekannte Commands erfolgen, die
 abgeleiteten Ansichten **direkt nach einer tatsächlich erfolgreichen Mutation**
