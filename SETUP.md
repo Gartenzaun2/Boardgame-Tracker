@@ -77,7 +77,9 @@ Mac-Pin vorgesehen; die tatsächliche Mac-Installation ist vor dem Build abzugle
 ```
 
 Das [iOS-Workload-Set `11.0.100.1`](https://github.com/dotnet/macios/releases/tag/dotnet-11.0.1xx-xcode27.2.11039)
-verwendet iOS `27.2.11039` mit Xcode `27.2` und benötigt macOS `16.6` oder neuer.
+verwendet iOS `27.2.11039` mit Xcode `27.2` und benötigt gemäß
+[Apple-Systemanforderungen](https://developer.apple.com/xcode/system-requirements)
+macOS Tahoe `26.6` oder neuer.
 Die SDK-Version für den Build setzt nicht die Mindest-iOS-Version der App;
 das Abnahmegerät iPhone 12 Pro mit iOS 26.2 bleibt vorgesehen.
 Die MAUI-Paketversion `11.0.10` bleibt unabhängig davon im App-Projekt gepinnt.
@@ -98,7 +100,7 @@ Für die SDK-/Workload-Auswahl zunächst aus `.local/ios/` prüfen:
 cd .local/ios
 dotnet --version
 dotnet workload --version
-dotnet workload restore ../../src/BoardgameTracker.App/BoardgameTracker.App.csproj
+dotnet workload --info
 ```
 
 Der erwartete lokale SDK-Wert ist `11.0.100`, die Workload-Set-Version `11.0.100.1`.
@@ -106,6 +108,37 @@ Vor einem iOS-Build zusätzlich überprüfen, ob auch der konkrete MSBuild-Aufru
 diese Toolchain verwendet. Stimmt die effektive Auswahl nicht, muss **die lokale
 Mac-Build-Aufrufkonfiguration** korrigiert werden, nicht die gemeinsame Root-Datei.
 Die allgemeinen Build-/Test- und Freigaberegeln dieses Dokuments gelten weiterhin.
+
+Für einen lokalen Einstieg mit ausschließlich MAUI-/iOS-Workloads grenzt die nicht
+versionierte `.local/ios/ios-only.targets` nur das App-Projekt ein:
+
+```xml
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'BoardgameTracker.App'">
+    <TargetFrameworks>net11.0-ios</TargetFrameworks>
+  </PropertyGroup>
+</Project>
+```
+
+Vom Verzeichnis `.local/ios/` aus wird diese Datei beim Restore und Build übergeben:
+
+```bash
+export NUGET_SCRATCH="$PWD/nuget-scratch"
+dotnet restore ../../src/BoardgameTracker.App/BoardgameTracker.App.csproj \
+  -p:DirectoryBuildTargetsPath="$PWD/ios-only.targets" -r iossimulator-arm64
+dotnet build ../../src/BoardgameTracker.App/BoardgameTracker.App.csproj --no-restore \
+  -p:DirectoryBuildTargetsPath="$PWD/ios-only.targets" \
+  -f net11.0-ios -c Debug -p:RuntimeIdentifier=iossimulator-arm64 \
+  -p:ArkNovaIosBuildDirectory="<Pfad-zum-passenden-Simulator-Archivordner>"
+```
+
+Für den Device-Build gelten entsprechend `ios-arm64`, `Release`, das getrennte
+Device-Archiv und die lokale Signing-Auswahl. `TargetFramework` oder
+`TargetFrameworks` nicht global beim Restore auf iOS setzen: Diese Eigenschaften
+würden auch Core/Application überschreiben, deren Restore-Ziel `net11.0` bleibt.
+Das lokale NuGet-Scratch-Verzeichnis vermeidet Sperrkonflikte mit einer unter
+Administratorrechten ausgeführten Workload-Installation; vorhandene Caches werden
+nicht gelöscht.
 
 ### Repository- und Log-Sicherheit
 
