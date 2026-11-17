@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.22.9.0 – 2026-11-17
+
+- iOS-Fotoanalyse repariert: Das CV-Referenzbild wird gezielt von Apples PNG-Optimierung ausgenommen, damit OpenCV es auch im .NET-11-Release-Bundle dekodieren kann. Ein SHA-256-Vergleich nach dem iOS-Build erkennt veränderte oder fehlende Referenzassets.
+
 ## 0.22.8.5 – 2026-11-16
 
 - Piloteditoren für Gruppen und Spieler nachgeschärft: fachliche Spielerdaten und Erstellmodus eindeutig benannt, gemeinsame Busy-Bedingung für Commands verwendet und den Navigationsweg von Speichern und Zurück klar getrennt. Bestehende Sonderaktionen und Navigation-Retry ohne weiteren Write erhalten.
