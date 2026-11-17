@@ -39,6 +39,11 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.1.0 – 2026-11-17
+
+- Der Editor manueller Spiele übernimmt bestehende Konfigurationen erst nach vollständig erfolgreichem Laden und sperrt Datenänderungen bis zum Ladeabschluss. Zurück, erneutes Laden und Navigation-Retry bleiben verfügbar.
+- History protokolliert auch fehlgeschlagene Transferfehlerdialoge und zeigt die Meldung ersatzweise inline. Nach bereits gespeichertem Import wird ein Fehler der Ergebnisanzeige korrekt gemeldet; Reload erhält die Rückfallmeldung, ohne den Commit zu wiederholen.
+
 ## 0.23.0.2 – 2026-11-17
 
 - Eigene Auswahl-Overlays in Gruppenbearbeitung und Spielgruppenauswahl auf explizite Enum-Zustände vereinheitlicht. Technisches Modalflag im ManualGame-Editor präzisiert, Save-Bedingung der Gruppenanlage passend eingeordnet und Historienimport in lesbare private Phasen gegliedert; bestehende Abbruch-, Speicher-, Navigations- und Retry-Semantik erhalten.

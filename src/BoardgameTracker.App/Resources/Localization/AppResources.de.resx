@@ -481,6 +481,9 @@
   <data name="TransferSuccess" xml:space="preserve">
     <value>Die Partien wurden importiert.</value>
   </data>
+  <data name="TransferResultPresentationFailed" xml:space="preserve">
+    <value>Die Partien wurden importiert. Die Ergebnisanzeige konnte nicht geöffnet werden. Der Import muss nicht wiederholt werden.</value>
+  </data>
   <data name="TransferUpdateRequired" xml:space="preserve">
     <value>Die Datei verwendet ein nicht unterstütztes Format oder Spiel. Bitte die App aktualisieren. Custom Games werden noch nicht unterstützt.</value>
   </data>

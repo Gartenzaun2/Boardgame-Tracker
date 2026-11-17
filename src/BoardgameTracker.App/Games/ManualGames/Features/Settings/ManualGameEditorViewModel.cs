@@ -53,7 +53,8 @@ public partial class ManualGameEditorViewModel : ObservableObject {
     public partial bool IsSaveCompleted { get; private set; }
 
     public bool CanInteract => IsNotBusy && !IsModalDialogOpen;
-    public bool CanEdit => CanInteract && !IsSaveCompleted;
+    public bool CanEdit => _isInitialLoadCompleted && CanInteract && !IsSaveCompleted;
+    private bool CanSave => _isInitialLoadCompleted && CanInteract;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Title), nameof(HeaderBadge), nameof(CanDelete))]
@@ -115,7 +116,7 @@ public partial class ManualGameEditorViewModel : ObservableObject {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDelete))]
     public partial bool HasSessions { get; private set; }
-    public bool CanDelete => IsEditing && !HasSessions && !IsSaveCompleted;
+    public bool CanDelete => _isInitialLoadCompleted && IsEditing && !HasSessions && !IsSaveCompleted;
 
     public string? DeletionWarning { get; private set; }
 
@@ -133,7 +134,7 @@ public partial class ManualGameEditorViewModel : ObservableObject {
         if (_isInitialLoadCompleted || IsBusy)
             return;
         if (gameKey is null) {
-            _isInitialLoadCompleted = true;
+            CompleteInitialization();
             return;
         }
 
@@ -143,6 +144,8 @@ public partial class ManualGameEditorViewModel : ObservableObject {
         try {
             ManualGameDetails details = await _manualGameUseCase.GetAsync(gameKey, cancellationToken)
                 ?? throw new ManualGameValidationException(ManualGameError.NotFound);
+            GameInfo game = await _gamesQuery.GetAsync(gameKey, cancellationToken);
+
             _gameId = details.Id;
             _gameKey = details.Key;
             IsEditing = true;
@@ -166,11 +169,10 @@ public partial class ManualGameEditorViewModel : ObservableObject {
 
             HasSessions = details.HasSessions;
 
-            GameInfo game = await _gamesQuery.GetAsync(gameKey, cancellationToken);
             IsEnabled = game.IsEnabled;
             IsEnablementLocked = game.HasOpenSessions;
 
-            _isInitialLoadCompleted = true;
+            CompleteInitialization();
         } catch (Exception exception) {
             _logger.LogError(exception, "Could not load manual game settings.");
             ErrorMessage = AppResources.ManualLoadFailed;
@@ -179,12 +181,17 @@ public partial class ManualGameEditorViewModel : ObservableObject {
         }
     }
 
+    private void CompleteInitialization() {
+        _isInitialLoadCompleted = true;
+        OnPropertyChanged(nameof(CanEdit));
+        OnPropertyChanged(nameof(CanDelete));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+
     /// <returns>True when saving and departure succeed; a navigation retry skips the completed write.</returns>
-    [RelayCommand(CanExecute = nameof(CanInteract))]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     public async Task<bool> SaveAsync(CancellationToken cancellationToken = default) {
-        if (!CanInteract)
-            return false;
-        if (!_isInitialLoadCompleted)
+        if (!CanSave)
             return false;
 
         IsBusy = true;
@@ -274,7 +281,7 @@ public partial class ManualGameEditorViewModel : ObservableObject {
 
     /// <returns>True when refreshed data allows deletion; false when unavailable, busy, blocked by sessions, or the check fails.</returns>
     public async Task<bool> RefreshDeleteEligibilityAsync(CancellationToken cancellationToken = default) {
-        if (!CanInteract || _gameKey is null)
+        if (!_isInitialLoadCompleted || !CanInteract || _gameKey is null)
             return false;
 
         IsBusy = true;

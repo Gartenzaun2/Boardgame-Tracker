@@ -11,6 +11,7 @@ public partial class HistoryPage {
         if (_isTransferring || _isLoading || _isNavigating || _isFilterSelectionOpen)
             return false;
 
+        ErrorLabel.IsVisible = false;
         _isTransferring = true;
         BusyOverlay.IsVisible = true;
         return true;
@@ -37,6 +38,7 @@ public partial class HistoryPage {
             return;
 
         bool committed = false;
+        string? fallbackMessage = null;
 
         try {
             FileResult? selected = await FilePicker.Default.PickAsync(new PickOptions {
@@ -64,12 +66,18 @@ public partial class HistoryPage {
             committed = true;
             await AppDialogPage.ShowAsync(this, AppResources.TransferImport, AppResources.TransferSuccess, AppResources.Ok);
         } catch (Exception exception) {
-            await ShowTransferErrorAsync(exception);
+            fallbackMessage = await ShowTransferErrorAsync(exception, committed);
         } finally {
             _isTransferring = false;
             BusyOverlay.IsVisible = false;
-            if (committed)
+            if (committed) {
                 await ReloadAsync();
+                // Reload clears transient errors; a failed result dialog must remain visible afterwards.
+                if (fallbackMessage is not null) {
+                    ErrorLabel.Text = fallbackMessage;
+                    ErrorLabel.IsVisible = true;
+                }
+            }
         }
     }
 
@@ -145,11 +153,24 @@ public partial class HistoryPage {
         return await AppDialogPage.ShowAsync(this, AppResources.TransferPreview, summary, AppResources.TransferCommit, AppResources.Cancel);
     }
 
-    private async Task ShowTransferErrorAsync(Exception exception) {
-        _logger.LogError(exception, "History transfer failed.");
-        string message = exception is InvalidDataException { Message: "UpdateRequired" }
-            ? AppResources.TransferUpdateRequired : AppResources.TransferFailed;
-        await AppDialogPage.ShowAsync(this, AppResources.History, message, AppResources.Ok);
+    /// <returns>The inline fallback message when modal presentation fails; otherwise null.</returns>
+    private async Task<string?> ShowTransferErrorAsync(Exception exception, bool importCommitted = false) {
+        if (importCommitted)
+            _logger.LogError(exception, "Could not present the completed import result.");
+        else
+            _logger.LogError(exception, "History transfer failed.");
+
+        string message = importCommitted ? AppResources.TransferResultPresentationFailed
+            : exception is InvalidDataException { Message: "UpdateRequired" } ? AppResources.TransferUpdateRequired : AppResources.TransferFailed;
+        try {
+            await AppDialogPage.ShowAsync(this, AppResources.History, message, AppResources.Ok);
+            return null;
+        } catch (Exception presentationException) {
+            _logger.LogError(presentationException, "Could not show history transfer error.");
+            ErrorLabel.Text = message;
+            ErrorLabel.IsVisible = true;
+            return message;
+        }
     }
 
     /// <summary>Prevents system back from interrupting a transfer or its conflict-resolution dialogs.</summary>
