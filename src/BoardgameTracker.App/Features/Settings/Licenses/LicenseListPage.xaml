@@ -4,14 +4,15 @@
     x:Class="BoardgameTracker.App.Features.Settings.Licenses.LicenseListPage" x:DataType="local:LicenseListViewModel"
     Title="{x:Static res:AppResources.OpenSourceLicenses}" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid x:Name="PageContent" IsEnabled="{Binding IsIdle}" RowDefinitions="Auto,*" RowSpacing="12">
+        <Grid x:Name="PageContent" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" RowDefinitions="Auto,*" RowSpacing="12">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.OpenSourceLicenses}"
-                    Variant="Subpage"
-                    BackClicked="OnBackClicked" />
+
+                <!-- Page header: return from offline licenses. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.OpenSourceLicenses}" Variant="Subpage" BackClicked="OnBackClicked" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+
+                <!-- Required attribution followed by the packaged component catalog. -->
                 <Label Grid.Row="0" Text="{Binding IjgAttribution}" FontSize="12" LineBreakMode="WordWrap" />
                 <CollectionView Grid.Row="1" ItemsSource="{Binding Components}" SelectionMode="None">
                     <CollectionView.ItemsLayout>
@@ -26,19 +27,24 @@
                                         <Label Text="{Binding LicenseDisplayName}" FontSize="12" TextColor="{DynamicResource TextSecondary}" LineBreakMode="WordWrap" />
                                     </VerticalStackLayout>
                                     <Image Grid.Column="1" Margin="0,0,16,0" Source="icon_chevron.png" Style="{StaticResource NavigationChevron}" />
-                                    <Button Grid.ColumnSpan="2" Style="{StaticResource TextActionButton}" Clicked="OnLicenseClicked" CommandParameter="{Binding Id}"
+                                    <Button Grid.ColumnSpan="2" Style="{StaticResource TextActionButton}"
+                                        Clicked="OnLicenseClicked" CommandParameter="{Binding Id}"
                                         SemanticProperties.Description="{Binding OverviewText}" SemanticProperties.Hint="{x:Static res:AppResources.LicenseOpenHint}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Load error and explicit retry. -->
                 <VerticalStackLayout Grid.Row="2" IsVisible="{Binding HasError}" Spacing="8">
                     <Label Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
                     <Button Text="{x:Static res:AppResources.LicensesRetry}" Clicked="OnRetryClicked" Style="{StaticResource SecondaryActionButton}" />
                 </VerticalStackLayout>
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: protect catalog loading. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

@@ -3,25 +3,29 @@
     xmlns:local="clr-namespace:BoardgameTracker.App.Features.Players.ListPlayers" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     x:Class="BoardgameTracker.App.Features.Players.ListPlayers.PlayerListPage" x:DataType="local:PlayerListViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsIdle}">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.Participants}"
-                    Variant="MainSection">
+
+                <!-- Page header and management segment selection. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.Participants}" Variant="MainSection">
                     <header:AppPageHeader.Actions>
-                        <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
+                        <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
+                            Clicked="OnInfoClicked"
+                            SemanticProperties.Description="{x:Static res:AppResources.Participants}" />
                     </header:AppPageHeader.Actions>
                 </header:AppPageHeader>
                 <VerticalStackLayout Padding="18,0,18,0" Spacing="8">
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
-                        <header:SegmentButton Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SegmentButton}" IsSelected="{Binding ShowPlayers}" />
+                        <header:SegmentButton Text="{x:Static res:AppResources.Players}" Clicked="OnPlayersSegmentClicked" Style="{StaticResource SegmentButton}" IsSelected="{Binding ShowGroups, Converter={StaticResource NegateBool}}" />
                         <header:SegmentButton Grid.Column="1" Text="{x:Static res:AppResources.Groups}" Clicked="OnGroupsSegmentClicked" IsEnabled="{Binding HasPlayers}" Style="{StaticResource SegmentButton}" IsSelected="{Binding ShowGroups}" />
                     </Grid>
-                    <Label Text="{x:Static res:AppResources.FirstPlayerHint}" IsVisible="{Binding HasNoPlayers}" />
+                    <Label Text="{x:Static res:AppResources.FirstPlayerHint}" IsVisible="{Binding HasPlayers, Converter={StaticResource NegateBool}}" />
                 </VerticalStackLayout>
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="Auto,*,Auto" RowSpacing="12">
-                <HorizontalStackLayout Grid.Row="0" Spacing="16" IsVisible="{Binding ShowPlayers}">
+
+                <!-- Segment-specific filters: guests and archived players or groups. -->
+                <HorizontalStackLayout Grid.Row="0" Spacing="16" IsVisible="{Binding ShowGroups, Converter={StaticResource NegateBool}}">
                     <HorizontalStackLayout Spacing="4">
                         <Switch IsToggled="{Binding IncludeGuests}" />
                         <Label Text="{x:Static res:AppResources.ShowGuests}" VerticalOptions="Center" />
@@ -35,7 +39,9 @@
                     <Switch IsToggled="{Binding IncludeArchivedGroups}" />
                     <Label Text="{x:Static res:AppResources.ShowArchived}" VerticalOptions="Center" />
                 </HorizontalStackLayout>
-                <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" IsVisible="{Binding ShowPlayers}">
+
+                <!-- Player list: identity, creation date, status and editor entry. -->
+                <CollectionView Grid.Row="1" ItemsSource="{Binding Players}" SelectionMode="None" IsVisible="{Binding ShowGroups, Converter={StaticResource NegateBool}}">
                     <CollectionView.EmptyView>
                         <Label Text="{x:Static res:AppResources.PlayersEmpty}" />
                     </CollectionView.EmptyView>
@@ -54,12 +60,16 @@
                                             <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" />
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
-                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
+                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}"
+                                        Clicked="OnEditClicked" CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="{x:Static res:AppResources.EditPlayer}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Group list: membership, archive state and editor entry. -->
                 <CollectionView Grid.Row="1" ItemsSource="{Binding Groups}" SelectionMode="None" IsVisible="{Binding ShowGroups}">
                     <CollectionView.EmptyView>
                         <Label Text="{x:Static res:AppResources.NoGroupsYet}" />
@@ -76,19 +86,25 @@
                                         <Label Text="{Binding Members}" />
                                         <Label Text="{x:Static res:AppResources.Archived}" IsVisible="{Binding IsArchived}" FontSize="12" />
                                     </VerticalStackLayout>
-                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}" Clicked="OnEditGroupClicked" CommandParameter="{Binding .}" SemanticProperties.Description="{x:Static res:AppResources.EditGroup}" />
+                                    <ImageButton Grid.Column="1" Source="icon_edit.png" Style="{StaticResource IconButton}"
+                                        Clicked="OnEditGroupClicked" CommandParameter="{Binding .}"
+                                        SemanticProperties.Description="{x:Static res:AppResources.EditGroup}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Inline errors and the current segment's creation action. -->
                 <VerticalStackLayout Grid.Row="2" Spacing="8">
                     <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
-                    <Button Text="{x:Static res:AppResources.AddPlayer}" IsVisible="{Binding ShowPlayers}" Clicked="OnAddPlayerClicked" Style="{StaticResource PrimaryCompactButton}" />
+                    <Button Text="{x:Static res:AppResources.AddPlayer}" IsVisible="{Binding ShowGroups, Converter={StaticResource NegateBool}}" Clicked="OnAddPlayerClicked" Style="{StaticResource PrimaryCompactButton}" />
                     <Button Text="{x:Static res:AppResources.CreateGroup}" IsVisible="{Binding ShowGroups}" Clicked="OnAddGroupClicked" Style="{StaticResource PrimaryCompactButton}" />
                 </VerticalStackLayout>
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: protect the lists and filter refresh. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

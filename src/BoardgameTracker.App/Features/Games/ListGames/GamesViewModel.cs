@@ -18,16 +18,21 @@ public partial class GamesViewModel : ObservableObject {
         _logger = logger;
     }
 
-    public ObservableCollection<PlayGameRow> Games { get; } = [];
     [ObservableProperty]
     public partial bool IsBusy { get; private set; }
+
     [ObservableProperty]
     public partial string? ErrorMessage { get; private set; }
+
+    public ObservableCollection<PlayGameRow> Games { get; } = [];
+
     public async Task LoadAsync(CancellationToken cancellationToken = default) {
         if (IsBusy)
             return;
+
         IsBusy = true;
         ErrorMessage = null;
+
         try {
             IReadOnlyList<PlayGame> games = await _query.ListAsync(cancellationToken);
             Games.Clear();
@@ -35,14 +40,13 @@ public partial class GamesViewModel : ObservableObject {
                 IGameSessionNavigationHandler? handler = _handlers.SingleOrDefault(handler => handler.CanHandle(game.Key));
                 Games.Add(new(game.Key, game.Name, game.HasOpenSession, handler is not null));
             }
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load games.");
             ErrorMessage = AppResources.LoadGamesFailed;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }
 }
+
 public sealed record PlayGameRow(string Key, string Name, bool HasOpenSession, bool CanOpen);

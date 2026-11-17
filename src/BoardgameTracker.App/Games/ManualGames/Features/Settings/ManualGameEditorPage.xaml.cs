@@ -7,7 +7,6 @@ namespace BoardgameTracker.App.Games.ManualGames.Features.Settings;
 public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
     private readonly ManualGameEditorViewModel _viewModel;
     private string? _gameKey;
-    private bool _navigating;
 
     public ManualGameEditorPage(ManualGameEditorViewModel viewModel) {
         InitializeComponent();
@@ -20,79 +19,70 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
             _gameKey = key as string;
     }
 
+    /// <summary>Modal dismissal must preserve the settings draft already initialized by the ViewModel.</summary>
     protected override async void OnAppearing() {
         base.OnAppearing();
         if (!AppDialogPage.IsOpen(this))
             await _viewModel.LoadAsync(_gameKey);
     }
 
-    private async void OnSaveClicked(object? sender, EventArgs e) {
-        if (_navigating || !_viewModel.CanInteract)
-            return;
-        if (await _viewModel.SaveAsync())
-            await GoBackAsync();
-    }
-
-    private async void OnVisibilityToggled(object? sender, ToggledEventArgs e)
-        => await _viewModel.SetVisibilityAsync(e.Value);
+    private async void OnEnabledToggled(object? sender, ToggledEventArgs e)
+        => await _viewModel.SetEnabledAsync(e.Value);
 
     private async void OnResultModeClicked(object? sender, EventArgs e) {
-        if (!_viewModel.CanInteract)
+        if (!_viewModel.CanEdit)
             return;
-        _viewModel.IsChoosing = true;
+
+        _viewModel.IsModalDialogOpen = true;
         try {
             int selected = await AppDialogPage.ChooseAsync(this, AppResources.ResultFromPoints,
                 _viewModel.ResultChoices, _viewModel.ResultMode);
             if (selected >= 0)
                 _viewModel.ResultMode = selected;
-        }
-        finally {
-            _viewModel.IsChoosing = false;
+        } catch (Exception exception) {
+            _viewModel.ReportDialogFailure(exception);
+        } finally {
+            _viewModel.IsModalDialogOpen = false;
         }
     }
 
     private async void OnDeleteClicked(object? sender, EventArgs e) {
-        if (_navigating || !await _viewModel.RefreshDeleteEligibilityAsync())
+        if (!await _viewModel.RefreshDeleteEligibilityAsync())
             return;
+
         bool confirmed;
-        _viewModel.IsChoosing = true;
+        _viewModel.IsModalDialogOpen = true;
         try {
             confirmed = await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame,
                 AppResources.DeleteManualGameQuestion, AppResources.DeleteManualGame, AppResources.Cancel, destructive: true);
+        } catch (Exception exception) {
+            _viewModel.ReportDialogFailure(exception);
+            return;
+        } finally {
+            _viewModel.IsModalDialogOpen = false;
         }
-        finally {
-            _viewModel.IsChoosing = false;
-        }
+
         if (!confirmed || !await _viewModel.DeleteAsync())
             return;
 
         if (_viewModel.DeletionWarning is string warning) {
-            _viewModel.IsChoosing = true;
+            _viewModel.IsModalDialogOpen = true;
             try {
                 await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame, warning, AppResources.Ok);
-            }
-            finally {
-                _viewModel.IsChoosing = false;
+            } catch (Exception exception) {
+                _viewModel.ReportDialogFailure(exception);
+                return;
+            } finally {
+                _viewModel.IsModalDialogOpen = false;
             }
         }
 
-        await GoBackAsync();
+        await _viewModel.GoBackCommand.ExecuteAsync(null);
     }
 
-    private async Task GoBackAsync() {
-        _navigating = true;
-        try { await Shell.Current.GoToAsync("..", false); }
-        finally {
-            _navigating = false;
-        }
+    /// <summary>Uses the header departure command so saved settings stay frozen after navigation failure.</summary>
+    protected override bool OnBackButtonPressed() {
+        _viewModel.GoBackCommand.Execute(null);
+        return true;
     }
-
-    private async void OnBackClicked(object? sender, EventArgs e) {
-        if (_viewModel.CanInteract && !_navigating)
-            await GoBackAsync();
-    }
-
-    /// <summary>Consumes system back while a choice, write or navigation is pending; otherwise MAUI handles departure.</summary>
-    protected override bool OnBackButtonPressed()
-        => !_viewModel.CanInteract || _navigating || base.OnBackButtonPressed();
 }

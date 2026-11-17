@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns:header="clr-namespace:BoardgameTracker.App.Presentation.Controls" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:presentation="clr-namespace:BoardgameTracker.App.Presentation" xmlns:local="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames" xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
-    x:Class="BoardgameTracker.App.Features.Settings.MyGames.MyGamesPage" x:DataType="local:MyGamesViewModel" Shell.NavBarIsVisible="False">
+    x:Name="Page" x:Class="BoardgameTracker.App.Features.Settings.MyGames.MyGamesPage" x:DataType="local:MyGamesViewModel" Shell.NavBarIsVisible="False">
     <Grid>
-        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsIdle}">
+        <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.MyGames}"
-                    Variant="Subpage"
-                    BackClicked="OnBackClicked" />
+
+                <!-- Page header: return from administrative game selection. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.MyGames}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+
+                <!-- Administrative game list: settings remain reachable for disabled games. -->
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Games}" SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="local:GameActivationRow">
+                        <DataTemplate x:DataType="local:GameSettingsRow">
                             <Border Style="{StaticResource CardBorder}" Padding="12" MinimumHeightRequest="48">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnGameTapped" CommandParameter="{Binding .}" />
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.OpenSettingsCommand, x:DataType=local:MyGamesPage}" CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                     <VerticalStackLayout Spacing="4">
@@ -36,6 +37,8 @@
                 <Label Grid.Row="1" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" />
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: protect loading, preference writes and settings navigation. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

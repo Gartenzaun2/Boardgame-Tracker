@@ -1,3 +1,4 @@
+using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Navigation;
 using BoardgameTracker.Application.Settings.Navigation;
 
@@ -10,6 +11,21 @@ internal sealed class EditorNavigationFake : INavigationService {
     public Task NavigationGate { get; set; } = Task.CompletedTask;
     public TaskCompletionSource NavigationStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public Action? OnNavigating { get; set; }
+
+    public Func<GroupSaveOutcome, Task>? OnGroupCreationCompleted { get; set; }
+    public Func<Task>? OnGroupDuplicatesRequested { get; set; }
+    public List<GroupSaveOutcome> GroupOutcomes { get; } = [];
+    public Task ShowGroupDuplicatesAsync(CreateGroupViewModel draft)
+        => OnGroupDuplicatesRequested?.Invoke() ?? Task.CompletedTask;
+    public async Task CompleteGroupCreationAsync(CreateGroupViewModel draft, GroupSaveOutcome outcome) {
+        GroupOutcomes.Add(outcome);
+        if (OnGroupCreationCompleted is not null)
+            await OnGroupCreationCompleted(outcome);
+        else
+            await NavigateAsync("group-completed", null);
+    }
+
+    public Task OpenGroupCreationAsync(string gameKey) => NavigateAsync("create-group:" + gameKey, null);
 
     public Task GoBackAsync() => NavigateAsync("..", null);
 

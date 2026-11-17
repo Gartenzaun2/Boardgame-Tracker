@@ -33,7 +33,7 @@ public sealed class ManualHistoryCorrectionTests
         public static async Task<Fixture> CreateAsync(int?[] points, int?[] placements, ManualGameOptions? snapshotOptions = null, GameSessionStatus status = GameSessionStatus.Completed)
         {
             SliceDatabase database = await SliceDatabase.CreateAsync();
-            Guid gameId = await new ManualGameUseCase(database, new TestGameActivationStore()).SaveAsync(new(null, "Manual", "TAG", 1, 12, snapshotOptions ?? new()), Token);
+            Guid gameId = await new ManualGameUseCase(database, new TestGameEnabledStore()).SaveAsync(new(null, "Manual", "TAG", 1, 12, snapshotOptions ?? new()), Token);
             Guid groupId = await new CreateGroupUseCase(database).CreateGroupAsync(new("Correction", Enumerable.Range(1, points.Length)
                 .Select(index => new CreateGroupPlayerInput(null, "P" + index, false)).ToArray(), [gameId]), Token);
             await using BoardgameTrackerDbContext db = database.CreateDbContext();

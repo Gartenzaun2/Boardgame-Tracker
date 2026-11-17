@@ -1,6 +1,6 @@
 using BoardgameTracker.App.Navigation;
-using BoardgameTracker.App.Resources.Localization;
 using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Settings.Licenses;
@@ -8,7 +8,6 @@ namespace BoardgameTracker.App.Features.Settings.Licenses;
 public partial class LicenseListPage : ContentPage {
     private readonly LicenseListViewModel _viewModel;
     private readonly ILogger<LicenseListPage> _logger;
-    private bool _navigating;
 
     public LicenseListPage(LicenseListViewModel viewModel, ILogger<LicenseListPage> logger) {
         InitializeComponent();
@@ -17,37 +16,40 @@ public partial class LicenseListPage : ContentPage {
         BindingContext = viewModel;
     }
 
+    private bool _navigating;
+
     protected override async void OnAppearing() {
         base.OnAppearing();
         await _viewModel.LoadAsync();
     }
 
     private async void OnLicenseClicked(object? sender, EventArgs e) {
-        if (_navigating || !_viewModel.IsIdle || sender is not Button { CommandParameter: string id })
+        if (_navigating || _viewModel.IsBusy || sender is not Button { CommandParameter: string id })
             return;
+
         _navigating = true;
+
         try {
             await Shell.Current.GoToAsync(nameof(LicenseDetailPage), false, new ShellNavigationQueryParameters {
                 [NavigationParameters.LicenseComponentId] = id
             });
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not open license detail for {ComponentId}.", id);
             await AppDialogPage.ShowAsync(this, AppResources.OpenSourceLicenses, AppResources.LicensesLoadFailed, AppResources.Ok);
-        }
-        finally {
+        } finally {
             _navigating = false;
         }
     }
 
     private async void OnBackClicked(object? sender, EventArgs e) {
-        if (_navigating || !_viewModel.IsIdle)
+        if (_navigating || _viewModel.IsBusy)
             return;
+
         _navigating = true;
+
         try {
             await Shell.Current.GoToAsync("..", false);
-        }
-        finally {
+        } finally {
             _navigating = false;
         }
     }

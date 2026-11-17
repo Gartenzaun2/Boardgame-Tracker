@@ -1,12 +1,14 @@
-using CoreGraphics;
 using System.Runtime.CompilerServices;
+using BoardgameTracker.App.Presentation.Controls;
+using BoardgameTracker.App.Resources.Localization;
+using CoreGraphics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Handlers.Compatibility;
 using Microsoft.Maui.Controls.Platform.Compatibility;
 using Microsoft.Maui.Platform;
 using UIKit;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using BoardgameTracker.App.Resources.Localization;
+
 namespace BoardgameTracker.App.Platforms.iOS;
 
 public sealed class ThemeShellRenderer : ShellRenderer {
@@ -38,14 +40,12 @@ public sealed class ThemeShellRenderer : ShellRenderer {
                     shell.Dispatcher.Dispatch(async () => {
                         try {
                             await shell.NavigateFromMainTabTapAsync(target);
-                        }
-                        catch (Exception exception) {
+                        } catch (Exception exception) {
                             logger.LogError(exception, "Could not navigate from an iOS main tab tap.");
                             // Keep native event exceptions out of the iOS run loop.
                             try {
-                                await shell.DisplayAlertAsync(AppResources.NavigationErrorTitle, AppResources.NavigationFailed, AppResources.Ok);
-                            }
-                            catch (Exception dialogException) {
+                                await AppDialogPage.ShowAsync(shell.CurrentPage, AppResources.NavigationErrorTitle, AppResources.NavigationFailed, AppResources.Ok);
+                            } catch (Exception dialogException) {
                                 logger.LogError(dialogException, "Could not display the main tab navigation error.");
                             }
                         }

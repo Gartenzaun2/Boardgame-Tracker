@@ -117,17 +117,12 @@ jeweils anhand ihrer tatsächlichen Verantwortung prüfen; Spielnavigation und
 Sonderaktionen dabei erhalten. Die abgeschlossene Pilotumstellung ist keine
 Freigabe für ein projektweites Refactoring.
 
-### Allgemeine Games-Abfrage und Enablement-Use-Case
+### CreateGroup: gegenseitig ausschließende Unterdialoge
 
-**Ist:** `GameActivationUseCase` unter `Application/Settings` mischt Lesen und Schreiben und verwendet uneinheitliche Begriffe; weitere allgemeine Spieleabfragen sind auf `PlayOverviewQuery` und den Gruppeneditor verteilt.
-
-**Ziel:**
-
-1. Feature-Ownership unter `Application/Games` vereinheitlichen: lesende `GamesQuery` und separaten schreibenden Use Case, beispielsweise `SetGameEnabledUseCase`. `GetAllAsync`, `GetEnabledAsync`, `GetByKeyAsync` sind **Vorschläge**, keine ohne Aufruferprüfung verbindlich festgelegten Methoden.
-2. Alle Aufrufer / benötigten Read Models gegenüber `PlayOverviewQuery` und Gruppenauswahl prüfen; tatsächlich gemeinsame Abfragen konsolidieren, sessionbezogene Navigation nicht ohne guten Grund in `GamesQuery` verschieben.
-3. Einheitlich `Games`, `IsEnabled`, `SetEnabled` nennen; nicht für denselben Zustand wechselweise `Activation`, `Visible`, `Active`, `GameCatalog`. UI-Modellnamen nur nach Prüfung ihrer übrigen Bedeutung ändern.
-4. **MAUI Preferences als persönlichen Speicher unverändert lassen**, Schlüssel nach `Game.Key`. Keine zusätzliche Entity-Spalte oder Datenmigration. Standardzustand und Schutz bei offenen Sessions erhalten; bisherige effektive Enabled-Berechnung beachten.
-5. Views, ViewModels, DI und passende Tests nach finaler Aufteilung einheitlich anpassen. Keine reinen Rename-Aliase einführen.
+Die vorhandenen Unterdialogzustände in einem separaten Dialog-Refactoring auf
+einen Enum-Zustand mit `None` umstellen und den gemeinsamen `EnumEqualsConverter`
+für die XAML-Vergleiche verwenden. Die Games-Konsolidierung nimmt diese Umstellung
+nicht vorweg.
 
 ### Weitere bereits angesprochene Aufräumarbeiten
 

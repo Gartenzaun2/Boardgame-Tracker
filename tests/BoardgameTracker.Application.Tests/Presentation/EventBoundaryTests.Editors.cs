@@ -69,7 +69,7 @@ public sealed partial class EventBoundaryTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         EditorLogger<EditGroupViewModel> logger = new();
         EditorNavigationFake navigation = new();
-        EditGroupViewModel editor = new(new(db), new(db, new TestGameActivationStore()), navigation, logger);
+        EditGroupViewModel editor = new(new(db), new(db, new TestGameEnabledStore()), navigation, logger);
         await editor.LoadAsync(db.Group.Id, EditorToken);
         editor.GroupName = "Updated group";
         editor.MovePlayerDownCommand.Execute(editor.Players[0]);

@@ -10,15 +10,15 @@
     Shell.NavBarIsVisible="False">
     <Grid RowDefinitions="Auto,*" RowSpacing="12" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}">
         <VerticalStackLayout Spacing="8">
-            <header:AppPageHeader x:Name="PageHeader"
-                Title="{Binding Title}"
-                Variant="Subpage"
-                BackCommand="{Binding GoBackCommand}" />
+
+            <!-- Page header: return, saved status and inline errors. -->
+            <header:AppPageHeader x:Name="PageHeader" Title="{Binding Title}" Variant="Subpage" BackCommand="{Binding GoBackCommand}" />
             <Label Text="{x:Static res:AppResources.EditorSavedHint}" IsVisible="{Binding IsSaveCompleted}" Margin="18,0" />
             <Label Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" TextColor="{DynamicResource Danger}" Margin="18,0" />
         </VerticalStackLayout>
-
         <Grid Grid.Row="1" Padding="18,0,18,18" RowDefinitions="*,Auto" RowSpacing="12">
+
+            <!-- Player draft: name and the mode-specific guest or archive option. -->
             <ScrollView Grid.Row="0">
                 <VerticalStackLayout Spacing="12" IsEnabled="{Binding CanEdit}">
                     <Label Text="{x:Static res:AppResources.PlayerNameLabel}" FontAttributes="Bold" />
@@ -34,6 +34,7 @@
                 </VerticalStackLayout>
             </ScrollView>
 
+            <!-- Completion actions: create another player or finish; existing players have a single save action. -->
             <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsCreateMode}">
                 <Button Text="{x:Static res:AppResources.AddAnotherPlayer}" Command="{Binding SaveAndAddAnotherCommand}" Style="{StaticResource SecondaryActionButton}" />
                 <Button Grid.Column="1" Text="{x:Static res:AppResources.Done}" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryCompactButton}" />

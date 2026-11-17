@@ -5,15 +5,19 @@
     <Grid>
         <Grid RowDefinitions="Auto,*" RowSpacing="14">
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader"
-                    Title="{x:Static res:AppResources.Games}"
-                    Variant="MainSection">
+
+                <!-- Page header: game overview and information. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.Games}" Variant="MainSection">
                     <header:AppPageHeader.Actions>
-                        <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}" Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.GameCatalogHint}" />
+                        <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
+                            Clicked="OnInfoClicked"
+                            SemanticProperties.Description="{x:Static res:AppResources.GameCatalogHint}" />
                     </header:AppPageHeader.Actions>
                 </header:AppPageHeader>
             </VerticalStackLayout>
             <Grid Grid.Row="1" Padding="20,0,20,22" RowDefinitions="*,Auto,Auto" RowSpacing="14">
+
+                <!-- Enabled games: open game context and running-session status. -->
                 <CollectionView Grid.Row="0" ItemsSource="{Binding Games}" SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
@@ -40,10 +44,14 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- Game creation and loading errors. -->
                 <Button Grid.Row="1" Text="{x:Static res:AppResources.CreateManualGame}" Clicked="OnCreateGameClicked" Style="{StaticResource PrimaryCompactButton}" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBool}}" />
                 <Label Grid.Row="2" Text="{Binding ErrorMessage}" TextColor="{DynamicResource Danger}" />
             </Grid>
         </Grid>
+
+        <!-- Busy overlay: block actions while the game overview is loading. -->
         <Grid IsVisible="{Binding IsBusy}" BackgroundColor="{DynamicResource BusyOverlay}">
             <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" />
         </Grid>

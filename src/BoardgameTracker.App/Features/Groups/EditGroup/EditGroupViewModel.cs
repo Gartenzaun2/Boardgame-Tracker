@@ -1,30 +1,32 @@
-using BoardgameTracker.Application.Settings;
-using BoardgameTracker.App.Navigation;
-using BoardgameTracker.App.Diagnostics;
-using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using BoardgameTracker.App.Diagnostics;
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Resources.Localization;
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.Application.Groups;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
+/// <summary>
+/// 1. Load metadata, fixed membership and game-assignment locks once per group.
+/// 2. Edit the name, archive state, member order and enabled game assignments in memory.
+/// 3. Save through the Application use case, which rechecks session locks; retry departure
+///    after navigation failure without repeating the completed write.
+/// </summary>
 public partial class EditGroupViewModel : ObservableObject {
     private readonly EditGroupUseCase _editGroupUseCase;
-    private readonly GameActivationUseCase _gameActivationUseCase;
+    private readonly GamesQuery _gamesQuery;
     private readonly INavigationService _navigationService;
     private readonly ILogger<EditGroupViewModel> _logger;
 
-    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GameActivationUseCase gameActivationUseCase, INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
+    public EditGroupViewModel(EditGroupUseCase editGroupUseCase, GamesQuery gamesQuery, INavigationService navigationService, ILogger<EditGroupViewModel> logger) {
         _editGroupUseCase = editGroupUseCase;
-        _gameActivationUseCase = gameActivationUseCase;
+        _gamesQuery = gamesQuery;
         _navigationService = navigationService;
         _logger = logger;
-        Players.CollectionChanged += (_, args) => {
-            if (IsNotBusy && args.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Move)
-                SaveCommand.NotifyCanExecuteChanged();
-        };
     }
 
     [ObservableProperty]
@@ -43,15 +45,11 @@ public partial class EditGroupViewModel : ObservableObject {
     public partial bool IsSaveCompleted { get; private set; }
 
     public bool CanEdit => IsNotBusy && !IsSaveCompleted;
-    public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0));
-
-    [ObservableProperty]
-    public partial bool IsChoosingGame { get; private set; }
+    public bool CanSave => IsNotBusy && (IsSaveCompleted || (GroupId != Guid.Empty && !string.IsNullOrWhiteSpace(GroupName)));
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
-
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
@@ -69,10 +67,14 @@ public partial class EditGroupViewModel : ObservableObject {
     public partial bool CanArchiveGroup { get; private set; }
 
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
+
+    [ObservableProperty]
+    public partial EditGroupSubdialog ActiveSubdialog { get; private set; }
+
     public ObservableCollection<GroupGameSelection> GameSelections { get; } = [];
 
-    public IReadOnlyList<GroupGameSelection> SelectedVisibleGames => GameSelections.Where(game => game.IsSelected && game.IsVisible).ToArray();
-    public IReadOnlyList<GroupGameSelection> GamesAvailableToAdd => GameSelections.Where(game => !game.IsSelected && game.IsVisible).ToArray();
+    public IReadOnlyList<GroupGameSelection> SelectedEnabledGames => GameSelections.Where(game => game.IsSelected && game.IsEnabled).ToArray();
+    public IReadOnlyList<GroupGameSelection> GamesAvailableToAdd => GameSelections.Where(game => !game.IsSelected && game.IsEnabled).ToArray();
     public bool HasGamesAvailableToAdd => GamesAvailableToAdd.Count > 0;
 
     #region Localized UI Text
@@ -99,12 +101,12 @@ public partial class EditGroupViewModel : ObservableObject {
                 return;
             }
 
-            IReadOnlyList<GameActivationState> activationStates = await _gameActivationUseCase.GetGamesAsync(cancellationToken);
-            HashSet<string> enabledGameKeys = activationStates.Where(game => game.IsEnabled).Select(game => game.GameKey).ToHashSet(StringComparer.Ordinal);
+            HashSet<string> enabledGameKeys = (await _gamesQuery.GetEnabledAsync(cancellationToken)).Select(game => game.Key).ToHashSet(StringComparer.Ordinal);
             GameSelections.Clear();
             foreach (EditGroupGame game in details.Games)
                 GameSelections.Add(new(game.Id, game.Name, game.IsAssigned, game.CanRemove, enabledGameKeys.Contains(game.Key)));
             RefreshGameSelectionBindings();
+
             CanArchiveGroup = details.CanArchive;
             GroupName = details.Name;
             IsGroupArchived = details.IsArchived;
@@ -113,7 +115,7 @@ public partial class EditGroupViewModel : ObservableObject {
             foreach (EditGroupPlayer player in details.Players.OrderBy(player => player.DefaultOrder))
                 Players.Add(new GroupMemberDraft(player.PlayerId, player.Name, player.IsGuest));
 
-            GroupMemberDraft.UpdatePositions(Players);
+            GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
             IsSaveCompleted = false;
             GroupId = details.Id;
         } catch (Exception exception) {
@@ -127,22 +129,22 @@ public partial class EditGroupViewModel : ObservableObject {
     [RelayCommand]
     private void ChooseGame() {
         if (CanEdit)
-            IsChoosingGame = true;
+            ActiveSubdialog = EditGroupSubdialog.SelectGame;
     }
 
     [RelayCommand]
     private void CloseGameSelection()
-        => IsChoosingGame = false;
+        => ActiveSubdialog = EditGroupSubdialog.None;
 
     [RelayCommand]
     private void AddGame(GroupGameSelection? game) {
         if (!CanEdit)
             return;
-        if (game is null || game.IsSelected || !game.IsVisible || !GameSelections.Contains(game))
+        if (game is null || game.IsSelected || !game.IsEnabled || !GameSelections.Contains(game))
             return;
 
         game.IsSelected = true;
-        IsChoosingGame = false;
+        ActiveSubdialog = EditGroupSubdialog.None;
         RefreshGameSelectionBindings();
     }
 
@@ -158,7 +160,7 @@ public partial class EditGroupViewModel : ObservableObject {
     }
 
     private void RefreshGameSelectionBindings() {
-        OnPropertyChanged(nameof(SelectedVisibleGames));
+        OnPropertyChanged(nameof(SelectedEnabledGames));
         OnPropertyChanged(nameof(GamesAvailableToAdd));
         OnPropertyChanged(nameof(HasGamesAvailableToAdd));
     }
@@ -173,7 +175,7 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         Players.Move(index, index - 1);
-        GroupMemberDraft.UpdatePositions(Players);
+        GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
     }
 
     [RelayCommand]
@@ -186,7 +188,7 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         Players.Move(index, index + 1);
-        GroupMemberDraft.UpdatePositions(Players);
+        GroupMemberDraft.RefreshPositionsAndMoveAvailability(Players);
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
@@ -220,6 +222,11 @@ public partial class EditGroupViewModel : ObservableObject {
         if (!IsNotBusy)
             return;
 
+        if (ActiveSubdialog != EditGroupSubdialog.None) {
+            CloseGameSelection();
+            return;
+        }
+
         try {
             IsBusy = true;
             ErrorMessage = null;
@@ -241,4 +248,9 @@ public partial class EditGroupViewModel : ObservableObject {
             ErrorMessage = AppResources.NavigationFailed;
         }
     }
+}
+
+public enum EditGroupSubdialog {
+    None,
+    SelectGame
 }

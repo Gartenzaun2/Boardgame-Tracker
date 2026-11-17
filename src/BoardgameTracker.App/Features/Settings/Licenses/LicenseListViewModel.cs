@@ -14,25 +14,29 @@ public partial class LicenseListViewModel : ObservableObject {
         _logger = logger;
     }
 
-    public ObservableCollection<ThirdPartyLicense> Components { get; } = [];
-    private bool _loaded;
+    /// <summary>Retain a successful catalog load across navigation and modal dismissal; cancelled reads remain retryable.</summary>
+    private bool _isInitialLoadCompleted;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsIdle))]
     public partial bool IsBusy { get; private set; }
-    public bool IsIdle => !IsBusy;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
     public bool HasError => ErrorMessage is not null;
+
     [ObservableProperty]
     public partial string IjgAttribution { get; private set; } = string.Empty;
 
+    public ObservableCollection<ThirdPartyLicense> Components { get; } = [];
+
     public async Task LoadAsync(CancellationToken cancellationToken = default) {
-        if (IsBusy || _loaded)
+        if (IsBusy || _isInitialLoadCompleted)
             return;
+
         IsBusy = true;
         ErrorMessage = null;
+
         try {
             IReadOnlyList<ThirdPartyLicense> catalog = await _licenses.LoadCatalogAsync(cancellationToken);
             string attribution = catalog.Single(item => item.Id == "independent-jpeg-group").AttributionText
@@ -41,16 +45,13 @@ public partial class LicenseListViewModel : ObservableObject {
             foreach (ThirdPartyLicense component in catalog)
                 Components.Add(component);
             IjgAttribution = attribution;
-            _loaded = true;
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
+            _isInitialLoadCompleted = true;
+        } catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) {
             // Leaving/cancelling a load is expected; keep the catalog eligible for a later retry.
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             _logger.LogError(exception, "Could not load the packaged third-party license catalog.");
             ErrorMessage = AppResources.LicensesLoadFailed;
-        }
-        finally {
+        } finally {
             IsBusy = false;
         }
     }

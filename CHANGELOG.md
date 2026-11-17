@@ -39,9 +39,35 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.2.0 – 2026-11-17
+
+- Die auf dem iPhone geprüfte iOS-CgBI-Korrektur aus 0.22.9.0 in den aktuellen Projektstand integriert; gezielte PNG-Optimierungsausnahme und Bundle-Hash-Prüfung erhalten.
+
+## 0.23.1.0 – 2026-11-17
+
+- Der Editor manueller Spiele übernimmt bestehende Konfigurationen erst nach vollständig erfolgreichem Laden und sperrt Datenänderungen bis zum Ladeabschluss. Zurück, erneutes Laden und Navigation-Retry bleiben verfügbar.
+- History protokolliert auch fehlgeschlagene Transferfehlerdialoge und zeigt die Meldung ersatzweise inline. Nach bereits gespeichertem Import wird ein Fehler der Ergebnisanzeige korrekt gemeldet; Reload erhält die Rückfallmeldung, ohne den Commit zu wiederholen.
+
+## 0.23.0.2 – 2026-11-17
+
+- Eigene Auswahl-Overlays in Gruppenbearbeitung und Spielgruppenauswahl auf explizite Enum-Zustände vereinheitlicht. Technisches Modalflag im ManualGame-Editor präzisiert, Save-Bedingung der Gruppenanlage passend eingeordnet und Historienimport in lesbare private Phasen gegliedert; bestehende Abbruch-, Speicher-, Navigations- und Retry-Semantik erhalten.
+
+## 0.23.0.1 – 2026-11-16
+
+- Codegestaltung der allgemeinen App-Dialoge konsolidiert: technische Zustände, Formularbereiche und UI-Texte geordnet, Benachrichtigungsattribute zusammengefasst und reine Darstellungsnegationen durch den vorhandenen Converter ersetzt. Methoden, C#-Formatierung und XAML-Abschnitte vereinheitlicht; bestehende Speicher-, Abbruch-, Navigations- und Retry-Abläufe erhalten.
+
+## 0.23.0.0 – 2026-11-16
+
+- Allgemeine App-Dialoge konsolidiert: Gruppenanlage verwendet gegenseitig ausschließende Auswahlzustände und direkte Commands; Duplikatauswahl und Speicherabschluss nutzen den gemeinsamen Navigationsvertrag einschließlich Spielvorbereitung.
+- Zurück, Abbruch und Navigation-Retry in Editoren und Gruppenauswahl vereinheitlicht. Erfolgreiche Gruppen-, Spiel- und Zuordnungswrites bleiben bei fehlgeschlagener Navigation erhalten und werden beim erneuten Abschluss nicht wiederholt; App-Dialoge erlauben erneutes Schließen nach Navigationsfehlern.
+
 ## 0.22.9.0 – 2026-11-17
 
 - iOS-Fotoanalyse repariert: Das CV-Referenzbild wird gezielt von Apples PNG-Optimierung ausgenommen, damit OpenCV es auch im .NET-11-Release-Bundle dekodieren kann. Ein SHA-256-Vergleich nach dem iOS-Build erkennt veränderte oder fehlende Referenzassets.
+
+## 0.22.8.6 – 2026-11-16
+
+- Gemeinsamen `EnumEqualsConverter` für typisierte Enum-Vergleiche ergänzt. Allgemeine Spieleabfragen in `GamesQuery` und Preference-Änderungen in `SetGameEnabledUseCase` unter dem Games-Feature getrennt; Aufrufer und Enablement-Begriffe vereinheitlicht. Bestehende Preference-Schlüssel, Standardaktivierung, offene Sessions und spielspezifische Abläufe erhalten.
 
 ## 0.22.8.5 – 2026-11-16
 

@@ -131,13 +131,13 @@ public sealed class PlayNavigationTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         Handler handler = new("ark-nova");
-        GroupListViewModel vm = new(new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<GroupListViewModel>.Instance, [handler]);
+        GroupListViewModel vm = new(new(db), new(db), new(db, new TestGameEnabledStore()), NullLogger<GroupListViewModel>.Instance, [handler], new EditorNavigationFake());
         vm.SetGameContext(handler.GameKey);
         await vm.LoadAsync(Token);
         Assert.Empty(vm.Groups);
         Assert.True(vm.CanCreate);
         Assert.True(vm.CanChoose);
-        vm.IsChoosingExisting = true;
+        vm.ChooseExistingCommand.Execute(null);
         await vm.SelectExistingAsync(Assert.Single(vm.AvailableGroups));
         Assert.False(vm.HasError);
         Assert.Equal((db.Group.Id, (Guid?)null), Assert.Single(handler.Opened));
@@ -156,20 +156,19 @@ public sealed class PlayNavigationTests
         foreach (bool playOrigin in new[] { false, true })
         {
             await using SliceDatabase db = await SliceDatabase.CreateAsync(archived: action == 2);
-            CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+            EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<CreateGroupViewModel>.Instance);
             if (playOrigin) vm.SetGameContext("ark-nova");
             else vm.SetManagementOrigin();
             await vm.LoadAsync(Token);
             vm.GroupName = "New identity";
-            vm.SelectedExistingPlayer = vm.AvailablePlayers.Single(player => player.Id == db.First.Id);
-            vm.AddSelectedPlayerCommand.Execute(null);
+            vm.AddExistingPlayerCommand.Execute(vm.AvailablePlayers.Single(player => player.Id == db.First.Id));
             if (action != 0)
             {
-                vm.SelectedExistingPlayer = vm.AvailablePlayers.Single(player => player.Id == db.Second.Id);
-                vm.AddSelectedPlayerCommand.Execute(null);
+                vm.AddExistingPlayerCommand.Execute(vm.AvailablePlayers.Single(player => player.Id == db.Second.Id));
             }
             GroupSaveOutcome? saved = null;
-            vm.SavedAsync = outcome => { saved = outcome; return Task.CompletedTask; };
+            navigation.OnGroupCreationCompleted = outcome => { saved = outcome; return Task.CompletedTask; };
             await vm.SaveCommand.ExecuteAsync(null);
             if (action is 1 or 2)
                 await vm.ReuseDuplicateCommand.ExecuteAsync(Assert.Single(vm.Duplicates));
@@ -192,7 +191,8 @@ public sealed class PlayNavigationTests
     public async Task NavigationFailureAfterSave_RetriesSameIdentityWithoutWritingAgain()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<CreateGroupViewModel>.Instance);
         vm.SetGameContext("ark-nova");
         await vm.LoadAsync(Token);
         vm.GroupName = "One save only";
@@ -200,7 +200,7 @@ public sealed class PlayNavigationTests
         vm.AddNewPlayerCommand.Execute(null);
         Guid? id = null;
         int calls = 0;
-        vm.SavedAsync = outcome =>
+        navigation.OnGroupCreationCompleted = outcome =>
         {
             Assert.Equal(id ?? outcome.GroupId, outcome.GroupId);
             id = outcome.GroupId;

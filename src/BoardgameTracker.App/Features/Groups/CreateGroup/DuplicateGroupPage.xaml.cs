@@ -3,34 +3,22 @@ using BoardgameTracker.App.Navigation;
 namespace BoardgameTracker.App.Features.Groups.CreateGroup;
 
 public partial class DuplicateGroupPage : ContentPage, IQueryAttributable {
-    public CreateGroupViewModel ViewModel { get; private set; } = null!;
     public DuplicateGroupPage()
         => InitializeComponent();
+
+    public CreateGroupViewModel ViewModel { get; private set; } = null!;
+
     public void ApplyQueryAttributes(IDictionary<string, object> query) {
         if (!query.TryGetValue(NavigationParameters.GroupDraft, out object? value) || value is not CreateGroupViewModel draft)
             throw new InvalidOperationException("The group draft is required.");
+
         ViewModel = draft;
         BindingContext = draft;
     }
-    private async void OnBackClicked(object? sender, EventArgs e) {
-        if (ViewModel.IsBusy)
-            return;
-        if (ViewModel.IsSaved) {
-            await ViewModel.SaveCommand.ExecuteAsync(null);
-            return;
-        }
-        ViewModel.CancelDuplicates();
-        await Shell.Current.GoToAsync("..", false);
-    }
-    /// <summary>Handles system back without discarding a completed save; otherwise clears the pending duplicate choice.</summary>
+
+    /// <summary>Uses the header's cancellation/retry flow so system back cannot discard a completed write.</summary>
     protected override bool OnBackButtonPressed() {
-        if (ViewModel.IsBusy)
-            return true;
-        if (ViewModel.IsSaved) {
-            ViewModel.SaveCommand.Execute(null);
-            return true;
-        }
-        ViewModel.CancelDuplicates();
-        return base.OnBackButtonPressed();
+        ViewModel.ReturnToDraftCommand.Execute(null);
+        return true;
     }
 }

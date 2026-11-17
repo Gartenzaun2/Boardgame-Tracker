@@ -26,7 +26,7 @@ public sealed class ManualTransferTests
     {
         await using SliceDatabase database = await SliceDatabase.CreateAsync();
         string badge = new('X', length);
-        Guid gameId = await new ManualGameUseCase(database, new TestGameActivationStore()).SaveAsync(
+        Guid gameId = await new ManualGameUseCase(database, new TestGameEnabledStore()).SaveAsync(
             new(null, "Grenzfall", length <= 1000 ? badge : "TAG", 1, 4, new()), Token);
         string key;
         await using (BoardgameTrackerDbContext db = database.CreateDbContext())
@@ -135,7 +135,7 @@ public sealed class ManualTransferTests
     {
         BgtFile file = File(kind, allFirst: true);
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        Guid local = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, "MANUAL", "LOCAL", 1, 1, new()), Token);
+        Guid local = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, "MANUAL", "LOCAL", 1, 1, new()), Token);
         ImportPlan unresolved = await AnalyzeAsync(db, file);
         Assert.False(unresolved.CanCommit);
         Assert.Equal(local, Assert.Single(Assert.Single(unresolved.GameConflicts).Candidates).Id);
@@ -233,7 +233,7 @@ public sealed class ManualTransferTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         string name = new('N', 100);
-        Guid local = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, name, "L", 1, 12, new()), Token);
+        Guid local = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, name, "L", 1, 12, new()), Token);
         BgtFile file = File(name: name);
         BgtGame second = file.Games[0] with { Id = Guid.NewGuid(), Key = ManualGame.CreateKey() };
         file = file with { Games = [file.Games[0], second], GameSessions = [file.GameSessions[0], file.GameSessions[0] with { Id = Guid.NewGuid(), GameId = second.Id }] };
@@ -256,7 +256,7 @@ public sealed class ManualTransferTests
     public async Task SameSourceKeyAndId_NeverImplicitlyMatch_AndIntegratedNamesAreNotCandidates()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        Guid id = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, "Local", "L", 1, 12, new()), Token);
+        Guid id = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, "Local", "L", 1, 12, new()), Token);
         await using BoardgameTrackerDbContext context = db.CreateDbContext();
         Game local = await context.Games.SingleAsync(game => game.Id == id, Token);
         BgtFile file = File(name: "Different");
@@ -285,7 +285,7 @@ public sealed class ManualTransferTests
             Assert.Single(await verify.Groups.ToArrayAsync(Token));
             await verify.Database.ExecuteSqlRawAsync("DROP TRIGGER RejectManualImport;", Token);
         }
-        await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, "Manual", "L", 1, 12, new()), Token);
+        await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, "Manual", "L", 1, 12, new()), Token);
         await Assert.ThrowsAsync<InvalidOperationException>(() => Store(db).CommitAsync(plan, Token));
     }
 
@@ -352,7 +352,7 @@ public sealed class ManualTransferTests
             Players = [source.Players[0] with { Name = db.First.Name }, source.Players[1] with { Name = db.Second.Name }],
             Groups = [source.Groups[0] with { Name = db.Group.Name }]
         };
-        Guid game = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(new(null, "Manual", "L", 1, 12, new()), Token);
+        Guid game = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(new(null, "Manual", "L", 1, 12, new()), Token);
         HistoryTransferUseCase transfer = new(Store(db), Format);
         ImportPlan initial = await AnalyzeAsync(db, source);
         ImportPlan plan = transfer.Resolve(initial, games: [new(source.Games[0].Id, game)]);

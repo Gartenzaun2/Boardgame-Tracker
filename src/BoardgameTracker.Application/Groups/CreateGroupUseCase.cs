@@ -61,18 +61,9 @@ public sealed class CreateGroupUseCase(IDbContextFactory<BoardgameTrackerDbConte
         return await db.Players.AsNoTracking().Where(player => !player.IsArchived).OrderBy(player => player.Name)
             .Select(player => new SelectablePlayer(player.Id, player.Name, player.IsGuest)).ToArrayAsync(cancellationToken);
     }
-
-    public async Task<IReadOnlyList<SelectableGroupGame>> GetSelectableGamesAsync(CancellationToken cancellationToken = default)
-    {
-        await using BoardgameTrackerDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken);
-        var games = await db.Games.AsNoTracking().OrderBy(game => game.Key)
-            .Select(game => new SelectableGroupGame(game.Id, game.Key, game.Name, game.MinPlayers, game.MaxPlayers)).ToArrayAsync(cancellationToken);
-        return games;
-    }
 }
 
 /// <summary>A deliberate new identity; duplicate membership does not trigger automatic reuse.</summary>
 public sealed record CreateGroupCommand(string Name, IReadOnlyList<CreateGroupPlayerInput> Players, IReadOnlyCollection<Guid> GameIds);
 public sealed record CreateGroupPlayerInput(Guid? ExistingPlayerId, string Name, bool IsGuest);
 public sealed record SelectablePlayer(Guid Id, string Name, bool IsGuest);
-public sealed record SelectableGroupGame(Guid Id, string Key, string Name, int MinimumPlayers, int MaximumPlayers);

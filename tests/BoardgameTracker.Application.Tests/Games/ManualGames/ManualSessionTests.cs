@@ -72,7 +72,7 @@ public sealed class ManualSessionTests
         public static async Task<Fixture> CreateAsync(bool order = true, bool colors = true)
         {
             SliceDatabase db = await SliceDatabase.CreateAsync();
-            Guid id = await new ManualGameUseCase(db, new TestGameActivationStore()).SaveAsync(
+            Guid id = await new ManualGameUseCase(db, new TestGameEnabledStore()).SaveAsync(
                 new(null, "Manual", "TAG", 1, 12, new(true, true, true, true, true, true, PointsDirection.Lowest, order, colors)), Token);
             await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, id, Token);
             await using BoardgameTrackerDbContext context = db.CreateDbContext();
@@ -410,8 +410,8 @@ public sealed class ManualSessionTests
         MainSectionNavigationTests.SettingsStore settings = new();
         AppShell shell = MainSectionNavigationTests.CreateShell(settings, fixture.Database);
         Shell.Current = shell;
-        GroupListViewModel groups = new(new(fixture.Database), new(fixture.Database), new(fixture.Database, new TestGameActivationStore()),
-            NullLogger<GroupListViewModel>.Instance, [handler]);
+        GroupListViewModel groups = new(new(fixture.Database), new(fixture.Database), new(fixture.Database, new TestGameEnabledStore()),
+            NullLogger<GroupListViewModel>.Instance, [handler], new Presentation.EditorNavigationFake());
         groups.SetGameContext(fixture.Key);
         await groups.LoadAsync(Token);
         Assert.Equal("TAG", groups.BadgeText);
@@ -428,7 +428,7 @@ public sealed class ManualSessionTests
         Assert.EndsWith("/ManualPointsPage", shell.Calls.Last().Route);
         Assert.Equal(id, settings.Value.LastGameSessionId);
         Assert.Equal(fixture.Key, settings.Value.SelectedGameKey);
-        GamesViewModel games = new(new(fixture.Database, new TestGameActivationStore()), [handler], NullLogger<GamesViewModel>.Instance);
+        GamesViewModel games = new(new(fixture.Database, new(fixture.Database, new TestGameEnabledStore())), [handler], NullLogger<GamesViewModel>.Instance);
         await games.LoadAsync(Token);
         Assert.True(games.Games.Single(game => game.Key == fixture.Key).CanOpen);
         Assert.True(games.Games.First().HasOpenSession);

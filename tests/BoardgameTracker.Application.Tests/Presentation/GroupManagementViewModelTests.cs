@@ -1,3 +1,4 @@
+using BoardgameTracker.Application.Games;
 using BoardgameTracker.App.Features.Groups;
 using BoardgameTracker.App.Features.Groups.CreateGroup;
 using BoardgameTracker.App.Features.Groups.EditGroup;
@@ -29,7 +30,7 @@ public sealed class GroupManagementViewModelTests
         Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Button"
             && (string?)element.Attribute("Text") == "{Binding SaveText}");
         Assert.Contains(page.Descendants(), element => element.Name.LocalName == "Label"
-            && (string?)element.Attribute("IsVisible") == "{Binding IsSaved}"
+            && (string?)element.Attribute("IsVisible") == (pageName == "CreateGroupPage" ? "{Binding IsSaveCompleted}" : "{Binding IsSaved}")
             && (string?)element.Attribute("Text") == "{x:Static res:AppResources.EditorSavedHint}");
     }
 
@@ -37,35 +38,35 @@ public sealed class GroupManagementViewModelTests
     public async Task CreatedGroup_NavigationFailuresLockDraftAndRetryWithoutFurtherWrites()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        CreateGroupViewModel model = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel model = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<CreateGroupViewModel>.Instance);
         await model.LoadAsync(Token);
         model.GroupName = "Gespeicherte Gruppe";
-        model.SelectedExistingPlayer = model.AvailablePlayers.Single(player => player.Id == db.First.Id);
-        model.AddSelectedPlayerCommand.Execute(null);
+        model.AddExistingPlayerCommand.Execute(model.AvailablePlayers.Single(player => player.Id == db.First.Id));
         model.NewPlayerName = "Neuer Gast";
         model.NewPlayerIsGuest = true;
         model.AddNewPlayerCommand.Execute(null);
         model.Games[0].IsSelected = true;
         List<Guid> completedIds = [];
-        model.SavedAsync = outcome =>
+        navigation.OnGroupCreationCompleted = outcome =>
         {
             completedIds.Add(outcome.GroupId);
             return Task.FromException(new InvalidOperationException("Navigation failed."));
         };
         await model.SaveCommand.ExecuteAsync(null);
-        Assert.True(model.IsSaved);
+        Assert.True(model.IsSaveCompleted);
         Assert.False(model.CanEdit);
         Assert.Equal(AppResources.Done, model.SaveText);
         Assert.StartsWith(AppResources.GroupNavigationFailed, model.ErrorMessage);
         model.RemovePlayerCommand.Execute(model.Players[0]);
         model.BeginNewPlayer();
         Assert.Equal(2, model.Players.Count);
-        Assert.False(model.IsAddingNewPlayer);
+        Assert.Equal(GroupCreationSubdialog.None, model.ActiveSubdialog);
         // Completion must no longer depend on draft validation, even if a stale binding changes it.
         model.GroupName = "";
         Assert.True(model.SaveCommand.CanExecute(null));
         await model.SaveCommand.ExecuteAsync(null);
-        model.SavedAsync = outcome => { completedIds.Add(outcome.GroupId); return Task.CompletedTask; };
+        navigation.OnGroupCreationCompleted = outcome => { completedIds.Add(outcome.GroupId); return Task.CompletedTask; };
         await model.SaveCommand.ExecuteAsync(null);
         Assert.Equal(3, completedIds.Count);
         Assert.All(completedIds, id => Assert.Equal(completedIds[0], id));
@@ -83,17 +84,17 @@ public sealed class GroupManagementViewModelTests
         public AppNavigationSettings Get() => Value;
         public void Save(AppNavigationSettings settings) => Value = settings;
     }
-    private static CreateGroupViewModel Draft(SliceDatabase db, bool management = true)
+    private static CreateGroupViewModel Draft(SliceDatabase db, bool management = true, EditorNavigationFake? navigation = null)
     {
-        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameActivationStore()), NullLogger<CreateGroupViewModel>.Instance);
+        navigation ??= new();
+        CreateGroupViewModel vm = new(new(db), new(db), new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<CreateGroupViewModel>.Instance);
         if (management) vm.SetManagementOrigin();
         else vm.SetGameContext("ark-nova");
         return vm;
     }
     private static void AddExisting(CreateGroupViewModel vm, Guid id)
     {
-        vm.SelectedExistingPlayer = vm.AvailablePlayers.Single(player => player.Id == id);
-        vm.AddSelectedPlayerCommand.Execute(null);
+        vm.AddExistingPlayerCommand.Execute(vm.AvailablePlayers.Single(player => player.Id == id));
     }
 
     [Fact]
@@ -134,15 +135,16 @@ public sealed class GroupManagementViewModelTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
-        TestGameActivationStore store = new();
-        BoardgameTracker.Application.Settings.GameActivationUseCase visibility = new(db, store);
-        await visibility.SetEnabledAsync("ark-nova", false, Token);
-        CreateGroupViewModel draft = new(new(db), new(db), new(db), visibility, NullLogger<CreateGroupViewModel>.Instance);
+        TestGameEnabledStore store = new();
+        BoardgameTracker.Application.Games.SetGameEnabledUseCase setGameEnabledUseCase = new(db, store);
+        await setGameEnabledUseCase.SetEnabledAsync("ark-nova", false, Token);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel draft = new(new(db), new(db), new(db), new(db, store), navigation, NullLogger<CreateGroupViewModel>.Instance);
         await draft.LoadAsync(Token);
         Assert.Empty(draft.Games);
-        EditGroupViewModel editor = new(new(db), visibility, new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel editor = new(new(db), new(db, store), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         await editor.LoadAsync(db.Group.Id, Token);
-        Assert.Empty(editor.SelectedVisibleGames);
+        Assert.Empty(editor.SelectedEnabledGames);
         Assert.Empty(editor.GamesAvailableToAdd);
         Assert.True(Assert.Single(editor.GameSelections).IsSelected);
         editor.GroupName = "Changed while hidden";
@@ -150,10 +152,10 @@ public sealed class GroupManagementViewModelTests
         Assert.False(editor.HasError);
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Equal(db.GameId, (await verify.GroupGames.SingleAsync(Token)).GameId);
-        await visibility.SetEnabledAsync("ark-nova", true, Token);
-        editor = new(new(db), visibility, new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        await setGameEnabledUseCase.SetEnabledAsync("ark-nova", true, Token);
+        editor = new(new(db), new(db, store), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         await editor.LoadAsync(db.Group.Id, Token);
-        Assert.Equal(db.GameId, Assert.Single(editor.SelectedVisibleGames).Id);
+        Assert.Equal(db.GameId, Assert.Single(editor.SelectedEnabledGames).Id);
     }
 
     [Theory]
@@ -167,7 +169,8 @@ public sealed class GroupManagementViewModelTests
             seed.Games.Add(new Game("second-game", "second-game", "second-game", 1, 8));
             await seed.SaveChangesAsync(Token);
         }
-        CreateGroupViewModel vm = Draft(db);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = Draft(db, navigation: navigation);
         await vm.LoadAsync(Token);
         Assert.All(vm.Games, game => Assert.False(game.IsSelected));
         vm.GroupName = "Draft";
@@ -177,7 +180,7 @@ public sealed class GroupManagementViewModelTests
         vm.AddNewPlayerCommand.Execute(null);
         if (withGames) foreach (GroupGameSelection game in vm.Games) game.IsSelected = true;
         int saved = 0;
-        vm.SavedAsync = duplicate => { Assert.False(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
+        navigation.OnGroupCreationCompleted = duplicate => { Assert.False(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
         {
             Assert.Equal(2, await verify.Players.CountAsync(Token));
@@ -227,7 +230,8 @@ public sealed class GroupManagementViewModelTests
             }
             await seed.SaveChangesAsync(Token);
         }
-        CreateGroupViewModel vm = Draft(db);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = Draft(db, navigation: navigation);
         await vm.LoadAsync(Token);
         vm.GroupName = "Kept draft";
         vm.NewPlayerName = "Still typing";
@@ -235,14 +239,14 @@ public sealed class GroupManagementViewModelTests
         AddExisting(vm, db.First.Id);
         vm.Games[0].IsSelected = true;
         int opened = 0;
-        vm.ShowDuplicatesAsync = () => { opened++; return Task.CompletedTask; };
+        navigation.OnGroupDuplicatesRequested = () => { opened++; return Task.CompletedTask; };
         await vm.SaveCommand.ExecuteAsync(null);
         Assert.Equal(1, opened);
         Assert.Equal(count, vm.Duplicates.Count);
         Assert.All(vm.Duplicates.Where(row => row.IsArchived), row => Assert.Equal("Ben · Anna", row.Members));
         Assert.Equal("Anna · Ben", vm.Duplicates.Single(row => row.Id == db.Group.Id).Members);
         Assert.Equal(vm.Duplicates.OrderBy(row => row.Name, StringComparer.Ordinal).Select(row => row.Id), vm.Duplicates.Select(row => row.Id));
-        vm.CancelDuplicates();
+        await vm.ReturnToDraftCommand.ExecuteAsync(null);
         await vm.LoadAsync(Token);
         Assert.Equal("Kept draft", vm.GroupName);
         Assert.Equal("Still typing", vm.NewPlayerName);
@@ -268,7 +272,8 @@ public sealed class GroupManagementViewModelTests
             seed.GroupGames.Add(GroupGame.Create(target, other));
             await seed.SaveChangesAsync(Token);
         }
-        CreateGroupViewModel vm = Draft(db);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = Draft(db, navigation: navigation);
         await vm.LoadAsync(Token);
         vm.GroupName = "Discarded name";
         AddExisting(vm, db.First.Id);
@@ -276,7 +281,7 @@ public sealed class GroupManagementViewModelTests
         vm.Games.Single(game => game.Id == db.GameId).IsSelected = true;
         await vm.SaveCommand.ExecuteAsync(null);
         int saved = 0;
-        vm.SavedAsync = duplicate => { Assert.True(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
+        navigation.OnGroupCreationCompleted = duplicate => { Assert.True(duplicate.FromDuplicates); saved++; return Task.CompletedTask; };
         await vm.ReuseDuplicateCommand.ExecuteAsync(vm.Duplicates.Single(row => row.Id == target.Id));
         Assert.False(vm.HasError);
         Assert.Equal(1, saved);
@@ -294,7 +299,8 @@ public sealed class GroupManagementViewModelTests
     public async Task DuplicateAction_CanCreateAdditionalGroupAndFailedReuseKeepsOtherCandidates()
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
-        CreateGroupViewModel vm = Draft(db);
+        EditorNavigationFake navigation = new();
+        CreateGroupViewModel vm = Draft(db, navigation: navigation);
         await vm.LoadAsync(Token);
         vm.GroupName = "Additional";
         AddExisting(vm, db.First.Id);
@@ -328,15 +334,15 @@ public sealed class GroupManagementViewModelTests
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
         await db.AddSessionAsync(scoring);
-        EditGroupViewModel vm = new(new(db), new(db, new TestGameActivationStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel vm = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         await vm.LoadAsync(db.Group.Id, Token);
         Assert.False(vm.CanArchiveGroup);
         Assert.True(Assert.IsType<bool>(new BoardgameTracker.App.Presentation.Converters.BoolNegationConverter()
             .Convert(vm.CanArchiveGroup, typeof(bool), null, System.Globalization.CultureInfo.InvariantCulture)));
-        vm.RemoveGameCommand.Execute(Assert.Single(vm.SelectedVisibleGames));
-        Assert.Single(vm.SelectedVisibleGames);
+        vm.RemoveGameCommand.Execute(Assert.Single(vm.SelectedEnabledGames));
+        Assert.Single(vm.SelectedEnabledGames);
         GroupGameSelection game = Assert.Single(vm.GameSelections);
-        Assert.True(game.IsLocked);
+        Assert.False(game.CanChange);
         Assert.NotEmpty(game.LockReason);
         game.IsSelected = false;
         Assert.True(game.IsSelected);
@@ -353,7 +359,7 @@ public sealed class GroupManagementViewModelTests
     {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
-        EditGroupViewModel vm = new(new(db), new(db, new TestGameActivationStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel vm = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         await vm.LoadAsync(db.Group.Id, Token);
         vm.GroupName = "Edited";
         vm.RemoveGameCommand.Execute(vm.GameSelections[0]);
@@ -370,7 +376,7 @@ public sealed class GroupManagementViewModelTests
     public async Task Editor_RejectsForeignGameAndPlayerInstances() {
         await using SliceDatabase db = await SliceDatabase.CreateAsync();
         await new AddGroupGameUseCase(db).AddGroupGameAsync(db.Group.Id, db.GameId, Token);
-        EditGroupViewModel editor = new(new(db), new(db, new TestGameActivationStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
+        EditGroupViewModel editor = new(new(db), new(db, new TestGameEnabledStore()), new EditorNavigationFake(), NullLogger<EditGroupViewModel>.Instance);
         await editor.LoadAsync(db.Group.Id, Token);
         GroupGameSelection ownedGame = Assert.Single(editor.GameSelections);
         GroupGameSelection foreignSelected = new(ownedGame.Id, ownedGame.Name, true);
@@ -386,7 +392,7 @@ public sealed class GroupManagementViewModelTests
         Assert.False(foreignAvailable.IsSelected);
         Assert.True(foreignSelected.IsSelected);
         Assert.True(ownedGame.IsSelected);
-        Assert.True(editor.IsChoosingGame);
+        Assert.Equal(EditGroupSubdialog.SelectGame, editor.ActiveSubdialog);
         Assert.Same(firstPlayer, editor.Players[0]);
         Assert.Equal(new[] { 1, 2 }, editor.Players.Select(player => player.Position));
     }
@@ -405,7 +411,7 @@ public sealed class GroupManagementViewModelTests
         Assert.True(list.ShowGroups);
         Assert.Single(list.Groups);
         list.SelectPlayers();
-        Assert.True(list.ShowPlayers);
+        Assert.False(list.ShowGroups);
         await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
             Assert.Equal(2, await verify.Players.CountAsync(Token));
         Assert.True(await editor.SaveAsync(Token));
@@ -426,8 +432,8 @@ public sealed class GroupManagementViewModelTests
         vm.BeginNewPlayer();
         vm.NewPlayerName = "Discarded";
         vm.NewPlayerIsGuest = true;
-        vm.CancelNewPlayer();
-        Assert.False(vm.IsAddingNewPlayer);
+        vm.CloseSubdialog();
+        Assert.Equal(GroupCreationSubdialog.None, vm.ActiveSubdialog);
         Assert.Single(vm.Players);
         Assert.Equal("Kept group", vm.GroupName);
         vm.BeginNewPlayer();
@@ -435,7 +441,7 @@ public sealed class GroupManagementViewModelTests
         Assert.False(vm.NewPlayerIsGuest);
         vm.NewPlayerName = "Draft guest";
         vm.AddNewPlayerCommand.Execute(null);
-        Assert.False(vm.IsAddingNewPlayer);
+        Assert.Equal(GroupCreationSubdialog.None, vm.ActiveSubdialog);
         Assert.Equal(new[] { 1, 2 }, vm.Players.Select(player => player.Position));
         Assert.False(vm.Players[0].CanMoveUp);
         Assert.False(vm.Players[1].CanMoveDown);
@@ -501,7 +507,7 @@ public sealed class GroupManagementViewModelTests
         var document = System.Xml.Linq.XDocument.Parse(reader.ReadToEnd());
         var elements = document.Descendants().ToArray();
         int members = Array.FindIndex(elements, element => (string?)element.Attribute("BindableLayout.ItemsSource") == "{Binding Players}");
-        int games = Array.FindIndex(elements, element => (string?)element.Attribute("BindableLayout.ItemsSource") == (kind == "Edit" ? "{Binding SelectedVisibleGames}" : "{Binding SelectedGames}"));
+        int games = Array.FindIndex(elements, element => (string?)element.Attribute("BindableLayout.ItemsSource") == (kind == "Edit" ? "{Binding SelectedEnabledGames}" : "{Binding SelectedGames}"));
         int addGame = Array.FindIndex(elements, element => ((string?)element.Attribute("Clicked") == "OnChooseGameClicked" || (string?)element.Attribute("Command") == "{Binding ChooseGameCommand}"));
         Assert.True(members >= 0 && games > members && addGame > games);
         Assert.DoesNotContain(elements, element => element.Name.LocalName == "CheckBox");
@@ -509,10 +515,10 @@ public sealed class GroupManagementViewModelTests
         Assert.Contains(elements, element => (string?)element.Attribute("IsEnabled") == "{Binding CanMoveDown}");
         if (kind == "Create")
         {
-            int addPlayer = Array.FindIndex(elements, element => (string?)element.Attribute("Clicked") == "OnChooseExistingPlayerClicked");
+            int addPlayer = Array.FindIndex(elements, element => (string?)element.Attribute("Command") == "{Binding ChooseExistingPlayerCommand}");
             Assert.True(addPlayer > members && addPlayer < games);
             var entry = Assert.Single(elements, element => (string?)element.Attribute("Text") == "{Binding NewPlayerName}");
-            Assert.Contains(entry.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsAddingNewPlayer}");
+            Assert.Contains(entry.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:GroupCreationSubdialog.CreatePlayer}}");
         }
         else
         {

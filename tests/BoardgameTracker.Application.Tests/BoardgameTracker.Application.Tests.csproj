@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppDialogPage.cs" LogicalName="DialogContract.AppDialogPage.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Platforms/Android/ThemeShellRenderer.cs" LogicalName="EventBoundary.AndroidThemeShellRenderer.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Platforms/iOS/ThemeShellRenderer.cs" LogicalName="EventBoundary.iOSThemeShellRenderer.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/App.xaml.cs" LogicalName="EventBoundary.App.xaml.cs" />
@@ -15,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderGeometry.cs" Link="Presentation/AppPageHeaderGeometry.cs" />
+    <Compile Include="../../src/BoardgameTracker.App/Presentation/Converters/EnumEqualsConverter.cs" Link="Presentation/EnumEqualsConverter.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Presentation/Converters/BoolNegationConverter.cs" Link="Presentation/BoolNegationConverter.cs" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Presentation/Controls/AppPageHeaderLayout.cs" LogicalName="HeaderContract.AppPageHeaderLayout.cs" />
   </ItemGroup>
@@ -50,11 +52,12 @@
     <EmbeddedResource Include="..\..\src\BoardgameTracker.App\Features\Groups\**\*.cs;..\..\src\BoardgameTracker.App\Features\Groups\**\*.xaml" LogicalName="GeneralGroupFeature.%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../src/BoardgameTracker.App/Navigation/ShellNavigationService.cs" Link="Presentation/ShellNavigationService.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Navigation/INavigationService.cs" Link="Presentation/INavigationService.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Features/Games/ListGames/GamesViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/ListGroups/GroupListViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/GroupFormModels.cs;../../src/BoardgameTracker.App/Features/Groups/CreateGroup/CreateGroupViewModel.cs;../../src/BoardgameTracker.App/Features/Groups/EditGroup/EditGroupViewModel.cs;../../src/BoardgameTracker.App/Diagnostics/UserErrorMessage.cs" Link="Presentation/%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="../../src/BoardgameTracker.App/Features/Settings/MyGames/MyGamesViewModel.cs;../../src/BoardgameTracker.App/Features/Settings/MauiGameActivationStore.cs" Link="Presentation/%(Filename)%(Extension)" />
+    <Compile Include="../../src/BoardgameTracker.App/Features/Settings/MyGames/MyGamesViewModel.cs;../../src/BoardgameTracker.App/Features/Games/MauiGameEnabledStore.cs" Link="Presentation/%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/Settings/ManualGameEditorViewModel.cs" Link="Presentation/ManualGameEditorViewModel.cs" />

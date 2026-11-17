@@ -5,24 +5,26 @@
     x:Class="BoardgameTracker.App.Features.Groups.EditGroup.EditGroupPage" x:Name="Page"
     x:DataType="local:EditGroupViewModel" Shell.NavBarIsVisible="False">
     <Grid>
+
         <!-- Keep modal and busy layers outside the content they disable. -->
         <Grid x:Name="PageContent" RowDefinitions="Auto,*" IsEnabled="False">
             <Grid.Triggers>
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>
                         <BindingCondition Binding="{Binding IsBusy}" Value="False" />
-                        <BindingCondition Binding="{Binding IsChoosingGame}" Value="False" />
+                        <BindingCondition Binding="{Binding ActiveSubdialog}" Value="{x:Static local:EditGroupSubdialog.None}" />
                     </MultiTrigger.Conditions>
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
             </Grid.Triggers>
             <VerticalStackLayout Spacing="8">
-                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.EditGroup}"
-                    Variant="Subpage" BackCommand="{Binding GoBackCommand}">
+
+                <!-- Page header: return, information, save and completion status. -->
+                <header:AppPageHeader x:Name="PageHeader" Title="{x:Static res:AppResources.EditGroup}" Variant="Subpage" BackCommand="{Binding GoBackCommand}">
                     <header:AppPageHeader.Actions>
                         <ImageButton WidthRequest="48" HeightRequest="48" Source="icon_info.png" Style="{StaticResource HeaderIconButton}"
-                            Clicked="OnInfoClicked" SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}"
-                            ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
+                            Clicked="OnInfoClicked"
+                            SemanticProperties.Description="{x:Static res:AppResources.EditGroupHint}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupHint}" />
                         <Button Style="{StaticResource PrimaryCompactButton}" Text="{Binding SaveText}" Command="{Binding SaveCommand}" />
                     </header:AppPageHeader.Actions>
                 </header:AppPageHeader>
@@ -30,8 +32,11 @@
                 <Label Margin="20,0" TextColor="{DynamicResource Danger}" Text="{Binding ErrorMessage}" IsVisible="{Binding HasError}" />
             </VerticalStackLayout>
 
+            <!-- Draft sections: metadata, ordered membership, game assignments. -->
             <ScrollView Grid.Row="1" IsEnabled="{Binding CanEdit}">
                 <VerticalStackLayout Padding="20,12,20,28" Spacing="20">
+
+                    <!-- Group metadata: name, archive state and archive lock. -->
                     <VerticalStackLayout Spacing="16">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GroupName}" />
                         <Entry Style="{StaticResource InlineFormEntry}" Placeholder="{x:Static res:AppResources.GroupNameExample}" Text="{Binding GroupName}" />
@@ -41,18 +46,17 @@
                             </VerticalStackLayout>
                             <Switch Grid.Column="1" IsToggled="{Binding IsGroupArchived}" IsEnabled="{Binding CanArchiveGroup}" />
                         </Grid>
-                        <Label FontSize="12" Text="{x:Static res:AppResources.GroupArchiveLocked}"
-                            IsVisible="{Binding CanArchiveGroup, Converter={StaticResource NegateBool}}" />
+                        <Label FontSize="12" Text="{x:Static res:AppResources.GroupArchiveLocked}" IsVisible="{Binding CanArchiveGroup, Converter={StaticResource NegateBool}}" />
                     </VerticalStackLayout>
 
+                    <!-- Membership and default order. -->
                     <VerticalStackLayout Spacing="10">
                         <HorizontalStackLayout Spacing="2">
                             <Label FontAttributes="Bold" FontSize="18" VerticalOptions="Center" Text="{x:Static res:AppResources.GroupPlayers}" />
-                            <ImageButton Source="icon_info.png" Style="{StaticResource IconButton}" Clicked="OnPlayersInfoClicked"
-                                SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}"
-                                ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
+                            <ImageButton Source="icon_info.png" Style="{StaticResource IconButton}"
+                                Clicked="OnPlayersInfoClicked"
+                                SemanticProperties.Description="{x:Static res:AppResources.EditGroupPlayersHint}" ToolTipProperties.Text="{x:Static res:AppResources.EditGroupPlayersHint}" />
                         </HorizontalStackLayout>
-
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupMemberDraft">
@@ -66,12 +70,12 @@
                                                     </HorizontalStackLayout>
                                                     <Label FontSize="12" Text="{x:Static res:AppResources.Guest}" IsVisible="{Binding IsGuest}" />
                                                 </VerticalStackLayout>
-                                                <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="↑" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48"
-                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}"
-                                                    CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveUp}" SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
-                                                <Button Grid.Column="2" Style="{StaticResource TextActionButton}" Text="↓" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48"
-                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}"
-                                                    CommandParameter="{Binding .}" IsEnabled="{Binding CanMoveDown}" SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
+                                                <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="↑" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48" IsEnabled="{Binding CanMoveUp}"
+                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerUpCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}"
+                                                    SemanticProperties.Description="{x:Static res:AppResources.MoveUp}" />
+                                                <Button Grid.Column="2" Style="{StaticResource TextActionButton}" Text="↓" FontSize="26" MinimumWidthRequest="48" MinimumHeightRequest="48" IsEnabled="{Binding CanMoveDown}"
+                                                    Command="{Binding Source={x:Reference Page}, Path=ViewModel.MovePlayerDownCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}"
+                                                    SemanticProperties.Description="{x:Static res:AppResources.MoveDown}" />
                                             </Grid>
                                         </VerticalStackLayout>
                                     </Border>
@@ -80,39 +84,40 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
 
+                    <!-- Game assignments: review selected games and their removal locks. -->
                     <VerticalStackLayout Spacing="8">
                         <Label FontAttributes="Bold" FontSize="18" Text="{x:Static res:AppResources.GamesSection}" />
-                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedVisibleGames}">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedEnabledGames}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:GroupGameSelection">
                                     <Border Margin="0,4" Padding="12" Style="{StaticResource CardBorder}">
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                             <VerticalStackLayout VerticalOptions="Center">
                                                 <Label FontAttributes="Bold" Text="{Binding Name}" />
-                                                <Label FontSize="12" TextColor="{DynamicResource TextSecondary}" Text="{Binding LockReason}" IsVisible="{Binding IsLocked}" />
+                                                <Label FontSize="12" TextColor="{DynamicResource TextSecondary}" Text="{Binding LockReason}" IsVisible="{Binding CanChange, Converter={StaticResource NegateBool}}" />
                                             </VerticalStackLayout>
-                                            <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="×" FontSize="26" TextColor="{DynamicResource Danger}"
-                                                Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemoveGameCommand, x:DataType=local:EditGroupPage}"
-                                                CommandParameter="{Binding .}" IsEnabled="{Binding CanChange}" SemanticProperties.Description="{x:Static res:AppResources.Remove}" />
+                                            <Button Grid.Column="1" Style="{StaticResource TextActionButton}" Text="×" FontSize="26" TextColor="{DynamicResource Danger}" IsEnabled="{Binding CanChange}"
+                                                Command="{Binding Source={x:Reference Page}, Path=ViewModel.RemoveGameCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}"
+                                                SemanticProperties.Description="{x:Static res:AppResources.Remove}" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
-                        <Button HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddGame}"
-                            IsEnabled="{Binding HasGamesAvailableToAdd}" Command="{Binding ChooseGameCommand}" />
+                        <Button HorizontalOptions="Start" Style="{StaticResource SecondaryActionButton}" Text="{x:Static res:AppResources.AddGame}" IsEnabled="{Binding HasGamesAvailableToAdd}" Command="{Binding ChooseGameCommand}" />
                     </VerticalStackLayout>
-
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>
 
-        <Grid Padding="18" BackgroundColor="{DynamicResource ModalOverlay}" IsVisible="{Binding IsChoosingGame}">
+        <!-- Game selection overlay: enabled games available to add. -->
+        <Grid Padding="18" BackgroundColor="{DynamicResource ModalOverlay}" IsVisible="{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:EditGroupSubdialog.SelectGame}}">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
                     <Grid ColumnDefinitions="Auto,*">
-                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}" Command="{Binding CloseGameSelectionCommand}"
+                        <ImageButton Source="icon_back.png" Style="{StaticResource IconButton}"
+                            Command="{Binding CloseGameSelectionCommand}"
                             SemanticProperties.Description="{x:Static res:AppResources.Back}" />
                         <Label Grid.Column="1" FontSize="19" FontAttributes="Bold" VerticalOptions="Center" Text="{x:Static res:AppResources.AddGame}" />
                     </Grid>
@@ -121,8 +126,7 @@
                             <DataTemplate x:DataType="models:GroupGameSelection">
                                 <Border Padding="12" Margin="0,4" Style="{StaticResource CardBorder}">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}"
-                                            CommandParameter="{Binding .}" />
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference Page}, Path=ViewModel.AddGameCommand, x:DataType=local:EditGroupPage}" CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
                                     <Label Text="{Binding Name}" />
                                 </Border>
@@ -133,6 +137,7 @@
             </Border>
         </Grid>
 
+        <!-- Busy overlay: protect edits and game selection while work is pending. -->
         <Grid BackgroundColor="{DynamicResource BusyOverlay}" InputTransparent="False" IsVisible="{Binding IsBusy}">
             <ActivityIndicator Color="{DynamicResource BusyIndicator}" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="{Binding IsBusy}" />
         </Grid>

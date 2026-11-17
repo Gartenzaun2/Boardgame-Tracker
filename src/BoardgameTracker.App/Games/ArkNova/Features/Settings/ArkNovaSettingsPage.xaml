@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:res="clr-namespace:BoardgameTracker.App.Resources.Localization"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:visibility="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames"
+    xmlns:games="clr-namespace:BoardgameTracker.App.Features.Settings.MyGames"
     xmlns:vm="clr-namespace:BoardgameTracker.App.Games.ArkNova.Features.Settings"
     x:DataType="vm:ArkNovaSettingsViewModel"
     Shell.NavBarIsVisible="False">
@@ -21,12 +21,12 @@
             <ScrollView Grid.Row="0">
                 <VerticalStackLayout Style="{StaticResource SettingsContent}">
                     <Label Text="{x:Static res:AppResources.SettingsGeneral}" Style="{StaticResource SettingsSectionTitle}" />
-                    <Grid x:Name="VisibilityPanel" x:DataType="visibility:GameActivationRow" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4" Style="{StaticResource SettingsRow}">
+                    <Grid x:Name="EnablementPanel" x:DataType="games:GameSettingsRow" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4" Style="{StaticResource SettingsRow}">
                         <Label Text="{x:Static res:AppResources.ShowGame}" Style="{StaticResource SettingsItemLabel}" />
-                        <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanToggle}" Toggled="OnGameVisibilityToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
+                        <Switch Grid.Column="1" IsToggled="{Binding IsEnabled, Mode=OneWay}" IsEnabled="{Binding CanToggle}" Toggled="OnGameEnabledToggled" SemanticProperties.Description="{x:Static res:AppResources.ShowGame}" />
                         <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static res:AppResources.GameDisableBlocked}" IsVisible="{Binding IsLocked}" Style="{StaticResource SettingsHintLabel}" />
                     </Grid>
-                    <Label x:Name="VisibilityError" IsVisible="False" TextColor="{DynamicResource Danger}" />
+                    <Label x:Name="EnablementError" IsVisible="False" TextColor="{DynamicResource Danger}" />
                     <Label Text="{x:Static res:AppResources.Scoring}" Style="{StaticResource SettingsSectionTitle}" />
                     <Grid ColumnDefinitions="*,Auto,Auto" Style="{StaticResource SettingsRow}">
                         <Label Text="{x:Static res:AppResources.CaptureReputation}" Style="{StaticResource SettingsItemLabel}" />

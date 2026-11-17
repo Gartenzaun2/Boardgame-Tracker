@@ -124,7 +124,7 @@ public sealed class PlayerManagementTests
         viewModel.SelectGroups();
         Assert.True(viewModel.ShowGroups);
         viewModel.SelectPlayers();
-        Assert.True(viewModel.ShowPlayers);
+        Assert.False(viewModel.ShowGroups);
         viewModel.IncludeGuests = true;
         viewModel.IncludeArchived = true;
         await viewModel.LoadAsync(Token);

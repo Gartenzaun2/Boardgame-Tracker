@@ -1,12 +1,9 @@
+using BoardgameTracker.App.Navigation;
 using BoardgameTracker.App.Presentation.Controls;
 using BoardgameTracker.App.Resources.Localization;
-using BoardgameTracker.App.Navigation;
 
 namespace BoardgameTracker.App.Features.Groups.EditGroup;
 
-/// <summary>
-/// MAUI view for editing group metadata, order and game assignments.
-/// </summary>
 public partial class EditGroupPage : ContentPage, IQueryAttributable {
     private readonly EditGroupViewModel _viewModel;
     private Guid _groupId;
@@ -36,33 +33,15 @@ public partial class EditGroupPage : ContentPage, IQueryAttributable {
             await _viewModel.LoadAsync(_groupId);
     }
 
-    private async void OnInfoClicked(object? sender, EventArgs e) {
-        await AppDialogPage.ShowAsync(this,
-            AppResources.EditGroup,
-            AppResources.EditGroupHint + "\n\n" + AppResources.ArchiveHint,
-            AppResources.Ok);
-    }
+    private async void OnInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.EditGroup, AppResources.EditGroupHint + "\n\n" + AppResources.ArchiveHint, AppResources.Ok);
 
-    private async void OnPlayersInfoClicked(object? sender, EventArgs e) {
-        await AppDialogPage.ShowAsync(this,
-            AppResources.GroupPlayers,
-            AppResources.EditGroupPlayersHint,
-            AppResources.Ok);
-    }
+    private async void OnPlayersInfoClicked(object? sender, EventArgs e)
+        => await AppDialogPage.ShowAsync(this, AppResources.GroupPlayers, AppResources.EditGroupPlayersHint, AppResources.Ok);
 
-    /// <summary>Handles system back by retrying a saved departure or closing game selection before leaving.</summary>
+    /// <summary>Routes system back through the header command, including cancellation, busy guards and navigation errors.</summary>
     protected override bool OnBackButtonPressed() {
-        if (_viewModel.IsBusy)
-            return true;
-        if (_viewModel.IsSaveCompleted) {
-            // MAUI needs a synchronous result; the existing async command handles departure and errors.
-            _viewModel.GoBackCommand.Execute(null);
-            return true;
-        }
-        if (_viewModel.IsChoosingGame) {
-            _viewModel.CloseGameSelectionCommand.Execute(null);
-            return true;
-        }
-        return base.OnBackButtonPressed();
+        _viewModel.GoBackCommand.Execute(null);
+        return true;
     }
 }

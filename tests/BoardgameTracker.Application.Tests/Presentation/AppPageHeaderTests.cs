@@ -61,11 +61,14 @@ public sealed class AppPageHeaderTests
     {
         var header = Header(ReadPage(page));
         Assert.Equal("Subpage", (string?)header.Attribute("Variant"));
-        if (page is "EditGroupPage" or "EditPlayerPage") {
+        if (page is "EditGroupPage" or "EditPlayerPage" or "CreateGroupPage" or "MyGamesPage") {
             Assert.Equal("{Binding GoBackCommand}", (string?)header.Attribute("BackCommand"));
             Assert.Null(header.Attribute("BackClicked"));
         }
-        else
+        else if (page == "DuplicateGroupPage") {
+            Assert.Equal("{Binding ReturnToDraftCommand}", (string?)header.Attribute("BackCommand"));
+            Assert.Null(header.Attribute("BackClicked"));
+        } else
             Assert.NotNull(header.Attribute("BackClicked"));
         Assert.Null(header.Attribute("BadgeText"));
         Assert.Null(header.Attribute("GameName"));
@@ -207,7 +210,7 @@ public sealed class AppPageHeaderTests
         Assert.Equal("Hinzufügen", AppResources.AddToDraft);
         var overlayTitle = ReadPage("CreateGroupPage").Descendants().Single(element =>
             element.Name.LocalName == "Label" && (string?)element.Attribute("Text") == "{x:Static res:AppResources.AddPlayer}");
-        Assert.Contains(overlayTitle.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding IsAddingNewPlayer}");
+        Assert.Contains(overlayTitle.Ancestors(), element => (string?)element.Attribute("IsVisible") == "{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:GroupCreationSubdialog.CreatePlayer}}");
         Assert.Equal("{x:Static res:AppResources.Settings}", (string?)Header(ReadPage("ArkNovaSettingsPage")).Attribute("Title"));
     }
 

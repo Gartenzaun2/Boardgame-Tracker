@@ -115,6 +115,7 @@ public static class AppResources
     public static string TransferPreview => GetString(nameof(TransferPreview));
     public static string TransferCommit => GetString(nameof(TransferCommit));
     public static string TransferSuccess => GetString(nameof(TransferSuccess));
+    public static string TransferResultPresentationFailed => GetString(nameof(TransferResultPresentationFailed));
     public static string TransferUpdateRequired => GetString(nameof(TransferUpdateRequired));
     public static string TransferFailed => GetString(nameof(TransferFailed));
     public static string TransferPreviewFormat => GetString(nameof(TransferPreviewFormat));
