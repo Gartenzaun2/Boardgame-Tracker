@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.2.0 – 2026-11-17
+
+- Die auf dem iPhone geprüfte iOS-CgBI-Korrektur aus 0.22.9.0 in den aktuellen Projektstand integriert; gezielte PNG-Optimierungsausnahme und Bundle-Hash-Prüfung erhalten.
+
 ## 0.23.1.0 – 2026-11-17
 
 - Der Editor manueller Spiele übernimmt bestehende Konfigurationen erst nach vollständig erfolgreichem Laden und sperrt Datenänderungen bis zum Ladeabschluss. Zurück, erneutes Laden und Navigation-Retry bleiben verfügbar.
@@ -56,6 +60,10 @@ historische Aufzeichnung unverändert erhalten.
 
 - Allgemeine App-Dialoge konsolidiert: Gruppenanlage verwendet gegenseitig ausschließende Auswahlzustände und direkte Commands; Duplikatauswahl und Speicherabschluss nutzen den gemeinsamen Navigationsvertrag einschließlich Spielvorbereitung.
 - Zurück, Abbruch und Navigation-Retry in Editoren und Gruppenauswahl vereinheitlicht. Erfolgreiche Gruppen-, Spiel- und Zuordnungswrites bleiben bei fehlgeschlagener Navigation erhalten und werden beim erneuten Abschluss nicht wiederholt; App-Dialoge erlauben erneutes Schließen nach Navigationsfehlern.
+
+## 0.22.9.0 – 2026-11-17
+
+- iOS-Fotoanalyse repariert: Das CV-Referenzbild wird gezielt von Apples PNG-Optimierung ausgenommen, damit OpenCV es auch im .NET-11-Release-Bundle dekodieren kann. Ein SHA-256-Vergleich nach dem iOS-Build erkennt veränderte oder fehlende Referenzassets.
 
 ## 0.22.8.6 – 2026-11-16
 
