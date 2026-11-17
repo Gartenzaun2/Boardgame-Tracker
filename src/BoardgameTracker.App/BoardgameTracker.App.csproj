@@ -17,7 +17,7 @@
     <ApplicationTitle>Boardgame Tracker</ApplicationTitle>
     <ApplicationId>de.boardgametracker.app</ApplicationId>
 
-    <ApplicationDisplayVersion>0.23.1.1</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>0.23.2.0</ApplicationDisplayVersion>
     <ApplicationVersion>146</ApplicationVersion>
 
     <NeutralLanguage>de</NeutralLanguage>
@@ -58,7 +58,10 @@
                LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
-    <MauiAsset Include="../../tools/Games/ArkNova/PhotoRecognition/Assets/board_reference_master_clean.png" LogicalName="ArkNovaVision/board_reference_master_clean.png" />
+    <!-- OpenCV cannot decode the Apple-private CgBI format produced by pngcrush. -->
+    <MauiAsset Include="../../tools/Games/ArkNova/PhotoRecognition/Assets/board_reference_master_clean.png" LogicalName="ArkNovaVision/board_reference_master_clean.png">
+      <Optimize Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">false</Optimize>
+    </MauiAsset>
     <MauiAsset Include="../../tools/Games/ArkNova/PhotoRecognition/Assets/scoring_regions_v2.json" LogicalName="ArkNovaVision/scoring_regions_v2.json" />
     <MauiAsset Include="Games/ArkNova/PhotoRecognition/Native/licenses/*.txt" LogicalName="ArkNovaVision/licenses/%(Filename)%(Extension)" />
   </ItemGroup>
@@ -92,6 +95,19 @@
   <Target Name="RequireArkNovaIosNativeLibrary" BeforeTargets="PrepareForBuild"
       Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(OS)' != 'Windows_NT' and '$(DesignTimeBuild)' != 'true'">
     <Error Condition="!Exists('$(ArkNovaIosBuildDirectory)/libarknova_vision_full.a')" Text="Build the shared Ark Nova iOS archive with tools/Games/ArkNova/NativeVisionSpike/Build-iOS.sh first; set ArkNovaIosBuildDirectory to that output." />
+  </Target>
+
+  <!-- Check the final bundle, so changes in MAUI metadata forwarding cannot silently break CV. -->
+  <Target Name="VerifyArkNovaIosReferenceAsset" AfterTargets="Build"
+      Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(OS)' != 'Windows_NT' and '$(DesignTimeBuild)' != 'true'">
+    <GetFileHash Files="$(MSBuildProjectDirectory)/../../tools/Games/ArkNova/PhotoRecognition/Assets/board_reference_master_clean.png" Algorithm="SHA256">
+      <Output TaskParameter="Hash" PropertyName="_ArkNovaReferenceSourceHash" />
+    </GetFileHash>
+    <GetFileHash Files="$(AppBundleDir)/ArkNovaVision/board_reference_master_clean.png" Algorithm="SHA256">
+      <Output TaskParameter="Hash" PropertyName="_ArkNovaReferenceBundleHash" />
+    </GetFileHash>
+    <Error Condition="'$(_ArkNovaReferenceSourceHash)' != '$(_ArkNovaReferenceBundleHash)'"
+        Text="The bundled Ark Nova reference must match the original PNG. Keep Optimize=false on this asset; OpenCV cannot decode pngcrush CgBI output." />
   </Target>
 
   <ItemGroup>
