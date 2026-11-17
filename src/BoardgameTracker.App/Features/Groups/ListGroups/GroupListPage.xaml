@@ -51,7 +51,7 @@
         </Grid>
 
         <!-- Existing group selection overlay: assign an eligible group to this game. -->
-        <Grid IsVisible="{Binding IsChoosingExisting}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
+        <Grid IsVisible="{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:GroupListSubdialog.SelectExistingGroup}}" BackgroundColor="{DynamicResource ModalOverlay}" Padding="18">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="450">
                     <Grid ColumnDefinitions="Auto,*">

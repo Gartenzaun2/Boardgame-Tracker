@@ -69,7 +69,7 @@ public partial class EditGroupViewModel : ObservableObject {
     public ObservableCollection<GroupMemberDraft> Players { get; } = [];
 
     [ObservableProperty]
-    public partial bool IsChoosingGame { get; private set; }
+    public partial EditGroupSubdialog ActiveSubdialog { get; private set; }
 
     public ObservableCollection<GroupGameSelection> GameSelections { get; } = [];
 
@@ -129,12 +129,12 @@ public partial class EditGroupViewModel : ObservableObject {
     [RelayCommand]
     private void ChooseGame() {
         if (CanEdit)
-            IsChoosingGame = true;
+            ActiveSubdialog = EditGroupSubdialog.SelectGame;
     }
 
     [RelayCommand]
     private void CloseGameSelection()
-        => IsChoosingGame = false;
+        => ActiveSubdialog = EditGroupSubdialog.None;
 
     [RelayCommand]
     private void AddGame(GroupGameSelection? game) {
@@ -144,7 +144,7 @@ public partial class EditGroupViewModel : ObservableObject {
             return;
 
         game.IsSelected = true;
-        IsChoosingGame = false;
+        ActiveSubdialog = EditGroupSubdialog.None;
         RefreshGameSelectionBindings();
     }
 
@@ -222,7 +222,7 @@ public partial class EditGroupViewModel : ObservableObject {
         if (!IsNotBusy)
             return;
 
-        if (IsChoosingGame) {
+        if (ActiveSubdialog != EditGroupSubdialog.None) {
             CloseGameSelection();
             return;
         }
@@ -248,4 +248,9 @@ public partial class EditGroupViewModel : ObservableObject {
             ErrorMessage = AppResources.NavigationFailed;
         }
     }
+}
+
+public enum EditGroupSubdialog {
+    None,
+    SelectGame
 }

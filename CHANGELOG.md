@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.0.2 – 2026-11-17
+
+- Eigene Auswahl-Overlays in Gruppenbearbeitung und Spielgruppenauswahl auf explizite Enum-Zustände vereinheitlicht. Technisches Modalflag im ManualGame-Editor präzisiert, Save-Bedingung der Gruppenanlage passend eingeordnet und Historienimport in lesbare private Phasen gegliedert; bestehende Abbruch-, Speicher-, Navigations- und Retry-Semantik erhalten.
+
 ## 0.23.0.1 – 2026-11-16
 
 - Codegestaltung der allgemeinen App-Dialoge konsolidiert: technische Zustände, Formularbereiche und UI-Texte geordnet, Benachrichtigungsattribute zusammengefasst und reine Darstellungsnegationen durch den vorhandenen Converter ersetzt. Methoden, C#-Formatierung und XAML-Abschnitte vereinheitlicht; bestehende Speicher-, Abbruch-, Navigations- und Retry-Abläufe erhalten.

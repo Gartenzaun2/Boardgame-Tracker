@@ -392,7 +392,7 @@ public sealed class GroupManagementViewModelTests
         Assert.False(foreignAvailable.IsSelected);
         Assert.True(foreignSelected.IsSelected);
         Assert.True(ownedGame.IsSelected);
-        Assert.True(editor.IsChoosingGame);
+        Assert.Equal(EditGroupSubdialog.SelectGame, editor.ActiveSubdialog);
         Assert.Same(firstPlayer, editor.Players[0]);
         Assert.Equal(new[] { 1, 2 }, editor.Players.Select(player => player.Position));
     }

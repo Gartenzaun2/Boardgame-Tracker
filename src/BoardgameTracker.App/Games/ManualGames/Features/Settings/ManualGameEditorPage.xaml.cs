@@ -33,7 +33,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
         if (!_viewModel.CanEdit)
             return;
 
-        _viewModel.IsChoosing = true;
+        _viewModel.IsModalDialogOpen = true;
         try {
             int selected = await AppDialogPage.ChooseAsync(this, AppResources.ResultFromPoints,
                 _viewModel.ResultChoices, _viewModel.ResultMode);
@@ -42,7 +42,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
         } catch (Exception exception) {
             _viewModel.ReportDialogFailure(exception);
         } finally {
-            _viewModel.IsChoosing = false;
+            _viewModel.IsModalDialogOpen = false;
         }
     }
 
@@ -51,7 +51,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
             return;
 
         bool confirmed;
-        _viewModel.IsChoosing = true;
+        _viewModel.IsModalDialogOpen = true;
         try {
             confirmed = await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame,
                 AppResources.DeleteManualGameQuestion, AppResources.DeleteManualGame, AppResources.Cancel, destructive: true);
@@ -59,21 +59,21 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
             _viewModel.ReportDialogFailure(exception);
             return;
         } finally {
-            _viewModel.IsChoosing = false;
+            _viewModel.IsModalDialogOpen = false;
         }
 
         if (!confirmed || !await _viewModel.DeleteAsync())
             return;
 
         if (_viewModel.DeletionWarning is string warning) {
-            _viewModel.IsChoosing = true;
+            _viewModel.IsModalDialogOpen = true;
             try {
                 await AppDialogPage.ShowAsync(this, AppResources.DeleteManualGame, warning, AppResources.Ok);
             } catch (Exception exception) {
                 _viewModel.ReportDialogFailure(exception);
                 return;
             } finally {
-                _viewModel.IsChoosing = false;
+                _viewModel.IsModalDialogOpen = false;
             }
         }
 

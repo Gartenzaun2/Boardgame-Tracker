@@ -78,6 +78,9 @@ public partial class CreateGroupViewModel : ObservableObject {
     public bool IsSaveCompleted => _savedOutcome is not null;
     public bool CanEdit => IsNotBusy && !IsSaveCompleted;
 
+    private bool CanSave()
+        => IsNotBusy && (IsSaveCompleted || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
     public partial string? ErrorMessage { get; private set; }
@@ -290,9 +293,6 @@ public partial class CreateGroupViewModel : ObservableObject {
 
         ActiveSubdialog = GroupCreationSubdialog.None;
     }
-
-    private bool CanSave()
-        => IsNotBusy && (IsSaveCompleted || !string.IsNullOrWhiteSpace(GroupName) && Players.Count > 0);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync() {

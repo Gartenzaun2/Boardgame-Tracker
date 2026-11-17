@@ -45,14 +45,14 @@ public partial class ManualGameEditorViewModel : ObservableObject {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract), nameof(CanEdit))]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand), nameof(GoBackCommand))]
-    public partial bool IsChoosing { get; set; }
+    public partial bool IsModalDialogOpen { get; set; }
 
     /// <summary>A completed save or deletion freezes the editor; departure retries must never repeat the write.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEdit), nameof(CanDelete), nameof(SaveText))]
     public partial bool IsSaveCompleted { get; private set; }
 
-    public bool CanInteract => IsNotBusy && !IsChoosing;
+    public bool CanInteract => IsNotBusy && !IsModalDialogOpen;
     public bool CanEdit => CanInteract && !IsSaveCompleted;
 
     [ObservableProperty]

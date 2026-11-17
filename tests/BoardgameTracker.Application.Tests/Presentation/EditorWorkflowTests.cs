@@ -111,7 +111,7 @@ public sealed class EditorWorkflowTests {
                 group.ChooseGameCommand.Execute(null);
                 Assert.Same(first, group.Players[0]);
                 Assert.Empty(group.SelectedEnabledGames);
-                Assert.False(group.IsChoosingGame);
+                Assert.Equal(EditGroupSubdialog.None, group.ActiveSubdialog);
             }
             else {
                 Assert.False(await player.SaveAndAddAnotherAsync(Token).WaitAsync(TimeSpan.FromSeconds(5), Token));
@@ -196,7 +196,7 @@ public sealed class EditorWorkflowTests {
         changes.Clear();
         group.ChooseGameCommand.Execute(null);
         group.AddGameCommand.Execute(game);
-        Assert.False(group.IsChoosingGame);
+        Assert.Equal(EditGroupSubdialog.None, group.ActiveSubdialog);
         Assert.Same(game, Assert.Single(group.SelectedEnabledGames));
         Assert.Empty(group.GamesAvailableToAdd);
         Assert.False(group.HasGamesAvailableToAdd);
@@ -311,7 +311,7 @@ public sealed class EditorWorkflowTests {
             group.ChooseGameCommand.Execute(null);
             page = EventBoundaryTests.Create("EditGroupPage.xaml.cs", groupEditor: group);
             await page.InvokeAsync("OnBackButtonPressed");
-            Assert.False(group.IsChoosingGame);
+            Assert.Equal(EditGroupSubdialog.None, group.ActiveSubdialog);
             Assert.Empty(navigation.Calls);
             back = group.GoBackCommand;
         } else {

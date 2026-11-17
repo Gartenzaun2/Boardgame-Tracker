@@ -55,7 +55,7 @@ public partial class GroupListViewModel : ObservableObject {
 
     public bool IsWorking => IsBusy || IsNavigating;
     private bool IsNotWorking => !IsWorking;
-    public bool CanInteract => !IsBusy && !IsNavigating && !IsChoosingExisting;
+    public bool CanInteract => !IsBusy && !IsNavigating && ActiveSubdialog == GroupListSubdialog.None;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasError))]
@@ -82,7 +82,7 @@ public partial class GroupListViewModel : ObservableObject {
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanInteract))]
-    public partial bool IsChoosingExisting { get; private set; }
+    public partial GroupListSubdialog ActiveSubdialog { get; private set; }
 
     #region Localized UI Text
 
@@ -154,7 +154,7 @@ public partial class GroupListViewModel : ObservableObject {
     [RelayCommand]
     private void ChooseExisting() {
         if (CanChoose && CanInteract)
-            IsChoosingExisting = true;
+            ActiveSubdialog = GroupListSubdialog.SelectExistingGroup;
     }
 
     [RelayCommand]
@@ -171,7 +171,7 @@ public partial class GroupListViewModel : ObservableObject {
             // assigned list rather than offering an already assigned group for another write.
             AvailableGroups.Remove(group);
             await LoadAsync();
-            IsChoosingExisting = false;
+            ActiveSubdialog = GroupListSubdialog.None;
             await _handlers.Single(handler => handler.CanHandle(SelectedGameKey)).OpenGroupAsync(SelectedGameKey, group.Id, null, null);
         } catch (Exception exception) {
             _logger.LogError(exception, "Could not assign and open game group.");
@@ -184,7 +184,7 @@ public partial class GroupListViewModel : ObservableObject {
     [RelayCommand]
     private void CloseSelection() {
         if (!IsWorking)
-            IsChoosingExisting = false;
+            ActiveSubdialog = GroupListSubdialog.None;
     }
 
     [RelayCommand]
@@ -209,7 +209,7 @@ public partial class GroupListViewModel : ObservableObject {
     private async Task GoBackAsync() {
         if (!IsNotWorking)
             return;
-        if (IsChoosingExisting) {
+        if (ActiveSubdialog != GroupListSubdialog.None) {
             CloseSelection();
             return;
         }
@@ -246,4 +246,9 @@ public sealed record AvailablePlayGroup(Guid Id, string Name, string Members);
 public sealed record GroupListItemViewModel(Guid Id, string Name, string PlayerNames, string LastPlayedText, Guid? OpenGameSessionId, GameSessionStatus? OpenGameSessionStatus) {
     public bool HasOpenGameSession => OpenGameSessionId.HasValue;
     public bool HasLastPlayed => !string.IsNullOrWhiteSpace(LastPlayedText);
+}
+
+public enum GroupListSubdialog {
+    None,
+    SelectExistingGroup
 }

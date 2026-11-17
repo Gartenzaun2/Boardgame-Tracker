@@ -183,9 +183,14 @@ public sealed class DialogWorkflowTests {
         EditorNavigationFake navigation = new();
         EditGroupViewModel editor = new(new(db), new(db, new TestGameEnabledStore()), navigation, NullLogger<EditGroupViewModel>.Instance);
         await editor.LoadAsync(db.Group.Id, Token);
+        Assert.Equal(EditGroupSubdialog.None, editor.ActiveSubdialog);
+        editor.ChooseGameCommand.Execute(null);
+        Assert.Equal(EditGroupSubdialog.SelectGame, editor.ActiveSubdialog);
+        editor.CloseGameSelectionCommand.Execute(null);
+        Assert.Equal(EditGroupSubdialog.None, editor.ActiveSubdialog);
         editor.ChooseGameCommand.Execute(null);
         await editor.GoBackCommand.ExecuteAsync(null);
-        Assert.False(editor.IsChoosingGame);
+        Assert.Equal(EditGroupSubdialog.None, editor.ActiveSubdialog);
         Assert.Empty(navigation.Calls);
         Assert.False(editor.IsSaveCompleted);
     }
@@ -239,7 +244,10 @@ public sealed class DialogWorkflowTests {
         model.SetGameContext("ark-nova");
         await model.LoadAsync(Token);
         AvailablePlayGroup group = Assert.Single(model.AvailableGroups);
+        model.ChooseExistingCommand.Execute(null);
+        Assert.Equal(GroupListSubdialog.SelectExistingGroup, model.ActiveSubdialog);
         await model.SelectExistingAsync(group);
+        Assert.Equal(GroupListSubdialog.None, model.ActiveSubdialog);
         Assert.True(model.HasError);
         await using (BoardgameTrackerDbContext reject = db.CreateDbContext())
             await reject.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_write BEFORE INSERT ON GroupGames BEGIN SELECT RAISE(ABORT, 'unexpected insert'); END", Token);
@@ -252,6 +260,100 @@ public sealed class DialogWorkflowTests {
         Assert.False(model.CanChoose);
         Assert.Empty(model.AvailableGroups);
         Assert.Equal(2, handler.Attempts);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ExistingGroup_SelectionClosesBeforeNavigationAndRespectsBusy(bool useBack) {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        EditorNavigationFake navigation = new();
+        GroupListViewModel model = new(new(db), new(db), new(db, new TestGameEnabledStore()), NullLogger<GroupListViewModel>.Instance, [], navigation);
+        model.SetGameContext("ark-nova");
+        await model.LoadAsync(Token);
+        List<string?> changes = [];
+        model.PropertyChanged += (_, args) => changes.Add(args.PropertyName);
+        Assert.Equal(GroupListSubdialog.None, model.ActiveSubdialog);
+        Assert.True(model.CanInteract);
+
+        model.ChooseExistingCommand.Execute(null);
+        Assert.Equal(GroupListSubdialog.SelectExistingGroup, model.ActiveSubdialog);
+        Assert.False(model.CanInteract);
+        Assert.Contains(nameof(model.CanInteract), changes);
+        Assert.True(model.TryBeginNavigation());
+        model.CloseSelectionCommand.Execute(null);
+        await model.GoBackCommand.ExecuteAsync(null);
+        Assert.Equal(GroupListSubdialog.SelectExistingGroup, model.ActiveSubdialog);
+        Assert.Empty(navigation.Calls);
+
+        model.EndNavigation();
+        changes.Clear();
+        if (useBack)
+            await model.GoBackCommand.ExecuteAsync(null);
+        else
+            model.CloseSelectionCommand.Execute(null);
+        Assert.Equal(GroupListSubdialog.None, model.ActiveSubdialog);
+        Assert.True(model.CanInteract);
+        Assert.Contains(nameof(model.CanInteract), changes);
+        Assert.Empty(navigation.Calls);
+        await using BoardgameTrackerDbContext verify = db.CreateDbContext();
+        Assert.Empty(await verify.GroupGames.ToArrayAsync(Token));
+
+        await model.GoBackCommand.ExecuteAsync(null);
+        Assert.Single(navigation.Calls);
+    }
+
+    [Fact]
+    public async Task ManualGame_ModalDialogBlocksCommandsAndNotifiesTheirAvailability() {
+        await using SliceDatabase db = await SliceDatabase.CreateAsync();
+        EditorNavigationFake navigation = new();
+        TestGameEnabledStore store = new();
+        ManualGameEditorViewModel editor = new(new(db, store), new(db, store), new(db, store), navigation, NullLogger<ManualGameEditorViewModel>.Instance);
+        await editor.LoadAsync(null, Token);
+        editor.GameName = "Unsaved";
+        editor.BadgeText = "U";
+        int saveChanges = 0;
+        int backChanges = 0;
+        editor.SaveCommand.CanExecuteChanged += (_, _) => saveChanges++;
+        editor.GoBackCommand.CanExecuteChanged += (_, _) => backChanges++;
+
+        editor.IsModalDialogOpen = true;
+        Assert.False(editor.CanInteract);
+        Assert.False(editor.CanEdit);
+        Assert.False(editor.SaveCommand.CanExecute(null));
+        Assert.False(editor.GoBackCommand.CanExecute(null));
+        Assert.Equal(1, saveChanges);
+        Assert.Equal(1, backChanges);
+        Assert.False(await editor.SaveAsync(Token));
+        await editor.GoBackCommand.ExecuteAsync(null);
+        Assert.Empty(navigation.Calls);
+        await using (BoardgameTrackerDbContext verify = db.CreateDbContext())
+            Assert.Empty(await verify.ManualGames.ToArrayAsync(Token));
+
+        int saveChangesBeforeClose = saveChanges;
+        int backChangesBeforeClose = backChanges;
+        editor.IsModalDialogOpen = false;
+        Assert.True(editor.CanInteract);
+        Assert.True(editor.CanEdit);
+        Assert.True(editor.SaveCommand.CanExecute(null));
+        Assert.True(editor.GoBackCommand.CanExecute(null));
+        Assert.Equal(saveChangesBeforeClose + 1, saveChanges);
+        Assert.Equal(backChangesBeforeClose + 1, backChanges);
+    }
+
+    [Theory]
+    [InlineData("EditGroupPage", "EditGroupSubdialog.SelectGame")]
+    [InlineData("GroupListPage", "GroupListSubdialog.SelectExistingGroup")]
+    public void OwnSelectionOverlayUsesEnumConverter(string pageName, string enumMember) {
+        var page = AppPageHeaderTests.ReadPage(pageName);
+        var overlay = Assert.Single(page.Descendants(), element => (string?)element.Attribute("BackgroundColor") == "{DynamicResource ModalOverlay}");
+        Assert.Equal("{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:" + enumMember + "}}", (string?)overlay.Attribute("IsVisible"));
+        if (pageName == "EditGroupPage") {
+            var condition = Assert.Single(page.Descendants(), element => (string?)element.Attribute("Binding") == "{Binding ActiveSubdialog}");
+            Assert.Equal("{x:Static local:EditGroupSubdialog.None}", (string?)condition.Attribute("Value"));
+        } else {
+            Assert.Contains(page.Descendants(), element => (string?)element.Attribute("IsEnabled") == "{Binding CanInteract}");
+        }
     }
 
     private sealed class FailingPreparationNavigation : IGameSessionNavigationHandler {

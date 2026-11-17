@@ -12,7 +12,7 @@
                 <MultiTrigger TargetType="Grid">
                     <MultiTrigger.Conditions>
                         <BindingCondition Binding="{Binding IsBusy}" Value="False" />
-                        <BindingCondition Binding="{Binding IsChoosingGame}" Value="False" />
+                        <BindingCondition Binding="{Binding ActiveSubdialog}" Value="{x:Static local:EditGroupSubdialog.None}" />
                     </MultiTrigger.Conditions>
                     <Setter Property="IsEnabled" Value="True" />
                 </MultiTrigger>
@@ -112,7 +112,7 @@
         </Grid>
 
         <!-- Game selection overlay: enabled games available to add. -->
-        <Grid Padding="18" BackgroundColor="{DynamicResource ModalOverlay}" IsVisible="{Binding IsChoosingGame}">
+        <Grid Padding="18" BackgroundColor="{DynamicResource ModalOverlay}" IsVisible="{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:EditGroupSubdialog.SelectGame}}">
             <Border Style="{StaticResource SelectionDialog}">
                 <Grid RowDefinitions="Auto,*" RowSpacing="12" MaximumHeightRequest="400">
                     <Grid ColumnDefinitions="Auto,*">
