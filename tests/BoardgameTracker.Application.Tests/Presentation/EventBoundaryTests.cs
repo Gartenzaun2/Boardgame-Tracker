@@ -234,7 +234,7 @@ public sealed partial class EventBoundaryTests
         Assert.Single(page.Messages);
     }
 
-    internal static EventBoundaryTestHost Create(string file, EditPlayerViewModel? playerEditor = null, EditGroupViewModel? groupEditor = null)
+    internal static EventBoundaryTestHost Create(string file, EditPlayerViewModel? playerEditor = null, EditGroupViewModel? groupEditor = null, BoardgameTracker.App.Games.ManualGames.Features.Settings.ManualGameEditorViewModel? manualEditor = null)
     {
         Assembly assembly = typeof(EventBoundaryTests).Assembly;
         string resource = assembly.GetManifestResourceNames().Single(name =>
@@ -254,6 +254,7 @@ public sealed partial class EventBoundaryTests
             "App.xaml.cs" => ["InitializeApplicationAsync"],
             "EditPlayerPage.xaml.cs" => ["OnBackButtonPressed"],
             "EditGroupPage.xaml.cs" => ["OnBackButtonPressed"],
+            "ManualGameEditorPage.xaml.cs" => ["OnResultModeClicked", "OnResultModeInfoClicked"],
             _ => ["OnMyGamesClicked", "OnLicensesClicked", "ShowNavigationErrorAsync"]
         };
         IEnumerable<string> fields = root.DescendantNodes().OfType<FieldDeclarationSyntax>()
@@ -296,6 +297,7 @@ public sealed partial class EventBoundaryTests
             {
             """ + (file == "EditPlayerPage.xaml.cs" ? "private new BoardgameTracker.App.Features.Players.EditPlayer.EditPlayerViewModel _viewModel => PlayerEditor!;\n" : string.Empty)
             + (file == "EditGroupPage.xaml.cs" ? "private new BoardgameTracker.App.Features.Groups.EditGroup.EditGroupViewModel _viewModel => GroupEditor!;\n" : string.Empty)
+            + (file == "ManualGameEditorPage.xaml.cs" ? "private BoardgameTracker.App.Games.ManualGames.Features.Settings.ManualGameEditorViewModel _viewModel => ManualEditor!;\n" : string.Empty)
             + string.Join("\n", fields.Concat(methods)) + """
             }
             public sealed class ArkNovaRunningPage;
@@ -319,6 +321,7 @@ public sealed partial class EventBoundaryTests
         EventBoundaryTestHost page = (EventBoundaryTestHost)Activator.CreateInstance(compiled.GetType("Handler")!)!;
         page.PlayerEditor = playerEditor;
         page.GroupEditor = groupEditor;
+        page.ManualEditor = manualEditor;
         BoundaryShell.Current = page.Navigation;
         page.Navigation.CurrentPage = page;
         return page;
@@ -336,6 +339,10 @@ public class EventBoundaryTestHost
     public BoundaryLogger Logger { get; } = new();
     public BoundaryShell Navigation { get; } = new();
     public BoundaryDispatcher Dispatcher { get; } = new();
+    public BoardgameTracker.App.Games.ManualGames.Features.Settings.ManualGameEditorViewModel? ManualEditor { get; set; }
+    public int ResultChoiceCalls { get; set; }
+    public int ResultChoice { get; set; } = 1;
+    public bool ResultChoiceWasModal { get; set; }
     public List<string> Messages { get; } = [];
     public int ConfirmationCalls { get; set; }
     public bool ConfirmDiscard { get; set; } = true;
@@ -465,6 +472,13 @@ public sealed class BoundaryDispatcher
 }
 public static class BoundaryDialogs
 {
+    public static Task<int> ChooseAsync(object owner, string title, IReadOnlyList<string> options, int selected) {
+        EventBoundaryTestHost page = (EventBoundaryTestHost)owner;
+        page.ResultChoiceCalls++;
+        page.ResultChoiceWasModal = page.ManualEditor!.IsModalDialogOpen;
+        return Task.FromResult(page.ResultChoice);
+    }
+
     public static Task<bool> ShowAsync(object owner, string title, string message, string accept, string? cancel = null, bool destructive = false)
     {
         EventBoundaryTestHost page = (EventBoundaryTestHost)owner;

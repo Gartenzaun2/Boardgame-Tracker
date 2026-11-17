@@ -39,6 +39,10 @@ damals zuständigen Reports oder Dokumenten.
 Die folgenden Einträge entstanden teilweise vor dieser Regel und bleiben als
 historische Aufzeichnung unverändert erhalten.
 
+## 0.23.1.1 – 2026-11-17
+
+- Abhängige Konfigurationsoptionen manueller Spiele bleiben beim Anlegen und Bearbeiten sichtbar und leicht eingerückt. Fehlende Voraussetzungen deaktivieren nur die zugehörigen Bedienelemente; Entwurfswerte und Formularpositionen bleiben beim Umschalten erhalten. Die Ergebniswahl prüft ihre Voraussetzung auch im Handler und bietet ein weiterhin zugängliches Info-Icon.
+
 ## 0.23.1.0 – 2026-11-17
 
 - Der Editor manueller Spiele übernimmt bestehende Konfigurationen erst nach vollständig erfolgreichem Laden und sperrt Datenänderungen bis zum Ladeabschluss. Zurück, erneutes Laden und Navigation-Retry bleiben verfügbar.

@@ -951,6 +951,9 @@ Lokale Stammdaten bleiben bei Zuordnungen erhalten.</value>
   <data name="CaptureWinner" xml:space="preserve"><value>Sieger erfassen</value></data>
   <data name="CapturePlacements" xml:space="preserve"><value>Platzierungen erfassen</value></data>
   <data name="AllowTies" xml:space="preserve"><value>Gleichstände erlauben</value></data>
+  <data name="NegativePointsRequirement" xml:space="preserve"><value>Erfordert Punkteerfassung.</value></data>
+  <data name="WinnerCaptureRequirement" xml:space="preserve"><value>Erfordert Siegererfassung.</value></data>
+  <data name="ResultFromPointsRequirement" xml:space="preserve"><value>Für die automatische Wertung aus Punkten müssen Punkte und Sieger erfasst werden.</value></data>
   <data name="ResultFromPoints" xml:space="preserve"><value>Wertung aus Punkten</value></data>
   <data name="ManualResult" xml:space="preserve"><value>Manuell</value></data>
   <data name="HighestPointsWin" xml:space="preserve"><value>Höchste Punktzahl gewinnt</value></data>

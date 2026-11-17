@@ -45,6 +45,9 @@ public static class AppResources
     public static string CapturePlacements => GetString(nameof(CapturePlacements));
     public static string AllowTies => GetString(nameof(AllowTies));
     public static string ResultFromPoints => GetString(nameof(ResultFromPoints));
+    public static string NegativePointsRequirement => GetString(nameof(NegativePointsRequirement));
+    public static string WinnerCaptureRequirement => GetString(nameof(WinnerCaptureRequirement));
+    public static string ResultFromPointsRequirement => GetString(nameof(ResultFromPointsRequirement));
     public static string ManualResult => GetString(nameof(ManualResult));
     public static string HighestPointsWin => GetString(nameof(HighestPointsWin));
     public static string LowestPointsWin => GetString(nameof(LowestPointsWin));

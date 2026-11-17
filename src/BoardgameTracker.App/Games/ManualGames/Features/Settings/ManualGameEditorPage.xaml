@@ -51,29 +51,32 @@
                                 <Label Text="{x:Static res:AppResources.CapturePoints}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CapturePoints}" SemanticProperties.Description="{x:Static res:AppResources.CapturePoints}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding CapturePoints}">
-                                <Label Text="{x:Static res:AppResources.AllowNegativePoints}" Style="{StaticResource SettingsItemLabel}" />
-                                <Switch Grid.Column="1" IsToggled="{Binding AllowNegativePoints}" SemanticProperties.Description="{x:Static res:AppResources.AllowNegativePoints}" />
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" Margin="16,0,0,0">
+                                <Label Text="{x:Static res:AppResources.AllowNegativePoints}" Style="{StaticResource SettingsItemLabel}" SemanticProperties.Hint="{x:Static res:AppResources.NegativePointsRequirement}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding AllowNegativePoints}" IsEnabled="{Binding CapturePoints}" SemanticProperties.Description="{x:Static res:AppResources.AllowNegativePoints}" SemanticProperties.Hint="{x:Static res:AppResources.NegativePointsRequirement}" />
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}">
                                 <Label Text="{x:Static res:AppResources.CaptureWinner}" Style="{StaticResource SettingsItemLabel}" />
                                 <Switch Grid.Column="1" IsToggled="{Binding CaptureWinner}" SemanticProperties.Description="{x:Static res:AppResources.CaptureWinner}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding CaptureWinner}">
-                                <Label Text="{x:Static res:AppResources.CapturePlacements}" Style="{StaticResource SettingsItemLabel}" />
-                                <Switch Grid.Column="1" IsToggled="{Binding CapturePlacements}" SemanticProperties.Description="{x:Static res:AppResources.CapturePlacements}" />
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" Margin="16,0,0,0">
+                                <Label Text="{x:Static res:AppResources.CapturePlacements}" Style="{StaticResource SettingsItemLabel}" SemanticProperties.Hint="{x:Static res:AppResources.WinnerCaptureRequirement}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding CapturePlacements}" IsEnabled="{Binding CaptureWinner}" SemanticProperties.Description="{x:Static res:AppResources.CapturePlacements}" SemanticProperties.Hint="{x:Static res:AppResources.WinnerCaptureRequirement}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding CaptureWinner}">
-                                <Label Text="{x:Static res:AppResources.AllowTies}" Style="{StaticResource SettingsItemLabel}" />
-                                <Switch Grid.Column="1" IsToggled="{Binding AllowTies}" SemanticProperties.Description="{x:Static res:AppResources.AllowTies}" />
+                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" Margin="16,0,0,0">
+                                <Label Text="{x:Static res:AppResources.AllowTies}" Style="{StaticResource SettingsItemLabel}" SemanticProperties.Hint="{x:Static res:AppResources.WinnerCaptureRequirement}" />
+                                <Switch Grid.Column="1" IsToggled="{Binding AllowTies}" IsEnabled="{Binding CaptureWinner}" SemanticProperties.Description="{x:Static res:AppResources.AllowTies}" SemanticProperties.Hint="{x:Static res:AppResources.WinnerCaptureRequirement}" />
                             </Grid>
-                            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource SettingsRow}" IsVisible="{Binding CanDeriveResult}">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Style="{StaticResource SettingsRow}" Margin="16,0,0,0">
                                 <Label Text="{x:Static res:AppResources.ResultFromPoints}" Style="{StaticResource SettingsItemLabel}" />
-                                <Grid Grid.Column="1" Style="{StaticResource SettingsLookupHost}">
+                                <ImageButton Grid.Column="1" Source="icon_info.png" Style="{StaticResource IconButton}"
+                                    Clicked="OnResultModeInfoClicked"
+                                    ToolTipProperties.Text="{x:Static res:AppResources.ResultFromPointsRequirement}" SemanticProperties.Description="{x:Static res:AppResources.ResultFromPointsRequirement}" />
+                                <Grid Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource SettingsLookupHost}">
                                     <Border Style="{StaticResource SettingsLookupFrame}" />
-                                    <Button Text="{Binding ResultModeText}" Style="{StaticResource SettingsLookup}"
+                                    <Button Text="{Binding ResultModeText}" Style="{StaticResource SettingsLookup}" IsEnabled="{Binding CanDeriveResult}"
                                         Clicked="OnResultModeClicked"
-                                        SemanticProperties.Description="{x:Static res:AppResources.ResultFromPoints}" />
+                                        SemanticProperties.Description="{x:Static res:AppResources.ResultFromPoints}" SemanticProperties.Hint="{x:Static res:AppResources.ResultFromPointsRequirement}" />
                                 </Grid>
                             </Grid>
 

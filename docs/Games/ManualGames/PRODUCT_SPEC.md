@@ -18,9 +18,11 @@ Gemeinsame Identitäten, Gruppen, Sessions, Farben, Historie, Navigation und Sic
 
 - **Punkte erfassen**: ganze Zahlen; **Negative Punkte erlauben** ist nur bei aktivierter Punkteerfassung wirksam.
 - **Sieger erfassen**: **Platzierungen erfassen** und **Gleichstände erlauben** sind nur bei aktivierter Siegererfassung wirksam. Sieger können allein oder mit vollständigen Platzierungen erfasst werden.
-- Nur bei **Punkte + Sieger** ist die Ermittlung **manuell**, **höchste Punktzahl gewinnt** oder **niedrigste Punktzahl gewinnt** konfigurierbar. Bei automatischer Ermittlung entscheidet „Platzierungen erfassen“, ob nur Sieger oder vollständige Platzierungen abgeleitet werden.
+- Die Ermittlung **manuell**, **höchste Punktzahl gewinnt** oder **niedrigste Punktzahl gewinnt** ist dauerhaft sichtbar und nur bei **Punkte + Sieger** bedienbar. Bei automatischer Ermittlung entscheidet „Platzierungen erfassen“, ob nur Sieger oder vollständige Platzierungen abgeleitet werden.
 - **Spielerreihenfolge erfassen** und **Spielerfarben erfassen** sind unabhängige Schalter. Bei aktiver Farberfassung benötigt jeder Teilnehmer eine eindeutige Farbe aus dem gemeinsamen 12er-Katalog; eine spielindividuell eingeschränkte Farbpalette ist nicht Teil dieses Vertrags.
 - Ohne Siegererfassung gibt es keine Platzierungserfassung oder automatische Siegerermittlung. Jede Kombination ohne Ergebniswerte ist zulässig („gespielt“).
+
+Alle abhängigen Konfigurationsoptionen bleiben beim Anlegen und Bearbeiten sichtbar; bei fehlender Voraussetzung sind ihre Bedienelemente deaktiviert. Das Umschalten einer Voraussetzung setzt bereits gewählte Unteroptionen im Entwurf nicht zurück. Ihre fachliche Wirksamkeit bleibt an die genannten Voraussetzungen gebunden.
 
 Änderungen der Erfassungsregeln gelten nur für neue Partien. Laufende Partien behalten die für ihren Start gültigen Regeln. Historische Ergebnisse, Wertungsarten und Farben werden weder gelöscht noch automatisch umgerechnet. Beim Bearbeiten historischer Partien bleiben die vorhandenen Ergebnisarten bearbeitbar, unabhängig von der aktuellen Konfiguration; nicht historisch vorhandene Ergebnisarten werden dadurch nicht nachträglich angelegt.
 

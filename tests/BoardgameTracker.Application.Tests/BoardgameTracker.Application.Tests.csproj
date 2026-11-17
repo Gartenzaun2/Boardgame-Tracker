@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/Settings/ManualGameEditorViewModel.cs" Link="Presentation/ManualGameEditorViewModel.cs" />
     <Compile Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/GameSessions/**/*ViewModel.cs;../../src/BoardgameTracker.App/Games/ManualGames/ManualGameSessionNavigationHandler.cs" Link="ManualGames/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/Settings/ManualGameEditorPage.xaml" LogicalName="ManualGames.ManualGameEditorPage.xaml" />
     <EmbeddedResource Include="../../src/BoardgameTracker.App/Games/ManualGames/Features/GameSessions/Running/ManualRunningPage.xaml" LogicalName="ManualGames.ManualRunningPage.xaml" />
   </ItemGroup>
   <PropertyGroup>

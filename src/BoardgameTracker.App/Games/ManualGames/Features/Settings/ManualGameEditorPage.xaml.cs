@@ -30,7 +30,7 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
         => await _viewModel.SetEnabledAsync(e.Value);
 
     private async void OnResultModeClicked(object? sender, EventArgs e) {
-        if (!_viewModel.CanEdit)
+        if (!_viewModel.CanEdit || !_viewModel.CanDeriveResult)
             return;
 
         _viewModel.IsModalDialogOpen = true;
@@ -39,6 +39,20 @@ public partial class ManualGameEditorPage : ContentPage, IQueryAttributable {
                 _viewModel.ResultChoices, _viewModel.ResultMode);
             if (selected >= 0)
                 _viewModel.ResultMode = selected;
+        } catch (Exception exception) {
+            _viewModel.ReportDialogFailure(exception);
+        } finally {
+            _viewModel.IsModalDialogOpen = false;
+        }
+    }
+
+    private async void OnResultModeInfoClicked(object? sender, EventArgs e) {
+        if (!_viewModel.CanEdit)
+            return;
+
+        _viewModel.IsModalDialogOpen = true;
+        try {
+            await AppDialogPage.ShowAsync(this, AppResources.ResultFromPoints, AppResources.ResultFromPointsRequirement, AppResources.Ok);
         } catch (Exception exception) {
             _viewModel.ReportDialogFailure(exception);
         } finally {
