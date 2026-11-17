@@ -514,18 +514,23 @@ können**, auch wenn ursprüngliche Formularbedingungen nicht mehr erfüllt sind
 Eine berechnete `CanSave`-Bedingung kann das ausdrücklich abbilden, ohne eine
 zweite Speicherung zu erlauben.
 
-### Gegenseitig ausschließende Unterdialoge
+### Einheitliche Modellierung von Unterdialogen
 
-Beschreiben mehrere Booleans ausschließlich, **welcher von mehreren
-Unterdialogen gerade geöffnet ist**, bevorzugt **einen Enum-Zustand mit einem
-expliziten `None`-Wert** verwenden. So kann nicht versehentlich gleichzeitig
-z. B. eine Spieler- und eine Spieleauswahl aktiv sein. Das Enum bezeichnet
-nur diese gegenseitig ausschließenden UI-Teilabläufe; unabhängige Bedingungen
-wie `IsBusy`, `CanEdit`, Validierungsfehler oder abgeschlossene Speicherung
-bleiben davon getrennt. Kein universelles Zustands-Enum für den gesamten
-Dialog und kein State-Machine-Framework allein für einfache Overlays einführen.
+Selbst implementierte Unterdialoge und Overlays bevorzugt über **einen expliziten
+Enum-Zustand mit `None`** modellieren – auch wenn derzeit nur ein einziger
+Unterdialog existiert. Damit ist das Unterdialogkonzept im ViewModel erkennbar,
+jeder Unterdialog eindeutig benannt und eine spätere Erweiterung ohne Wechsel
+des Zustandsmodells möglich. Bei mehreren Unterdialogen verhindert der Enum
+zusätzlich, dass versehentlich mehrere gegenseitig ausschließende Overlays
+gleichzeitig aktiv sind.
 
-**Beispiel (illustrativer Unterdialog; keine festgelegten Typ- oder Membernamen):**
+Der Enum beschreibt ausschließlich, **welcher eigene Unterdialog aktiv ist**;
+unabhängige Bedingungen wie `IsBusy`, `CanEdit`, Validierungsfehler oder
+abgeschlossene Speicherung bleiben getrennt. Kein universelles Zustands-Enum
+für den gesamten Dialog und kein State-Machine-Framework für einfache Overlays
+einführen.
+
+**Beispiel mit mehreren Unterdialogen (`GroupCreationSubdialog`):**
 
 ```csharp
 public enum GroupCreationSubdialog {
@@ -539,16 +544,37 @@ public enum GroupCreationSubdialog {
 public partial GroupCreationSubdialog ActiveSubdialog { get; private set; }
 ```
 
+**Beispiel mit nur einem Unterdialog (`EditGroupSubdialog`, illustrativ):**
+
+```csharp
+public enum EditGroupSubdialog {
+    None,
+    SelectGame
+}
+
+[ObservableProperty]
+public partial EditGroupSubdialog ActiveSubdialog { get; private set; }
+```
+
+Die Beispiele zeigen die Zustandsmodellierung, nicht verpflichtende neue Typen
+oder Membernamen für jeden Dialog. `GroupCreationSubdialog` ist ein bestehendes
+Projektbeispiel; `EditGroupSubdialog` veranschaulicht die bevorzugte Form für
+einen einzelnen Unterdialog und behauptet keine bereits erfolgte Umstellung.
+
 Beim Öffnen den passenden Enum-Wert setzen, beim Schließen auf `None`
 zurücksetzen und beim System-Zurück zuerst den aktiven Unterdialog behandeln.
-Für XAML-Sichtbarkeit kann ein gemeinsam bereitgestellter Vergleichs-Converter
-den Enum-Wert **gegen den als Parameter übergebenen Enum-Member** prüfen;
-die fachliche Zustandsquelle bleibt `ActiveSubdialog`. Ein solcher Converter
-ist keine zweite Zustandsquelle und erfordert nicht für jedes Enum eine eigene
-Klasse. Ein zusätzlicher Paketverweis allein dafür ist nicht nötig.
+Für XAML-Sichtbarkeit den vorhandenen `EnumEqualsConverter` verwenden, der
+den Enum-Wert **gegen den als Parameter übergebenen Enum-Member** prüft;
+die fachliche Zustandsquelle bleibt `ActiveSubdialog`. Keine zusätzlichen
+Boolean-Proxies für dieselben Unterdialogzustände einführen.
 
-**XAML-Beispiel (nur Bindungsidee; `EnumEquals` ist ein illustrativer
-Ressourcenschlüssel, keine Behauptung über bereits vorhandenen Code):**
+**Abgrenzung:** Ein reines technisches Sperrflag, das lediglich die laufende
+Präsentation eines nativen oder über `AppDialogPage` angezeigten modalen Dialogs
+markiert, benötigt keinen Enum, wenn die konkrete Dialogidentität für die
+Zustandssteuerung unerheblich ist. Dafür genügt ein klar benanntes Boolean wie
+`IsModalDialogOpen`. Nicht jeden Modalaufruf zu einem eigenen Unterdialog machen.
+
+**XAML-Beispiel (Bindung an den vorhandenen `EnumEquals`-Ressourcenschlüssel):**
 
 ```xml
 <Grid IsVisible="{Binding ActiveSubdialog, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static local:GroupCreationSubdialog.SelectGame}}" />
