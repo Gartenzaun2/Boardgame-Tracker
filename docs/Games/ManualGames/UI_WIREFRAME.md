@@ -4,14 +4,14 @@ Gemeinsame Header, Capsule-Geometrie, Themes, PlayerColor-Flächen, Textkontrast
 
 ## 1. Spiel anlegen / Einstellungen
 
-**Spiel anlegen** öffnet den ManualGames-Editor mit Name, kurzem Capsule-Tag, Min-/Max-Spielerzahl und den Wertungseinstellungen. Der Dialog ist kein separater Arche-Nova-Modus. Abhängige Optionen werden **ausgeblendet**, nicht deaktiviert stehen gelassen:
+**Spiel anlegen** öffnet den ManualGames-Editor mit Name, kurzem Capsule-Tag, Min-/Max-Spielerzahl und den Wertungseinstellungen. Der Dialog ist kein separater Arche-Nova-Modus. Sämtliche Konfigurationszeilen sind von Anfang an sichtbar und behalten beim Umschalten ihre Position; abhängige Bedienelemente sind bei fehlender Voraussetzung deaktiviert:
 
-- **Punkte erfassen** → **Negative Punkte erlauben**.
-- **Sieger erfassen** → **Platzierungen erfassen**, **Gleichstände erlauben**.
-- **Punkte + Sieger** → **Wertung aus Punkten**: manuell / höchste / niedrigste Punktzahl.
+- **Punkte erfassen** → **Negative Punkte erlauben** (nur mit Punkteerfassung bedienbar).
+- **Sieger erfassen** → **Platzierungen erfassen**, **Gleichstände erlauben** (nur mit Siegererfassung bedienbar).
+- **Punkte + Sieger** → **Wertung aus Punkten**: manuell / höchste / niedrigste Punktzahl (nur mit beiden Erfassungsarten bedienbar).
 - Unabhängig: **Spielerreihenfolge erfassen**, **Spielerfarben erfassen**.
 
-Die Seite nutzt flache gemeinsame Einstellungszeilen, Switches und Lookups. Keine dekorativen Erläuterungstexte; Zusatzinformationen über `Info`, echte Fehler und Sperrgründe bleiben sichtbar.
+Abhängige Zeilen sind leicht eingerückt und dadurch ihren Hauptoptionen visuell untergeordnet. Deaktivierte Bedienelemente bleiben gut lesbar und sind als nicht bedienbar erkennbar. Die Seite bleibt flach und verwendet weiterhin die gemeinsamen Einstellungszeilen, Switches und Lookups statt zusätzlicher Karten. Bei nicht unmittelbar verständlichen Voraussetzungen kann ein zurückhaltendes, auch bei deaktivierter Option bedienbares Info-Icon die Abhängigkeit erklären; dafür gelten die gemeinsamen Touchflächen- und Accessibility-Regeln. Keine dauerhaft eingeblendeten dekorativen Erläuterungstexte; echte Fehler und konkrete Sperrgründe bleiben sichtbar.
 
 Bearbeiten nur unter **Einstellungen → Spiele verwalten → [manuelles Spiel]**; dort **Spiel anzeigen** zuerst, anschließend Name, Capsule-Tag und bearbeitbare Konfiguration sowie **Spiel löschen** (nur ohne Partien, sonst gesperrt). Die Spieleübersicht erhält keinen Bearbeiten-Stift.
 

@@ -16,9 +16,9 @@ Gemeinsame Identitäten, Gruppen, Sessions, Farben, Historie, Navigation und Sic
 
 ## 3. Konfigurierbare Erfassung
 
-- **Punkte erfassen**: ganze Zahlen; darunter ausschließlich bei Aktivierung **Negative Punkte erlauben**.
-- **Sieger erfassen**: darunter ausschließlich bei Aktivierung **Platzierungen erfassen** und **Gleichstände erlauben**. Sieger können allein oder mit vollständigen Platzierungen erfasst werden.
-- Nur bei **Punkte + Sieger**: Ermittlung **manuell**, **höchste Punktzahl gewinnt** oder **niedrigste Punktzahl gewinnt**. Bei automatischer Ermittlung entscheidet „Platzierungen erfassen“, ob nur Sieger oder vollständige Platzierungen abgeleitet werden.
+- **Punkte erfassen**: ganze Zahlen; **Negative Punkte erlauben** ist nur bei aktivierter Punkteerfassung wirksam.
+- **Sieger erfassen**: **Platzierungen erfassen** und **Gleichstände erlauben** sind nur bei aktivierter Siegererfassung wirksam. Sieger können allein oder mit vollständigen Platzierungen erfasst werden.
+- Nur bei **Punkte + Sieger** ist die Ermittlung **manuell**, **höchste Punktzahl gewinnt** oder **niedrigste Punktzahl gewinnt** konfigurierbar. Bei automatischer Ermittlung entscheidet „Platzierungen erfassen“, ob nur Sieger oder vollständige Platzierungen abgeleitet werden.
 - **Spielerreihenfolge erfassen** und **Spielerfarben erfassen** sind unabhängige Schalter. Bei aktiver Farberfassung benötigt jeder Teilnehmer eine eindeutige Farbe aus dem gemeinsamen 12er-Katalog; eine spielindividuell eingeschränkte Farbpalette ist nicht Teil dieses Vertrags.
 - Ohne Siegererfassung gibt es keine Platzierungserfassung oder automatische Siegerermittlung. Jede Kombination ohne Ergebniswerte ist zulässig („gespielt“).
 
